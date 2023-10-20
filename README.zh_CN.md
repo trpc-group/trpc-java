@@ -10,7 +10,7 @@
 tRPC-Java，作为 [tRPC](https://github.com/trpc-group/trpc) 的 Java
 语言版本，是经过大规模线上业务使用验证过的微服务框架，它不仅性能高，而且易于使用和测试。
 
-更多信息见：[相关文档](#2)
+更多信息见：[相关文档](#相关文档)
 
 ## 整体架构
 
@@ -69,7 +69,8 @@ JDK 8+, Maven 3.6.3+
 
 ## 如何贡献
 
-如果您有兴趣进行贡献，请查阅[贡献指南](CONTRIBUTING.md)并检查 [issues](https://github.com/trpc-group/trpc-java/issues)
+如果您有兴趣进行贡献，请查阅[贡献指南](CONTRIBUTING.zh_CN.md)
+并检查 [issues](https://github.com/trpc-group/trpc-java/issues)
 中未分配的问题。认领一个任务，让我们一起为 tRPC-Java 做出贡献。
 
 ## LICENSE

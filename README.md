@@ -11,7 +11,7 @@ tRPC-Java, as the Java language implementation of [tRPC](https://github.com/trpc
 battle-tested microservices framework that has been extensively validated in production
 environments. It not only delivers high performance but also offers ease of use and testability.
 
-For more information, please refer to the [related documentation](#2).
+For more information, please refer to the [related documentation](#related-documentation).
 
 ## Overall Architecture
 
@@ -71,8 +71,9 @@ It is recommended to use [Tencent Kona JDK 8](https://github.com/Tencent/Tencent
 ## How to Contribute
 
 If you're interested in contributing, please take a look at
-the [contribution guidelines][contributing] and check the [unassigned issues][issues] in the
-repository. Claim a task and let's contribute together to tRPC-Java.
+the [contribution guidelines](CONTRIBUTING.md) and check
+the [unassigned issues](https://github.com/trpc-group/trpc-java/issues) in the repository. Claim a
+task and let's contribute together to tRPC-Java.
 
 ## LICENSE
 
