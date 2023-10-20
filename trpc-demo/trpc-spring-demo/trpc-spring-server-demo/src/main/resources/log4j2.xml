@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG">
+    <Properties>
+        <Property name="logdir">./log</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout charset="UTF-8" pattern="%d [%-5p]%c{1}(%L) %m%n"/>
+        </Console>
+        <RollingRandomAccessFile name="DebugLog" append="true" fileName="${logdir}/debug.log"
+                filePattern="${logdir}/debug.%d{yyyy-MM-dd}.log">
+            <Filters>
+                <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p]%C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <TimeBasedTriggeringPolicy/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="ErrorLog" append="true" fileName="${logdir}/error.log"
+                filePattern="${logdir}/error.log.%i">
+            <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p]%C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="200MB"/>
+            <DefaultRolloverStrategy max="3"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <loggers>
+        <Root level="INFO" includeLocation="true">
+            <AppenderRef ref="Console" />
+        </Root>
+    </loggers>
+</Configuration>

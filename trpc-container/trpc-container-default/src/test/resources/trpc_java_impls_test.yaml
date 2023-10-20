@@ -1,0 +1,24 @@
+global:
+  namespace: ${env_type}
+  env_name: ${env_name}
+  container_name: ${container_name}
+
+server:
+  app: QQPIM
+  server: DMServer                                                                                                                                                                            #本地IP，容器内为容器ip，物理机或虚拟机为本机ip
+  service:
+    - name: trpc.TestApp.TestServer.Greeter
+      impls:
+        - impl: com.tencent.trpc.container.demo.GreeterServiceImp
+          request_timeout: 2000
+          filters:
+            - a
+            - b
+        - impl: com.tencent.trpc.container.demo.GreeterServiceImp
+          enable_link_timeout: true
+      filters:
+        - c
+      ip: 127.0.0.1
+      port: 12345
+      network: tcp
+      protocol: trpc

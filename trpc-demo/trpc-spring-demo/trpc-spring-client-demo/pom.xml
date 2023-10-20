@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>trpc-spring-demo</artifactId>
+        <groupId>com.tencent.trpc</groupId>
+        <version>0.16.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>trpc-spring-client-demo</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.tencent.trpc</groupId>
+            <artifactId>trpc-proto-http</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.tencent.trpc</groupId>
+                <artifactId>trpc-maven-plugin</artifactId>
+                <version>${project.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>gen-code</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <attachGeneratedFiles>true</attachGeneratedFiles>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

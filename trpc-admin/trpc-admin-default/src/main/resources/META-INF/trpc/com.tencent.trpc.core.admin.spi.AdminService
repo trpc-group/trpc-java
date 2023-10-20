@@ -1,0 +1,1 @@
+defaultAdminService=com.tencent.trpc.admin.service.DefaultAdminServiceImpl

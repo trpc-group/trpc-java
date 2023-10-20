@@ -1,0 +1,14 @@
+global:
+  namespace: test_namespace
+  env_name: test_env_name
+  container_name: test_container_name
+  enable_set: Y
+  full_set_name: a.b.c
+
+server:
+  app: QQPIM
+  server: DMServer
+  service:
+    - name: trpc.TestApp.TestServer.Greeter
+      impls:
+        - com.tencent.trpc.container.demo.GreeterServiceImp

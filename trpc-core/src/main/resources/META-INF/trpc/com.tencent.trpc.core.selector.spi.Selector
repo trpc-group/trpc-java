@@ -1,0 +1,2 @@
+assemble=com.tencent.trpc.core.selector.support.def.AssembleSelector
+ip=com.tencent.trpc.core.selector.support.ip.IpSelector

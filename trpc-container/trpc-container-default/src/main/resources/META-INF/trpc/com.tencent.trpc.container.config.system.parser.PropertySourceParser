@@ -1,0 +1,1 @@
+default=com.tencent.trpc.container.config.system.parser.DefaultPropertySourceParser

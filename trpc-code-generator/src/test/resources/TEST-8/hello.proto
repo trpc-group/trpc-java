@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package trpc.exp.helloworld;
+
+option java_package = "com.tencent.trpc.codegen.test";
+option java_multiple_files = false;
+option java_outer_classname = "GreeterService";
+
+message HelloRequest {
+  string message = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}
+
+service HelloWorldService {
+  rpc SayHello (stream HelloRequest) returns (stream HelloReply) {}
+  rpc SayHello2 (HelloRequest) returns (stream HelloReply) {}
+  rpc SayHello3 (stream HelloRequest) returns (HelloReply) {}
+  rpc SayHello4 (HelloRequest) returns (HelloReply) {}
+}

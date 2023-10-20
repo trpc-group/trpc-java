@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+// package内容格式推荐为trpc.{app}.{server}，以trpc为固定前缀，标识这是一个trpc服务协议，app为你的应用名，server为你的服务进程名
+package trpc.exp.helloworld;
+
+import "validate.proto";
+
+// 注意：这里java_package指定的是自动生成的java类文件所在目录,保持路径全小写
+option java_package="com.tencent.trpc.codegen.test.helloworld";
+// 可以用来指定生成的协议文件是多个类文件还是单个类文件
+option  java_multiple_files = false;
+// 当java_multiple_files属性为false时，生成的类文件名
+option java_outer_classname = "GreeterService";
+
+// 定义服务接口
+service Greeter {
+  //@alias= /api/helloworld
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+// 请求参数
+message HelloRequest {
+  string message = 1 [(validate.rules).string.min_len = 2];
+  int64 ts = 2;
+}
+
+// 响应参数
+message HelloReply {
+  string message = 1;
+  int64 ts = 2;
+}

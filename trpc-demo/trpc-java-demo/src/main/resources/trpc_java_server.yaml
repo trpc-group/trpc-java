@@ -1,0 +1,34 @@
+server:
+  app: TestApp            # App name
+  server: TestServer      # Server name
+  local_ip: 127.0.0.1     # Local ip
+  worker_pool: biz_worker_pool # Worker pool, used to call local services' functions
+  filters:
+    - demoFilter
+  service: # Service list
+    - name: trpc.TestApp.TestServer.Greeter1  # Service name
+      impls: # Service implement classes
+        - com.tencent.trpc.demo.server.impl.GreeterServiceImpl
+      ip: 127.0.0.1       # Listen ip
+      port: 12321         # Listen port
+      network: tcp        # Network type, tcp or udp
+    - name: trpc.TestApp.TestServer.Greeter2  # Service name
+      impls: # Service implement classes
+        - com.tencent.trpc.demo.server.impl.GreeterServiceImpl2
+      ip: 127.0.0.1       # Listen ip
+      port: 12321         # Listen port
+      network: udp        # Network type, tcp or udp
+    - name: trpc.TestApp.TestServer.Greeter3  # Service name
+      impls: # Service implement classes
+        - com.tencent.trpc.demo.server.impl.GreeterServiceImpl
+        - com.tencent.trpc.demo.server.impl.GreeterServiceImpl2
+      ip: 127.0.0.1       # Listen ip
+      port: 12322         # Listen port
+      protocol: http      # Means using http protocol
+      transporter: jetty  # Means the underline servlet server is jetty
+
+plugins: # Plugin configs
+  worker_pool: # Worker pool plugin config
+    biz_worker_pool: # Worker pool name
+      _type: thread       # Thread type
+      core_pool_size: 4   # Thread size

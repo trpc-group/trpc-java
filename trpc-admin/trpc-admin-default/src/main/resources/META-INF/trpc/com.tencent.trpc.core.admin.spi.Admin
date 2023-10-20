@@ -1,0 +1,6 @@
+LoggerAdmin=com.tencent.trpc.admin.impl.LoggerAdmin
+FrameOverviewAdmin=com.tencent.trpc.admin.impl.FrameOverviewAdmin
+CommandAdmin=com.tencent.trpc.admin.impl.CommandAdmin
+ConfigAdmin=com.tencent.trpc.admin.impl.ConfigAdmin
+WorkerPoolAdmin=com.tencent.trpc.admin.impl.WorkerPoolAdmin
+RpcStatsAdmin=com.tencent.trpc.admin.impl.RpcStatsAdmin

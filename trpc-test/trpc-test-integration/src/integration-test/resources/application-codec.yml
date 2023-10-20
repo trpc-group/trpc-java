@@ -1,0 +1,106 @@
+spring:
+  main:
+    web-application-type: none
+
+trpc:
+  server:
+    app: integration-test-codec
+    server: integration-test-codec-server
+    local_ip: 127.0.0.1
+    request_timeout: 30000
+    service:
+      - name: no-compress
+        impls:
+          - com.tencent.trpc.integration.test.stub.EchoAPIImpl
+        compressor: none
+        compress_min_bytes: 4
+        port: 7041
+      - name: gzip
+        impls:
+          - com.tencent.trpc.integration.test.stub.EchoAPIImpl
+        compressor: gzip
+        compress_min_bytes: 4
+        port: 7042
+      - name: snappy
+        impls:
+          - com.tencent.trpc.integration.test.stub.EchoAPIImpl
+        compressor: snappy
+        compress_min_bytes: 4
+        port: 7043
+      - name: pb
+        impls:
+          - com.tencent.trpc.integration.test.stub.EchoAPIImpl
+        port: 7044
+        serialization: pb
+      - name: jpb
+        impls:
+          - com.tencent.trpc.integration.test.stub.JpbEchoAPIImpl
+        port: 7045
+        serialization: jpb
+      - name: json
+        impls:
+          - com.tencent.trpc.integration.test.stub.EchoAPIImpl
+        port: 7046
+        serialization: json
+  client:
+    request_timeout: 30000
+    service:
+      - name: no-compress-client
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7041
+        compressor: none
+        compress_min_bytes: 4
+      - name: gzip-client
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7042
+        compressor: gzip
+        compress_min_bytes: 4
+      - name: snappy-client
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7043
+        compressor: snappy
+        compress_min_bytes: 4
+      - name: illegal-compressor-client
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7043
+        compressor: non-exist
+      - name: pb-client
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7044
+        serialization: pb
+      - name: jpb-client
+        interface: com.tencent.trpc.integration.test.stub.JpbEchoAPI
+        naming_url: ip://127.0.0.1:7045
+        serialization: jpb
+      - name: json-client
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7046
+        serialization: json
+      - name: pb-json-client
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7046
+        serialization: pb
+      - name: pb-jpb-client
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7045
+        serialization: pb
+      - name: jpb-pb-client
+        interface: com.tencent.trpc.integration.test.stub.JpbEchoAPI
+        naming_url: ip://127.0.0.1:7044
+        serialization: jpb
+      - name: jpb-json-client
+        interface: com.tencent.trpc.integration.test.stub.JpbEchoAPI
+        naming_url: ip://127.0.0.1:7046
+        serialization: jpb
+      - name: json-pb-client
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7044
+        serialization: json
+      - name: json-jpb-client
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7045
+        serialization: json
+      - name: illegal-serialization-client
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7045
+        serialization: non-exist

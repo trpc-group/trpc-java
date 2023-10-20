@@ -1,0 +1,7 @@
+logging:
+  level:
+    com.tencent.trpc.spring.boot.starters.context.configuration.bind.TRpcConfigurationBindResultReporter: debug
+
+trpc:
+  server:
+    request-timeout: 1000

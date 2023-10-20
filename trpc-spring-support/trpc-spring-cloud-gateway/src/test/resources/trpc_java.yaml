@@ -1,0 +1,15 @@
+server:
+  local_ip: 127.0.0.1
+  service:
+    - name: Hello
+      impls:
+        - com.tencent.trpc.spring.cloud.gateway.filter.test.server.HelloServiceImpl
+      port: 8090
+    - name: HelloHttpService
+      impls:
+        - com.tencent.trpc.spring.cloud.gateway.filter.test.server.HelloServiceImpl
+      port: 8091
+      transporter: jetty
+      protocol: http
+      base_path: /test
+      serialization: json

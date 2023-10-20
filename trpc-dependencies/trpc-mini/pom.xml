@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>trpc-mini</artifactId>
+
+    <parent>
+        <groupId>com.tencent.trpc</groupId>
+        <artifactId>trpc-dependencies</artifactId>
+        <version>0.16.0-SNAPSHOT</version>
+    </parent>
+
+    <packaging>jar</packaging>
+    <name>${project.artifactId}</name>
+    <description>The mini server module of trpc project</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.tencent.trpc</groupId>
+            <artifactId>trpc-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tencent.trpc</groupId>
+            <artifactId>trpc-transport-netty</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tencent.trpc</groupId>
+            <artifactId>trpc-proto-standard</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tencent.trpc</groupId>
+            <artifactId>trpc-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <artifactId>trpc-server</artifactId>
+            <groupId>com.tencent.trpc</groupId>
+        </dependency>
+    </dependencies>
+</project>

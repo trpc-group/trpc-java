@@ -1,0 +1,3 @@
+default=com.tencent.trpc.core.proxy.support.ByteBuddyProxyFactory
+jdk=com.tencent.trpc.core.proxy.support.JdkProxyFactory
+bytebuddy=com.tencent.trpc.core.proxy.support.ByteBuddyProxyFactory

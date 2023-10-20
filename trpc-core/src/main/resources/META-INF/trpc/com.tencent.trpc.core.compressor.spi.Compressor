@@ -1,0 +1,3 @@
+none=com.tencent.trpc.core.compressor.support.NoneCompressor
+gzip=com.tencent.trpc.core.compressor.support.GZipCompressor
+snappy=com.tencent.trpc.core.compressor.support.SnappyCompressor

@@ -1,0 +1,3 @@
+trpc:
+  server:
+    request-timeout: 3000

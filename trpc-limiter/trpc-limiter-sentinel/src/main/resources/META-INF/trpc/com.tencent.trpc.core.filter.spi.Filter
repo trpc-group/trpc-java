@@ -1,0 +1,1 @@
+sentinel=com.tencent.trpc.limiter.sentinel.filter.SentinelLimiterFilter

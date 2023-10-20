@@ -1,0 +1,1 @@
+#org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.tencent.trpc.spring.cloud.gateway.autoconfigure.TrpcGatewayConfig

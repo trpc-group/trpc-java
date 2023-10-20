@@ -1,0 +1,1 @@
+load_balance_polaris_round_robin=com.tencent.trpc.container.plugin.RoundRobinLoadBalanceFactoryTest

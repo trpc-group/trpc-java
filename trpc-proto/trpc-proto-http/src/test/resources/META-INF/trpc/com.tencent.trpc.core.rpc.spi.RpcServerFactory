@@ -1,0 +1,1 @@
+http=com.tencent.trpc.proto.http.server.HttpRpcServerFactory

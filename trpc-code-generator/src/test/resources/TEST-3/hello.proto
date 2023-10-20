@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+import "trpc.proto";
+import "google/protobuf/empty.proto";
+import "msg/hello.proto";
+
+package trpc.exp.helloworld;
+
+option java_package = "com.tencent.trpc.codegen.test";
+option java_multiple_files = false;
+option java_outer_classname = "GreeterService";
+
+// 定义服务接口
+service Greeter {
+  rpc SayHello (stream HelloRequest) returns (stream HelloReply) { option(trpc.alias) = "/api/helloworld"; }
+
+  rpc SayHello2 (EmptyMessage) returns (stream HelloReply) {}
+
+  rpc SayHello3 (stream EmptyMessage) returns (google.protobuf.Empty) {}
+}

@@ -1,0 +1,19 @@
+spring:
+  main:
+    web-application-type: none
+
+trpc:
+  server:
+    app: integration-test-stream
+    server: integration-test-stream-server
+    local_ip: 127.0.0.1
+    service:
+      - name: stream-api
+        impls:
+          - com.tencent.trpc.integration.test.stub.StreamingEchoAPIImpl
+        port: 7060
+  client:
+    service:
+      - name: stream-client
+        interface: com.tencent.trpc.integration.test.stub.StreamingEchoAPI
+        naming_url: ip://127.0.0.1:7060

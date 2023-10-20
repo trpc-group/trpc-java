@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: springboot-test-demo
+trpc:
+  server:
+    app: integration-test-admin
+    server: integration-test-admin
+    local_ip: 127.0.0.1
+    request_timeout: 30000
+    admin:
+      admin_ip: 127.0.0.1
+      admin_port: 20002  #

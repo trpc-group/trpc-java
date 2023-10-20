@@ -1,0 +1,54 @@
+global:
+  namespace: ${env_type}
+  env_name: ${env_name}
+  container_name: ${container_name}
+
+server:
+  app: QQPIM
+  server: DMServer
+  bin_path: /usr/local/trpc/bin/
+  data_path: /usr/local/trpc/data/
+  main_class: com.tencent.trpc.server.Main
+  class_path: /usr/local/app/trpc/Test.HelloServer/lib
+  jvm_params: -Xms1024m -Xmx1024m -Xmn512m
+  jmx_port: 8090
+  admin_port: 8091
+  admin_ip: 127.0.0.1
+  local_ip: 127.0.0.1
+  service:
+    - name: trpc.TestApp.TestServer.Greeter
+      interface: com.tencent.trpc.container.demo.GreeterService
+      impl: com.tencent.trpc.container.demo.GreeterServiceImp
+      ip: 127.0.0.1
+      port: 12345
+      network: tcp
+      protocol: trpc
+
+client:
+  protocol: trpc
+  service:
+    - name: trpc.TestApp.TestServer.Greeter
+      interface: com.tencent.trpc.container.demo.GreeterClient
+      naming_url: ip://127.0.0.1:12345
+    - name: trpc.TestApp.TestServer.Notconnect
+      interface: com.tencent.trpc.container.demo.GreeterClient
+      naming_url: ip://127.0.0.1:9999
+      request_timeout: 2000
+plugins:
+  registry:
+    polaris:
+      address_list: 10.235.25.48:8090
+      register_self: false
+      service:
+        - namespace: java-sdk-test-service1
+          token: 5e43887a00c4465085fb89eaa0e414b4
+          instance_id: feda4ceffed0b7b08cf5ec665dcd320e50434549
+          name: trpc.TestApp.TestServer.Greeter
+
+  selector:
+    list:
+      _type: assemble
+      discovery: list
+      loadbalance: random
+      circuitbreaker: none
+

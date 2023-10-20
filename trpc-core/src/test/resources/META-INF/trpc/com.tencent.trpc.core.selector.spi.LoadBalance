@@ -1,0 +1,1 @@
+mock=com.tencent.trpc.core.selector.mock.MockLoadBalance

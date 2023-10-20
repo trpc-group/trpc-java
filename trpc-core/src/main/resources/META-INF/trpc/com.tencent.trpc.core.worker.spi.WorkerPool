@@ -1,0 +1,4 @@
+default=com.tencent.trpc.core.worker.support.thread.ThreadWorkerPool
+thread=com.tencent.trpc.core.worker.support.thread.ThreadWorkerPool
+trpc_naming_def=com.tencent.trpc.core.worker.support.thread.ThreadWorkerPool
+forkJoinPool=com.tencent.trpc.core.worker.support.thread.ForkJoinWorkerPool

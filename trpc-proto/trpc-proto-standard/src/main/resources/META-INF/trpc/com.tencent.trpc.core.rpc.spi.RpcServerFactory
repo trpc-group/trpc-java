@@ -1,0 +1,3 @@
+default=com.tencent.trpc.proto.standard.server.StandardRpcServerFactory
+standard=com.tencent.trpc.proto.standard.server.StandardRpcServerFactory
+trpc=com.tencent.trpc.proto.standard.server.StandardRpcServerFactory

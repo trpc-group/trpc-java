@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <artifactId>trpc-selector</artifactId>
+
+    <description>Trpc Parent Project ${project.version}</description>
+
+    <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>trpc-selector-nacos</module>
+        <module>trpc-selector-consul</module>
+        <module>trpc-selector-open-polaris</module>
+        <module>trpc-selector-zookeeper</module>
+    </modules>
+    <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
+
+    <parent>
+        <artifactId>trpc-parent</artifactId>
+        <groupId>com.tencent.trpc</groupId>
+        <version>0.16.0-SNAPSHOT</version>
+    </parent>
+</project>

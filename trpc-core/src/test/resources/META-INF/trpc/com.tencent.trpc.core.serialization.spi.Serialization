@@ -1,0 +1,2 @@
+pb=com.tencent.trpc.core.serialization.support.PBSerialization
+json=com.tencent.trpc.core.serialization.support.JSONSerializatio

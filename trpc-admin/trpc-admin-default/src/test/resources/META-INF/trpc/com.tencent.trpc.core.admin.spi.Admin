@@ -1,0 +1,2 @@
+CustomizeAdmin=com.tencent.trpc.admin.CustomizeAdmin
+TestAdmin=com.tencent.trpc.admin.custom.TestAdmin

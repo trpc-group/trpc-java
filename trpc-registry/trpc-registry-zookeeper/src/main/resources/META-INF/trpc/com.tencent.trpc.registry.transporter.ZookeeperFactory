@@ -1,0 +1,1 @@
+curator=com.tencent.trpc.registry.transporter.curator.CuratorZookeeperFactory

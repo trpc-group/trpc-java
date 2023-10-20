@@ -1,0 +1,16 @@
+trpc:
+  server: # Server config, used as caller service info
+    app: TestApp # App name
+    server: TestServer # Server name
+    local_ip: 127.0.0.1 # Local ip
+
+  client: # Client configs
+    service:
+      - name: trpc.TestApp.TestServer.Greeter1  # Service name
+        naming_url: ip://127.0.0.1:12321  # Router address
+        interface: com.tencent.trpc.demo.proto.GreeterserviceAsyncAPI # Service interface
+      - name: trpc.TestApp.TestServer.Greeter2  # Service name
+        naming_url: ip://127.0.0.1:12322  # Router address
+        interface: com.tencent.trpc.demo.proto.Greeterservice2AsyncAPI  # Service interface
+        protocol: http  # Protocol type, default is trpc
+        basePath: /rest # The base path of the client service url address

@@ -1,0 +1,16 @@
+spring:
+  main:
+    web-application-type: none
+
+trpc:
+  server:
+    app: integration-test-codec
+    server: integration-test-codec-server
+    local_ip: 127.0.0.1
+    request_timeout: 30000
+    service:
+      - name: invalid-service
+        impls:
+          - com.tencent.trpc.integration.test.stub.EchoAPIImpl
+        serialization: non-exist
+        port: 7050

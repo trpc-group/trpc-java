@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Properties>
+        <Property name="logdir">../log</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout charset="UTF-8"
+                    pattern="%d [%-5p]%c{1}(%L, %X{printTraceId})(trace:%X{printTraceId}) %m%n"/>
+        </Console>
+        <RollingRandomAccessFile name="InfoLog" append="true" fileName="${logdir}/info.log"
+                filePattern="${logdir}/info.log.%i">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p]%C{1}(%L)(trace:%X{printTraceId) %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="300MB"/>
+            <DefaultRolloverStrategy max="7"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="ErrorLog" append="true" fileName="${logdir}/error.log"
+                filePattern="${logdir}/error.log.%i">
+            <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p]%C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="1000MB"/>
+            <DefaultRolloverStrategy max="15"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <loggers>
+        <AsyncRoot level="INFO" includeLocation="true">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="InfoLog"/>
+        </AsyncRoot>
+    </loggers>
+</Configuration>

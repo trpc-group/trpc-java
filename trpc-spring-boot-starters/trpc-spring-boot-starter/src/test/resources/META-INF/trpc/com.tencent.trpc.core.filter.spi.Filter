@@ -1,0 +1,3 @@
+additional_client_filter=com.tencent.trpc.spring.boot.starters.test.MockAdditionalFilter
+additional_server_filter=com.tencent.trpc.spring.boot.starters.test.MockAdditionalFilter
+auto_inject_test_filter=com.tencent.trpc.spring.boot.starters.test.AutoInjectTestFilter

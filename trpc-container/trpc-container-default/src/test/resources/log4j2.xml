@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG">
+    <Properties>
+        <Property name="logdir">../log</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout charset="UTF-8"
+                    pattern="%d [%-5p]%c{1}(%L, %X{printTraceId})(trace:%X{printTraceId}) %m%n"/>
+        </Console>
+        <RollingRandomAccessFile name="DebugLog" append="true" fileName="${logdir}/debug.log"
+                filePattern="${logdir}/debug.log.%i">
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p]%C{1}(%L)(trace:%X{printTraceId) %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="300MB"/>
+            <DefaultRolloverStrategy max="7"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="ErrorLog" append="true" fileName="${logdir}/error.log"
+                filePattern="${logdir}/error.log.%i">
+            <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p]%C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="1000MB"/>
+            <DefaultRolloverStrategy max="15"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="CacheLog" append="true"
+                fileName="${logdir}/cache.log"
+                filePattern="${logdir}/cache.log.%i">
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p] %C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="200MB"/>
+            <DefaultRolloverStrategy max="3"/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="JungleRedisLog" append="true"
+                fileName="${logdir}/jungle_redis.log"
+                filePattern="${logdir}/jungle_redis.log.%i">
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p] %C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="200MB"/>
+            <DefaultRolloverStrategy max="3"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <loggers>
+        <AsyncRoot level="DEBUG" includeLocation="true">
+            <AppenderRef ref="DebugLog"/>
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="ErrorLog"/>
+        </AsyncRoot>
+    </loggers>
+</Configuration>

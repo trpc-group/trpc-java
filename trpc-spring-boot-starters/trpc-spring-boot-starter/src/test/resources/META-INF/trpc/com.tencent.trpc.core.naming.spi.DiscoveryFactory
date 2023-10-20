@@ -1,0 +1,2 @@
+test=com.tencent.trpc.naming.discovery.polaris.PolarisDiscoveryFactoryTest
+cl5Test=com.tencent.trpc.naming.discovery.polaris.PolarisDiscoveryFactoryTest

@@ -1,0 +1,69 @@
+spring:
+  main:
+    web-application-type: none
+
+trpc:
+  server:
+    app: integration-test
+    server: integration-test-server
+    local_ip: 127.0.0.1
+    request_timeout: 2000
+    service:
+      - name: tcp-service
+        impls:
+          - com.tencent.trpc.integration.test.stub.EchoAPIImpl
+        network: tcp
+        port: 7070
+        request_timeout: 3000
+        idle_timeout: 1000
+        max_conns: 1
+      - name: udp-service
+        impls:
+          - com.tencent.trpc.integration.test.stub.EchoAPIImpl
+        network: udp
+        port: 7071
+      - name: http-7072
+        impls:
+          - com.tencent.trpc.integration.test.stub.EchoAPIImpl
+        protocol: http
+        transporter: jetty
+        port: 7072
+      - name: http-7073
+        impls:
+          - com.tencent.trpc.integration.test.stub.EchoAPIImpl
+        protocol: http
+        transporter: jetty
+        port: 7073
+  client:
+    request_timeout: 2000
+    conns_per_addr: 1
+    service:
+      - name: tcp-client
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7070
+        network: tcp
+      - name: udp-client
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7071
+        network: udp
+      - name: tcp-client-udp
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7071
+        network: tcp
+      - name: udp-client-tcp
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7070
+        network: udp
+      - name: tcp-client2
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7070
+        network: tcp
+      - name: http-client-7072
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7072
+        protocol: http
+      - name: http-client-7073
+        interface: com.tencent.trpc.integration.test.stub.EchoAPI
+        naming_url: ip://127.0.0.1:7072
+        protocol: http
+

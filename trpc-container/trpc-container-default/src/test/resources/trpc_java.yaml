@@ -1,0 +1,36 @@
+global:
+  namespace: ${env_type}
+  env_name: ${env_name}
+  container_name: ${container_name}
+
+server:
+  app: QQPIM
+  server: DMServer
+  bin_path: /usr/local/trpc/bin/
+  data_path: /usr/local/trpc/data/
+  main_class: com.tencent.trpc.server.Main
+  class_path: /usr/local/app/trpc/Test.HelloServer/lib
+  jvm_params: -Xms1024m -Xmx1024m -Xmn512m
+  jmx_port: 8090
+  admin_port: 8091
+  admin_ip: 127.0.0.1
+  local_ip: 127.0.0.1
+  service:
+    - name: trpc.TestApp.TestServer.Greeter
+      impls:
+        - com.tencent.trpc.container.demo.GreeterServiceImp
+      ip: 127.0.0.1
+      port: 12345
+      network: tcp
+      protocol: trpc
+
+client:
+  protocol: trpc
+  service:
+    - name: trpc.TestApp.TestServer.Greeter
+      interface: com.tencent.trpc.container.demo.GreeterClient
+      naming_url: ip://127.0.0.1:12345
+    - name: trpc.TestApp.TestServer.Notconnect
+      interface: com.tencent.trpc.container.demo.GreeterClient
+      naming_url: ip://127.0.0.1:9999
+      request_timeout: 2000

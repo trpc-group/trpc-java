@@ -1,0 +1,2 @@
+testMetrics=com.tencent.trpc.core.stat.metrics.MetricStatFactoryTest$TestMetricsFactory
+testCoreMetrics=com.tencent.trpc.core.metrics.MetricsTest$TestMetricsFactory

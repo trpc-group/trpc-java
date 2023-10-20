@@ -1,0 +1,40 @@
+global:
+  namespace: ${env_type}                                                                                            #环境类型，分正式环境和非正式环境两种类型
+  env_name: ${env_name}                                                                                             #环境名称，非正式环境下多环境的名称
+  container_name: ${container_name}                                                                                 #节点容器名
+
+server:
+  admin:
+    admin-ip: 127.0.0.1
+    admin-port: 2333
+  app: TestApp                                                                                                         #业务的应用名
+  server: TestServer                                                                                                #业务的服务名
+  local_ip: 127.0.0.1                                                                                             #本地IP，容器内为容器ip，物理机或虚拟机为本机ip
+  worker_pool: woker_pool_provider_test
+  request_timeout: 2000
+  service:
+    - name: trpc.TestApp.TestServer.Greeter1Naming
+      impls:
+        - com.tencent.trpc.spring.boot.starters.test.GreeterServiceImpl
+      port: 12345
+
+client:
+  protocol: trpc
+  network: tcp
+  worker_pool: woker_pool_consumer_test
+  connsPerAddr: 100
+  connTimeout: 1000
+  service:
+    - name: trpc.TestApp.TestServer.Greeter1Naming
+      interface: com.tencent.trpc.spring.boot.starters.test.GreeterService
+      naming_url: ip://127.0.0.1:12345
+      network: tcp                                                                                            #tcp/udp
+
+plugins:
+  worker_pool:
+    woker_pool_consumer_test:
+      _type: thread
+      core_pool_size: 8
+    woker_pool_provider_test:
+      _type: thread
+      core_pool_size: 8

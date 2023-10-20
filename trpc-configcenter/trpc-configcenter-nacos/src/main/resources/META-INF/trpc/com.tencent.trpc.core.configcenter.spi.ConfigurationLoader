@@ -1,0 +1,1 @@
+nacos=com.tencent.trpc.configcenter.nacos.NacosConfigurationLoader

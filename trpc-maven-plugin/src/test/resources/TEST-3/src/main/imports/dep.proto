@@ -1,0 +1,12 @@
+syntax = "proto3";
+package trpc.test.helloworld;
+option java_package = "com.tencent.test.helloworld";
+option java_outer_classname = "GreeterMsg";
+// 请求协议头
+message HelloRequest {
+  string message = 1;
+}
+// 响应协议头
+message HelloResponse {
+  string message = 1;
+}

@@ -1,0 +1,2 @@
+impl1=com.tencent.trpc.core.extension.tests.ext2.impl.Ext2Impl1
+impl2=com.tencent.trpc.core.extension.tests.ext2.impl.Ext2Impl2

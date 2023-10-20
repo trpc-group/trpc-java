@@ -1,0 +1,4 @@
+additional_client_filter=com.tencent.trpc.spring.context.MockAdditionalFilter
+additional_server_filter=com.tencent.trpc.spring.context.MockAdditionalFilter
+auto_inject_test_server_filter=com.tencent.trpc.spring.context.AutoInjectTestServerFilter
+auto_inject_test_client_filter=com.tencent.trpc.spring.context.AutoInjectTestClientFilter

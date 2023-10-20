@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package trpc.TestApp.TestServer;
+
+option java_package = "com.tencent.trpc.demo.proto";
+option java_outer_classname = "HelloRequestProtocol";
+
+// If do not customize url, no need to import the next proto file.
+import "trpc.proto";
+
+message HelloRequest {
+  string message = 1;
+}
+
+message HelloResponse {
+  string message = 1;
+}
+
+// Normal service
+service GreeterService {
+  rpc sayHello (HelloRequest) returns (HelloResponse) {}
+}
+
+// Normal service with customized url
+service GreeterService2 {
+  rpc sayHi (HelloRequest) returns (HelloResponse) {
+    option (trpc.alias) = "/api/hi";
+  }
+}
+
+// Stream service
+service StreamGreeterService {
+  rpc clientSayHellos (stream HelloRequest) returns (HelloResponse) {}
+  rpc serverSayHellos (HelloRequest) returns (stream HelloResponse) {}
+  rpc allSayHellos (stream HelloRequest) returns (stream HelloResponse) {}
+}

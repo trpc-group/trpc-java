@@ -1,0 +1,185 @@
+global:
+  namespace: test_namespace
+  env_name: test_env_name
+  container_name: test_container_name
+  enable_set: Y
+  full_set_name: a.b.c
+  ext:
+    ext_a: value_a
+    ext_b:
+      value_b_key_a: value_b_a
+server:
+  app: QQPIM
+  server: DMServer
+  bin_path: /usr/local/trpc/bin/
+  data_path: /usr/local/trpc/data/
+  main_class: com.tencent.trpc.server.Main
+  class_path: /usr/local/app/trpc/Test.HelloServer/lib
+  jvm_params: -Xms1024m -Xmx1024m -Xmn512m
+  jmx_port: 8090
+  admin:
+    admin_port: 8091
+    admin_ip: 127.0.0.1
+  local_ip: 127.0.0.1
+  close_timeout: 1000
+  nic: eth1
+  request_timeout: 2000
+  enable_link_timeout: false
+  worker_pool: woker_pool_provider_test
+  filters:
+    - filter
+  service:
+    - name: trpc.TestApp.TestServer.Greeter
+      version: v.121
+      group: g1
+      impls:
+        - com.tencent.trpc.container.demo.GreeterServiceImp
+      ip: 127.0.0.1
+      nic: eth3
+      port: 12345
+      network: udp
+      protocol: trpc
+      serialization: pb
+      compressor: gzip
+      compress_min_bytes: 10
+      transporter: httpnetty
+      charset: gbk
+      keep_alive: false
+      max_conns: 10
+      backlog: 1111
+      send_buffer: 10
+      receive_buffer: 20
+      payload: 2222
+      idle_timeout: 200
+      lazyinit: false
+      conns_per_addr: 5
+      conn_timeout: 2000
+      io_mode: kqueue
+      io_thread_group_share: false
+      io_threads: 20
+      request_timeout: 3000
+      worker_pool: woker_pool_provider_test2
+      enable_link_timeout: true
+      reuse_port: true
+      filters:
+        - filter2
+      registrys:
+        polaris2:
+          namespace: java-sdk-test-service2
+          token: 5e43887a00c4465085fb89eaa0e414b3
+          instance_id: feda4ceffed0b7b08cf5ec665dcd320e50434549
+          name: trpc.TestApp.TestServer.Greeter3
+
+    - name: trpc.TestApp.TestServer.Greeter1
+      network: tcp
+      impls:
+        - com.a
+        - com.b
+
+    - name: trpc.TestApp.TestServer.Greeter2
+      impls:
+        - com.tencent.trpc.container.demo.GreeterServiceImp
+      network: tcp
+
+    - name: trpc.TestApp.TestServer.Greeter3
+      impls:
+        - com.tencent.trpc.container.demo.GreeterServiceImp
+
+client:
+  namespace: dev
+  worker_pool: woker_pool_consumer_test
+  request_timeout: 2000
+  nic: eth3
+  port: 12345
+  network: udp
+  protocol: trpc
+  serialization: pb
+  compressor: snappy
+  transporter: httpnetty
+  charset: gbk
+  keep_alive: false
+  max_conns: 10
+  backlog: 1111
+  send_buffer: 10
+  receive_buffer: 20
+  idle_timeout: 200
+  lazyinit: false
+  conns_per_addr: 5
+  conn_timeout: 2000
+  io_mode: kqueue
+  io_thread_group_share: false
+  io_threads: 20
+  ext_map:
+    connection_request_timeout: 1000
+  filters:
+    - filter
+  interceptors:
+    - test
+  service:
+    - name: trpc.TestApp.TestServer.Greeter
+      interface: com.tencent.trpc.container.demo.GreeterClient
+      naming_url: ip://127.0.0.1:12345
+      namespace: dev2
+      callee: trpc.TestApp.TestServer.GreeterCallee
+      group: g1
+      version: v1
+      compressor: gzip
+      compress_min_bytes: 1
+      interceptors:
+        - test
+        - test1
+    - name: trpc.TestApp.TestServer.Greeter2
+      interface: com.tencent.trpc.container.demo.GreeterClient
+      naming_url: ip://127.0.0.1:12345
+      protocol: trpc
+      request_timeout: 3000
+      nic: eth3
+      port: 22222
+      network: tcp
+      serialization: json
+      compressor: zip
+      transporter: netty
+      keep_alive: true
+      send_buffer: 30
+      receive_buffer: 40
+      idle_timeout: 300
+      lazyinit: false
+      conns_per_addr: 9
+      conn_timeout: 3000
+      io_mode: select
+      io_thread_group_share: true
+      charset: utf8
+      io_threads: 40
+      worker_pool: woker_pool_consumer_test2
+      mock: false
+      mock_class: java.lang.Object
+      filters:
+        - filter2
+
+plugins:
+  worker_pool:
+    woker_pool_provider_test:
+      _type: thread
+      core_pool_size: 10000
+
+    woker_pool_consumer_test:
+      _type: thread
+      core_pool_size: 10000
+
+  registry:
+    polaris:
+      address_list: 10.235.25.48:8090
+      register_self: true
+      service:
+        - namespace: java-sdk-test-service2
+          token: 5e43887a00c4465085fb89eaa0e414b4
+          instance_id: feda4ceffed0b7b08cf5ec665dcd320e50434549
+          name: trpc.TestApp.TestServer.Greeter
+  selector:
+    polaris:
+      address_list: ${polaris_address_list}
+      mode: 0
+      protocol: grpc
+      localCache:
+        persistDir: /tmp
+

@@ -1,0 +1,2 @@
+default=com.tencent.trpc.core.worker.support.thread.ThreadWorkerPoolFactory
+thread=com.tencent.trpc.core.worker.support.thread.ThreadWorkerPoolFactory

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package trpc.exp.helloworld;
+
+option java_package = "com.tencent.trpc.codegen.test.msg";
+option java_multiple_files = false;
+option java_outer_classname = "Hello";
+
+message HelloRequest {
+  string message = 1;
+  int64 ts = 2;
+}
+
+message HelloReply {
+  string message = 1;
+  int64 ts = 2;
+}
+
+message EmptyMessage {}

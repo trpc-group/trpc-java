@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package tencent.trpc;
+
+option java_package = "com.tencent.trpc.core.rpc.support.trpc.demo";
+option java_outer_classname = "HelloRequestProtocol";
+
+//protoc hello.proto --java_out=/Users/wangjia/data/workspace/java/trpc-java/trpc-core/src/main/java
+message HelloRequest {
+  bytes message = 1;
+}
+
+message HelloResponse {
+  bytes message = 2;
+}

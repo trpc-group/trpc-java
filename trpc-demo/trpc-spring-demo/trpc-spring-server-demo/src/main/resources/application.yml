@@ -1,0 +1,23 @@
+server:
+  port: 0 # The first service with rest protocol in the following trpc configuration will replace this port
+
+trpc:
+  server:
+    app: TestApp          # App name
+    server: TestServer    # Server name
+    local_ip: 127.0.0.1   # Local ip
+    service: # Service list
+      - name: trpc.TestApp.TestServer.Greeter1  # Service name
+        impls: # Service implement classes
+          - com.tencent.trpc.spring.demo.server.impl.GreeterServiceImpl
+        ip: 127.0.0.1     # Listen ip
+        port: 12321       # Listen port
+        network: tcp      # Network type, tcp or udp
+      - name: trpc.TestApp.TestServer.Greeter2  # Service name
+        impls: # Service implement classes
+          - com.tencent.trpc.spring.demo.server.impl.GreeterServiceImpl2
+        ip: 127.0.0.1     # Listen ip
+        port: 12322       # Listen port
+        protocol: rest    # Means using trpc-springmvc mode, service exported as spring mvc controller
+        basePath: /rest   # The url address is the base_path plus the service name annotated with @TRpcService, and the
+                          # '.' in the service name are all replaced with '/'. Default is '/'.

@@ -1,0 +1,32 @@
+server: # Server config, used as caller service info
+  app: TestApp  # App name
+  server: TestServer  # Server name
+  local_ip: 127.0.0.1 # Local ip
+
+client: # Client configs
+  worker_pool: biz_worker_pool  # Worker pool, used to call remote services' functions
+  filters:
+    - demoFilter
+  service:
+    - name: trpc.TestApp.TestServer.Greeter1  # Service name
+      interface: com.tencent.trpc.demo.proto.GreeterserviceAPI  # Service interface
+      naming_url: ip://127.0.0.1:12321  # Router address
+      network: tcp                      # Network type, tcp or udp
+    - name: trpc.TestApp.TestServer.Greeter2  # Service name
+      interface: com.tencent.trpc.demo.proto.Greeterservice2API # Service interface
+      naming_url: ip://127.0.0.1:12321  # Router address
+      network: udp                      # Network type, tcp or udp
+    - name: trpc.TestApp.TestServer.Greeter3  # Service name
+      interface: com.tencent.trpc.demo.proto.GreeterserviceAPI  # Service interface
+      naming_url: ip://127.0.0.1:12322  # Router address
+      protocol: http                    # Protocol type, default is trpc
+    - name: trpc.TestApp.TestServer.Greeter4  # Service name
+      interface: com.tencent.trpc.demo.proto.Greeterservice2API # Service interface
+      naming_url: ip://127.0.0.1:12322  # Router address
+      protocol: http                    # Protocol type, default is trpc
+
+plugins: # Plugin configs
+  worker_pool: # Worker pool plugin config
+    biz_worker_pool: # Worker pool name
+      _type: thread       # Thread type
+      core_pool_size: 4   # Thread size

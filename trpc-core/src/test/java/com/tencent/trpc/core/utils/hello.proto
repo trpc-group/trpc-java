@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package tencent.trpc;
+
+option java_package = "com.tencent.trpc.core.utils";
+option java_outer_classname = "HelloRequestProtocol";
+
+message HelloRequest {
+  int32 intField = 1;
+  string stringField = 2;
+  bool booleanField = 3;
+  double doubleField = 4;
+  float floatField = 5;
+  int64 longField = 6;
+  bytes byteStringField = 7;
+  Other other = 8;
+  Week week = 9;
+  repeated int32 intFields = 11;
+  repeated string stringFields = 12;
+  repeated bool booleanFields = 13;
+  repeated double doubleFields = 14;
+  repeated float floatFields = 15;
+  repeated int64 longFields = 16;
+  repeated bytes byteStringFields = 17;
+  repeated Other others = 18;
+  repeated Week weeks = 19;
+}
+enum Week {
+  FIRST = 0;
+}
+
+message Other {
+  int32 intField = 1;
+}

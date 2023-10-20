@@ -1,0 +1,1 @@
+random=com.tencent.trpc.core.selector.loadbalance.support.RandomLoadBalance

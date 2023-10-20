@@ -1,0 +1,6 @@
+org.springframework.context.ApplicationListener=\
+  com.tencent.trpc.spring.boot.starters.listener.TRpcBannerListener
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.tencent.trpc.spring.boot.starters.env.TRpcConfigurationEnvironmentPostProcessor
+org.springframework.context.ApplicationContextInitializer=\
+  com.tencent.trpc.spring.boot.starters.context.configuration.TRpcConfigurationApplicationContextInitializer

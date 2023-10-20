@@ -1,0 +1,6 @@
+com.tencent.trpc.core.extension.tests.ext3.impl.Ext3Impl1
+com.tencent.trpc.core.extension.tests.ext3.impl.Ext3Impl2
+impl3=com.tencent.trpc.core.extension.tests.ext3.impl.Ext3Impl3
+impl4=com.tencent.trpc.core.extension.tests.ext3.impl.Ext3Impl4
+impl5=com.tencent.trpc.core.extension.tests.ext3.impl.Ext3Impl5
+impl10=com.tencent.trpc.core.extension.tests.ext3.impl.Ext3Impl10

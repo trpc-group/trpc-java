@@ -1,0 +1,152 @@
+trpc:
+  global: #全局配置
+    namespace: test_namespace                                                                                            #环境类型，分正式环境和非正式环境两种类型
+    env_name: test_env_name                                                                                             #环境名称，非正式环境下多环境的名称
+    container_name: test_container_name                                                                                 #节点容器名
+    enable_set: Y
+    full_set_name: a.b.c
+    ext:
+      ext_a: value_a
+      ext_b:
+        value_b_key_a: value_b_a
+  server:
+    app: QQPIM                                                                                                      #业务的应用名
+    server: DMServer                                                                                                #业务的服务名
+    bin_path: /usr/local/trpc/bin/                                                                                    #二进制可执行文件和业务配置文件所在路径
+    data_path: /usr/local/trpc/data/                                                                                  #数据文件所在路径
+    main_class: com.tencent.trpc.server.Main                                                                          #程序主类
+    class_path: /usr/local/app/trpc/Test.HelloServer/lib                                                              #程序classpath
+    jvm_params: -Xms1024m -Xmx1024m -Xmn512m                                                                          #配置jvm相关参数
+    jmx_port: 8090                                                                                                    #jmx端口
+    admin:
+      admin_port: 8091                                                                                                  #管理平台管理端口（安全如何管理）
+      admin_ip: 127.0.0.1                                                                                             #管理命令服务监听ip地址
+    local_ip: 127.0.0.1                                                                                             #本地IP，容器内为容器ip，物理机或虚拟机为本机ip
+    close_timeout: 1000
+    nic: eth1
+    request_timeout: 2000
+    enable_link_timeout: false
+    worker_pool: woker_pool_provider_test
+    filters:
+      - additional_server_filter
+    server_listener: #服务启动完成的监听事件
+      - listener_class: com.tencent.trpc.container.container.DefaultServerListener
+    service: #业务服务提供的service，可以有多个
+      - name: trpc.TestApp.TestServer.Greeter                                                                         #service的id,附带naming的含义
+        version: v.121
+        group: g1
+        impls:
+          - com.tencent.trpc.spring.boot.starters.test.GreeterServiceImpl                                                    #service协议接口实现类
+        ip: 127.0.0.1
+        nic: eth3
+        port: 12345                                                                                                    #port
+        network: udp                                                                                                   #tcp/udp
+        protocol: trpc                                                                                                 #协议类型 trpc oidb ilive http等
+        serialization: pb
+        compressor: gzip
+        compress_min_bytes: 10
+        charset: gbk
+        keep_alive: false
+        max_conns: 10
+        backlog: 1111
+        send_buffer: 10
+        receive_buffer: 20
+        payload: 2222
+        idle_timeout: 200
+        lazyinit: false
+        conns_per_addr: 5
+        conn_timeout: 2000
+        io_mode: kqueue
+        io_thread_group_share: false
+        io_threads: 20
+        request_timeout: 3000
+        worker_pool: woker_pool_provider_test
+        enable_link_timeout: true
+        reuse_port: true
+        filters:
+          - additional_server_filter
+  client:
+    namespace: dev
+    worker_pool: woker_pool_consumer_test
+    request_timeout: 2000
+    nic: eth3
+    port: 12345                                                                                                    #port
+    network: udp                                                                                                   #tcp/udp
+    protocol: trpc                                                                                                 #协议类型 trpc oidb ilive http等
+    serialization: pb
+    compressor: snappy
+    charset: gbk
+    keep_alive: false
+    max_conns: 10
+    backlog: 1111
+    send_buffer: 10
+    receive_buffer: 20
+    idle_timeout: 200
+    lazyinit: false
+    conns_per_addr: 5
+    conn_timeout: 2000
+    io_mode: kqueue
+    io_thread_group_share: false
+    io_threads: 20
+    filters:
+      - additional_client_filter
+    interceptors:
+      - test
+    service:
+      - name: trpc.TestApp.TestServer.Greeter1Naming
+        interface: com.tencent.trpc.spring.boot.starters.test.GreeterService
+        naming_url: ip://127.0.0.1:12345                                         #naming配置,直连 ip://ip:port, 名字服务: polaris://trpc.TestApp.TestServer.Greeter?key=value&key=value  l5://mid:cmid  cmlb://id
+        namespace: dev2
+        callee: trpc.TestApp.TestServer.GreeterCallee
+        caller_service_name: trpc.TestApp.TestServer.GreeterCallee2
+        group: g1
+        version: v1
+        compressor: gzip
+        compress_min_bytes: 1
+        interceptors:
+          - test
+          - test1
+
+  plugins:
+    worker_pool:
+      woker_pool_provider_test:
+        _type: thread
+        core_pool_size: 10000
+
+      woker_pool_consumer_test:
+        _type: thread
+        core_pool_size: 10000
+
+    registry:
+      polaris: #名字注册服务的远程对象
+        heartbeat_interval: 1000 #名字注册服务心跳上报间隔
+        register_self: false
+
+    selector:
+      polaris:
+        mode: 0
+
+    remote_log:
+      atta:
+        attaid: "0a100055063"                                                                              #attaid
+        token: "3514966829"                                                                              #attatoken
+        switch: open                                                                                    #当前节点ip
+
+    tracing:
+      tjg:
+        appid: trpc
+        service_name: trpc.${app}.${server}
+        hostname: ${container_name}
+        local_addr: ${local_ip}
+        local_port: 0
+        sampler:
+          type: mix
+          mix:
+            sample_rate: 1024
+            min_speed_rate: 1
+            max_speed_rate: 10
+        reporter:
+          type: atta
+          atta:
+            atta_id: "0af00000141"
+            atta_token: "7913895459"

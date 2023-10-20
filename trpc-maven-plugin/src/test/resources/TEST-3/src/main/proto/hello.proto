@@ -1,0 +1,8 @@
+syntax = "proto3";
+package trpc.test.helloworld;
+import "dep.proto";
+option java_package = "com.tencent.test.helloworld";
+option java_outer_classname = "GreeterSvr";
+service Greeter {
+  rpc sayHello (HelloRequest) returns (HelloResponse);
+}

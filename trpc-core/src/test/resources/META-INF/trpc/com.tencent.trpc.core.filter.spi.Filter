@@ -1,0 +1,3 @@
+knockc=com.tencent.trpc.core.auth.knock.KnockClientFilter
+knocks=com.tencent.trpc.core.auth.knock.KnockServerFilter
+test=com.tencent.trpc.core.logger.TestRemoteLoggerFilter

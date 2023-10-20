@@ -1,0 +1,91 @@
+global: #全局配置
+  env_type: informal                                        #环境类型，分正式环境和非正式环境两种类型
+  env_name: test1                                            #环境名称，非正式环境下多环境的名称
+  enable_set: true                                          #是否启用set
+  set_division: test.sh.1                                    #set分组信息
+
+server:
+  app: Test                                                    #业务的应用名
+  server: TestServer                                        #业务的服务名
+  local_ip: 127.0.0.1                                        #本地ip
+  bin_path: /usr/local/app/trpc/Test.HelloServer/bin/        #二进制可执行文件和业务配置文件所在路径
+  data_path: /usr/local/app/trpc/Test.HelloServer/data/        #数据文件所在路径
+  main_class: com.tencent.trpc.server.Main                  #程序主类
+  class_path: /usr/local/app/trpc/Test.HelloServer/lib      #程序classpath
+  jvm_params: -Xms1024m -Xmx1024m -Xmn512m                  #配置jvm相关参数
+  jmx_port: 8090
+  admin_port: 8091                                          #管理平台管理端口（安全如何管理）
+  filter: default
+  service: #业务服务提供的service，可以有多个
+    - service_name: tencent.Greeter                        #service的路由名称
+      service_interface: com.tencent.trpc.core.rpc.support.trpc.demo.GreeterService      #service接口
+      service_impl_class: com.tencent.trpc.core.rpc.support.trpc.demo.GreeterServiceImp #service实现类
+      registry: polaris,etcd,zookeeper                          #多注册中心
+      protocol: trpc_0                                      #多协议
+      filter: default                                       #过滤
+      method: #方法
+        -
+
+protocol:
+  - id: trpc_0                                            #协议id
+    name: trpc                                            #协议名称
+    transport: netty                                      #应用层协议
+    endpoint: tcp -h 127.0.0.1 -p 12345                    #协议使用的ip/port/网络协议等信息
+    protocol: trpc
+    rpc_handler: trpc
+    codec: trpc
+    max_conns: 10000                                        #最大连接数
+    io_thread_size: 2                                            #网络线程数目
+    idle_timeout: 60s                                #空连接超时关闭的时间,单位秒
+    #ip_order: allow   				                    #ip黑白名单 allow/deny
+    #allow_ip: 192.168.0.1|192.168.0.2         	        #白名单
+    #deny_ip: 192.168.0.3|192.168.0.4      	            #黑名单
+
+client:
+  module_name: Test.HelloServer                                #服务的模块名称
+  sync_timeout: 3000                                        #同步超时时间(ms)
+  async_timeout: 3000                                       #异步超时时间(ms)
+
+registry:
+  - registry_name: polaris_0                                #服务注册中心
+    registry_type: polaris                                  #服务注册实现类型
+    refresh_interval: 10s                                    #名字路由信息同步刷新的时间,单位秒
+    params:
+      addresses: 10.235.25.48:8090
+      mode: 1
+      protocol: grpc
+
+
+conf:
+  conf_name: xxx                                            #远程配置中心的对象
+  conf_type: tconf                                            #远程配置中心实现插件类型
+  refresh_interval: 10s                                        #业务配置同步更新的时间间隔
+
+log: #本地/远程日志/统计分析类数据上报的配置项
+  rolllog_size: 10M                                            #滚动日志的大小
+  rolllog_level: DEBUG                                        #滚动日志的级别
+  rolllog_path: /usr/local/app/trpc/app_log/Test.HelloServer/    #滚动日志存放的路径
+  remotelog_name: xxx                                        #远程日志上报的对象
+  remotelog_type: atta                                        #远程日志实现插件类型
+
+metric:
+  stat_name: xx                                                #模调数据上报的对象
+  stat_type: pp                                                #模调数据上报实现插件类型
+  property_name: xxx                                        #属性数据上报的对象
+  property_type: pp                                            #属性数据上报实现类型
+  report_interval: 10s                                        #上报间隔
+
+trace:
+  trace_type: atta                                            #链路跟踪数据上报实现插件类型
+  sample_rate:                                              #链路跟踪采样率
+  min_speed_rate:                                           #链路跟踪采样速率控制
+  max_speed_rate:                                           #链路跟踪采样速率控制
+
+auth:
+
+notify:
+  notify_name:                                              #关键状态、致命或者异常消息上报的对象
+  notify_type:                                              #上报实现插件类型
+
+node:
+  node_name:                                                #管理服务的对象

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG">
+    <Properties>
+        <Property name="logdir">../log</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout charset="UTF-8"
+                    pattern="%d [%-5p]%c{1}(%L, %X{printTraceId})(trace:%X{printTraceId}) %m%n"/>
+        </Console>
+        <RollingRandomAccessFile name="DebugLog" append="true" fileName="${logdir}/debug.log"
+                filePattern="${logdir}/debug.log.%i">
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p]%C{1}(%L)(trace:%X{printTraceId) %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="300MB"/>
+            <DefaultRolloverStrategy max="7"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="ErrorLog" append="true" fileName="${logdir}/error.log"
+                filePattern="${logdir}/error.log.%i">
+            <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p]%C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="1000MB"/>
+            <DefaultRolloverStrategy max="15"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="ServerFlow" append="true" fileName="${logdir}/flower.log"
+                filePattern="${logdir}/flower.%d{yyyy-MM-dd}.log">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d %m%n</Pattern>
+            </PatternLayout>
+            <TimeBasedTriggeringPolicy/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="ServerWriteFlow" append="true"
+                fileName="${logdir}/write-flower.log"
+                filePattern="${logdir}/write-flower.%d{yyyy-MM-dd}.log">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d %m%n</Pattern>
+            </PatternLayout>
+            <TimeBasedTriggeringPolicy/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="ServerRpcFlow" append="true"
+                fileName="${logdir}/rpc-flower.log"
+                filePattern="${logdir}/rpc-flower.log.%i">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="1800MB"/>
+            <DefaultRolloverStrategy max="3"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="RedisOpFlow" append="true"
+                fileName="${logdir}/redis-flower.log"
+                filePattern="${logdir}/redis-flower.log.%i">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p]%C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="1800MB"/>
+            <DefaultRolloverStrategy max="3"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="RedisOpErrorFlow" append="true"
+                fileName="${logdir}/redis-error-flower.log"
+                filePattern="${logdir}/redis-error-flower.%d{yyyy-MM-dd}.log">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p]%C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <TimeBasedTriggeringPolicy/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="ConfigFlow" append="true"
+                fileName="${logdir}/config-flower.log"
+                filePattern="${logdir}/config-flower.log.%i">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p]-traceId:%X{printTraceId}-%C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="1800MB"/>
+            <DefaultRolloverStrategy max="3"/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="EventFlow" append="true"
+                fileName="${logdir}/event-flower.log"
+                filePattern="${logdir}/event-flower.%d{yyyy-MM-dd}.log">
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p]%C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <TimeBasedTriggeringPolicy/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="RewardOpErrorFlow" append="true"
+                fileName="${logdir}/reward-error-flower.log"
+                filePattern="${logdir}/reward-error-flower.%d{yyyy-MM-dd}.log">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p] %C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <TimeBasedTriggeringPolicy/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="CacheLog" append="true"
+                fileName="${logdir}/cache.log"
+                filePattern="${logdir}/cache.log.%i">
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p] %C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="200MB"/>
+            <DefaultRolloverStrategy max="3"/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="JungleRedisLog" append="true"
+                fileName="${logdir}/jungle_redis.log"
+                filePattern="${logdir}/jungle_redis.log.%i">
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8">
+                <Pattern>%d [%-5p] %C{1}(%L) %m%n</Pattern>
+            </PatternLayout>
+            <SizeBasedTriggeringPolicy size="200MB"/>
+            <DefaultRolloverStrategy max="3"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <loggers>
+        <AsyncRoot level="INFO" includeLocation="true">
+            <!-- <LogLimitFilter rate="10" onMatch="ACCEPT" onMisMatch="DENY" /> -->
+            <AppenderRef ref="DebugLog"/>
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="ErrorLog"/>
+        </AsyncRoot>
+    </loggers>
+</Configuration>

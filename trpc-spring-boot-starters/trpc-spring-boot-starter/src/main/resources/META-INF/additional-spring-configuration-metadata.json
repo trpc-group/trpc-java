@@ -1,0 +1,15 @@
+{
+  "hints": [
+    {
+      "name": "trpc.server.admin",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "com.tencent.trpc.spring.context.configuration.schema.server.ServerAdminSchema"
+          }
+        }
+      ]
+    }
+  ]
+}

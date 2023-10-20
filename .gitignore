@@ -1,0 +1,44 @@
+# Created by .ignore support plugin
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iws
+*.iml
+*.ipr
+*.html
+out
+gen
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so2
+*.dylib
+
+# Test binary
+*.test
+# Output, specifically when used with LiteIDE
+*.out
+*.DS_Store
+*.log
+target
+log
+site
+.settings
+.project
+.classpath
+bin
+# Polaris cache after Test
+**/polaris/backup/*.yaml
+**/polaris/backup/*.lock
+**/pom.xml.versionsBackup
+trpc-selector/trpc-selector-open-polaris/polaris
+**/target
+
+# Codecc
+.codecc
+.vscode
+build.yml
+test.py

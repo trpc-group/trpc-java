@@ -1,0 +1,58 @@
+[
+  {
+    "resource": "/trpc.TestApp.TestServer.Greeter/sayHello",
+    "controlBehavior": 1,
+    "count": 200000,
+    "grade": 1,
+    "limitApp": "default",
+    "strategy": 0
+  },
+  {
+    "resource": "/trpc.TestApp.TestServer.Greeter/sayHello2",
+    "controlBehavior": 1,
+    "count": 1,
+    "grade": 2,
+    "limitApp": "default",
+    "strategy": 0
+  },
+  {
+    "resource": "test-redis",
+    "controlBehavior": 1,
+    "count": 5,
+    "grade": 1,
+    "limitApp": "default",
+    "strategy": 0
+  },
+  {
+    "resource": "abc-file",
+    "controlBehavior": 0,
+    "count": 20.0,
+    "grade": 1,
+    "limitApp": "default",
+    "strategy": 0
+  },
+  {
+    "resource": "abc1-file",
+    "controlBehavior": 0,
+    "count": 20.0,
+    "grade": 1,
+    "limitApp": "default",
+    "strategy": 0
+  },
+  {
+    "resource": "abc2-file",
+    "controlBehavior": 0,
+    "count": 20.0,
+    "grade": 1,
+    "limitApp": "default",
+    "strategy": 0
+  },
+  {
+    "resource": "abc4-file",
+    "controlBehavior": 0,
+    "count": 20.0,
+    "grade": 1,
+    "limitApp": "default",
+    "strategy": 0
+  }
+]

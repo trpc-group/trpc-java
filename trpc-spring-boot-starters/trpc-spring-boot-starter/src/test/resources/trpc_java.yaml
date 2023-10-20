@@ -1,0 +1,48 @@
+global: #全局配置
+  namespace: ${env_type}                                                                                            #环境类型，分正式环境和非正式环境两种类型
+  env_name: ${env_name}                                                                                             #环境名称，非正式环境下多环境的名称
+  container_name: ${container_name}                                                                                 #节点容器名
+
+server:
+  filters:
+    - auto_inject_test_filter
+  app: TestApp                                                                                                         #业务的应用名
+  server: TestServer                                                                                                #业务的服务名
+  local_ip: 127.0.0.1                                                                                             #本地IP，容器内为容器ip，物理机或虚拟机为本机ip
+  worker_pool: woker_pool_provider_test
+  request_timeout: 2000
+  run_listeners:
+    - listenerImpl
+  service:
+    - name: trpc.TestApp.TestServer.Greeter1Naming
+      impls:
+        - impl: com.tencent.trpc.spring.boot.starters.test.GreeterServiceImpl
+          request_timeout: 100
+      port: 12345
+
+client:
+  protocol: trpc
+  network: tcp
+  worker_pool: woker_pool_consumer_test
+  service:
+    - name: trpc.TestApp.TestServer.Greeter1Naming
+      interface: com.tencent.trpc.spring.boot.starters.test.GreeterService
+      naming_url: ip://127.0.0.1:12345
+      network: tcp                                                                                            #tcp/udp
+    - name: trpc.TestApp.TestServer.Greeter2Naming
+      interface: com.tencent.trpc.spring.boot.starters.test.GreeterService
+      naming_url: ip://127.0.0.1:12345
+      network: tcp
+    - name: myTestServer
+      interface: com.tencent.trpc.spring.boot.starters.test.GreeterService
+      naming_url: ip://127.0.0.1:12345
+      network: tcp
+
+plugins:
+  worker_pool: # 线程池插件类型
+    woker_pool_consumer_test: # 客户端线程池名称
+      _type: thread
+      core_pool_size: 8 # 核心线程池数量，使用下划线
+    woker_pool_provider_test: # 服务端线程池名称
+      _type: thread
+      core_pool_size: 8

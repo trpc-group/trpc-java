@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.tencent.trpc</groupId>
+        <artifactId>trpc-parent</artifactId>
+        <version>0.16.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>trpc-logger</artifactId>
+    <packaging>pom</packaging>
+    <description>Trpc Parent Project ${project.version}</description>
+    <name>${project.artifactId}</name>
+
+    <modules>
+        <module>trpc-logger-admin</module>
+    </modules>
+</project>
