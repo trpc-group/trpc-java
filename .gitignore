@@ -35,6 +35,7 @@ bin
 **/polaris/backup/*.lock
 **/pom.xml.versionsBackup
 trpc-selector/trpc-selector-open-polaris/polaris
+trpc-registry/trpc-registry-open-polaris/polaris
 **/target
 
 # Codecc

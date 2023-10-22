@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -11,6 +11,7 @@
 
 package com.tencent.trpc.selector.open.polaris.common;
 
+import com.tencent.trpc.polaris.common.PolarisConstant;
 import org.junit.Assert;
 import org.junit.Test;
 

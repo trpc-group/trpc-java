@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -11,18 +11,18 @@
 
 package com.tencent.trpc.selector.open.polaris;
 
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.POLARIS_CMDBCAMPUS;
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.POLARIS_CMDBREGION;
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.POLARIS_CMDBZONE;
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.POLARIS_HEALTHY;
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.POLARIS_ID;
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.POLARIS_INSTANCE;
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.POLARIS_PRIORITY;
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.POLARIS_PROTOCOL;
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.POLARIS_RESPONSE;
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.POLARIS_REVISION;
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.POLARIS_SERVICE;
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.POLARIS_VERSION;
+import static com.tencent.trpc.polaris.common.PolarisConstant.POLARIS_CMDBCAMPUS;
+import static com.tencent.trpc.polaris.common.PolarisConstant.POLARIS_CMDBREGION;
+import static com.tencent.trpc.polaris.common.PolarisConstant.POLARIS_CMDBZONE;
+import static com.tencent.trpc.polaris.common.PolarisConstant.POLARIS_HEALTHY;
+import static com.tencent.trpc.polaris.common.PolarisConstant.POLARIS_ID;
+import static com.tencent.trpc.polaris.common.PolarisConstant.POLARIS_INSTANCE;
+import static com.tencent.trpc.polaris.common.PolarisConstant.POLARIS_PRIORITY;
+import static com.tencent.trpc.polaris.common.PolarisConstant.POLARIS_PROTOCOL;
+import static com.tencent.trpc.polaris.common.PolarisConstant.POLARIS_RESPONSE;
+import static com.tencent.trpc.polaris.common.PolarisConstant.POLARIS_REVISION;
+import static com.tencent.trpc.polaris.common.PolarisConstant.POLARIS_SERVICE;
+import static com.tencent.trpc.polaris.common.PolarisConstant.POLARIS_VERSION;
 
 import com.google.common.collect.Maps;
 import com.tencent.polaris.api.config.global.RunMode;
@@ -40,8 +40,9 @@ import com.tencent.trpc.core.rpc.def.DefRequest;
 import com.tencent.trpc.core.selector.ServiceId;
 import com.tencent.trpc.core.selector.ServiceInstance;
 import com.tencent.trpc.core.worker.WorkerPoolManager;
-import com.tencent.trpc.selector.open.polaris.common.PolarisConstant;
-import com.tencent.trpc.selector.open.polaris.common.PolarisSelectorConfig;
+import com.tencent.trpc.polaris.common.PolarisConstant;
+import com.tencent.trpc.selector.polaris.PolarisSelector;
+import com.tencent.trpc.selector.polaris.PolarisSelectorConfig;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;

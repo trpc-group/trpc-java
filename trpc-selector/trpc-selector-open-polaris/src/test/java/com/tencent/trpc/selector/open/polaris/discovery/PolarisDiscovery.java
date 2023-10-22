@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -12,8 +12,8 @@
 package com.tencent.trpc.selector.open.polaris.discovery;
 
 import static com.tencent.polaris.api.exception.ErrorCode.PLUGIN_ERROR;
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.NAMESPACE_DIFF_ALLOWED;
-import static com.tencent.trpc.selector.open.polaris.common.PolarisConstant.NAMESPACE_DIFF_ALLOWED_DEFAULT;
+import static com.tencent.trpc.polaris.common.PolarisConstant.NAMESPACE_DIFF_ALLOWED;
+import static com.tencent.trpc.polaris.common.PolarisConstant.NAMESPACE_DIFF_ALLOWED_DEFAULT;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -38,10 +38,10 @@ import com.tencent.trpc.core.logger.LoggerFactory;
 import com.tencent.trpc.core.selector.ServiceId;
 import com.tencent.trpc.core.selector.ServiceInstance;
 import com.tencent.trpc.core.selector.discovery.AbstractDiscovery;
-import com.tencent.trpc.selector.open.polaris.common.PolarisCommon;
-import com.tencent.trpc.selector.open.polaris.common.PolarisConstant;
-import com.tencent.trpc.selector.open.polaris.common.PolarisFutureUtil;
-import com.tencent.trpc.selector.open.polaris.common.PolarisTrans;
+import com.tencent.trpc.polaris.common.PolarisConstant;
+import com.tencent.trpc.polaris.common.PolarisFutureUtil;
+import com.tencent.trpc.polaris.common.PolarisTrans;
+import com.tencent.trpc.selector.polaris.common.PolarisCommon;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

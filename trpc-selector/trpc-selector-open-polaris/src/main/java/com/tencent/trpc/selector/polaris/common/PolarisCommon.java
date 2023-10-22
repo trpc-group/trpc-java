@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -9,7 +9,7 @@
  * A copy of the Apache 2.0 License can be found in the LICENSE file.
  */
 
-package com.tencent.trpc.selector.open.polaris.common;
+package com.tencent.trpc.selector.polaris.common;
 
 import com.tencent.polaris.api.core.ConsumerAPI;
 import com.tencent.polaris.api.exception.PolarisException;
@@ -29,7 +29,8 @@ import com.tencent.trpc.core.exception.ErrorCode;
 import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.core.selector.ServiceInstance;
 import com.tencent.trpc.core.utils.JsonUtils;
-import com.tencent.trpc.selector.open.polaris.info.PolarisServiceInstances;
+import com.tencent.trpc.polaris.common.PolarisTrans;
+import com.tencent.trpc.selector.polaris.common.pojo.PolarisServiceInstances;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

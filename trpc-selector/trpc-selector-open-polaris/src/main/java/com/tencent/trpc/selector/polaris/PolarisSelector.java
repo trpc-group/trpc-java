@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -9,7 +9,7 @@
  * A copy of the Apache 2.0 License can be found in the LICENSE file.
  */
 
-package com.tencent.trpc.selector.open.polaris;
+package com.tencent.trpc.selector.polaris;
 
 import com.google.common.collect.Lists;
 import com.tencent.polaris.api.config.Configuration;
@@ -41,11 +41,10 @@ import com.tencent.trpc.core.rpc.Request;
 import com.tencent.trpc.core.selector.ServiceId;
 import com.tencent.trpc.core.selector.ServiceInstance;
 import com.tencent.trpc.core.selector.spi.Selector;
-import com.tencent.trpc.selector.open.polaris.common.PolarisCommon;
-import com.tencent.trpc.selector.open.polaris.common.PolarisFutureUtil;
-import com.tencent.trpc.selector.open.polaris.common.PolarisSelectorConfig;
-import com.tencent.trpc.selector.open.polaris.common.PolarisTrans;
-import com.tencent.trpc.selector.open.polaris.common.PolarisConstant;
+import com.tencent.trpc.polaris.common.PolarisConstant;
+import com.tencent.trpc.polaris.common.PolarisFutureUtil;
+import com.tencent.trpc.polaris.common.PolarisTrans;
+import com.tencent.trpc.selector.polaris.common.PolarisCommon;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -65,8 +64,7 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
 
     private static final Logger logger = LoggerFactory.getLogger(PolarisSelector.class);
 
-    private static final LoadBalancer loadBalancer = new WeightedRandomBalance()
-;
+    private static final LoadBalancer loadBalancer = new WeightedRandomBalance();
     private PolarisSelectorConfig selectorConfig;
 
     private ConsumerAPI polarisAPI;
@@ -180,7 +178,7 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
 
     @Override
     public CompletionStage<List<ServiceInstance>> asyncSelectAll(ServiceId serviceId,
-                                                                 Request request) {
+            Request request) {
         GetInstancesRequest req = createSelectAllReq(serviceId, request, false);
         logger.debug("[asyncSelectAll] GetInstancesRequest:{}", req);
         try {
@@ -216,7 +214,7 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
      * and then load balancing is performed to return
      */
     private CompletableFuture<ServiceInstance> selectOneFallback(ServiceId serviceId,
-                                                                 Request request) {
+            Request request) {
         logger.debug("[selector] selectOneFallback call for ServiceId:{}", serviceId);
         GetInstancesRequest req = createSelectAllReq(serviceId, request, true);
         try {
