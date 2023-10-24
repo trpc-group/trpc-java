@@ -33,7 +33,7 @@ tRPC-Java 具有以下特点：
 
 JDK 8+, Maven 3.6.3+
 
-### 引入依赖(非协程版本)
+### 引入依赖
 
 ```pom
 <dependencies>
@@ -45,19 +45,10 @@ JDK 8+, Maven 3.6.3+
 </dependencies>
 ```
 
-### 引入依赖(协程版本)
+#### 使用协程
 
-推荐使用 [Tencent Kona JDK 8](https://github.com/Tencent/TencentKona-8)
-
-```pom
-<dependencies>
-    <dependency>
-        <groupId>com.tencent.trpc</groupId>
-        <artifactId>trpc-mini</artifactId>
-        <version>0.15.0-FIBER</version>
-    </dependency>
-</dependencies>
-```
+推荐使用 [Tencent Kona JDK FIBER 8](https://github.com/Tencent/TencentKona-8)
+todo 协程配置，配置文件
 
 <h2 id="2">相关文档</h2>
 

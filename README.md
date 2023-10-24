@@ -34,31 +34,21 @@ tRPC-Java has the following features:
 
 JDK 8+, Maven 3.6.3+
 
-### Import dependencies (non-coroutine version)
+### Import dependencies
 
 ```pom
 <dependencies>
     <dependency>
         <groupId>com.tencent.trpc</groupId>
         <artifactId>trpc-mini</artifactId>
-        <version>0.15.0</version>
+        <version>1.0.0</version>
     </dependency>
 </dependencies>
 ```
 
-### Import dependencies (coroutine version)
+#### Use coroutine
 
-It is recommended to use [Tencent Kona JDK 8](https://github.com/Tencent/TencentKona-8).
-
-```pom
-<dependencies>
-    <dependency>
-        <groupId>com.tencent.trpc</groupId>
-        <artifactId>trpc-mini</artifactId>
-        <version>0.15.0-FIBER</version>
-    </dependency>
-</dependencies>
-```
+It is recommended to use [Tencent Kona JDK FIBER 8](https://github.com/Tencent/TencentKona-8).
 
 <h2 id="2">Related Documentation</h2>
 

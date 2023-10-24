@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -29,8 +29,9 @@ import com.tencent.trpc.core.management.support.MBeanRegistryHelper;
 import com.tencent.trpc.core.worker.AbstractWorkerPool;
 import com.tencent.trpc.core.worker.handler.TrpcThreadExceptionHandler;
 import com.tencent.trpc.core.worker.spi.WorkerPool;
-import java.lang.Thread.Builder.OfVirtual;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -42,6 +43,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import org.reflections.ReflectionUtils;
 
 @Extension(ThreadWorkerPool.TYPE)
 public class ThreadWorkerPool extends AbstractWorkerPool
@@ -81,14 +83,31 @@ public class ThreadWorkerPool extends AbstractWorkerPool
         protocolError = new AtomicLong(0);
         uncaughtExceptionHandler = new TrpcThreadExceptionHandler(errorCount, businessError, protocolError);
 
-        ThreadFactory threadFactory;
+        ThreadFactory threadFactory = null;
         if (poolConfig.useFiber()) {
-            OfVirtual virtual = Thread.ofVirtual().name(poolConfig.getNamePrefix(), 1);
-            if (!poolConfig.isShareSchedule()) {
-                virtual.scheduler(Executors.newWorkStealingPool(poolConfig.getFiberParallel()));
+            try {
+                Class<?> threadClazz = ReflectionUtils.forName("java.lang.Thread");
+                Method ofVirtualMethod = threadClazz.getDeclaredMethod("ofVirtual");
+                Object virtual = ofVirtualMethod.invoke(threadClazz);
+                Class<?> virtualClazz = virtual.getClass();
+                Method nameMethod = virtualClazz.getMethod("name", String.class, long.class);
+                nameMethod.setAccessible(true);
+                nameMethod.invoke(virtual, poolConfig.getNamePrefix(), 1);
+                if (!poolConfig.isShareSchedule()) {
+                    Method schedulerMethod = virtualClazz.getDeclaredMethod("scheduler", Executor.class);
+                    schedulerMethod.setAccessible(true);
+                    schedulerMethod.invoke(virtual, Executors.newWorkStealingPool(poolConfig.getFiberParallel()));
+                }
+                Method factoryMethod = virtualClazz.getDeclaredMethod("factory");
+                factoryMethod.setAccessible(true);
+                threadFactory = (ThreadFactory) factoryMethod.invoke(virtual);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
+                logger.error("The current JDK version cannot use coroutines, please use OpenJDK 21+ or Tencent "
+                        + "Kona JDK FIBER 8+ version, error: ", exception);
             }
-            threadFactory = virtual.factory();
-        } else {
+        }
+        // If coroutines cannot be used, downgrade to threads
+        if (threadFactory == null) {
             threadFactory = new NamedThreadFactory(poolConfig.getNamePrefix(), poolConfig.isDaemon(),
                     uncaughtExceptionHandler);
         }
