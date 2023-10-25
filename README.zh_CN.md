@@ -33,6 +33,14 @@ tRPC-Java 具有以下特点：
 
 JDK 8+, Maven 3.6.3+
 
+如果使用 JDK 9及其以上版本，JVM 参数请进行如下设置:
+
+```shell
+--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.management/sun.management=ALL-UNNAMED  --add-opens java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED
+```
+
+> tRPC-Java 暂时不支持运行在 JDK 17及其以上版本。
+
 ### 引入依赖
 
 ```pom
@@ -40,7 +48,7 @@ JDK 8+, Maven 3.6.3+
     <dependency>
         <groupId>com.tencent.trpc</groupId>
         <artifactId>trpc-mini</artifactId>
-        <version>0.15.0</version>
+        <version>1.0.0</version>
     </dependency>
 </dependencies>
 ```
@@ -48,7 +56,7 @@ JDK 8+, Maven 3.6.3+
 #### 使用协程
 
 推荐使用 [Tencent Kona JDK FIBER 8](https://github.com/Tencent/TencentKona-8)
-todo 协程配置，配置文件
+使用示例见[coroutine](https://github.com/trpc-group/trpc-java-examples/tree/master/trpc-examples-coroutine)
 
 <h2 id="2">相关文档</h2>
 

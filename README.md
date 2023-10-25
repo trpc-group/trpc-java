@@ -34,6 +34,14 @@ tRPC-Java has the following features:
 
 JDK 8+, Maven 3.6.3+
 
+If using JDK 9 and above, please set the JVM options as follows:
+
+```shell
+--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.management/sun.management=ALL-UNNAMED  --add-opens java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED
+```
+
+> tRPC-Java currently does not support running on JDK 17 and above.
+
 ### Import dependencies
 
 ```pom
@@ -48,8 +56,9 @@ JDK 8+, Maven 3.6.3+
 
 #### Use coroutine
 
-It is recommended to use [Tencent Kona JDK FIBER 8](https://github.com/Tencent/TencentKona-8).
-
+It is recommended to use [Tencent Kona JDK FIBER 8](https://github.com/Tencent/TencentKona-8). For
+usage examples,
+see [coroutine](https://github.com/trpc-group/trpc-java-examples/tree/master/trpc-examples-coroutine)
 <h2 id="2">Related Documentation</h2>
 
 - [Quick start](/docs/en/1.quick_start.md)
