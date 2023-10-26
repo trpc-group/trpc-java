@@ -43,3 +43,4 @@ trpc-registry/trpc-registry-open-polaris/polaris
 .vscode
 build.yml
 test.py
+checkstyle.jar
