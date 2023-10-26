@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -99,7 +99,6 @@ public abstract class AbstractConsumerInvoker<T> implements ConsumerInvoker<T> {
     }
 
     /**
-     *
      * The actual invocation of the client's request. Subclasses need to implement this method
      * to support different HTTP protocols.
      *
@@ -266,8 +265,7 @@ public abstract class AbstractConsumerInvoker<T> implements ConsumerInvoker<T> {
         if (!StringUtils.isEmpty(basePath) && !URI_SEPARATOR.equals(basePath)) {
             stringBuilder.append(basePath);
         }
-        stringBuilder.append(URI_SEPARATOR).append(invocation.getRpcServiceName())
-                .append(URI_SEPARATOR).append(invocation.getRpcMethodName());
+        stringBuilder.append(invocation.getFunc());
 
         uriBuilder.setPath(stringBuilder.toString());
         return uriBuilder.build();
