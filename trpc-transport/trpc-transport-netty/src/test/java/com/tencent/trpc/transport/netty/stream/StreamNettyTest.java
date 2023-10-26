@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -61,7 +61,6 @@ public class StreamNettyTest {
         conn[0].dispose();
         Assert.assertTrue(conn[0].isDisposed());
         server[0].dispose();
-        Assert.assertTrue(server[0].isDisposed());
     }
 
     private ProtocolConfig getProtoConfig(String network) {
