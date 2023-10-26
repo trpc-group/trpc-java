@@ -15,18 +15,6 @@ on:
     branches: [ "fiber_main", "master" ]
 
 jobs:
-  checkstyle_job:
-    runs-on: ubuntu-latest
-    name: Checkstyle job
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Run check style
-        uses: nikitasavinov/checkstyle-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: 'github-pr-check'
-          tool_name: 'reviewdog'
   checkstyle:
     name: Checkstyle
     runs-on: ubuntu-latest
@@ -46,7 +34,7 @@ jobs:
       - name: checkstyle
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: java -jar checkstyle.jar -c tools/tencent_checks.xml -f xml ./
+        run: java -jar checkstyle.jar -c google_checks.xml -f xml ./ | reviewdog -f=checkstyle -name="Checkstyle" -reporter=github-check
   test:
     runs-on: ubuntu-latest
     steps:
