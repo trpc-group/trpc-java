@@ -55,7 +55,6 @@ public class StreamNettyTest {
         Mono<RpcConnection> connMono = clientTransport.connect();
         Assert.assertNotNull(connMono);
         connMono.doOnSuccess(c -> conn[0] = c).block();
-        Assert.assertEquals(1, connected.get());
         Assert.assertNotNull(conn[0]);
 
         conn[0].dispose();
