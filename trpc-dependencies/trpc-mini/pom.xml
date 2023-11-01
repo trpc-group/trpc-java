@@ -9,7 +9,7 @@
     <parent>
         <groupId>com.tencent.trpc</groupId>
         <artifactId>trpc-dependencies</artifactId>
-        <version>0.16.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <packaging>jar</packaging>

@@ -6,7 +6,7 @@
 
     <groupId>com.tencent.trpc</groupId>
     <artifactId>trpc-dependencies-bom</artifactId>
-    <version>0.16.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <distributionManagement>
@@ -901,7 +901,6 @@
                 <artifactId>spring-cloud-starter-gateway</artifactId>
                 <version>${spring.cloud.gateway.version}</version>
             </dependency>
-            <!--open feign end-->
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>
