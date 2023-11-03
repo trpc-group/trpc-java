@@ -2,10 +2,10 @@ English | [中文](README.zh_CN.md)
 
 # tRPC-Java Framework
 
-[![LICENSE](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://github.com/trpc-group/trpc-java/blob/main/LICENSE)
+[![LICENSE](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://github.com/trpc-group/trpc-java/blob/master/LICENSE)
 [![Releases](https://img.shields.io/github/release/trpc.group/trpc-java.svg?style=flat-square)](https://github.com/trpc-group/trpc-java/releases)
-[![Docs](https://img.shields.io/badge/docs-latest-green)](https://github.com/trpc-group/trpc-java/tree/main/docs/)
-[![Coverage](https://codecov.io/gh/trpc.group/trpc-java/branch/main/graph/badge.svg)](https://app.codecov.io/gh/trpc.group/trpc-java/tree/main)
+[![Docs](https://img.shields.io/badge/docs-latest-green)](https://github.com/trpc-group/trpc-java/tree/master/docs/)
+[![Coverage](https://codecov.io/gh/trpc.group/trpc-java/branch/main/graph/badge.svg)](https://app.codecov.io/gh/trpc-group/trpc-java/tree/master)
 
 tRPC-Java, as the Java language implementation of [tRPC](https://github.com/trpc-group/trpc), is a
 battle-tested microservices framework that has been extensively validated in production
