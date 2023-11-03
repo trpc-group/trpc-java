@@ -5,7 +5,7 @@
 [![LICENSE](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://github.com/trpc-group/trpc-java/blob/master/LICENSE)
 [![Releases](https://img.shields.io/github/release/trpc.group/trpc-java.svg?style=flat-square)](https://github.com/trpc-group/trpc-java/releases)
 [![Docs](https://img.shields.io/badge/docs-latest-green)](https://github.com/trpc-group/trpc-java/tree/master/docs/)
-[![Coverage](https://codecov.io/gh/trpc.group/trpc-java/branch/main/graph/badge.svg)](https://app.codecov.io/gh/trpc-group/trpc-java/tree/master)
+[![Coverage](https://codecov.io/gh/trpc-group/trpc-java/graph/badge.svg?token=PCzWvpNAIk)](https://codecov.io/gh/trpc-group/trpc-java)
 
 tRPC-Java，作为 [tRPC](https://github.com/trpc-group/trpc) 的 Java
 语言版本，是经过大规模线上业务使用验证过的微服务框架，它不仅性能高，而且易于使用和测试。
