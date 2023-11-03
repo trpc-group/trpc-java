@@ -9,7 +9,6 @@
         <artifactId>trpc-demo</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <groupId>com.tencent.trpc.demo</groupId>
     <name>trpc-demo</name>
     <description>Demo project for Spring Boot</description>
 
