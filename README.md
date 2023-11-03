@@ -24,7 +24,7 @@ tRPC-Java has the following features:
 - Streaming RPC
 - Rich plugin ecosystem
 - Scalability
-- Load balancing
+- Load balance
 - Flow & Overload control
 - Support coroutine
 

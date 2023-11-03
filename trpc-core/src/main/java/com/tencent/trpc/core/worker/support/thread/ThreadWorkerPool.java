@@ -53,6 +53,13 @@ public class ThreadWorkerPool extends AbstractWorkerPool
     public static final String TYPE = "thread";
 
     protected static final Logger logger = LoggerFactory.getLogger(ThreadWorkerPool.class);
+
+    private static final String THREAD_CLASS_NAME = "java.lang.Thread";
+    private static final String OF_VIRTUAL_NAME = "ofVirtual";
+    private static final String NAME = "name";
+    private static final String SCHEDULER_NAME = "scheduler";
+    private static final String FACTORY_NAME = "factory";
+
     private ExecutorService threadPool;
     private ThreadPoolConfig poolConfig;
     private PluginConfig config;
@@ -86,19 +93,23 @@ public class ThreadWorkerPool extends AbstractWorkerPool
         ThreadFactory threadFactory = null;
         if (poolConfig.useFiber()) {
             try {
-                Class<?> threadClazz = ReflectionUtils.forName("java.lang.Thread");
-                Method ofVirtualMethod = threadClazz.getDeclaredMethod("ofVirtual");
+                // Since versions below OpenJDK 21 and Tencent JDK non-FIBER versions do not support coroutines,
+                // introducing the "java.lang.Thread.Builder.OfVirtual" dependency will result in an error,
+                // so we create coroutines through reflection, which is compatible with JDKs that do not support
+                // coroutines. When the JDK does not support coroutines, it downgrades to threads.
+                Class<?> threadClazz = ReflectionUtils.forName(THREAD_CLASS_NAME);
+                Method ofVirtualMethod = threadClazz.getDeclaredMethod(OF_VIRTUAL_NAME);
                 Object virtual = ofVirtualMethod.invoke(threadClazz);
                 Class<?> virtualClazz = virtual.getClass();
-                Method nameMethod = virtualClazz.getMethod("name", String.class, long.class);
+                Method nameMethod = virtualClazz.getMethod(NAME, String.class, long.class);
                 nameMethod.setAccessible(true);
                 nameMethod.invoke(virtual, poolConfig.getNamePrefix(), 1);
                 if (!poolConfig.isShareSchedule()) {
-                    Method schedulerMethod = virtualClazz.getDeclaredMethod("scheduler", Executor.class);
+                    Method schedulerMethod = virtualClazz.getDeclaredMethod(SCHEDULER_NAME, Executor.class);
                     schedulerMethod.setAccessible(true);
                     schedulerMethod.invoke(virtual, Executors.newWorkStealingPool(poolConfig.getFiberParallel()));
                 }
-                Method factoryMethod = virtualClazz.getDeclaredMethod("factory");
+                Method factoryMethod = virtualClazz.getDeclaredMethod(FACTORY_NAME);
                 factoryMethod.setAccessible(true);
                 threadFactory = (ThreadFactory) factoryMethod.invoke(virtual);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
@@ -110,6 +121,7 @@ public class ThreadWorkerPool extends AbstractWorkerPool
         if (threadFactory == null) {
             threadFactory = new NamedThreadFactory(poolConfig.getNamePrefix(), poolConfig.isDaemon(),
                     uncaughtExceptionHandler);
+            logger.warn("If the server uses a synchronous interface, please increase the thread pool size");
         }
 
         threadPool = new ThreadPoolExecutor(poolConfig.getCorePoolSize(),
