@@ -39,8 +39,6 @@ JDK 8+, Maven 3.6.3+
 --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.management/sun.management=ALL-UNNAMED  --add-opens java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED
 ```
 
-> tRPC-Java 暂时不支持运行在 JDK 17及其以上版本。
-
 ### 引入依赖
 
 ```pom

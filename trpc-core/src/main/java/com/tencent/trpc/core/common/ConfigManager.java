@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -365,16 +365,16 @@ public class ConfigManager {
                 serverConfig.unregister();
                 closeTime = serverConfig.getCloseTimeout();
             }
-            // 2) service stop, do not accept new requests
+            // 2) wait for threads to close
+            WorkerPoolManager.shutdown(closeTime, TimeUnit.MILLISECONDS);
+            // 3) service stop, do not accept new requests
             if (serverConfig != null) {
                 serverConfig.stop();
             }
-            // 3) business-related
+            // 4) business-related
             if (appInitializer != null) {
                 appInitializer.stop();
             }
-            // 4) wait for threads to close
-            WorkerPoolManager.shutdown(closeTime, TimeUnit.MILLISECONDS);
             // 5) close the client side
             clientConfig.stop();
             // 6) close plugins

@@ -40,8 +40,6 @@ If using JDK 9 and above, please set the JVM options as follows:
 --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.management/sun.management=ALL-UNNAMED  --add-opens java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED
 ```
 
-> tRPC-Java currently does not support running on JDK 17 and above.
-
 ### Import dependencies
 
 ```pom
