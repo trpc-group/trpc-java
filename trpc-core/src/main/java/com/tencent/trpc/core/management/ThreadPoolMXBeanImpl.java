@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -14,8 +14,8 @@ package com.tencent.trpc.core.management;
 import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import com.sun.jmx.mbeanserver.Util;
 
 public class ThreadPoolMXBeanImpl implements ThreadPoolMXBean {
 
@@ -67,7 +67,11 @@ public class ThreadPoolMXBeanImpl implements ThreadPoolMXBean {
 
     @Override
     public ObjectName getObjectName() {
-        return Util.newObjectName(WORKER_POOL_MXBEAN_DOMAIN_TYPE + ",name=" + objectName);
+        try {
+            return new ObjectName(WORKER_POOL_MXBEAN_DOMAIN_TYPE + ",name=" + objectName);
+        } catch (MalformedObjectNameException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
 }

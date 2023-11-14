@@ -37,6 +37,7 @@ bin
 trpc-selector/trpc-selector-open-polaris/polaris
 trpc-registry/trpc-registry-open-polaris/polaris
 **/target
+deploy.sh
 
 # Codecc
 .codecc

@@ -100,17 +100,20 @@ public class ThreadWorkerPool extends AbstractWorkerPool
                 Class<?> threadClazz = ReflectionUtils.forName(THREAD_CLASS_NAME);
                 Method ofVirtualMethod = threadClazz.getDeclaredMethod(OF_VIRTUAL_NAME);
                 Object virtual = ofVirtualMethod.invoke(threadClazz);
-                Class<?> virtualClazz = virtual.getClass();
+                Class<?> virtualClazz = ofVirtualMethod.getReturnType();
                 Method nameMethod = virtualClazz.getMethod(NAME, String.class, long.class);
-                nameMethod.setAccessible(true);
                 nameMethod.invoke(virtual, poolConfig.getNamePrefix(), 1);
                 if (!poolConfig.isShareSchedule()) {
-                    Method schedulerMethod = virtualClazz.getDeclaredMethod(SCHEDULER_NAME, Executor.class);
-                    schedulerMethod.setAccessible(true);
-                    schedulerMethod.invoke(virtual, Executors.newWorkStealingPool(poolConfig.getFiberParallel()));
+                    try {
+                        Method schedulerMethod = virtualClazz.getDeclaredMethod(SCHEDULER_NAME, Executor.class);
+                        schedulerMethod.setAccessible(true);
+                        schedulerMethod.invoke(virtual, Executors.newWorkStealingPool(poolConfig.getFiberParallel()));
+                    } catch (NoSuchMethodException exception) {
+                        logger.error("Only Tencent Kona JDK FIBER 8+ version support scheduler method, error: ",
+                                exception);
+                    }
                 }
-                Method factoryMethod = virtualClazz.getDeclaredMethod(FACTORY_NAME);
-                factoryMethod.setAccessible(true);
+                Method factoryMethod = virtualClazz.getMethod(FACTORY_NAME);
                 threadFactory = (ThreadFactory) factoryMethod.invoke(virtual);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
                 logger.error("The current JDK version cannot use coroutines, please use OpenJDK 21+ or Tencent "
