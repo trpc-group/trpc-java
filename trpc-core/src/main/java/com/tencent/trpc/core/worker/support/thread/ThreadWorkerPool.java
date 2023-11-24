@@ -103,15 +103,13 @@ public class ThreadWorkerPool extends AbstractWorkerPool
                 Class<?> virtualClazz = ofVirtualMethod.getReturnType();
                 Method nameMethod = virtualClazz.getMethod(NAME, String.class, long.class);
                 nameMethod.invoke(virtual, poolConfig.getNamePrefix(), 1);
-                if (!poolConfig.isShareSchedule()) {
-                    try {
-                        Method schedulerMethod = virtualClazz.getDeclaredMethod(SCHEDULER_NAME, Executor.class);
-                        schedulerMethod.setAccessible(true);
-                        schedulerMethod.invoke(virtual, Executors.newWorkStealingPool(poolConfig.getFiberParallel()));
-                    } catch (NoSuchMethodException exception) {
-                        logger.error("Only Tencent Kona JDK FIBER 8+ version support scheduler method, error: ",
-                                exception);
-                    }
+                // Only Tencent Kona JDK FIBER 8+ version support the scheduler method, OpenJDK 21 version does not
+                // support the scheduler method.
+                if (!poolConfig.isShareSchedule()
+                        && containsMethod(virtualClazz.getDeclaredMethods(), SCHEDULER_NAME)) {
+                    Method schedulerMethod = virtualClazz.getDeclaredMethod(SCHEDULER_NAME, Executor.class);
+                    schedulerMethod.setAccessible(true);
+                    schedulerMethod.invoke(virtual, Executors.newWorkStealingPool(poolConfig.getFiberParallel()));
                 }
                 Method factoryMethod = virtualClazz.getMethod(FACTORY_NAME);
                 threadFactory = (ThreadFactory) factoryMethod.invoke(virtual);
@@ -215,6 +213,15 @@ public class ThreadWorkerPool extends AbstractWorkerPool
     @Override
     public UncaughtExceptionHandler getUncaughtExceptionHandler() {
         return this.uncaughtExceptionHandler;
+    }
+
+    private boolean containsMethod(Method[] methods, String name) {
+        for (Method method : methods) {
+            if (method.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
