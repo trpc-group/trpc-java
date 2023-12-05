@@ -32,7 +32,7 @@ tRPC-Java has the following features:
 
 ### Dependency environment
 
-JDK 8+, Maven 3.6.3+
+JDK 1.8.0_251+, Maven 3.6.3+
 
 ### Import dependencies
 
