@@ -3,7 +3,7 @@ English | [中文](README.zh_CN.md)
 # tRPC-Java Framework
 
 [![LICENSE](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://github.com/trpc-group/trpc-java/blob/master/LICENSE)
-[![Releases](https://img.shields.io/github/release/trpc.group/trpc-java.svg?style=flat-square)](https://github.com/trpc-group/trpc-java/releases)
+[![Releases](https://img.shields.io/github/v/release/trpc-group/trpc-java.svg?style=flat-square)](https://github.com/trpc-group/trpc-java/releases)
 [![Docs](https://img.shields.io/badge/docs-latest-green)](https://github.com/trpc-group/trpc-java/tree/master/docs/)
 [![Coverage](https://codecov.io/gh/trpc-group/trpc-java/graph/badge.svg?token=PCzWvpNAIk)](https://codecov.io/gh/trpc-group/trpc-java)
 
@@ -33,6 +33,8 @@ tRPC-Java has the following features:
 ### Dependency environment
 
 JDK 1.8.0_251+, Maven 3.6.3+
+
+> Please compile tRPC-Java through `mvn -Dmaven.test.skip=true clean install`. If you want to run unit tests, you need to use JDK 8.
 
 ### Import dependencies
 

@@ -3,7 +3,7 @@
 # tRPC-Java Framework
 
 [![LICENSE](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://github.com/trpc-group/trpc-java/blob/master/LICENSE)
-[![Releases](https://img.shields.io/github/release/trpc.group/trpc-java.svg?style=flat-square)](https://github.com/trpc-group/trpc-java/releases)
+[![Releases](https://img.shields.io/github/v/release/trpc-group/trpc-java.svg?style=flat-square)](https://github.com/trpc-group/trpc-java/releases)
 [![Docs](https://img.shields.io/badge/docs-latest-green)](https://github.com/trpc-group/trpc-java/tree/master/docs/)
 [![Coverage](https://codecov.io/gh/trpc-group/trpc-java/graph/badge.svg?token=PCzWvpNAIk)](https://codecov.io/gh/trpc-group/trpc-java)
 
@@ -32,6 +32,8 @@ tRPC-Java 具有以下特点：
 ### 依赖环境
 
 JDK 1.8.0_251+, Maven 3.6.3+
+
+> 请通过 `mvn -Dmaven.test.skip=true clean install` 编译tRPC-Java。如果运行单元测试需使用JDK 8执行。
 
 ### 引入依赖
 

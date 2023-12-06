@@ -17,6 +17,7 @@
 
     <properties>
         <skip_maven_deploy>true</skip_maven_deploy>
+        <trpc-maven-plugin.version>1.0.0</trpc-maven-plugin.version>
     </properties>
     <modules>
         <module>trpc-java-demo</module>

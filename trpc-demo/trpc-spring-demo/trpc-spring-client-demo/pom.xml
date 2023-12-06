@@ -23,7 +23,7 @@
             <plugin>
                 <groupId>com.tencent.trpc</groupId>
                 <artifactId>trpc-maven-plugin</artifactId>
-                <version>${project.version}</version>
+                <version>${trpc-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
