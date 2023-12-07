@@ -191,24 +191,24 @@ public class NacosConfigurationLoaderTest {
     }
 
     @Test
-    public void testParallelGetValue() throws Exception {
+    public void testGroupDataIdListenerCache() throws Exception {
         String key = "example.config.name";
+        String key1 = "example.config.list[0].key1";
         Mockito.when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(YAML_EXAMPLE);
         NacosConfigurationLoader loader = PowerMockito.spy(configYaml);
-
-        Thread thread1 = new Thread(() -> loader.getValue(key, DEFAULT_GROUP));
-        Thread thread2 = new Thread(() -> loader.getValue(key, DEFAULT_GROUP));
-        thread1.start();
-        thread2.start();
-        thread1.join();
-        thread2.join();
+        loader.getValue(key, DEFAULT_GROUP);
+        loader.getValue(key1, DEFAULT_GROUP);
+        PowerMockito.verifyPrivate(loader, Mockito.times(1))
+                .invoke("cacheKeyAndRegisterRelatedListener", DEFAULT_GROUP, DEFAULT_DATA_ID, key);
+        PowerMockito.verifyPrivate(loader, Mockito.times(1))
+                .invoke("cacheKeyAndRegisterRelatedListener", DEFAULT_GROUP, DEFAULT_DATA_ID, key1);
         PowerMockito.verifyPrivate(loader, Mockito.times(1))
                 .invoke("registerListenerToGroupDataId", DEFAULT_GROUP, DEFAULT_DATA_ID);
     }
 
     @Test
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void testGroupDataIdCaches() throws NacosException, IllegalAccessException {
+    public void testGroupDataIdCache() throws NacosException, IllegalAccessException {
         String key = "example.config.name";
         Mockito.when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(YAML_EXAMPLE);
         Assert.assertEquals(configYaml.getValue(key, DEFAULT_GROUP), "example");
