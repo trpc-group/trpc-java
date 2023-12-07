@@ -20,6 +20,7 @@ import com.tencent.trpc.core.compressor.support.SnappyCompressor;
 import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.core.rpc.RpcContext;
+import com.tencent.trpc.core.utils.NetUtils;
 import com.tencent.trpc.core.utils.RpcContextUtils;
 import com.tencent.trpc.proto.standard.common.GreeterServiceImp;
 import com.tencent.trpc.proto.standard.stream.common.HelloRequestProtocol.HelloRequest;
@@ -51,7 +52,6 @@ import reactor.core.publisher.Mono;
 
 public class StreamTests {
 
-    private static final int TCP_PORT = 12825;
     ServiceConfig serviceConfig;
     StreamGreeterServiceImpl1 streamGreeterService = new StreamGreeterServiceImpl1();
 
@@ -68,6 +68,7 @@ public class StreamTests {
         ConfigManager.stopTest();
         if (serviceConfig != null) {
             serviceConfig.unExport();
+            serviceConfig = null;
         }
     }
 
@@ -254,8 +255,8 @@ public class StreamTests {
 
     @Test
     public void testRemoteNotExist() throws Exception {
-        StreamGreeterService2 proxy = getNotExistServiceProxy(TCP_PORT);
-        StreamGreeterService2 proxy2 = getNotExistServiceProxy(TCP_PORT + 1);
+        StreamGreeterService2 proxy = getNotExistServiceProxy(serviceConfig.getPort());
+        StreamGreeterService2 proxy2 = getNotExistServiceProxy(serviceConfig.getPort() + 1);
         HelloRequest helloRequest = HelloRequest.newBuilder().setMessage("hello").build();
 
         final AtomicInteger rspCount = new AtomicInteger();
@@ -350,7 +351,7 @@ public class StreamTests {
     @Test
     public void testMultiProtocolTypeService() {
         try {
-            ServiceConfig serviceConfig = getTRpcServiceConfig(TCP_PORT + 1);
+            ServiceConfig serviceConfig = getTRpcServiceConfig(this.serviceConfig.getPort() + 1);
 
             ProviderConfig<?> providerConfig = new ProviderConfig<>();
             providerConfig.setRefClazz(StreamGreeterServiceImpl3.class.getCanonicalName());
@@ -363,7 +364,7 @@ public class StreamTests {
         }
 
         try {
-            ServiceConfig serviceConfig = getTRpcServiceConfig(TCP_PORT + 2);
+            ServiceConfig serviceConfig = getTRpcServiceConfig(this.serviceConfig.getPort() + 2);
 
             ProviderConfig<?> providerConfig1 = new ProviderConfig<>();
             providerConfig1.setRefClazz(GreeterServiceImp.class.getCanonicalName()); // standard
@@ -382,7 +383,7 @@ public class StreamTests {
     public void testMultiProtocolTypeClient() {
         try {
             BackendConfig backendConfig = new BackendConfig();
-            backendConfig.setNamingUrl("ip://127.0.0.1:" + TCP_PORT);
+            backendConfig.setNamingUrl("ip://127.0.0.1:" + serviceConfig.getPort());
             ConsumerConfig<StreamGreeterService4> consumerConfig = new ConsumerConfig<>();
             consumerConfig.setServiceInterface(StreamGreeterService4.class);
             StreamGreeterService4 proxy = backendConfig.getProxy(consumerConfig);
@@ -529,7 +530,7 @@ public class StreamTests {
 
     private StreamGreeterService getServiceProxy() {
         BackendConfig backendConfig = new BackendConfig();
-        backendConfig.setNamingUrl("ip://127.0.0.1:" + TCP_PORT);
+        backendConfig.setNamingUrl("ip://127.0.0.1:" + serviceConfig.getPort());
         ConsumerConfig<StreamGreeterService> consumerConfig = new ConsumerConfig<>();
         consumerConfig.setServiceInterface(StreamGreeterService.class);
         return backendConfig.getProxy(consumerConfig);
@@ -545,7 +546,7 @@ public class StreamTests {
 
     private StreamGreeterService getCompressedServiceProxy() {
         BackendConfig backendConfig = new BackendConfig();
-        backendConfig.setNamingUrl("ip://127.0.0.1:" + TCP_PORT);
+        backendConfig.setNamingUrl("ip://127.0.0.1:" + serviceConfig.getPort());
         backendConfig.setCompressor(SnappyCompressor.NAME); // 压缩数据测试
         ConsumerConfig<StreamGreeterService> consumerConfig = new ConsumerConfig<>();
         consumerConfig.setServiceInterface(StreamGreeterService.class);
@@ -555,7 +556,8 @@ public class StreamTests {
     private void startServer() {
         ProviderConfig<StreamGreeterService> providerConfig = new ProviderConfig<>();
         providerConfig.setRef(this.streamGreeterService);
-        ServiceConfig serviceConfig = getTRpcServiceConfig(TCP_PORT);
+        int port = NetUtils.getAvailablePort();
+        ServiceConfig serviceConfig = getTRpcServiceConfig(port);
         startServer(serviceConfig, Collections.singletonList(providerConfig));
         this.serviceConfig = serviceConfig;
     }
