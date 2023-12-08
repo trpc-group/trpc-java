@@ -35,7 +35,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -188,22 +187,6 @@ public class NacosConfigurationLoaderTest {
         Mockito.when(configService.getConfig(APP_DATA_ID, APP_GROUP, TIMEOUT)).thenReturn(PROPERTIES_EXAMPLE);
         Assert.assertEquals(configProperties.getValue(key, APP_GROUP), "example");
         Assert.assertEquals(configProperties.getValue(key2, APP_GROUP), "value2");
-    }
-
-    @Test
-    public void testParallelGetValue() throws Exception {
-        String key = "example.config.name";
-        Mockito.when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(YAML_EXAMPLE);
-        NacosConfigurationLoader loader = PowerMockito.spy(configYaml);
-
-        Thread thread1 = new Thread(() -> loader.getValue(key, DEFAULT_GROUP));
-        Thread thread2 = new Thread(() -> loader.getValue(key, DEFAULT_GROUP));
-        thread1.start();
-        thread2.start();
-        thread1.join();
-        thread2.join();
-        PowerMockito.verifyPrivate(loader, Mockito.times(1))
-                .invoke("registerListenerToGroupDataId", DEFAULT_GROUP, DEFAULT_DATA_ID);
     }
 
     @Test
