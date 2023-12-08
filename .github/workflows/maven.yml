@@ -13,7 +13,8 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-
+  schedule:
+    - cron: '0 9 * * *'
 jobs:
   test:
     runs-on: ubuntu-latest
