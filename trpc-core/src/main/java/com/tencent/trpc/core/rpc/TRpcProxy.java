@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -89,7 +89,7 @@ public class TRpcProxy {
         if (backendConfig == null) {
             return null;
         }
-        backendConfig.getExtMap().put(NamingOptions.DESTINATION_SET, setName);
+        backendConfig.setDestinationSet(setName);
         return backendConfig.getDefaultProxy();
     }
 
@@ -106,8 +106,7 @@ public class TRpcProxy {
         if (backendConfig == null) {
             return null;
         }
-        backendConfig.getExtMap().put(NamingOptions.DESTINATION_SET, setName);
+        backendConfig.setDestinationSet(setName);
         return backendConfig.getProxy(clazz);
     }
-
 }
