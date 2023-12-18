@@ -259,7 +259,6 @@ public class BackendConfig extends BaseProtocolConfig {
                 Map<String, String> metadata = (Map<String, String>) metadataObj;
                 metadata.put(Constants.POLARIS_PLUGIN_SET_NAME_KEY, setName);
                 metadata.put(Constants.POLARIS_PLUGIN_ENABLE_SET_KEY, Constants.POLARIS_PLUGIN_ENABLE_SET);
-                namingServiceId.getParameters().putAll(namingMap);
             }
         } else if (namingUrl.startsWith(Constants.ASSEMBLE_PLUGIN_URL_PREFIX)) {
             extMap.put(NamingOptions.DESTINATION_SET, setName);
@@ -553,6 +552,7 @@ public class BackendConfig extends BaseProtocolConfig {
      */
     public ServiceId toNamingServiceId() {
         if (namingServiceId != null) {
+            namingServiceId.getParameters().putAll(namingMap);
             return namingServiceId;
         }
         Objects.requireNonNull(namingOptions, "namingOptions");
