@@ -33,6 +33,7 @@ import com.tencent.trpc.core.utils.BinderUtils;
 import com.tencent.trpc.core.worker.WorkerPoolManager;
 import com.tencent.trpc.core.worker.spi.WorkerPool;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -114,7 +115,11 @@ public class BackendConfig extends BaseProtocolConfig {
      * The parameters of naming's map and namingUrl together form the naming configuration and put namingOptions
      */
     @ConfigProperty(name = "naming_map")
-    protected Map<String, Object> namingMap = Maps.newHashMap();
+    protected Map<String, Object> namingMap = new HashMap<String, Object>() {
+        {
+            put(Constants.METADATA, Maps.newHashMap());
+        }
+    };
     /**
      * Environment
      */
