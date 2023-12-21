@@ -557,7 +557,6 @@ public class BackendConfig extends BaseProtocolConfig {
      */
     public ServiceId toNamingServiceId() {
         if (namingServiceId != null) {
-            namingServiceId.getParameters().putAll(namingMap);
             return namingServiceId;
         }
         Objects.requireNonNull(namingOptions, "namingOptions");
