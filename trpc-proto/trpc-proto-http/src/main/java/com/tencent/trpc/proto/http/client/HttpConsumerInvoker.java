@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -27,9 +27,12 @@ import com.tencent.trpc.core.utils.RpcUtils;
 import com.tencent.trpc.proto.http.common.HttpConstants;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpStatus;
@@ -84,24 +87,38 @@ public class HttpConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
             throw TRpcException.newBizException(statusCode,
                     httpResponse.getStatusLine().getReasonPhrase());
         }
+        //handle http header
+        //Parse the data passed through from the server to the client.
+        Map<String, Object> respAttachments = new HashMap<>();
+        for (Header header : httpResponse.getAllHeaders()) {
+            String name = header.getName();
+            for (HeaderElement element : header.getElements()) {
+                String value = element.getName();
+                respAttachments.put(name, value);
+            }
+        }
 
         Header contentLengthHdr = httpResponse.getFirstHeader(HttpHeaders.CONTENT_LENGTH);
+
         if (contentLengthHdr != null) {
             int contentLength = Integer.parseInt(contentLengthHdr.getValue().trim());
             // NOTE: By default, the HTTP implementation must return the content length.
             // However, other HTTP implementations may not return the content length,
             // so strong validation is not performed here.
             if (contentLength == 0) {
-                return RpcUtils.newResponse(request, null, null);
+                Response response = RpcUtils.newResponse(request, null, null);
+                response.setAttachments(respAttachments);
+                return response;
             }
         }
-
         // Decoded response result.
         InputStream in = httpResponse.getEntity().getContent();
         String decodeIn = IOUtils.toString(in, StandardCharsets.UTF_8);
         Object value = decodeFromJson(
                 request.getInvocation().getRpcMethodInfo().getActualReturnType(), decodeIn);
-        return RpcUtils.newResponse(request, value, null);
+        Response response = RpcUtils.newResponse(request, value, null);
+        response.setAttachments(respAttachments);
+        return response;
     }
 
     /**
