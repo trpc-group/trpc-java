@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -210,4 +210,28 @@ public class Constants {
      */
     public static final String STANDARD_NAMING_PRE = "trpc.";
 
+    /**
+     * Assemble plugin url prefix
+     */
+    public static final String ASSEMBLE_PLUGIN_URL_PREFIX = "assemble://";
+
+    /**
+     * Polaris plugin url prefix
+     */
+    public static final String POLARIS_PLUGIN_URL_PREFIX = "polaris://";
+
+    /**
+     * Polaris plugin set name key
+     */
+    public static final String POLARIS_PLUGIN_SET_NAME_KEY = "internal-set-name";
+
+    /**
+     * Polaris plugin enable set router key
+     */
+    public static final String POLARIS_PLUGIN_ENABLE_SET_KEY = "internal-enable-set";
+
+    /**
+     * Polaris plugin enable set value
+     */
+    public static final String POLARIS_PLUGIN_ENABLE_SET = "Y";
 }

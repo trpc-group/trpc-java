@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -248,13 +248,26 @@ public class BackendConfig extends BaseProtocolConfig {
     }
 
     public <T> T getProxyWithDestinationSet(ConsumerConfig<T> consumerConfig, String setName) {
-        extMap.put(NamingOptions.DESTINATION_SET, setName);
+        setDestinationSet(setName);
         return getProxy(consumerConfig);
     }
 
     public <T> T getProxyWithDestinationSet(Class<T> serviceInterface, String setName) {
-        extMap.put(NamingOptions.DESTINATION_SET, setName);
+        setDestinationSet(setName);
         return getProxy(serviceInterface);
+    }
+
+    public void setDestinationSet(String setName) {
+        if (namingUrl.startsWith(Constants.POLARIS_PLUGIN_URL_PREFIX)) {
+            Object metadataObj = namingMap.computeIfAbsent(Constants.METADATA, k -> Maps.newHashMap());
+            if (metadataObj instanceof Map) {
+                Map<String, String> metadata = (Map<String, String>) metadataObj;
+                metadata.put(Constants.POLARIS_PLUGIN_SET_NAME_KEY, setName);
+                metadata.put(Constants.POLARIS_PLUGIN_ENABLE_SET_KEY, Constants.POLARIS_PLUGIN_ENABLE_SET);
+            }
+        } else if (namingUrl.startsWith(Constants.ASSEMBLE_PLUGIN_URL_PREFIX)) {
+            extMap.put(NamingOptions.DESTINATION_SET, setName);
+        }
     }
 
     public <T> ConsumerConfig<T> newConsumerConfig(Class<T> clazz) {
