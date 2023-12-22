@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -12,6 +12,8 @@
 package com.tencent.trpc.spring.context.configuration.schema.client;
 
 import com.google.common.collect.Maps;
+import com.tencent.trpc.core.common.Constants;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +64,11 @@ public class ClientServiceSchema extends AbstractClientProtocolSchema {
     /**
      * NamingUrl options
      */
-    private Map<String, Object> namingMap = Maps.newHashMap();
+    private Map<String, Object> namingMap = new HashMap<String, Object>() {
+        {
+            put(Constants.METADATA, Maps.newHashMap());
+        }
+    };
 
     /**
      * Service namespace

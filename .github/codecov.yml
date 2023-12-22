@@ -12,6 +12,6 @@ coverage: # https://docs.codecov.com/docs/codecovyml-reference#coverage
     project:
       default:
         branches:
-          - ^main$
+          - ^master$
         target: 80.0 # the minimum coverage ratio that the commit must meet to be considered a success.
         threshold: 1% # allow the coverage to drop by X%, and posting a success status.
