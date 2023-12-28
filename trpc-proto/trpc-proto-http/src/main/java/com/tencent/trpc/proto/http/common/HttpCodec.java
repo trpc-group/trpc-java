@@ -222,7 +222,7 @@ public class HttpCodec {
         if (attachments == null || attachments.isEmpty()) {
             return;
         }
-        // set custom business headers, consistent with the TRPC protocol, only process String and byte[]
+        // Set custom business headers, consistent with the TRPC protocol, only process String and byte[]
         attachments.forEach((name, value) -> {
             if (value instanceof String) {
                 response.setHeader(name, String.valueOf(value));

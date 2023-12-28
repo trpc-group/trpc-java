@@ -23,6 +23,7 @@ import static com.tencent.trpc.proto.http.constant.Constant.TEST_STRING_RSP_KEY;
 import static com.tencent.trpc.proto.http.constant.Constant.TEST_STRING_RSP_VALUE;
 
 import com.tencent.trpc.core.rpc.RpcContext;
+import java.nio.charset.StandardCharsets;
 import org.junit.Assert;
 import tests.service.GreeterService;
 import tests.service.HelloRequestProtocol;
@@ -33,11 +34,11 @@ public class GreeterServiceImpl2 implements GreeterService {
 
     @Override
     public HelloRequestProtocol.HelloResponse sayHello(RpcContext context, HelloRequestProtocol.HelloRequest request) {
-        String stringReqValue = (String) context.getReqAttachMap().get(TEST_STRING_REQ_KEY);
-        Assert.assertEquals(stringReqValue, TEST_STRING_REQ_VALUE);
+        byte[] stringReqValue = (byte[]) context.getReqAttachMap().get(TEST_STRING_REQ_KEY);
+        Assert.assertEquals(new String(stringReqValue, StandardCharsets.UTF_8), TEST_STRING_REQ_VALUE);
 
         byte[] bytesReqValue = (byte[]) context.getReqAttachMap().get(TEST_BYTES_REQ_KEY);
-        Assert.assertEquals(TEST_BYTES_REQ_VALUE, bytesReqValue);
+        Assert.assertArrayEquals(TEST_BYTES_REQ_VALUE, bytesReqValue);
 
         String message = request.getMessage();
         Assert.assertEquals(TEST_MESSAGE, message);

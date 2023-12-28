@@ -87,14 +87,15 @@ public class HttpConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
             throw TRpcException.newBizException(statusCode,
                     httpResponse.getStatusLine().getReasonPhrase());
         }
-        //handle http header
-        //Parse the data passed through from the server to the client.
+        // handle http header
+        // Parse the data passed through from the server to the client.
+        // In the tRPC protocol, the value of the attachment is stored and used as a byte array to maintain consistency.
         Map<String, Object> respAttachments = new HashMap<>();
         for (Header header : httpResponse.getAllHeaders()) {
             String name = header.getName();
             for (HeaderElement element : header.getElements()) {
                 String value = element.getName();
-                respAttachments.put(name, value);
+                respAttachments.put(name, value.getBytes(StandardCharsets.UTF_8));
             }
         }
 

@@ -26,6 +26,7 @@ import com.tencent.trpc.core.rpc.Request;
 import com.tencent.trpc.core.rpc.Response;
 import com.tencent.trpc.core.utils.RpcUtils;
 import com.tencent.trpc.proto.http.common.HttpConstants;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -94,11 +95,12 @@ public class Http2ConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
         }
         // handle http header
         // Parse the data passed through from the server to the client.
+        // In the tRPC protocol, the value of the attachment is stored and used as a byte array to maintain consistency.
         Map<String, Object> respAttachments = new HashMap<>();
         for (Header header : simpleHttpResponse.getHeaders()) {
             String name = header.getName();
             String value = header.getValue();
-            respAttachments.put(name, value);
+            respAttachments.put(name, value.getBytes(StandardCharsets.UTF_8));
         }
 
         Header contentLengthHdr = simpleHttpResponse.getFirstHeader(HttpHeaders.CONTENT_LENGTH);
@@ -202,7 +204,7 @@ public class Http2ConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
         if (jsonString != null) {
             simpleHttpRequest.setBody(jsonString, ContentType.APPLICATION_JSON);
         }
-        // set custom business headers, consistent with the TRPC protocol, only process String and byte[]
+        // Set custom business headers, consistent with the TRPC protocol, only process String and byte[]
         request.getAttachments().forEach((k, v) -> {
             if (Objects.equal(k, HttpHeaders.TRANSFER_ENCODING) || Objects.equal(k, HttpHeaders.CONTENT_LENGTH)) {
                 return;
