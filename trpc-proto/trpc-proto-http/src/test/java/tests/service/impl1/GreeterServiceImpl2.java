@@ -11,8 +11,18 @@
 
 package tests.service.impl1;
 
+import static com.tencent.trpc.proto.http.constant.Constant.TEST_BYTES_REQ_KEY;
+import static com.tencent.trpc.proto.http.constant.Constant.TEST_BYTES_REQ_VALUE;
+import static com.tencent.trpc.proto.http.constant.Constant.TEST_BYTES_RSP_KEY;
+import static com.tencent.trpc.proto.http.constant.Constant.TEST_BYTES_RSP_VALUE;
+import static com.tencent.trpc.proto.http.constant.Constant.TEST_MESSAGE;
+import static com.tencent.trpc.proto.http.constant.Constant.TEST_RSP_MESSAGE;
+import static com.tencent.trpc.proto.http.constant.Constant.TEST_STRING_REQ_KEY;
+import static com.tencent.trpc.proto.http.constant.Constant.TEST_STRING_REQ_VALUE;
+import static com.tencent.trpc.proto.http.constant.Constant.TEST_STRING_RSP_KEY;
+import static com.tencent.trpc.proto.http.constant.Constant.TEST_STRING_RSP_VALUE;
+
 import com.tencent.trpc.core.rpc.RpcContext;
-import java.nio.charset.StandardCharsets;
 import org.junit.Assert;
 import tests.service.GreeterService;
 import tests.service.HelloRequestProtocol;
@@ -21,22 +31,20 @@ import tests.service.TestBeanConvertWithGetMethodRsp;
 
 public class GreeterServiceImpl2 implements GreeterService {
 
-    private static final String TRANSPARENT_TRANSMISSION_KEY = "name";
-    private static final String TRANSPARENT_TRANSMISSION_VALUE = "zhangsan";
-
-    private static final String TRANSPARENT_TRANSMISSION_RES_KEY = "code";
-    private static final String TRANSPARENT_TRANSMISSION_RES_VALUE = "2012";
-
     @Override
     public HelloRequestProtocol.HelloResponse sayHello(RpcContext context, HelloRequestProtocol.HelloRequest request) {
-        byte[] name = (byte[]) context.getReqAttachMap().get(TRANSPARENT_TRANSMISSION_KEY);
-        String str = new String(name, StandardCharsets.UTF_8);
+        String stringReqValue = (String) context.getReqAttachMap().get(TEST_STRING_REQ_KEY);
+        Assert.assertEquals(stringReqValue, TEST_STRING_REQ_VALUE);
 
-        Assert.assertEquals(str, TRANSPARENT_TRANSMISSION_VALUE);
+        byte[] bytesReqValue = (byte[]) context.getReqAttachMap().get(TEST_BYTES_REQ_KEY);
+        Assert.assertEquals(TEST_BYTES_REQ_VALUE, bytesReqValue);
+
         String message = request.getMessage();
+        Assert.assertEquals(TEST_MESSAGE, message);
 
-        context.getRspAttachMap().put(TRANSPARENT_TRANSMISSION_RES_KEY, TRANSPARENT_TRANSMISSION_RES_VALUE);
-        return HelloRequestProtocol.HelloResponse.newBuilder().setMessage("hello " + str).build();
+        context.getRspAttachMap().put(TEST_BYTES_RSP_KEY, TEST_BYTES_RSP_VALUE);
+        context.getRspAttachMap().put(TEST_STRING_RSP_KEY, TEST_STRING_RSP_VALUE);
+        return HelloRequestProtocol.HelloResponse.newBuilder().setMessage(TEST_RSP_MESSAGE).build();
     }
 
     @Override
