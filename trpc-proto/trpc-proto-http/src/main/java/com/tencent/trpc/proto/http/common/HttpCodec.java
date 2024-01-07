@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -17,18 +17,9 @@ import com.tencent.trpc.core.rpc.Response;
 import com.tencent.trpc.core.serialization.spi.Serialization;
 import com.tencent.trpc.core.serialization.support.JSONSerialization;
 import com.tencent.trpc.core.serialization.support.PBSerialization;
-import com.tencent.trpc.core.utils.JsonUtils;
 import com.tencent.trpc.core.utils.ProtoJsonConverter;
 import com.tencent.trpc.proto.http.util.StreamUtils;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.http.HttpHeaders;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -36,8 +27,8 @@ import java.util.Map;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.http.HttpHeaders;
-import org.springframework.cglib.beans.BeanMap;
 
 /**
  * HTTP encoding and decoding utility class, also used in the Spring MVC module.
@@ -216,13 +207,29 @@ public class HttpCodec {
                 data = jsonSerialization.serialize(value);
             }
         }
-
+        // Encapsulate the data passed through from the server to the client in the HTTP response header.
+        fillResponseHeaderWithAttachments(response, result);
         if (data != null) {
             response.setHeader(HttpHeaders.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_JSON);
             response.setContentLength(data.length);
             ServletOutputStream os = response.getOutputStream();
             os.write(data);
         }
+    }
+
+    private void fillResponseHeaderWithAttachments(HttpServletResponse response, Response result) throws IOException {
+        Map<String, Object> attachments = result.getAttachments();
+        if (attachments == null || attachments.isEmpty()) {
+            return;
+        }
+        // Set custom business headers, consistent with the TRPC protocol, only process String and byte[]
+        attachments.forEach((name, value) -> {
+            if (value instanceof String) {
+                response.setHeader(name, String.valueOf(value));
+            } else if (value instanceof byte[]) {
+                response.setHeader(name, new String((byte[]) value));
+            }
+        });
     }
 
 }

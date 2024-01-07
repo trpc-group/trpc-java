@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -15,6 +15,7 @@ package com.tencent.trpc.proto.http.client;
 import static com.tencent.trpc.core.common.Constants.DEFAULT_CLIENT_REQUEST_TIMEOUT_MS;
 import static com.tencent.trpc.proto.http.common.HttpConstants.CONNECTION_REQUEST_TIMEOUT;
 
+import autovalue.shaded.com.google.common.common.base.Objects;
 import com.tencent.trpc.core.common.config.BackendConfig;
 import com.tencent.trpc.core.common.config.ConsumerConfig;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
@@ -25,6 +26,9 @@ import com.tencent.trpc.core.rpc.Request;
 import com.tencent.trpc.core.rpc.Response;
 import com.tencent.trpc.core.utils.RpcUtils;
 import com.tencent.trpc.proto.http.common.HttpConstants;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
@@ -89,6 +93,15 @@ public class Http2ConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
             throw TRpcException
                     .newBizException(statusCode, simpleHttpResponse.getReasonPhrase());
         }
+        // handle http header
+        // Parse the data passed through from the server to the client.
+        // In the tRPC protocol, the value of the attachment is stored and used as a byte array to maintain consistency.
+        Map<String, Object> respAttachments = new HashMap<>();
+        for (Header header : simpleHttpResponse.getHeaders()) {
+            String name = header.getName();
+            String value = header.getValue();
+            respAttachments.put(name, value.getBytes(StandardCharsets.UTF_8));
+        }
 
         Header contentLengthHdr = simpleHttpResponse.getFirstHeader(HttpHeaders.CONTENT_LENGTH);
         if (contentLengthHdr != null) {
@@ -97,7 +110,9 @@ public class Http2ConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
             // but other HTTP implementations may not return it. Therefore,
             // no strict validation is performed here.
             if (contentLength == 0) {
-                return RpcUtils.newResponse(request, null, null);
+                Response response = RpcUtils.newResponse(request, null, null);
+                response.setAttachments(respAttachments);
+                return response;
             }
         }
 
@@ -106,7 +121,9 @@ public class Http2ConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
                 request.getInvocation().getRpcMethodInfo().getActualReturnType(),
                 simpleHttpResponse.getBodyText());
 
-        return RpcUtils.newResponse(request, value, null);
+        Response response = RpcUtils.newResponse(request, value, null);
+        response.setAttachments(respAttachments);
+        return response;
     }
 
     /**
@@ -187,6 +204,17 @@ public class Http2ConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
         if (jsonString != null) {
             simpleHttpRequest.setBody(jsonString, ContentType.APPLICATION_JSON);
         }
+        // Set custom business headers, consistent with the TRPC protocol, only process String and byte[]
+        request.getAttachments().forEach((k, v) -> {
+            if (Objects.equal(k, HttpHeaders.TRANSFER_ENCODING) || Objects.equal(k, HttpHeaders.CONTENT_LENGTH)) {
+                return;
+            }
+            if (v instanceof String) {
+                simpleHttpRequest.setHeader(k, String.valueOf(v));
+            } else if (v instanceof byte[]) {
+                simpleHttpRequest.setHeader(k, new String((byte[]) v));
+            }
+        });
         return simpleHttpRequest;
     }
 
