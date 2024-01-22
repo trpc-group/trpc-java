@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -28,8 +28,8 @@ import java.util.function.Predicate;
 
 /**
  * Implementation of {@link TRpcConfigManagerCustomizer} that allow user to config tRPC filters programmatically.
- * <p>Equivalent to the {@code trpc.server.filters} and {@code trpc.client.filters} configuration in trpc.yaml.
- * <p>Example:
+ * <p>Equivalent to the {@code trpc.server.filters} and {@code trpc.client.filters} configuration in trpc.yaml.</p>
+ * <p>Example:</p>
  * <pre>
  *    {@literal @}Configuration
  *     public class BizConfiguration {

@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -163,8 +163,8 @@ public class TrpcMDCAdapter implements MDCAdapter {
     /**
      * Remove duplicate Map parameters and lock the oldMap to avoid being modified by other threads.
      *
-     * @param oldMap oldMap<String, String>
-     * @return Map Map<String, String>
+     * @param oldMap {@code Map<String, String>}
+     * @return Map {@code Map<String, String>}
      */
     private Map<String, String> duplicateAndInsertNewMap(Map<String, String> oldMap) {
         Map<String, String> newMap = new ConcurrentHashMap<>();

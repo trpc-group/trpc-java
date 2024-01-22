@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -78,23 +78,7 @@ public class RpcStatsServiceDto extends RPCStatsCommonDto {
      * Init configuration
      */
     public RpcStatsServiceDto(WorkerPool workerPool) {
-
-        this.workerPool = workerPool;
-
-        this.connectionCount = getThreadPoolMXBean() == null ? getForkJoinPoolMXBean() == null ? 0
-                : getForkJoinPoolMXBean().getPoolSize()
-                : getThreadPoolMXBean().getPoolSize();
-
-        this.reqTotal = getThreadPoolMXBean() == null ? getForkJoinPoolMXBean() == null ? 0
-                : getForkJoinPoolMXBean().getQueuedSubmissionCount()
-                : getThreadPoolMXBean().getCompletedTaskCount();
-
-        this.reqActive = getThreadPoolMXBean() == null ? getForkJoinPoolMXBean() == null ? 0
-                : getForkJoinPoolMXBean().getActiveThreadCount()
-                : getThreadPoolMXBean().getActiveThreadCount();
-
-        this.errorTotal = ((TrpcThreadExceptionHandler) getWorkerPool()
-                .getUncaughtExceptionHandler()).getErrorCount();
+        super(workerPool);
 
         this.businessError = ((TrpcThreadExceptionHandler) getWorkerPool()
                 .getUncaughtExceptionHandler())

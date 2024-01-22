@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Default implementation of {@link ExceptionResultTransformer}.
- * <p>Marshal result Object to json, then unmarshal it to targetType.
+ * <p>Marshal result Object to json, then unmarshal it to targetType.</p>
  * targetType should extend {@link Message} or is a POJO class
  *
  * @see ProtoJsonConverter

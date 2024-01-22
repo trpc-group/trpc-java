@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -12,7 +12,6 @@
 package com.tencent.trpc.admin.dto.rpc;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.tencent.trpc.core.worker.handler.TrpcThreadExceptionHandler;
 import com.tencent.trpc.core.worker.spi.WorkerPool;
 import java.math.BigDecimal;
 
@@ -40,22 +39,7 @@ public class RpcStatsClientDto extends RPCStatsCommonDto {
      * init configuration
      */
     public RpcStatsClientDto(WorkerPool workerPool) {
-        this.workerPool = workerPool;
-
-        this.connectionCount = getThreadPoolMXBean() == null ? getForkJoinPoolMXBean() == null ? 0
-                : getForkJoinPoolMXBean().getPoolSize()
-                : getThreadPoolMXBean().getPoolSize();
-
-        this.reqTotal = getThreadPoolMXBean() == null ? getForkJoinPoolMXBean() == null ? 0
-                : getForkJoinPoolMXBean().getQueuedSubmissionCount()
-                : getThreadPoolMXBean().getCompletedTaskCount();
-
-        this.reqActive = getThreadPoolMXBean() == null ? getForkJoinPoolMXBean() == null ? 0
-                : getForkJoinPoolMXBean().getActiveThreadCount()
-                : getThreadPoolMXBean().getActiveThreadCount();
-
-        this.errorTotal = ((TrpcThreadExceptionHandler) getWorkerPool()
-                .getUncaughtExceptionHandler()).getErrorCount();
+        super(workerPool);
     }
 
     public BigDecimal getLatency99() {

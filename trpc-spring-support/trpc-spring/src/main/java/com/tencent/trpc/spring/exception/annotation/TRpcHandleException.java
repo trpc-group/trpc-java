@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 /**
  * Indicates that exception thrown by annotated method(or methods of annotated class)
  * should be handled by {@link ExceptionHandler}s(or {@link TRpcExceptionHandler} annotated methods).
- * <p>Should be used on {@link TRpcService} classes or {@link TRpcMethod} methods.
+ * <p>Should be used on {@link TRpcService} classes or {@link TRpcMethod} methods.</p>
  *
  * Example:
  * <pre class="code">

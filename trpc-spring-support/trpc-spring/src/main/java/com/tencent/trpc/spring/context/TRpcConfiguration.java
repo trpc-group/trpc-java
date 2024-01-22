@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -40,7 +40,7 @@ public class TRpcConfiguration {
     /**
      * Build {@link TRpcConfigManagerInitializer}.
      * <p>Users could implement {@link TRpcConfigManagerCustomizer} and
-     * register it as bean to customize {@link com.tencent.trpc.core.common.ConfigManager}
+     * register it as bean to customize {@link com.tencent.trpc.core.common.ConfigManager}</p>
      *
      * @param customizerProvider implementations of {@link TRpcConfigManagerCustomizer}, if any
      * @return TRpcConfigManagerInitializer

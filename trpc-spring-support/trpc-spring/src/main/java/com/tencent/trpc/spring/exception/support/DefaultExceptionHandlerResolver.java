@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -23,7 +23,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Default implementation of tRPC {@link ExceptionHandlerResolver}.
- * <p>Resolve ExceptionHandler by scan methods annotated with {@link TRpcExceptionHandler}, in order of:
+ * <p>Resolve ExceptionHandler by scan methods annotated with {@link TRpcExceptionHandler}, in order of:</p>
  * <ol>
  *     <li>scan annotated methods in target bean</li>
  *     <li>scan annotated methods in {@link Configuration}

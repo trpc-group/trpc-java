@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -23,7 +23,7 @@ import org.springframework.util.function.SingletonSupplier;
 /**
  * Abstract base class for tRPC service advisors.
  * <p>Provides built-in pointcut to methods annotated with {@link TRpcMethod}
- * in classes annotated with {@link TRpcService}.
+ * in classes annotated with {@link TRpcService}.</p>
  * Subclasses can provide additional pointcut by implementing {@link #getExtraPointcut}
  *
  * @see TRpcService
