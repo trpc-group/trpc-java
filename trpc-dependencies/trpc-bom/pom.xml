@@ -111,11 +111,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <artifactId>trpc-stat-runtime</artifactId>
-                <groupId>com.tencent.trpc</groupId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <artifactId>trpc-registry-consul</artifactId>
                 <groupId>com.tencent.trpc</groupId>
                 <version>${project.version}</version>
