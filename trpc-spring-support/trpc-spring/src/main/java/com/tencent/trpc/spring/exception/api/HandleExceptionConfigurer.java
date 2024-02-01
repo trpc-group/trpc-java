@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -15,7 +15,7 @@ package com.tencent.trpc.spring.exception.api;
  * Implement this interface to provide customize {@link ExceptionResultTransformer}
  * and {@link ExceptionHandlerResolver}
  *
- * <p>Example:
+ * <p>Example:</p>
  * <pre class="code">
  * &#064;Configuration
  * &#064;EnableTRpcHandleException

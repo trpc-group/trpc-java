@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -66,7 +66,7 @@ public abstract class AbstractInvocableExceptionHandlerResolver implements Excep
     /**
      * Set allowOverrideExceptionHandler, if true, allow bind multiple handlers
      * to same exception type. But only one of them takes effect.
-     * <p>Default to false
+     * <p>Default to false</p>
      *
      * @param allowOverrideExceptionHandler true or false
      */
