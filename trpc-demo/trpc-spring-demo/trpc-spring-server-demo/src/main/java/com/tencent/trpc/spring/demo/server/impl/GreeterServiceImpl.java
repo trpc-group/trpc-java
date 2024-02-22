@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -26,11 +26,11 @@ public class GreeterServiceImpl implements GreeterServiceAPI {
 
     @Override
     public HelloRequestProtocol.HelloResponse sayHello(RpcContext context, HelloRequestProtocol.HelloRequest request) {
-        logger.error(">>>[server]receive msg:{}", TextFormat.shortDebugString(request));
+        logger.info(">>>[server]receive msg:{}", TextFormat.shortDebugString(request));
         String message = request.getMessage();
         HelloRequestProtocol.HelloResponse.Builder rspBuilder = HelloRequestProtocol.HelloResponse.newBuilder();
         rspBuilder.setMessage("Hello " + message);
-        logger.error(">>>[server]return msg:{}", TextFormat.shortDebugString(rspBuilder));
+        logger.info(">>>[server]return msg:{}", TextFormat.shortDebugString(rspBuilder));
         return rspBuilder.build();
     }
 
