@@ -196,6 +196,11 @@ public class Constants {
     public static final String CONTAINER_NAME = "container_name";
 
     /**
+     * Enable trpcmdcadapter
+     */
+    public static final String ENABLE_TRPCMDCADAPTER = "enable_trpcmdcadapter";
+
+    /**
      * Environment name registered to Polaris
      */
     public static final String POLARIS_ENV = "env";
