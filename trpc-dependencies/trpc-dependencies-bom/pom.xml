@@ -83,7 +83,7 @@
         <opentelemetry.bom.alpha.version>1.26.0-alpha</opentelemetry.bom.alpha.version>
         <opentelemetry.bom.version>1.26.0</opentelemetry.bom.version>
         <okio.version>3.4.0</okio.version>
-        <polaris.open.version>1.15.3-SNAPSHOT</polaris.open.version>
+        <polaris.open.version>1.15.3</polaris.open.version>
         <powermock.version>1.7.4</powermock.version>
         <protobuf-bom.version>3.21.9</protobuf-bom.version>
         <pgv.version>0.4.1</pgv.version>
