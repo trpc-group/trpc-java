@@ -10,7 +10,7 @@
     </parent>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
-    <artifactId>trpc-configcenter-polaris</artifactId>
+    <artifactId>trpc-configcenter-open-polaris</artifactId>
 
     <dependencies>
         <dependency>
