@@ -26,7 +26,7 @@
         </dependency>
         <dependency>
             <groupId>com.tencent.polaris</groupId>
-            <artifactId>polaris-factory</artifactId>
+            <artifactId>polaris-all</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>org.yaml</groupId>
@@ -37,6 +37,10 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tencent.trpc</groupId>
+            <artifactId>trpc-proto-http</artifactId>
         </dependency>
     </dependencies>
 </project>

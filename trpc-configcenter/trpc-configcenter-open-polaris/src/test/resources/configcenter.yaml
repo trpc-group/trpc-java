@@ -1,0 +1,9 @@
+namespace: xxx
+serverAddrs:
+  - 127.0.0.1
+token: 123
+timeout: 5000
+confgis:
+  - group: group
+    files:
+      - application.properties

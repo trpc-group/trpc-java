@@ -33,7 +33,7 @@
         </dependency>
         <dependency>
             <groupId>com.tencent.polaris</groupId>
-            <artifactId>polaris-factory</artifactId>
+            <artifactId>polaris-all</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

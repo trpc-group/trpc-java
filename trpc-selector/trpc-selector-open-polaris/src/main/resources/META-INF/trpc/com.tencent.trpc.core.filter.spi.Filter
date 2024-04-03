@@ -1,0 +1,2 @@
+polaris_client=com.tencent.trpc.filter.polaris.PolarisClientFilter
+polaris_server=com.tencent.trpc.filter.polaris.PolarisServerFilter
