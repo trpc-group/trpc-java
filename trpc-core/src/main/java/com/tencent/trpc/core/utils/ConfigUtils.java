@@ -6,6 +6,7 @@ import com.tencent.trpc.core.common.config.constant.ConfigConstants;
 import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.io.FileInputStream;
 import java.util.Map;
@@ -30,12 +31,14 @@ public class ConfigUtils {
      */
     public static GlobalConfig loadGlobalConfig() {
         String confPath = TRpcSystemProperties.getProperties(TRpcSystemProperties.CONFIG_PATH);
-        Map<String, Object> config;
+        Map<String, Object> config = null;
         try {
             if (StringUtils.isEmpty(confPath)) {
                 logger.warn("warning!!, not set properties [" + TRpcSystemProperties.CONFIG_PATH
                         + "], we will use classpath:" + DEFAULT_YAML_CONFIG_FILE_NAME + "");
-                config = (Map<String, Object>) YamlParser.parseAsFromClassPath(DEFAULT_YAML_CONFIG_FILE_NAME, Map.class).get(ConfigConstants.GLOBAL);
+                if (ObjectUtils.isNotEmpty(YamlParser.class.getClassLoader().getResourceAsStream(DEFAULT_YAML_CONFIG_FILE_NAME))){
+                    config = (Map<String, Object>) YamlParser.parseAsFromClassPath(DEFAULT_YAML_CONFIG_FILE_NAME, Map.class).get(ConfigConstants.GLOBAL);
+                }
             } else {
                 config = (Map<String, Object>) YamlParser.parseAs(new FileInputStream(confPath), Map.class).get(ConfigConstants.GLOBAL);
             }
