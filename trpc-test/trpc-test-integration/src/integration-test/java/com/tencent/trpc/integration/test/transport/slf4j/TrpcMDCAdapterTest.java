@@ -11,7 +11,11 @@
 
 package com.tencent.trpc.integration.test.transport.slf4j;
 
+import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.integration.test.TrpcServerApplication;
+import com.tencent.trpc.integration.test.stub.EchoAPI;
+import com.tencent.trpc.integration.test.stub.EchoService;
+import com.tencent.trpc.spring.annotation.TRpcClient;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,22 +28,33 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TrpcServerApplication.class)
 @ActiveProfiles("transport")
 public class TrpcMDCAdapterTest {
 
+    @TRpcClient(id = "http-client-7072")
+    private EchoAPI http7072EchoAPI;
+
+    @TRpcClient(id = "http-client-7073")
+    private EchoAPI http7073EchoAPI;
+
+    /**
+     * Test for testTrpcMDCAdapter
+     */
     @Test
     public void testTrpcMDCAdapter() {
-        TrpcMDCAdapter test = new TrpcMDCAdapter();
-        MDCAdapter adapter = TrpcMDCAdapter.init();
-        adapter.put("traceId", "test");
-        adapter.get("traceId");
-        adapter.remove("traceId");
-        adapter.clear();
-        Map<String, String> contextMap = new HashMap<>();
-        adapter.setContextMap(contextMap);
-        adapter.getCopyOfContextMap();
-        Assert.assertNotNull(adapter);
+
+            String message = "http-hello";
+            EchoService.EchoResponse response = http7072EchoAPI.echo(new RpcClientContext(), EchoService.EchoRequest.newBuilder()
+                    .setMessage(message)
+                    .build());
+            assertEquals(message, response.getMessage());
+            response = http7073EchoAPI.echo(new RpcClientContext(), EchoService.EchoRequest.newBuilder()
+                    .setMessage(message)
+                    .build());
+            assertEquals(message, response.getMessage());
     }
 }
