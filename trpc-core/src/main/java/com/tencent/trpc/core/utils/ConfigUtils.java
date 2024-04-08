@@ -5,6 +5,7 @@ import com.tencent.trpc.core.common.config.GlobalConfig;
 import com.tencent.trpc.core.common.config.constant.ConfigConstants;
 import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
+import org.apache.commons.collections4.MapUtils;
 
 import java.io.FileInputStream;
 import java.util.Map;
@@ -42,9 +43,11 @@ public class ConfigUtils {
             throw new RuntimeException(e);
         }
         GlobalConfig globalConfig = new GlobalConfig();
-        BinderUtils.bind(globalConfig, config);
-        BinderUtils.bind(BinderUtils.UNDERSCORES_TO_UPPERCASE, globalConfig, config,
-                ConfigConstants.ENABLE_SET, o -> "Y".equalsIgnoreCase(String.valueOf(o)));
+        if(MapUtils.isNotEmpty(config)){
+            BinderUtils.bind(globalConfig, config);
+            BinderUtils.bind(BinderUtils.UNDERSCORES_TO_UPPERCASE, globalConfig, config,
+                    ConfigConstants.ENABLE_SET, o -> "Y".equalsIgnoreCase(String.valueOf(o)));
+        }
         return globalConfig;
     }
 }

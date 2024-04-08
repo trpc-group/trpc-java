@@ -1,0 +1,8 @@
+global: #全局配置
+    namespace: test_namespace                                                                                            #环境类型，分正式环境和非正式环境两种类型
+    env_name: test_env_name                                                                                             #环境名称，非正式环境下多环境的名称
+    container_name: test_container_name                                                                                 #节点容器名
+    enable_set: Y
+    full_set_name: a.b.c                                   #set分组信息
+    ext:
+      enable_trpcmdcadapter: true                               #是否启用trpcmdcadapter
