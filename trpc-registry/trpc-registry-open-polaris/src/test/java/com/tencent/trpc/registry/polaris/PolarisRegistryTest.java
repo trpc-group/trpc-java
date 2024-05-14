@@ -17,6 +17,8 @@ import static org.mockito.Matchers.anyObject;
 
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
+import com.tencent.polaris.api.plugin.server.ReportServiceContractRequest;
+import com.tencent.polaris.api.plugin.server.ReportServiceContractResponse;
 import com.tencent.polaris.api.rpc.InstanceDeregisterRequest;
 import com.tencent.polaris.api.rpc.InstanceHeartbeatRequest;
 import com.tencent.polaris.api.rpc.InstanceRegisterRequest;
@@ -85,6 +87,11 @@ public class PolarisRegistryTest extends TestCase {
                     public void heartbeat(InstanceHeartbeatRequest instanceHeartbeatRequest)
                             throws PolarisException {
                         Assert.assertEquals("101", instanceHeartbeatRequest.getInstanceID());
+                    }
+
+                    @Override
+                    public ReportServiceContractResponse reportServiceContract(ReportServiceContractRequest reportServiceContractRequest) throws PolarisException {
+                        return null;
                     }
 
                     @Override
