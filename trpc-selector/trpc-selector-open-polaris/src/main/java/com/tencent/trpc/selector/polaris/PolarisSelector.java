@@ -342,7 +342,7 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
     private static MetadataContext buildCalleeMetadataManager(Request request) {
         MetadataContext manager = RpcContextUtils.getValueMapValue(request.getContext(), PolarisConstant.RPC_CONTEXT_POALRIS_METADATA);
         if (Objects.isNull(manager)) {
-            manager = new MetadataContext(MetadataContext.DEFAULT_TRANSITIVE_PREFIX, true);
+            manager = new MetadataContext(MetadataContext.DEFAULT_TRANSITIVE_PREFIX);
             RpcContextUtils.putValueMapValue(request.getContext(), PolarisConstant.RPC_CONTEXT_POALRIS_METADATA, manager);
         }
         MetadataContainerImpl calleeContainer = manager.getMetadataContainer(MetadataType.MESSAGE, false);
