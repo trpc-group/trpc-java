@@ -33,7 +33,7 @@ public class PolarisContextUtil {
      * @param metadataContext {@link MetadataContext}
      * @param context {@link RpcClientContext}
      */
-    public static void putRpcContext(MetadataContext metadataContext, RpcClientContext context) {
+    public static void putRpcContext(RpcClientContext context, MetadataContext metadataContext) {
         RpcContextUtils.putValueMapValue(context, PolarisConstant.RPC_CONTEXT_POALRIS_METADATA, metadataContext);
     }
 
@@ -44,7 +44,7 @@ public class PolarisContextUtil {
      * @param metadataContext {@link MetadataContext}
      * @param request {@link Request}
      */
-    public static void putAttachValue(MetadataContext metadataContext, Request request) {
+    public static void putAttachValue(Request request, MetadataContext metadataContext) {
 
         MessageMetadataContainer callerContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, true);
         Map<String, String> transitiveHeaders = new HashMap<>(callerContainer.getTransitiveHeaders());
@@ -62,7 +62,7 @@ public class PolarisContextUtil {
      * @param request {@link Request}
      * @return {@link MetadataContext}
      */
-    public static MetadataContext getRpcContext(Request request) {
+    public static MetadataContext getMetadataContext(Request request) {
         String metadataValue = RpcContextUtils.getRequestAttachValue(request.getContext(), PolarisConstant.RPC_CONTEXT_TRANSITIVE_METADATA);
         if (StringUtils.isEmpty(metadataValue)) {
             metadataValue = new String((byte[]) request.getAttachment(PolarisConstant.RPC_CONTEXT_TRANSITIVE_METADATA));

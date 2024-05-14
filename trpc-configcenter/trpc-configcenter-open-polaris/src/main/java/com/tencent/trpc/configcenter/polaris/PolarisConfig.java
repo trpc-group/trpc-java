@@ -31,7 +31,7 @@ public class PolarisConfig {
 
     public static final String POLARIS_TIMEOUT_KEY = "timeout";
 
-    public static final String POLARIS_TOKen_KEY = "token";
+    public static final String POLARIS_TOKEN_KEY = "token";
 
     public static final String POLARIS_GROUP_KEY = "group";
 
@@ -64,7 +64,7 @@ public class PolarisConfig {
                 "Polaris plugin config, wrong value type for key [polaris.configs], expected: List<Map>");
         configs = ((List<?>) configList).stream().map(this::buildConfig).collect(Collectors.toList());
         timeout = MapUtils.getLong(polarisProperties, POLARIS_TIMEOUT_KEY, DEFAULT_READ_TIMEOUT);
-        token = MapUtils.getString(polarisProperties, POLARIS_TOKen_KEY);
+        token = MapUtils.getString(polarisProperties, POLARIS_TOKEN_KEY);
     }
 
     @SuppressWarnings("unchecked")

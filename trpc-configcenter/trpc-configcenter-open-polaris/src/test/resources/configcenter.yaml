@@ -3,7 +3,7 @@ serverAddrs:
   - 127.0.0.1
 token: 123
 timeout: 5000
-confgis:
+configs:
   - group: group
     files:
       - application.properties

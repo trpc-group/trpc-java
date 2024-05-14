@@ -80,6 +80,8 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
 
     public static final String NAME = "polaris";
 
+    private static final String FIELD_NAME_HEADERS = "headers";
+
     private static final Logger logger = LoggerFactory.getLogger(PolarisSelector.class);
 
     private static final LoadBalancer loadBalancer = new WeightedRandomBalance();
@@ -344,51 +346,62 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
             RpcContextUtils.putValueMapValue(request.getContext(), PolarisConstant.RPC_CONTEXT_POALRIS_METADATA, manager);
         }
         MetadataContainerImpl calleeContainer = manager.getMetadataContainer(MetadataType.MESSAGE, false);
-        calleeContainer.setMetadataProvider(new MetadataProvider() {
-            @Override
-            public String getRawMetadataStringValue(String key) {
-                key = key.toLowerCase();
-                switch (key) {
-                    case MessageMetadataContainer.LABEL_KEY_CALLER_IP:
-                        return request.getMeta().getRemoteAddress().getHostName();
-                    case MessageMetadataContainer.LABEL_KEY_METHOD:
-                        return request.getMeta().getCallInfo().getCalleeMethod();
-                    case MessageMetadataContainer.LABEL_KEY_PATH:
-                        return request.getInvocation().getRpcMethodInfo().getServiceInterface().getCanonicalName();
-                }
-                return null;
-            }
-
-            @Override
-            public String getRawMetadataMapValue(String key, String mapKey) {
-                key = key.toLowerCase();
-                if (key.equals(MessageMetadataContainer.LABEL_MAP_KEY_HEADER)) {
-                    Map<String, Object> attach = request.getContext().getReqAttachMap();
-                    if (attach.containsKey("headers")) {
-                        // processing scg scenes
-                        Object springHeaders = attach.get("headers");
-                        try {
-                            Method method = springHeaders.getClass().getMethod("getFirst");
-                            Object val = method.invoke(springHeaders, mapKey);
-                            return val == null ? null : String.valueOf(val);
-                        } catch (Exception e) {
-                            logger.error("[selector] get raw metadata from tRPC context fail, key:{}", mapKey, e);
-                            return null;
-                        }
-                    }
-                    if (attach.containsKey(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST)) {
-                        // processing tRPC http protocol
-                        HttpServletRequest servletRequest = (HttpServletRequest) attach.get(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST);
-                        return servletRequest.getHeader(mapKey);
-                    }
-
-                    Object val = attach.get(mapKey);
-                    return val == null ? null : String.valueOf(val);
-                }
-                return null;
-            }
-        });
+        calleeContainer.setMetadataProvider(new RequestMetadataProvider(request));
         RpcContextUtils.putValueMapValue(request.getContext(), PolarisConstant.RPC_CONTEXT_POALRIS_METADATA, manager);
         return manager;
+    }
+
+    private static class RequestMetadataProvider implements MetadataProvider {
+
+        private final Request request;
+
+        private RequestMetadataProvider(Request request) {
+            this.request = request;
+        }
+
+        @Override
+        public String getRawMetadataStringValue(String key) {
+            key = key.toLowerCase();
+            switch (key) {
+                case MessageMetadataContainer.LABEL_KEY_CALLER_IP:
+                    return request.getMeta().getRemoteAddress().getHostName();
+                case MessageMetadataContainer.LABEL_KEY_METHOD:
+                    return request.getMeta().getCallInfo().getCalleeMethod();
+                case MessageMetadataContainer.LABEL_KEY_PATH:
+                    return request.getInvocation().getRpcMethodInfo().getServiceInterface().getCanonicalName();
+            }
+            return null;
+        }
+
+        @Override
+        public String getRawMetadataMapValue(String key, String mapKey) {
+            key = key.toLowerCase();
+            if (key.equals(MessageMetadataContainer.LABEL_MAP_KEY_HEADER)) {
+                Map<String, Object> attach = request.getContext().getReqAttachMap();
+                if (attach.containsKey(FIELD_NAME_HEADERS)) {
+                    // processing scg scenes
+                    // springHeaders define {@link org.springframework.http.HttpHeaders}
+                    Object springHeaders = attach.get(FIELD_NAME_HEADERS);
+                    try {
+                        // public String getFirst(String headerName)
+                        Method method = springHeaders.getClass().getMethod("getFirst");
+                        Object val = method.invoke(springHeaders, mapKey);
+                        return val == null ? null : (String) val;
+                    } catch (Exception e) {
+                        logger.error("[selector] get raw metadata from tRPC context fail, key:{}", mapKey, e);
+                        return null;
+                    }
+                }
+                if (attach.containsKey(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST)) {
+                    // processing tRPC http protocol
+                    HttpServletRequest servletRequest = (HttpServletRequest) attach.get(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST);
+                    return servletRequest.getHeader(mapKey);
+                }
+
+                Object val = attach.get(mapKey);
+                return val == null ? null : String.valueOf(val);
+            }
+            return null;
+        }
     }
 }

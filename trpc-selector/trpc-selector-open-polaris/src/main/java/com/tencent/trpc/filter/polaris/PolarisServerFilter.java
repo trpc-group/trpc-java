@@ -31,7 +31,7 @@ public class PolarisServerFilter implements Filter {
 
     @Override
     public CompletionStage<Response> filter(Invoker<?> filterChain, Request req) {
-        MetadataContext metadataContext = PolarisContextUtil.getRpcContext(req);
+        MetadataContext metadataContext = PolarisContextUtil.getMetadataContext(req);
         RpcContextUtils.putValueMapValue(req.getContext(), PolarisConstant.RPC_CONTEXT_POALRIS_METADATA, metadataContext);
         return filterChain.invoke(req);
     }
