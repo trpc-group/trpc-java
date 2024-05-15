@@ -31,7 +31,6 @@ jobs:
         uses: dbelyaev/action-checkstyle@v1.11.0
         with:
           reporter: github-pr-review
-          level: warning
       - name: Test with Maven
         run: mvn clean install -B -U --file pom.xml
       - name: Upload coverage reports to Codecov
