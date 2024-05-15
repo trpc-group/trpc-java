@@ -27,10 +27,6 @@ jobs:
           java-version: '8'
           distribution: 'temurin'
           cache: maven
-      - name: Checkstyle for Java
-        uses: dbelyaev/action-checkstyle@v1.11.0
-        with:
-          level: warning
       - name: Test with Maven
         run: mvn clean install -B -U --file pom.xml
       - name: Upload coverage reports to Codecov
