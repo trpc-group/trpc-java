@@ -71,13 +71,14 @@ public class LogbackLoggerProcessUnitTest {
     private void addLoggerToUnit() {
         try {
             Class<?> loggerClass = Class.forName("ch.qos.logback.classic.Logger");
-            Constructor<?> constructor = loggerClass.getDeclaredConstructor(String.class, Logger.class, LoggerContext.class);
+            Constructor<?> constructor = loggerClass.getDeclaredConstructor(String.class, Logger.class,
+                    LoggerContext.class);
             constructor.setAccessible(true);
             Logger logger = (Logger) constructor.newInstance("logger", null, new LoggerContext());
             logger.setLevel(Level.ALL);
             logbackLoggerProcessUnit.addLogger("logger", logger);
-        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
-                 InvocationTargetException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException
+                 | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
