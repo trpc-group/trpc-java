@@ -21,11 +21,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+@RunWith(PowerMockRunner.class)
 public class LogbackLoggerProcessUnitTest {
 
     @Rule
@@ -44,6 +50,14 @@ public class LogbackLoggerProcessUnitTest {
     public void testInit() {
         expectedEx.expect(ClassCastException.class);
         expectedEx.expectMessage("cannot be cast");
+        logbackLoggerProcessUnit.init();
+    }
+
+    @Test
+    @PrepareForTest({LoggerFactory.class})
+    public void testInitSuccess() {
+        PowerMockito.mockStatic(LoggerFactory.class);
+        PowerMockito.when(LoggerFactory.getILoggerFactory()).thenReturn(new LoggerContext());
         logbackLoggerProcessUnit.init();
     }
 
