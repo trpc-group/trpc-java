@@ -11,11 +11,14 @@
 
 package com.tencent.trpc.configcenter.nacos;
 
+import com.alibaba.nacos.api.config.ConfigChangeEvent;
 import com.alibaba.nacos.api.config.ConfigChangeItem;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.PropertyChangeType;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.client.config.listener.impl.AbstractConfigChangeListener;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.tencent.trpc.core.common.ConfigManager;
@@ -23,22 +26,26 @@ import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.configcenter.ConfigurationListener;
 import com.tencent.trpc.core.exception.ConfigCenterException;
 import com.tencent.trpc.core.extension.ExtensionLoader;
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executor;
 
 /**
  * NacosConfigurationLoader Test
@@ -189,6 +196,19 @@ public class NacosConfigurationLoaderTest {
         Assert.assertEquals(configProperties.getValue(key2, APP_GROUP), "value2");
     }
 
+    @Rule
+    public ExpectedException expectedEx = ExpectedException.none();
+
+    @Test
+    public void testGetValueForException() throws NacosException {
+        expectedEx.expect(ConfigCenterException.class);
+        expectedEx.expectMessage(String.format(
+                "Fetch config failed from Nacos, group: %s, dataId: %s", DEFAULT_GROUP, DEFAULT_DATA_ID));
+        String key = "example.config.name";
+        Mockito.when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenThrow(new NacosException());
+        Assert.assertNull(configYaml.getValue(key, DEFAULT_GROUP));
+    }
+
     @Test
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void testGroupDataIdCaches() throws NacosException, IllegalAccessException {
@@ -216,6 +236,18 @@ public class NacosConfigurationLoaderTest {
 
         Object listener = groupDataIdToNacosListener.get(String.format("%s_%s", DEFAULT_GROUP, DEFAULT_DATA_ID));
         Assert.assertTrue(listener instanceof Listener);
+        Assert.assertTrue(listener instanceof AbstractConfigChangeListener);
+
+        // Test configuration DELETED changes
+        ConfigChangeItem item = new ConfigChangeItem(key, "", "");
+        item.setType(PropertyChangeType.DELETED);
+        ConfigChangeEvent event = new ConfigChangeEvent(ImmutableMap.of(key, item));
+        ((AbstractConfigChangeListener) listener).receiveConfigChange(event);
+        keys = groupDataIdToKeys.get(String.format("%s_%s", DEFAULT_GROUP, DEFAULT_DATA_ID));
+        Assert.assertEquals(keys.size(), 0);
+
+        Executor executor = ((AbstractConfigChangeListener) listener).getExecutor();
+        Assert.assertNotNull(executor);
     }
 
     @Test
@@ -266,6 +298,34 @@ public class NacosConfigurationLoaderTest {
         ConfigurationListener listener = Mockito.mock(ConfigurationListener.class);
         configYaml.addListener(listener);
         configYaml.removeListener(listener);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Test
+    public void testListenerCallback() throws IllegalAccessException {
+        String key = "example.config.name";
+
+        ConfigurationListener listener = event -> Assert.assertEquals(event.getKey(), key);
+        configYaml.addListener(listener);
+
+        Field configurationListenerToNacosListener = Whitebox
+                .getField(NacosConfigurationLoader.class, "configurationListenerToNacosListener");
+        boolean groupDataIdToKeysFieldAccessible = configurationListenerToNacosListener.isAccessible();
+        configurationListenerToNacosListener.setAccessible(true);
+        Map listenerMap = (Map) configurationListenerToNacosListener.get(configYaml);
+        configurationListenerToNacosListener.setAccessible(groupDataIdToKeysFieldAccessible);
+        Map<NacosConfig.Config, Listener> nacosConfigToListener = (Map<NacosConfig.Config, Listener>) listenerMap.get(listener);
+        Listener changeListener = nacosConfigToListener.get(new NacosConfig.Config(DEFAULT_GROUP, DEFAULT_DATA_ID));
+        Assert.assertNotNull(changeListener);
+        Assert.assertTrue(changeListener instanceof AbstractConfigChangeListener);
+
+        ConfigChangeItem item = new ConfigChangeItem(key, "", "");
+        item.setType(PropertyChangeType.DELETED);
+        ConfigChangeEvent event = new ConfigChangeEvent(ImmutableMap.of(key, item));
+        ((AbstractConfigChangeListener) changeListener).receiveConfigChange(event);
+
+        Executor executor = changeListener.getExecutor();
+        Assert.assertNotNull(executor);
     }
 
     @Test
