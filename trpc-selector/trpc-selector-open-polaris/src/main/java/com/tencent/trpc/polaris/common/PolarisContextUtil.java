@@ -67,7 +67,7 @@ public class PolarisContextUtil {
         if (StringUtils.isEmpty(metadataValue)) {
             metadataValue = new String((byte[]) request.getAttachment(PolarisConstant.RPC_CONTEXT_TRANSITIVE_METADATA));
             if (StringUtils.isEmpty(metadataValue)) {
-                return new MetadataContext(MetadataContext.DEFAULT_TRANSITIVE_PREFIX, true);
+                return new MetadataContext(MetadataContext.DEFAULT_TRANSITIVE_PREFIX);
             }
         }
         Map<String, String> transitiveHeaders = JsonUtils.fromJson(metadataValue, new TypeReference<Map<String, String>>() {});
