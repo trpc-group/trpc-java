@@ -82,7 +82,7 @@ public class DefaultExceptionResultTransformerTest {
     public void testUnsupported() {
         DefaultExceptionResultTransformer transform = new DefaultExceptionResultTransformer();
         MyResponse myResponse = new MyResponse("testObjectToMessage", "123456");
-        Object result = transform.transform(myResponse, List.class);
+        transform.transform(myResponse, List.class);
         Assert.fail();
     }
 
