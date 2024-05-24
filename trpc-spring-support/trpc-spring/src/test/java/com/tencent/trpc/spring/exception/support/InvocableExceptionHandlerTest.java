@@ -35,10 +35,10 @@ public class InvocableExceptionHandlerTest {
         HashSet<InvocableExceptionHandler> set = new HashSet<>();
         set.add(handler1);
         Assert.assertEquals(handler1.hashCode(), handler2.hashCode());
-        Assert.assertEquals(true, handler1.equals(handler1));
-        Assert.assertEquals(true, handler1.equals(handler2));
-        Assert.assertEquals(false, handler1.equals(bean));
-        Assert.assertEquals(true, set.contains(handler2));
+        Assert.assertEquals(handler1, handler1);
+        Assert.assertEquals(handler1, handler2);
+        Assert.assertNotEquals(handler1, bean);
+        Assert.assertTrue(set.contains(handler2));
         Assert.assertEquals(MyExceptionHandle.class, handler1.getTargetType());
     }
 
@@ -60,7 +60,8 @@ public class InvocableExceptionHandlerTest {
         Assert.assertEquals("myBean1", methodParameters[0].getParameterName());
         Assert.assertEquals("e", methodParameters[1].getParameterName());
         Assert.assertEquals("method11111", methodParameters[2].getParameterName());
-        Assert.assertEquals(true, String.class.isAssignableFrom(result.getClass()));
+        assert result != null;
+        Assert.assertTrue(String.class.isAssignableFrom(result.getClass()));
         Assert.assertEquals("name1_IllegalArgumentException_targetMethod", result);
     }
 
