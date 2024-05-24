@@ -22,8 +22,6 @@ import org.junit.Test;
 
 public class AddFilterTRpcConfigManagerCustomizerTest {
 
-    private static final String KEY = "OrderKey:b131d74c753540db859c626c564aa8ce";
-
     private static final String FILTER_ONE = "filter1";
 
     private static final String FILTER_TWO = "filter2";
