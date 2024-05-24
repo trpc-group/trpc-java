@@ -106,9 +106,8 @@ public class AddFilterTRpcConfigManagerCustomizerTest {
 
         addFilterTRpcConfigManagerCustomizer.customize(configManager);
         List<String> expected = Arrays.asList(FILTER_THREE, FILTER_FOUR);
-        Assert.assertEquals(2, backendConfig.getFilters().size());
+        Assert.assertEquals(expected.size(), backendConfig.getFilters().size());
         Assert.assertEquals(expected, backendConfig.getFilters());
-
     }
 
     @Test
