@@ -14,6 +14,8 @@ package com.tencent.trpc.spring.context.configuration;
 import com.tencent.trpc.core.common.ConfigManager;
 import com.tencent.trpc.core.common.config.BackendConfig;
 import com.tencent.trpc.core.common.config.ClientConfig;
+import com.tencent.trpc.core.common.config.ServerConfig;
+import com.tencent.trpc.core.common.config.ServiceConfig;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Assert;
@@ -31,6 +33,16 @@ public class AddFilterTRpcConfigManagerCustomizerTest {
     private static final String FILTER_FOUR = "filter4";
 
     private static final String BACKEND_MAP_KEY = "backend";
+
+    private static final String SERVER_FILTER_ONE = "server-filter1";
+
+    private static final String SERVER_FILTER_TWO = "server-filter2";
+
+    private static final String SERVICE_FILTER_THREE = "service-filter3";
+
+    private static final String SERVICE_FILTER_FOUR = "service-filter4";
+
+    private static final String SERVICE_BACKEND_MAP_KEY = "service-backend";
 
     private static final Integer ORDER_VALUE = 1024;
 
@@ -91,22 +103,32 @@ public class AddFilterTRpcConfigManagerCustomizerTest {
 
     @Test
     public void testConstructorWithNullEmpty() {
-        addFilterTRpcConfigManagerCustomizer.addClientFilters(FILTER_ONE, FILTER_TWO);
         addFilterTRpcConfigManagerCustomizer = new AddFilterTRpcConfigManagerCustomizer(null, null);
+        addFilterTRpcConfigManagerCustomizer.addClientFilters(FILTER_ONE, FILTER_TWO);
+        addFilterTRpcConfigManagerCustomizer.addServerFilters(SERVER_FILTER_ONE, SERVER_FILTER_TWO);
 
         ClientConfig clientConfig = new ClientConfig();
         BackendConfig backendConfig = new BackendConfig();
-
         backendConfig.setFilters(Arrays.asList(FILTER_THREE, FILTER_FOUR));
         clientConfig.getBackendConfigMap().put(BACKEND_MAP_KEY, backendConfig);
 
+        ServerConfig serverConfig = new ServerConfig();
+        ServiceConfig serviceConfig = new ServiceConfig();
+        serviceConfig.setFilters(Arrays.asList(SERVICE_FILTER_THREE, SERVICE_FILTER_FOUR));
+        serverConfig.getServiceMap().put(SERVICE_BACKEND_MAP_KEY, serviceConfig);
+
         ConfigManager configManager = ConfigManager.getInstance();
         configManager.setClientConfig(clientConfig);
+        configManager.setServerConfig(serverConfig);
 
         addFilterTRpcConfigManagerCustomizer.customize(configManager);
-        List<String> expected = Arrays.asList(FILTER_THREE, FILTER_FOUR);
-        Assert.assertEquals(expected.size(), backendConfig.getFilters().size());
-        Assert.assertEquals(expected, backendConfig.getFilters());
+        List<String> clientExpected = Arrays.asList(FILTER_ONE, FILTER_TWO, FILTER_THREE, FILTER_FOUR);
+        // backendConfig filters test
+        Assert.assertEquals(clientExpected.size(), backendConfig.getFilters().size());
+        // serviceConfig filters test
+        List<String> serverExpected = Arrays.asList(SERVER_FILTER_ONE, SERVER_FILTER_TWO, SERVICE_FILTER_THREE,
+                SERVICE_FILTER_FOUR);
+        Assert.assertEquals(serverExpected.size(), serviceConfig.getFilters().size());
     }
 
     @Test
