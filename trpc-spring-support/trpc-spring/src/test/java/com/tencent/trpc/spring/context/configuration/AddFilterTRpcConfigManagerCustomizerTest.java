@@ -55,7 +55,6 @@ public class AddFilterTRpcConfigManagerCustomizerTest {
 
     @Test
     public void testAddServerFilters() {
-        AddFilterTRpcConfigManagerCustomizer addFilterTRpcConfigManagerCustomizer = new AddFilterTRpcConfigManagerCustomizer();
         AddFilterTRpcConfigManagerCustomizer customizer = addFilterTRpcConfigManagerCustomizer.addServerFilters(
                 FILTER_ONE, FILTER_TWO);
         Assert.assertEquals(addFilterTRpcConfigManagerCustomizer, customizer);
