@@ -6,9 +6,10 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Maven Install Test
 
 on:
+  pull_request_target:
   push:
     branches: [ "master" ]
   pull_request:
@@ -48,7 +49,7 @@ jobs:
           cache: maven
       - name: Test with Maven
         run: mvn clean install -Dmaven.test.skip=true -B -U --file pom.xml
-  JDK17:
+  JDK21:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codes
