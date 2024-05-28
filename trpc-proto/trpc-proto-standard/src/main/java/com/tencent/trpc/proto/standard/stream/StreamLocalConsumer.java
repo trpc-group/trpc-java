@@ -38,7 +38,6 @@ public class StreamLocalConsumer implements Consumer<ByteBuf> {
     private int consumedWindowSize;
 
     public StreamLocalConsumer(RpcConnection connection, int streamId, int windowSize) {
-        System.out.println(11111);
         this.connection = Objects.requireNonNull(connection, "connection is null");
         PreconditionUtils.checkArgument(windowSize >= 0 && streamId >= 0,
                 "create remote flow subscriber failed, windowSize=%d, streamId=%d",
