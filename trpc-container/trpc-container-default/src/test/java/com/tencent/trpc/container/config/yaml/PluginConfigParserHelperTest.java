@@ -35,6 +35,20 @@ public class PluginConfigParserHelperTest {
         checkRegistry(plugins.get(Registry.class).get("polaris"));
     }
 
+    @Test
+    public void testParsePluginConfig() {
+        Map<String, Object> yamlConfigMap = YamlParser
+                .parseAsFromClassPath("trpc_java_config.yaml", Map.class);
+        Map<String, Object> polaris = (Map<String, Object>) new YamlUtils("Label[]")
+                .getMap(yamlConfigMap, ConfigConstants.PLUGINS)
+                .get("registry");
+        Map<String, PluginConfig> plugins = PluginConfigParserHelper
+                .parsePluginConfig("plugin(type=registry)",Registry.class,polaris);
+        checkRegistry(plugins.get("polaris"));
+    }
+
+
+
     private void checkRegistry(PluginConfig config) {
         Assert.assertEquals(config.getName(), "polaris");
         Assert.assertEquals(config.getPluginInterface(), Registry.class);
