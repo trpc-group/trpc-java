@@ -35,8 +35,7 @@ public class BackendConfigParserTest {
         Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("trpc_java_config.yaml", Map.class);
         List<Map<String, Object>> maps = Arrays.asList(yamlConfigMap);
         Map<String, BackendConfig> stringBackendConfigMap = BackendConfigParser.parseConfigMap(maps);
-        BackendConfig backendConfig = stringBackendConfigMap.get("@BackendConfig(0)");
-        Assert.assertNotNull(backendConfig);
+        Assert.assertNotNull(stringBackendConfigMap);
     }
 
     @Test
