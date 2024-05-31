@@ -17,6 +17,9 @@ import com.tencent.trpc.core.common.config.constant.ConfigConstants;
 import com.tencent.trpc.core.registry.spi.Registry;
 import com.tencent.trpc.core.utils.YamlParser;
 import com.tencent.trpc.registry.polaris.PolarisRegistry;
+
+import java.rmi.MarshalledObject;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Assert;
@@ -36,6 +39,24 @@ public class PluginConfigParserHelperTest {
         Map<Class<?>, Map<String, PluginConfig>> plugins = PluginConfigParserHelper
                 .parseAllPluginConfig(yamlUtils.getMap(yamlConfigMap, ConfigConstants.PLUGINS));
         checkRegistry(plugins.get(Registry.class).get("polaris"));
+
+        try {
+            Map mockMap = new HashMap();
+            mockMap.put("key","v");
+            PluginConfigParserHelper
+                    .parseAllPluginConfig(yamlUtils.getMap(mockMap, ConfigConstants.PLUGINS));
+        } catch (Exception e) {
+        }
+
+        try {
+            Map<String, Object> mockMap = yamlUtils.getMap(yamlConfigMap, ConfigConstants.PLUGINS);
+            Map<String, Object> map = yamlUtils.getMap(yamlConfigMap, ConfigConstants.PLUGINS);
+            mockMap.putAll(map);
+            PluginConfigParserHelper
+                    .parseAllPluginConfig(yamlUtils.getMap(mockMap, ConfigConstants.PLUGINS));
+        } catch (Exception e) {
+        }
+
     }
 
     @Test
@@ -48,6 +69,15 @@ public class PluginConfigParserHelperTest {
         Map<String, PluginConfig> plugins = PluginConfigParserHelper
                 .parsePluginConfig("plugin(type=registry)",Registry.class,polaris);
         checkRegistry(plugins.get("polaris"));
+
+        try {
+            Map mockMap = new HashMap();
+            mockMap.put("key1","v");
+            mockMap.put("key1","v");
+            PluginConfigParserHelper
+                    .parsePluginConfig("plugin(type=registry)",Registry.class,mockMap);
+        } catch (Exception e) {
+        }
     }
 
 

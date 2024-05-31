@@ -14,6 +14,8 @@ public class ClientConfigParserTest{
 
     @Test
     public void testParseClientConfig() {
+        ClientConfigParser clientConfigParser = new ClientConfigParser();
+        Assert.assertNotNull(clientConfigParser);
         Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("listener_default.yaml", Map.class);
         YamlUtils yamlUtils = new YamlUtils("Label[]");
         ClientConfig clientConfig = ClientConfigParser.parseClientConfig(yamlUtils.getMap(yamlConfigMap, ConfigConstants.CLIENT));

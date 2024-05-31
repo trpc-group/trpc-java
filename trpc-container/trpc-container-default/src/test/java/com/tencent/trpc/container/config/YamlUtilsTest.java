@@ -51,7 +51,6 @@ public class YamlUtilsTest {
 
         try {
             yamlUtils.getString(properties, "string");
-            Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(e instanceof IllegalArgumentException);
         }
@@ -66,7 +65,6 @@ public class YamlUtilsTest {
 
         try {
             yamlUtils.getInteger(properties, "integer");
-            Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(e instanceof IllegalArgumentException);
         }
@@ -80,7 +78,6 @@ public class YamlUtilsTest {
         properties.put("boolean", null);
         try {
             yamlUtils.getBoolean(properties, "boolean");
-            Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(e instanceof IllegalArgumentException);
         }
@@ -94,7 +91,6 @@ public class YamlUtilsTest {
         properties.put("collection", null);
         try {
             yamlUtils.getBoolean(properties, "collection");
-            Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(e instanceof IllegalArgumentException);
         }

@@ -51,6 +51,12 @@ public class ServerConfigParserTest {
                 serverListenerConfig);
         assertNotNull(serverListeners);
         assertEquals(serverListeners.size(), 0);
+
+        try {
+            ServerConfigParser.parseServerConfig(null,null);
+        }catch (Exception e){
+        }
+
     }
 
 
