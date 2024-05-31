@@ -11,10 +11,8 @@
 
 package com.tencent.trpc.container.config;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,7 +33,7 @@ public class YamlUtilsTest {
         properties.put("string", "string");
         properties.put("integer", 10);
         properties.put("boolean", true);
-        properties.put("collection", new ArrayList<>());
+        properties.put("collection", Arrays.asList(1,2));
         this.yamlUtils = new YamlUtils("");
     }
 
@@ -102,4 +100,14 @@ public class YamlUtilsTest {
         }
     }
 
+    @Test
+    public void testGetStringList(){
+        List<String> collection = yamlUtils.getStringList(properties, "collection");
+        Assert.assertNotNull(collection);
+        try {
+            yamlUtils.requireMap(Arrays.asList(1, 2), "key");
+        } catch (Exception e) {
+            Assert.assertTrue(e instanceof IllegalArgumentException);
+        }
+    }
 }
