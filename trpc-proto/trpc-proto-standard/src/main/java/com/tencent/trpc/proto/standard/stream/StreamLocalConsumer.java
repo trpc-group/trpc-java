@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -17,10 +17,9 @@ import com.tencent.trpc.core.stream.transport.RpcConnection;
 import com.tencent.trpc.core.utils.PreconditionUtils;
 import com.tencent.trpc.proto.standard.stream.codec.TRpcStreamFrameCodec;
 import io.netty.buffer.ByteBuf;
-
-import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Objects;
 import java.util.function.Consumer;
+import javax.annotation.concurrent.NotThreadSafe;
 
 @NotThreadSafe
 public class StreamLocalConsumer implements Consumer<ByteBuf> {
