@@ -8,9 +8,9 @@ public class SystemConfigurationTest{
 
     @Test
     public void testGetInternalProperty() {
-        System.setProperty("global","1");
+        System.setProperty("testSysProperty","1");
         SystemConfiguration systemConfiguration = new SystemConfiguration();
-        Object result = systemConfiguration.getInternalProperty("global");
+        Object result = systemConfiguration.getInternalProperty("testSysProperty");
         Assert.assertNotNull(result);
     }
 }

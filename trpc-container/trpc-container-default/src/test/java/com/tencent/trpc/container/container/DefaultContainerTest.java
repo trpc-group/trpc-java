@@ -24,11 +24,16 @@ public class DefaultContainerTest {
     public void start() {
         container =
                 ExtensionLoader.getExtensionLoader(Container.class).getExtension("default");
+
+    }
+
+    @Test
+    public void testStart() {
         container.start();
     }
 
     @Test
-    public void stop() throws InterruptedException {
+    public void testStop() throws InterruptedException {
         Thread.sleep(1000);
         container.stop();
     }
