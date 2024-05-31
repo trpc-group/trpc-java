@@ -67,13 +67,13 @@ public class NacosDatasourceConfig extends AbstractDatasourceConfig {
     @Override
     public void register() {
         super.register();
-        logger.warn("start to register nacos as sentinel flow rule data source, remoteAddress = {}, groupId = {},"
+        logger.info("start to register nacos as sentinel flow rule data source, remoteAddress = {}, groupId = {},"
                 + " dataId= {}", remoteAddress, groupId, dataId);
         ReadableDataSource<String, List<FlowRule>> flowRuleDataSource = new NacosDataSource<>(remoteAddress, groupId,
                 dataId, source -> JsonUtils.fromJson(source, new TypeReference<List<FlowRule>>() {
         }));
         FlowRuleManager.register2Property(flowRuleDataSource.getProperty());
-        logger.warn("succeed to register nacos as sentinel flow rule datasource");
+        logger.info("succeed to register nacos as sentinel flow rule datasource");
     }
 
 }

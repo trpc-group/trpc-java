@@ -59,6 +59,7 @@ public class LocalFileDatasourceConfig extends AbstractDatasourceConfig {
     @Override
     public void register() {
         super.register();
+        logger.info("start to register local file as sentinel flow rule data source, path = {}", path);
         AbstractDataSource<String, List<FlowRule>> dataSource = null;
         Converter<String, List<FlowRule>> converter = source -> JsonUtils.fromJson(source,
                 new TypeReference<List<FlowRule>>() {
@@ -100,7 +101,7 @@ public class LocalFileDatasourceConfig extends AbstractDatasourceConfig {
             throw new LimiterDataSourceException("file path=" + path + " not exists");
         }
         FlowRuleManager.register2Property(dataSource.getProperty());
-        logger.warn("succeed to register local file as sentinel flow rule data source");
+        logger.info("succeed to register local file as sentinel flow rule data source");
     }
 
 }
