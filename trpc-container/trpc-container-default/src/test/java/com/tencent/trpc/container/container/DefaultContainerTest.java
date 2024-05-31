@@ -20,17 +20,17 @@ public class DefaultContainerTest {
 
     Container container;
 
-    @Before
-    public void start() {
+    @Test
+    public void testTestStart() {
         container =
                 ExtensionLoader.getExtensionLoader(Container.class).getExtension("default");
         container.start();
     }
 
     @Test
-    public void stop() throws InterruptedException {
-        Thread.sleep(1000);
+    public void testTestStop() {
+        container =
+                ExtensionLoader.getExtensionLoader(Container.class).getExtension("default");
         container.stop();
     }
-
 }
