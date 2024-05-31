@@ -8,6 +8,8 @@ public class ParseErrorInfoTest extends TestCase {
 
     @Test
     public void testInfo() {
+        ParseErrorInfo parseErrorInfo = new ParseErrorInfo();
+        Assert.assertNotNull(parseErrorInfo);
         String info = ParseErrorInfo.info("key", "value");
         Assert.assertNotNull(info);
     }

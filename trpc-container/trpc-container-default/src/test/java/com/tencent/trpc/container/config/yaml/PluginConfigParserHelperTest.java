@@ -26,6 +26,9 @@ public class PluginConfigParserHelperTest {
 
     @Test
     public void testParseAllPluginConfig() {
+        PluginConfigParserHelper pluginConfigParserHelper = new PluginConfigParserHelper();
+        Assert.assertNotNull(pluginConfigParserHelper);
+
         Map<String, Object> yamlConfigMap = YamlParser
                 .parseAsFromClassPath("trpc_java_config.yaml", Map.class);
         YamlUtils yamlUtils = new YamlUtils("Label[]");

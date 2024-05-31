@@ -1,5 +1,6 @@
 package com.tencent.trpc.container.config.system.parser;
 
+import com.tencent.trpc.core.utils.YamlParser;
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,31 +13,18 @@ public class DefaultPropertySourceParserTest extends TestCase {
 
     @Test
     public void testGetFlattableMap() {
+
+        Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("listener_default.yaml", Map.class);
         DefaultPropertySourceParser propertySourceParser = new DefaultPropertySourceParser();
-        Map<String, Object> source = new HashMap<>();
-        source.put("key","value");
-        source.put("list","[l1,l2]");
-        source.put("key.key2","value22");
-        source.put("key2", Arrays.asList(1,2));
-        Map<String,String> map= new HashMap();
-        map.put("map1","value1");
-        source.put("key3", map);
-        Map<String, Object> flattableMap = propertySourceParser.getFlattableMap(source);
+        Map<String, Object> flattableMap = propertySourceParser.getFlattableMap(yamlConfigMap);
         Assert.assertNotNull(flattableMap);
     }
 
     @Test
     public void testParseFlattableMap() {
+        Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("listener_default.yaml", Map.class);
         DefaultPropertySourceParser propertySourceParser = new DefaultPropertySourceParser();
-        Map<String, Object> source = new HashMap<>();
-        source.put("key","value");
-        source.put("list","[l1,l2]");
-        source.put("key.key2","value22");
-        source.put("key2", Arrays.asList(1,2));
-        Map<String,String> map= new HashMap();
-        map.put("map1","value1");
-        source.put("key3", map);
-        Map<String, Object> stringObjectMap = propertySourceParser.parseFlattableMap(source);
+        Map<String, Object> stringObjectMap = propertySourceParser.parseFlattableMap(yamlConfigMap);
         Assert.assertNotNull(stringObjectMap);
     }
 }

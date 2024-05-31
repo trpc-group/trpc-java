@@ -18,6 +18,9 @@ public class ServiceConfigParserTest extends TestCase {
 
     @Test
     public void testParseServiceMapConfig() {
+        ServiceConfigParser serviceConfigParser = new ServiceConfigParser();
+        Assert.assertNotNull(serviceConfigParser);
+
         Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("listener_default.yaml", Map.class);
         YamlUtils yamlUtils = new YamlUtils("Label[]");
         Map<String, Object> objectMap = yamlUtils.getMap(yamlConfigMap, ConfigConstants.PLUGINS);

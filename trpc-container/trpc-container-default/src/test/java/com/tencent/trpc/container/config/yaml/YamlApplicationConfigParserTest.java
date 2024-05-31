@@ -277,6 +277,9 @@ public class YamlApplicationConfigParserTest {
 
     @Test
     public void testParseMap_confPath() {
+        TRpcSystemProperties.setProperties(TRpcSystemProperties.CONFIG_PATH, "");
+        Map<String, Object> map1 = new YamlApplicationConfigParser().parseMap("");
+        Assert.assertNotNull(map1);
         String path = YamlParser.class.getClassLoader().getResource("trpc_java.yaml").getPath();
         TRpcSystemProperties.setProperties(TRpcSystemProperties.CONFIG_PATH, path);
         Map<String, Object> map = new YamlApplicationConfigParser().parseMap("");
