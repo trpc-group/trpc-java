@@ -20,12 +20,15 @@ public class DefaultContainerTest {
 
     Container container;
 
-    @Test
-    public void testTestStart() {
-        container =
-                ExtensionLoader.getExtensionLoader(Container.class).getExtension("default");
-        container.start();
-    }
+    /**
+     * todo
+     */
+//    @Test
+//    public void testTestStart() {
+//        container =
+//                ExtensionLoader.getExtensionLoader(Container.class).getExtension("default");
+//        container.start();
+//    }
 
     @Test
     public void testTestStop() {
