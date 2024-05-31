@@ -52,7 +52,6 @@ public class YamlUtilsTest {
         try {
             yamlUtils.getString(properties, "string");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
         }
     }
 

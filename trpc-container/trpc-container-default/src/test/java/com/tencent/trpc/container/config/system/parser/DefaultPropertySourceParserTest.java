@@ -1,5 +1,6 @@
 package com.tencent.trpc.container.config.system.parser;
 
+import com.tencent.trpc.container.config.system.Configuration;
 import com.tencent.trpc.core.utils.YamlParser;
 import junit.framework.TestCase;
 import org.junit.Assert;
@@ -26,5 +27,6 @@ public class DefaultPropertySourceParserTest extends TestCase {
         DefaultPropertySourceParser propertySourceParser = new DefaultPropertySourceParser();
         Map<String, Object> stringObjectMap = propertySourceParser.parseFlattableMap(yamlConfigMap);
         Assert.assertNotNull(stringObjectMap);
+        Configuration.toBooleanObject(true);
     }
 }
