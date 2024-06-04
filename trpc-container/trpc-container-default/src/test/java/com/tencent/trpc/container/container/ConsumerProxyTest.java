@@ -54,7 +54,6 @@ public class ConsumerProxyTest {
                 HelloRequest.newBuilder().setMessage(ByteString.copyFrom("abc".getBytes()))
                         .build());
         assertEquals(sayHello.getMessage().toStringUtf8(), "abc-");
-
         ConfigManager instance = ConfigManager.getInstance();
         BackendConfig backendConfig = instance.getClientConfig().getBackendConfigMap()
                 .get(servcieId);

@@ -11,12 +11,16 @@
 
 package com.tencent.trpc.container.config;
 
-import java.util.*;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+
 
 /**
  * YamlUtils test class
@@ -87,7 +91,6 @@ public class YamlUtilsTest {
     public void testGetCollection() {
         Collection collection = yamlUtils.getCollection(properties, "collection");
         Assert.assertNotNull(collection);
-
         properties.put("collection", null);
         try {
             yamlUtils.getBoolean(properties, "collection");

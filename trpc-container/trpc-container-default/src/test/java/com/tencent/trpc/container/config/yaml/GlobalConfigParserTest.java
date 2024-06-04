@@ -7,7 +7,6 @@ import com.tencent.trpc.core.utils.YamlParser;
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
-
 import java.util.Map;
 
 public class GlobalConfigParserTest extends TestCase {

@@ -12,19 +12,12 @@
 package com.tencent.trpc.container.config.yaml;
 
 import com.tencent.trpc.core.common.config.BackendConfig;
-import com.tencent.trpc.core.common.config.constant.ConfigConstants;
-import com.tencent.trpc.core.utils.BinderUtils;
-import com.tencent.trpc.core.utils.ClassLoaderUtils;
 import com.tencent.trpc.core.utils.YamlParser;
 import org.junit.Assert;
 import org.junit.Test;
-
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * BackendConfig parser.

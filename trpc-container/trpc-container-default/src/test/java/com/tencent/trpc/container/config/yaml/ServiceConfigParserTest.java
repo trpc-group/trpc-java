@@ -7,11 +7,8 @@ import com.tencent.trpc.core.common.config.constant.ConfigConstants;
 import com.tencent.trpc.core.utils.YamlParser;
 import junit.framework.TestCase;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 public class ServiceConfigParserTest extends TestCase {
@@ -26,7 +23,7 @@ public class ServiceConfigParserTest extends TestCase {
         Map<Class<?>, Map<String, PluginConfig>> classMapMap = PluginConfigParser.parsePlugins(objectMap);
         Map<String, ServiceConfig> stringServiceConfigMap =
                 ServiceConfigParser.parseServiceMapConfig(Arrays.asList(yamlConfigMap), classMapMap);
-        Assert.assertNotNull(stringServiceConfigMap);
+        Assert.assertEquals(1,stringServiceConfigMap.size());
     }
 
     @Test
@@ -36,6 +33,6 @@ public class ServiceConfigParserTest extends TestCase {
         Map<String, Object> objectMap = yamlUtils.getMap(yamlConfigMap, ConfigConstants.PLUGINS);
         Map<Class<?>, Map<String, PluginConfig>> classMapMap = PluginConfigParser.parsePlugins(objectMap);
         ServiceConfig serviceConfig = ServiceConfigParser.parseServiceConfig(yamlConfigMap, classMapMap);
-        Assert.assertNotNull(serviceConfig);
+        Assert.assertFalse(serviceConfig.isSetDefault());
     }
 }

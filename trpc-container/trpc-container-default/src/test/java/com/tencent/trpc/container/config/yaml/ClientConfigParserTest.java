@@ -4,7 +4,6 @@ import com.tencent.trpc.container.config.YamlUtils;
 import com.tencent.trpc.core.common.config.ClientConfig;
 import com.tencent.trpc.core.common.config.constant.ConfigConstants;
 import com.tencent.trpc.core.utils.YamlParser;
-import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
 

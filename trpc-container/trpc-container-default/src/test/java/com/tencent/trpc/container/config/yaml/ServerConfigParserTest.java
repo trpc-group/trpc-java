@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,12 +46,10 @@ public class ServerConfigParserTest {
     public void testParseDefaultStartedListeners() {
         ServerConfigParser serverConfigParser = new ServerConfigParser();
         Assert.assertNotNull(serverConfigParser);
-
         List<ServerListener> serverListeners = ServerConfigParser.parseStartedListeners(yamlUtils,
                 serverListenerConfig);
         assertNotNull(serverListeners);
         assertEquals(serverListeners.size(), 0);
-
         try {
             ServerConfig serverConfig = ServerConfigParser.parseServerConfig(null, null);
             Assert.assertNotNull(serverConfig);

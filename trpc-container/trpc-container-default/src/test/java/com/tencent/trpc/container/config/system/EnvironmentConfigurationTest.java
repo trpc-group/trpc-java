@@ -1,9 +1,7 @@
 package com.tencent.trpc.container.config.system;
 
 import com.tencent.trpc.container.config.ApplicationConfigParser;
-import com.tencent.trpc.core.common.ConfigManager;
 import com.tencent.trpc.core.extension.ExtensionLoader;
-import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,15 +23,12 @@ public class EnvironmentConfigurationTest{
         System.setProperty("client.protocol", "fbp");
         System.setProperty("client.service[0].name", "trpc.TestApp.TestServer.Greeter3");
         System.setProperty("client.service[0].naming_url", "ip://127.0.0.1:77777");
-
         System.setProperty("worker.pool", "30");
         System.setProperty("enable.distribution.transaction", "true");
-
         System.setProperty("short.test", "1");
         System.setProperty("byte.test", "1");
         System.setProperty("float.test", "1");
         System.setProperty("double.test", "1");
-
         ApplicationConfigParser parser = ExtensionLoader.getExtensionLoader(ApplicationConfigParser.class)
                 .getExtension("yaml");
         environment = new Environment(parser);
@@ -62,6 +57,6 @@ public class EnvironmentConfigurationTest{
     @Test
     public void testGetInternalProperty() {
         Object internalProperty = environment.getInternalProperty("server.app");
-        Assert.assertNotNull(internalProperty);
+        Assert.assertEquals(internalProperty,"wechat");
     }
 }
