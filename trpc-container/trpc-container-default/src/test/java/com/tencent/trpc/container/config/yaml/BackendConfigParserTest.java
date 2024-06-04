@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class BackendConfigParserTest {
 
     @Test
-    public void testParseConfigMap(){
+    public void testParseConfigMap() {
         BackendConfigParser backendConfigParser = new BackendConfigParser();
         Assert.assertNotNull(backendConfigParser);
         Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("trpc_java_config.yaml", Map.class);
@@ -42,7 +42,7 @@ public class BackendConfigParserTest {
     }
 
     @Test
-    public void testParseConfig(){
+    public void testParseConfig() {
         Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("trpc_java_config.yaml", Map.class);
         BackendConfig backendConfig = BackendConfigParser.parseConfig(yamlConfigMap);
         Assert.assertNotNull(backendConfig);

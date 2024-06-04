@@ -312,7 +312,7 @@ public class YamlApplicationConfigParserTest {
     }
 
     @Test
-    public void testEx(){
+    public void testEx() {
 
         try {
             new YamlApplicationConfigParser().parseMap("abc");

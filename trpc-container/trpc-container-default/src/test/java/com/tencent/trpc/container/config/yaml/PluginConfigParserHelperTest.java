@@ -46,6 +46,7 @@ public class PluginConfigParserHelperTest {
             PluginConfigParserHelper
                     .parseAllPluginConfig(yamlUtils.getMap(mockMap, ConfigConstants.PLUGINS));
         } catch (Exception e) {
+            Assert.assertTrue(e instanceof IllegalArgumentException);
         }
 
         try {
@@ -55,6 +56,7 @@ public class PluginConfigParserHelperTest {
             PluginConfigParserHelper
                     .parseAllPluginConfig(yamlUtils.getMap(mockMap, ConfigConstants.PLUGINS));
         } catch (Exception e) {
+            Assert.assertTrue(e instanceof IllegalArgumentException);
         }
 
     }
@@ -77,6 +79,7 @@ public class PluginConfigParserHelperTest {
             PluginConfigParserHelper
                     .parsePluginConfig("plugin(type=registry)",Registry.class,mockMap);
         } catch (Exception e) {
+            Assert.assertTrue(e instanceof IllegalArgumentException);
         }
     }
 

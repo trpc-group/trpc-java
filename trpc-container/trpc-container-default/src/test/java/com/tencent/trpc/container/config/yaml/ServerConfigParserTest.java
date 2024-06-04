@@ -18,6 +18,7 @@ import static org.junit.Assert.fail;
 
 import com.tencent.trpc.container.config.YamlUtils;
 import com.tencent.trpc.container.container.DefaultServerListener;
+import com.tencent.trpc.core.common.config.ServerConfig;
 import com.tencent.trpc.core.container.spi.ServerListener;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,10 +54,11 @@ public class ServerConfigParserTest {
         assertEquals(serverListeners.size(), 0);
 
         try {
-            ServerConfigParser.parseServerConfig(null,null);
+            ServerConfig serverConfig = ServerConfigParser.parseServerConfig(null, null);
+            Assert.assertNotNull(serverConfig);
         }catch (Exception e){
+            assertTrue(e instanceof IllegalArgumentException);
         }
-
     }
 
 

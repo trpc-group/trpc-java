@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
-public class ClientConfigParserTest{
+public class ClientConfigParserTest {
 
     @Test
     public void testParseClientConfig() {
@@ -18,7 +18,8 @@ public class ClientConfigParserTest{
         Assert.assertNotNull(clientConfigParser);
         Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("listener_default.yaml", Map.class);
         YamlUtils yamlUtils = new YamlUtils("Label[]");
-        ClientConfig clientConfig = ClientConfigParser.parseClientConfig(yamlUtils.getMap(yamlConfigMap, ConfigConstants.CLIENT));
+        ClientConfig clientConfig =
+                ClientConfigParser.parseClientConfig(yamlUtils.getMap(yamlConfigMap, ConfigConstants.CLIENT));
         Assert.assertNotNull(clientConfig.getNamespace());
     }
 }
