@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -67,10 +67,13 @@ public class RedisDatasourceConfig extends AbstractDatasourceConfig {
     @Override
     public void register() {
         super.register();
+        logger.info("start to register redis as sentinel flow rule data source, channel = {}, ruleKey = {}", channel,
+                ruleKey);
         ReadableDataSource<String, List<FlowRule>> flowRuleDataSource = new RedisDataSource<>(redisConnectionConfig,
                 ruleKey, channel, source -> JsonUtils.fromJson(source, new TypeReference<List<FlowRule>>() {
         }));
         FlowRuleManager.register2Property(flowRuleDataSource.getProperty());
+        logger.info("succeed to register redis as sentinel flow rule datasource");
     }
 
 }

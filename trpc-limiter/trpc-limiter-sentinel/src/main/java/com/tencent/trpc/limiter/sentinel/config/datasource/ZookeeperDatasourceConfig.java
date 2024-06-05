@@ -56,13 +56,13 @@ public class ZookeeperDatasourceConfig extends AbstractDatasourceConfig {
     @Override
     public void register() {
         super.register();
-        logger.warn("start to register zookeeper as sentinel flow rule data source, remoteAddress = {}, path = {}",
+        logger.info("start to register zookeeper as sentinel flow rule data source, remoteAddress = {}, path = {}",
                 remoteAddress, path);
         ReadableDataSource<String, List<FlowRule>> flowRuleDataSource = new ZookeeperDataSource<>(remoteAddress, path,
                 source -> JsonUtils.fromJson(source, new TypeReference<List<FlowRule>>() {
                 }));
         FlowRuleManager.register2Property(flowRuleDataSource.getProperty());
-        logger.warn("succeed to register zookeeper as sentinel flow rule datasource");
+        logger.info("succeed to register zookeeper as sentinel flow rule datasource");
     }
 
 }
