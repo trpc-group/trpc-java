@@ -17,6 +17,7 @@ import com.tencent.trpc.core.common.config.constant.ConfigConstants;
 import com.tencent.trpc.core.registry.spi.Registry;
 import com.tencent.trpc.core.utils.YamlParser;
 import com.tencent.trpc.registry.polaris.PolarisRegistry;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Assert;
@@ -26,14 +27,55 @@ public class PluginConfigParserHelperTest {
 
     @Test
     public void testParseAllPluginConfig() {
-        Map<String, Object> yamlConfigMap = YamlParser
-                .parseAsFromClassPath("trpc_java_config.yaml", Map.class);
+        PluginConfigParserHelper pluginConfigParserHelper = new PluginConfigParserHelper();
+        Assert.assertNotNull(pluginConfigParserHelper);
+        Map<String, Object> yamlConfigMap =
+                YamlParser.parseAsFromClassPath("trpc_java_config.yaml", Map.class);
         YamlUtils yamlUtils = new YamlUtils("Label[]");
-
         Map<Class<?>, Map<String, PluginConfig>> plugins = PluginConfigParserHelper
                 .parseAllPluginConfig(yamlUtils.getMap(yamlConfigMap, ConfigConstants.PLUGINS));
         checkRegistry(plugins.get(Registry.class).get("polaris"));
+        try {
+            Map mockMap = new HashMap();
+            mockMap.put("key","v");
+            PluginConfigParserHelper
+                    .parseAllPluginConfig(yamlUtils.getMap(mockMap, ConfigConstants.PLUGINS));
+        } catch (Exception e) {
+            Assert.assertTrue(e instanceof IllegalArgumentException);
+        }
+        try {
+            Map<String, Object> mockMap = yamlUtils.getMap(yamlConfigMap, ConfigConstants.PLUGINS);
+            Map<String, Object> map = yamlUtils.getMap(yamlConfigMap, ConfigConstants.PLUGINS);
+            mockMap.putAll(map);
+            PluginConfigParserHelper
+                    .parseAllPluginConfig(yamlUtils.getMap(mockMap, ConfigConstants.PLUGINS));
+        } catch (Exception e) {
+            Assert.assertTrue(e instanceof IllegalArgumentException);
+        }
     }
+
+    @Test
+    public void testParsePluginConfig() {
+        Map<String, Object> yamlConfigMap =
+                YamlParser.parseAsFromClassPath("trpc_java_config.yaml", Map.class);
+        Map<String, Object> polaris = (Map<String, Object>) new YamlUtils("Label[]")
+                .getMap(yamlConfigMap, ConfigConstants.PLUGINS)
+                .get("registry");
+        Map<String, PluginConfig> plugins = PluginConfigParserHelper
+                .parsePluginConfig("plugin(type=registry)",Registry.class,polaris);
+        checkRegistry(plugins.get("polaris"));
+        try {
+            Map<String,Object> mockMap = new HashMap();
+            mockMap.put("key1","v");
+            mockMap.put("key1","v");
+            PluginConfigParserHelper
+                    .parsePluginConfig("plugin(type=registry)",Registry.class,mockMap);
+        } catch (Exception e) {
+            Assert.assertTrue(e instanceof IllegalArgumentException);
+        }
+    }
+
+
 
     private void checkRegistry(PluginConfig config) {
         Assert.assertEquals(config.getName(), "polaris");

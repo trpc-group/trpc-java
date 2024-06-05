@@ -277,6 +277,9 @@ public class YamlApplicationConfigParserTest {
 
     @Test
     public void testParseMap_confPath() {
+        TRpcSystemProperties.setProperties(TRpcSystemProperties.CONFIG_PATH, "");
+        Map<String, Object> map1 = new YamlApplicationConfigParser().parseMap("");
+        Assert.assertNotNull(map1);
         String path = YamlParser.class.getClassLoader().getResource("trpc_java.yaml").getPath();
         TRpcSystemProperties.setProperties(TRpcSystemProperties.CONFIG_PATH, path);
         Map<String, Object> map = new YamlApplicationConfigParser().parseMap("");
@@ -308,4 +311,18 @@ public class YamlApplicationConfigParserTest {
         Assert.assertTrue(providerConfig2.getEnableLinkTimeout());
     }
 
+    @Test
+    public void testEx() {
+
+        try {
+            new YamlApplicationConfigParser().parseMap("abc");
+            TRpcSystemProperties.setProperties(TRpcSystemProperties.CONFIG_PATH, "abc");
+            new YamlApplicationConfigParser().parseMap("abc");
+            String path = YamlParser.class.getClassLoader().getResource("trpc_java.yaml").getPath();
+            TRpcSystemProperties.setProperties(TRpcSystemProperties.CONFIG_PATH, path);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 }

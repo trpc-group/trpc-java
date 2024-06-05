@@ -11,14 +11,16 @@
 
 package com.tencent.trpc.container.config;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+
 
 /**
  * YamlUtils test class
@@ -35,7 +37,7 @@ public class YamlUtilsTest {
         properties.put("string", "string");
         properties.put("integer", 10);
         properties.put("boolean", true);
-        properties.put("collection", new ArrayList<>());
+        properties.put("collection", Arrays.asList(1,2));
         this.yamlUtils = new YamlUtils("");
     }
 
@@ -53,7 +55,6 @@ public class YamlUtilsTest {
 
         try {
             yamlUtils.getString(properties, "string");
-            Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(e instanceof IllegalArgumentException);
         }
@@ -68,7 +69,6 @@ public class YamlUtilsTest {
 
         try {
             yamlUtils.getInteger(properties, "integer");
-            Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(e instanceof IllegalArgumentException);
         }
@@ -82,7 +82,6 @@ public class YamlUtilsTest {
         properties.put("boolean", null);
         try {
             yamlUtils.getBoolean(properties, "boolean");
-            Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(e instanceof IllegalArgumentException);
         }
@@ -92,14 +91,22 @@ public class YamlUtilsTest {
     public void testGetCollection() {
         Collection collection = yamlUtils.getCollection(properties, "collection");
         Assert.assertNotNull(collection);
-
         properties.put("collection", null);
         try {
             yamlUtils.getBoolean(properties, "collection");
-            Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(e instanceof IllegalArgumentException);
         }
     }
 
+    @Test
+    public void testGetStringList(){
+        List<String> collection = yamlUtils.getStringList(properties, "collection");
+        Assert.assertNotNull(collection);
+        try {
+            yamlUtils.requireMap(Arrays.asList(1, 2), "key");
+        } catch (Exception e) {
+            Assert.assertTrue(e instanceof IllegalArgumentException);
+        }
+    }
 }

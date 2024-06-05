@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -54,7 +54,6 @@ public class ConsumerProxyTest {
                 HelloRequest.newBuilder().setMessage(ByteString.copyFrom("abc".getBytes()))
                         .build());
         assertEquals(sayHello.getMessage().toStringUtf8(), "abc-");
-
         ConfigManager instance = ConfigManager.getInstance();
         BackendConfig backendConfig = instance.getClientConfig().getBackendConfigMap()
                 .get(servcieId);
