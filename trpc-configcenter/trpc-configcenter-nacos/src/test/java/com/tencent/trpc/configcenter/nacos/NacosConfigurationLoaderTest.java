@@ -15,6 +15,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
+import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigChangeEvent;
 import com.alibaba.nacos.api.config.ConfigChangeItem;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -29,6 +30,7 @@ import com.tencent.trpc.core.common.ConfigManager;
 import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.configcenter.ConfigurationListener;
 import com.tencent.trpc.core.exception.ConfigCenterException;
+import com.tencent.trpc.core.exception.TRpcExtensionException;
 import com.tencent.trpc.core.extension.ExtensionLoader;
 import org.junit.After;
 import org.junit.Assert;
@@ -38,6 +40,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -49,13 +52,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Executor;
 
 /**
  * NacosConfigurationLoader Test
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({NacosConfigurationLoader.class})
+@PrepareForTest({NacosConfigurationLoader.class, NacosFactory.class})
 @PowerMockIgnore({"javax.management.*"})
 public class NacosConfigurationLoaderTest {
 
@@ -386,5 +390,32 @@ public class NacosConfigurationLoaderTest {
     @Test
     public void testDestroy() {
         configYaml.destroy();
+    }
+
+    @Test
+    public void testDestroyError() {
+        expectedEx.expect(TRpcExtensionException.class);
+        try {
+            doAnswer(it -> {
+                throw new NacosException();
+            }).when(configService).shutDown();
+        } catch (NacosException e) {
+            throw new RuntimeException(e);
+        }
+        configYaml.destroy();
+    }
+
+    @Test
+    public void testInitError() {
+        expectedEx.expect(TRpcExtensionException.class);
+
+        PowerMockito.mockStatic(NacosFactory.class);
+        try {
+            PowerMockito.doThrow(new NacosException()).when(NacosFactory.class,
+                    "createConfigService", any(Properties.class));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        configYaml.init();
     }
 }
