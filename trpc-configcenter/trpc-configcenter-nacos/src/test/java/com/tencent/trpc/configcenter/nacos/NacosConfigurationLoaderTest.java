@@ -199,6 +199,15 @@ public class NacosConfigurationLoaderTest {
         nacosConfig.setPassword(PASSWORD);
         nacosConfig.setFileExtension(FILE_EXTENSION_YAML);
         nacosConfig.setUsername(USERNAME);
+        nacosConfig.setServerAddr(SERVER_ADDR);
+        nacosConfig.setTimeout(TIMEOUT);
+
+        NacosConfig.Config config = new NacosConfig.Config(DEFAULT_GROUP, DEFAULT_DATA_ID);
+        config.setGroup(DEFAULT_GROUP);
+        config.setDataId(DEFAULT_DATA_ID);
+        NacosConfig.Config configOther = new NacosConfig.Config(DEFAULT_GROUP, DEFAULT_DATA_ID);
+        boolean equals = config.equals(configOther);
+        Assert.assertTrue(equals);
     }
 
     @Test
