@@ -130,6 +130,11 @@ public class NacosConfigurationLoaderTest {
     private ConfigService configService;
 
     /**
+     * nacosConfig
+     */
+    private NacosConfig nacosConfig;
+
+    /**
      * setUp
      */
     @Before
@@ -158,6 +163,9 @@ public class NacosConfigurationLoaderTest {
         extMap.put(NacosConfig.NACOS_FILE_EXTENSION_KEY, FILE_EXTENSION_YAML);
         PluginConfig pluginConfig = new PluginConfig(NacosConfigurationLoader.NAME, NacosConfigurationLoader.class,
                 extMap);
+
+        nacosConfig = new NacosConfig(pluginConfig);
+
         configYaml = new NacosConfigurationLoader();
         configYaml.setPluginConfig(pluginConfig);
         try {
@@ -183,6 +191,14 @@ public class NacosConfigurationLoaderTest {
     public void setDown() {
         ConfigManager.stopTest();
         ExtensionLoader.destroyAllPlugin();
+    }
+
+    @Test
+    public void testNacosConfigSetMethod() {
+        nacosConfig.setNamespace(NAMESPACE);
+        nacosConfig.setPassword(PASSWORD);
+        nacosConfig.setFileExtension(FILE_EXTENSION_YAML);
+        nacosConfig.setUsername(USERNAME);
     }
 
     @Test
@@ -317,7 +333,7 @@ public class NacosConfigurationLoaderTest {
         configYaml.setConfigService(configService);
 
         expectedEx.expect(ConfigCenterException.class);
-        
+
         ConfigurationListener listener = Mockito.mock(ConfigurationListener.class);
         configYaml.addListener(listener);
     }
