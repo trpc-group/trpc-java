@@ -11,7 +11,8 @@
 
 package com.tencent.trpc.logger.admin;
 
-import ch.qos.logback.classic.Level;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.tencent.trpc.core.logger.LoggerLevel;
@@ -22,16 +23,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @RunWith(PowerMockRunner.class)
+@PrepareForTest({LoggerFactory.class})
 public class LogbackLoggerProcessUnitTest {
 
     @Rule
@@ -56,8 +55,8 @@ public class LogbackLoggerProcessUnitTest {
     @Test
     @PrepareForTest({LoggerFactory.class})
     public void testInitSuccess() {
-        PowerMockito.mockStatic(LoggerFactory.class);
-        PowerMockito.when(LoggerFactory.getILoggerFactory()).thenReturn(new LoggerContext());
+        mockStatic(LoggerFactory.class);
+        when(LoggerFactory.getILoggerFactory()).thenReturn(new LoggerContext());
         logbackLoggerProcessUnit.init();
     }
 
@@ -79,22 +78,13 @@ public class LogbackLoggerProcessUnitTest {
     public void testSetLogger() {
         addLoggerToUnit();
         String loggerLevel = logbackLoggerProcessUnit.setLoggerLevel("logger", LoggerLevel.ALL);
-        Assert.assertEquals("ALL", loggerLevel);
+        Assert.assertEquals("DEBUG", loggerLevel);
     }
 
     private void addLoggerToUnit() {
-        try {
-            Class<?> loggerClass = Class.forName("ch.qos.logback.classic.Logger");
-            Constructor<?> constructor = loggerClass.getDeclaredConstructor(String.class, Logger.class,
-                    LoggerContext.class);
-            constructor.setAccessible(true);
-            Logger logger = (Logger) constructor.newInstance("logger", null, new LoggerContext());
-            logger.setLevel(Level.ALL);
-            logbackLoggerProcessUnit.addLogger("logger", logger);
-        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException
-                 | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+        LoggerContext loggerContext = new LoggerContext();
+        Logger logger = loggerContext.getLogger("ROOT");
+        logbackLoggerProcessUnit.addLogger("logger", logger);
     }
 
 }
