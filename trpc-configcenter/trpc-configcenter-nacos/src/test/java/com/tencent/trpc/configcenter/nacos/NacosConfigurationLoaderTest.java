@@ -11,6 +11,10 @@
 
 package com.tencent.trpc.configcenter.nacos;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 import com.alibaba.nacos.api.config.ConfigChangeEvent;
 import com.alibaba.nacos.api.config.ConfigChangeItem;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -186,12 +190,12 @@ public class NacosConfigurationLoaderTest {
         String key = "example.config.name";
         String key1 = "example.config.list[0].key1";
 
-        Mockito.when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(YAML_EXAMPLE);
+        when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(YAML_EXAMPLE);
         Assert.assertEquals(configYaml.getValue(key, DEFAULT_GROUP), "example");
         Assert.assertEquals(configYaml.getValue(key1, DEFAULT_GROUP), "value1");
 
         String key2 = "example.config.list[1].key2";
-        Mockito.when(configService.getConfig(APP_DATA_ID, APP_GROUP, TIMEOUT)).thenReturn(PROPERTIES_EXAMPLE);
+        when(configService.getConfig(APP_DATA_ID, APP_GROUP, TIMEOUT)).thenReturn(PROPERTIES_EXAMPLE);
         Assert.assertEquals(configProperties.getValue(key, APP_GROUP), "example");
         Assert.assertEquals(configProperties.getValue(key2, APP_GROUP), "value2");
     }
@@ -205,7 +209,7 @@ public class NacosConfigurationLoaderTest {
         expectedEx.expectMessage(String.format(
                 "Fetch config failed from Nacos, group: %s, dataId: %s", DEFAULT_GROUP, DEFAULT_DATA_ID));
         String key = "example.config.name";
-        Mockito.when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenThrow(new NacosException());
+        when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenThrow(new NacosException());
         Assert.assertNull(configYaml.getValue(key, DEFAULT_GROUP));
     }
 
@@ -213,7 +217,7 @@ public class NacosConfigurationLoaderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void testGroupDataIdCaches() throws NacosException, IllegalAccessException {
         String key = "example.config.name";
-        Mockito.when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(YAML_EXAMPLE);
+        when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(YAML_EXAMPLE);
         Assert.assertEquals(configYaml.getValue(key, DEFAULT_GROUP), "example");
 
         Field groupDataIdToKeysField = Whitebox
@@ -255,13 +259,13 @@ public class NacosConfigurationLoaderTest {
         String key = "example.config.name";
         String key1 = "example.config.list[0].key1";
 
-        Mockito.when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(YAML_EXAMPLE);
+        when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(YAML_EXAMPLE);
         Map<String, String> allYamlValue = configYaml.getAllValue(DEFAULT_GROUP);
         Assert.assertEquals(allYamlValue.get(key), "example");
         Assert.assertEquals(allYamlValue.get(key1), "value1");
 
         String key2 = "example.config.list[1].key2";
-        Mockito.when(configService.getConfig(APP_DATA_ID, APP_GROUP, TIMEOUT)).thenReturn(PROPERTIES_EXAMPLE);
+        when(configService.getConfig(APP_DATA_ID, APP_GROUP, TIMEOUT)).thenReturn(PROPERTIES_EXAMPLE);
         Map<String, String> allPropsValue1 = configProperties.getAllValue(APP_GROUP);
         Assert.assertEquals(allPropsValue1.get(key), "example");
         Assert.assertEquals(allPropsValue1.get(key2), "value2");
@@ -270,21 +274,21 @@ public class NacosConfigurationLoaderTest {
     @Test(expected = ConfigCenterException.class)
     public void testGetAllValueXml() throws NacosException {
         String xmlValue = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
-        Mockito.when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(xmlValue);
+        when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(xmlValue);
         configYaml.getAllValue(DEFAULT_GROUP);
     }
 
     @Test(expected = ConfigCenterException.class)
     public void testGetAllValueHtml() throws NacosException {
         String htmlValue = "<html lang=\"en\">";
-        Mockito.when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(htmlValue);
+        when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(htmlValue);
         configYaml.getAllValue(DEFAULT_GROUP);
     }
 
     @Test(expected = ConfigCenterException.class)
     public void testGetAllValueText() throws NacosException {
         String textValue = "Test text.";
-        Mockito.when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(textValue);
+        when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(textValue);
         configYaml.getAllValue(DEFAULT_GROUP);
     }
 
@@ -298,6 +302,24 @@ public class NacosConfigurationLoaderTest {
         ConfigurationListener listener = Mockito.mock(ConfigurationListener.class);
         configYaml.addListener(listener);
         configYaml.removeListener(listener);
+    }
+
+    @Test
+    public void testAddListenerError() {
+        configService = Mockito.mock(ConfigService.class);
+        try {
+            doAnswer(it -> {
+                throw new NacosException(1, "add listener error");
+            }).when(configService).addListener(anyString(), anyString(), any());
+        } catch (NacosException e) {
+            throw new RuntimeException(e);
+        }
+        configYaml.setConfigService(configService);
+
+        expectedEx.expect(ConfigCenterException.class);
+        
+        ConfigurationListener listener = Mockito.mock(ConfigurationListener.class);
+        configYaml.addListener(listener);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
