@@ -314,7 +314,8 @@ public class NacosConfigurationLoaderTest {
         configurationListenerToNacosListener.setAccessible(true);
         Map listenerMap = (Map) configurationListenerToNacosListener.get(configYaml);
         configurationListenerToNacosListener.setAccessible(groupDataIdToKeysFieldAccessible);
-        Map<NacosConfig.Config, Listener> nacosConfigToListener = (Map<NacosConfig.Config, Listener>) listenerMap.get(listener);
+        Map<NacosConfig.Config, Listener> nacosConfigToListener =
+                (Map<NacosConfig.Config, Listener>) listenerMap.get(listener);
         Listener changeListener = nacosConfigToListener.get(new NacosConfig.Config(DEFAULT_GROUP, DEFAULT_DATA_ID));
         Assert.assertNotNull(changeListener);
         Assert.assertTrue(changeListener instanceof AbstractConfigChangeListener);
