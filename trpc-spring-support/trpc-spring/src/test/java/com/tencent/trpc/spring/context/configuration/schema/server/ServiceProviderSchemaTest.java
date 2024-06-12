@@ -90,4 +90,10 @@ public class ServiceProviderSchemaTest {
         serviceProviderSchema.setEnableLinkTimeout(Boolean.TRUE);
         Assert.assertTrue(serviceProviderSchema.getEnableLinkTimeout());
     }
+
+    @Test
+    public void testGetDisableDefaultFilter() {
+        serviceProviderSchema.setDisableDefaultFilter(Boolean.TRUE);
+        Assert.assertTrue(serviceProviderSchema.getDisableDefaultFilter());
+    }
 }
