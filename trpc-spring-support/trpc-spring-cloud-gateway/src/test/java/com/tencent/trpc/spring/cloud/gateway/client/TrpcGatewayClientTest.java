@@ -52,6 +52,11 @@ public class TrpcGatewayClientTest {
 
     private Builder builder;
 
+    /**
+     * 初始化build.
+     *
+     * @throws URISyntaxException
+     */
     @Before
     public void setUp() throws URISyntaxException {
         PowerMockito.mockStatic(TRpcProxy.class);

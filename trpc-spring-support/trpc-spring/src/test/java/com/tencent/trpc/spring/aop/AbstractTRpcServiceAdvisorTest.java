@@ -11,9 +11,8 @@
 
 package com.tencent.trpc.spring.aop;
 
-import static org.junit.Assert.*;
-
 import org.aopalliance.aop.Advice;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -45,6 +44,6 @@ public class AbstractTRpcServiceAdvisorTest {
     @Test
     public void testGetPointcut() {
         Pointcut pointcut = advisor.getPointcut();
-        assertNotNull(pointcut);
+        Assert.assertNotNull(pointcut);
     }
 }

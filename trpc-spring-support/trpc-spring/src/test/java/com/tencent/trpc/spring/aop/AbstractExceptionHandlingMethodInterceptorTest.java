@@ -11,13 +11,14 @@
 
 package com.tencent.trpc.spring.aop;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 import com.tencent.trpc.spring.exception.api.ExceptionHandler;
 import com.tencent.trpc.spring.exception.api.ExceptionHandlerResolver;
 import com.tencent.trpc.spring.exception.api.ExceptionResultTransformer;
 import org.aopalliance.intercept.MethodInvocation;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -42,6 +43,9 @@ public class AbstractExceptionHandlingMethodInterceptorTest {
     @Mock
     private ExceptionResultTransformer mockExceptionResultTransformer;
 
+    /**
+     * 初始化interceptor测试.
+     */
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -68,14 +72,14 @@ public class AbstractExceptionHandlingMethodInterceptorTest {
 
     @Test
     public void testConstructor() {
-        assertNotNull(ReflectionTestUtils.getField(interceptor, "defaultHandlerResolverSupplier"));
-        assertNotNull(ReflectionTestUtils.getField(interceptor, "defaultTransformSupplier"));
+        Assert.assertNotNull(ReflectionTestUtils.getField(interceptor, "defaultHandlerResolverSupplier"));
+        Assert.assertNotNull(ReflectionTestUtils.getField(interceptor, "defaultTransformSupplier"));
     }
 
     @Test
     public void testGetOrder() {
         // 验证getOrder方法是否返回正确的顺序值
-        assertEquals(Ordered.HIGHEST_PRECEDENCE, interceptor.getOrder());
+        Assert.assertEquals(Ordered.HIGHEST_PRECEDENCE, interceptor.getOrder());
     }
 
     @Test(expected = NullPointerException.class)
@@ -84,7 +88,7 @@ public class AbstractExceptionHandlingMethodInterceptorTest {
         when(mockMethodInvocation.proceed()).thenThrow(new RuntimeException("test exception"));
         when(mockExceptionHandler.handle(any(), any(), any())).thenReturn("exception result");
         Object result = interceptor.invoke(mockMethodInvocation);
-        assertEquals("exception result", result);
+        Assert.assertEquals("exception result", result);
     }
 
     @Test
@@ -92,6 +96,6 @@ public class AbstractExceptionHandlingMethodInterceptorTest {
         // 模拟正常执行
         when(mockMethodInvocation.proceed()).thenReturn("normal result");
         Object result = interceptor.invoke(mockMethodInvocation);
-        assertEquals("normal result", result);
+        Assert.assertEquals("normal result", result);
     }
 }

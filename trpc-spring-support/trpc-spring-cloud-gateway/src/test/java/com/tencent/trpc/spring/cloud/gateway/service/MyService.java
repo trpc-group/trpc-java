@@ -12,6 +12,7 @@
 package com.tencent.trpc.spring.cloud.gateway.service;
 
 import org.springframework.stereotype.Component;
+
 @Component
 public class MyService {
 

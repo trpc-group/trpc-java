@@ -12,12 +12,12 @@
 package com.tencent.trpc.spring.context;
 
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
@@ -113,7 +113,7 @@ public class AnnotationInjectedBeanPostProcessorTest {
         @Override
         protected Object doGetInjectedBean(AnnotationAttributes attributes, Object bean, String beanName,
                 Class<?> injectedType, InjectedElement injectedElement) throws Exception {
-            return mock(injectedType);
+            return Mockito.mock(injectedType);
         }
     }
 
