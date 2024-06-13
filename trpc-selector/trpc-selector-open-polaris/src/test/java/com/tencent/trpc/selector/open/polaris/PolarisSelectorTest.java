@@ -26,22 +26,25 @@ import com.tencent.polaris.api.rpc.InstancesFuture;
 import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.APIFactory;
+import com.tencent.polaris.factory.config.ConfigurationImpl;
 import com.tencent.trpc.core.common.ConfigManager;
 import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.rpc.Request;
 import com.tencent.trpc.core.selector.ServiceId;
 import com.tencent.trpc.core.selector.ServiceInstance;
+import com.tencent.trpc.polaris.common.PolarisConstant;
 import com.tencent.trpc.polaris.common.PolarisTrans;
 import com.tencent.trpc.selector.polaris.PolarisSelector;
+import com.tencent.trpc.selector.polaris.common.PolarisCommon;
 import com.tencent.trpc.selector.polaris.common.pojo.PolarisServiceInstances;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.ObjectUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -326,5 +329,51 @@ public class PolarisSelectorTest {
         polarisSelector.init();
         Assert.assertNotNull(polarisSelector.getPolarisAPI());
         polarisSelector.destroy();
+    }
+
+    @Test
+    public void testGenPolarisConfiguration() {
+        PolarisSelector polarisSelector = new PolarisSelector();
+        try {
+            polarisSelector.init();
+            Assert.assertNull(polarisSelector.getPolarisAPI());
+            polarisSelector.destroy();
+        } catch (Exception e) {
+            return;
+        }
+    }
+
+    @Test
+    public void testWarmup() {
+        PolarisSelector clusterNaming = new PolarisSelector();
+        clusterNaming.setPluginConfig(selectorConfig);
+        clusterNaming.init();
+        ServiceId serviceId = DataTest.newTestServiceId();
+        try {
+            clusterNaming.warmup(serviceId);
+        } catch (Exception e) {
+            return;
+        }
+    }
+
+    @Test
+    public void testSelectOneFallback() {
+        PolarisSelector clusterNaming = new PolarisSelector();
+        clusterNaming.setPluginConfig(selectorConfig);
+        clusterNaming.init();
+        ServiceId serviceId = DataTest.newServiceId();
+        serviceId.setServiceName("service-metadata-select-one");
+        clusterNaming.warmup(serviceId);
+        Request request = DataTest.mockServiceMetadataRequest();
+        CompletionStage<ServiceInstance> future = clusterNaming.asyncSelectOne(serviceId, request);
+        AtomicReference<Throwable> errorRef = new AtomicReference<>();
+        CompletionStage<ServiceInstance> stage = future.whenComplete((res, err) -> {
+            if (err != null) {
+                errorRef.set(err);
+                err.printStackTrace();
+            }
+        });
+        CompletableFuture.allOf(stage.toCompletableFuture()).join();
+        Assert.assertNull(errorRef.get());
     }
 }

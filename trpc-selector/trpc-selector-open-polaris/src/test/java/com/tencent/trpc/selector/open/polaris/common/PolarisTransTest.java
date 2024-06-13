@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tencent.polaris.api.pojo.ServiceInstances;
+import com.tencent.polaris.factory.config.consumer.CircuitBreakerConfigImpl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -36,6 +38,7 @@ import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 import com.tencent.trpc.core.selector.ServiceInstance;
 import com.tencent.trpc.polaris.common.PolarisConstant;
 import com.tencent.trpc.polaris.common.PolarisTrans;
+import com.tencent.trpc.selector.polaris.common.PolarisCommon;
 
 public class PolarisTransTest {
 
@@ -211,7 +214,20 @@ public class PolarisTransTest {
 
         List<ServiceInstance> serviceInstances = PolarisTrans.parseRouterResult(routeResult,instancesResponse);
 
+        ServiceInstances convertServiceIns = PolarisCommon.toServiceInstances(serviceInstances);
+
         Assert.assertEquals(2,serviceInstances.size());
         Assert.assertEquals("sz0001",serviceInstances.get(0).getParameter(PolarisConstant.POLARIS_ID));
+        Assert.assertEquals(2,convertServiceIns.getInstances().size());
+    }
+
+    @Test
+    public void testGenCircuitBreakerConfiguration() {
+        ConfigurationImpl configuration = new ConfigurationImpl();
+        configuration.setDefault();
+        Map<String, Object> extMap = new HashMap<>();
+        extMap.put(PolarisConstant.POLARIS_ID, "sz0001");
+        CircuitBreakerConfigImpl circuitBreakerConfig = PolarisCommon.genCircuitBreakerConfiguration(configuration,extMap);
+        Assert.assertEquals(1,circuitBreakerConfig.getChain().size());
     }
 }

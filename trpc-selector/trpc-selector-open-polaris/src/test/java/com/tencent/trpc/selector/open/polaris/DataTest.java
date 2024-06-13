@@ -102,6 +102,13 @@ public class DataTest {
         return serviceId;
     }
 
+    public static ServiceId newTestServiceId() {
+        ServiceId serviceId = new ServiceId();
+        Map<String, Object> params = new HashMap<>();
+        serviceId.setParameters(params);
+        return serviceId;
+    }
+
     public static ServiceInstance genServiceInstance(int i) {
         Map<String, Object> map = new HashMap<>();
         map.put(POLARIS_CMDBCAMPUS, "cmdbCampus");
@@ -166,6 +173,14 @@ public class DataTest {
         Map<String, Object> extMap = new HashMap<>();
         extMap.put(PolarisConstant.POLARIS_RUNMODE_KEY, RunMode.ModeNoAgent.ordinal());
         extMap.put(PolarisConstant.POLARIS_ADDRESSES_KEY, "http://10.235.25.48:8080");
+        extMap.put(PolarisConstant.POLARIS_ENABLE_TRANS_META, "true");
+        return new PluginConfig("polaris", PolarisSelector.class, extMap);
+    }
+
+    private static PluginConfig createDiscoveryConfig1() {
+        Map<String, Object> extMap = new HashMap<>();
+        extMap.put(PolarisConstant.POLARIS_RUNMODE_KEY, RunMode.ModeNoAgent.ordinal());
+        extMap.put(PolarisConstant.POLARIS_ADDRESSES_KEY, "http://10.235.25.499:8080");
         extMap.put(PolarisConstant.POLARIS_ENABLE_TRANS_META, "true");
         return new PluginConfig("polaris", PolarisSelector.class, extMap);
     }
