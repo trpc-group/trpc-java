@@ -227,7 +227,8 @@ public class PolarisTransTest {
         configuration.setDefault();
         Map<String, Object> extMap = new HashMap<>();
         extMap.put(PolarisConstant.POLARIS_ID, "sz0001");
-        CircuitBreakerConfigImpl circuitBreakerConfig = PolarisCommon.genCircuitBreakerConfiguration(configuration,extMap);
+        CircuitBreakerConfigImpl circuitBreakerConfig =
+                PolarisCommon.genCircuitBreakerConfiguration(configuration,extMap);
         Assert.assertEquals(1,circuitBreakerConfig.getChain().size());
     }
 }
