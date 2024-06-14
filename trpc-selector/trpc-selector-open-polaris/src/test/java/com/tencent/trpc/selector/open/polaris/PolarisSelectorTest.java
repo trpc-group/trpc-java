@@ -155,9 +155,9 @@ public class PolarisSelectorTest {
         clusterNaming.init();
         ServiceId serviceId = DataTest.newServiceId();
         serviceId.setServiceName("fallback");
-
+        Request request = DataTest.request;
         CompletionStage<ServiceInstance> future = clusterNaming
-                .asyncSelectOne(serviceId, DataTest.request);
+                .asyncSelectOne(serviceId, request);
         AtomicReference<Throwable> errorRef = new AtomicReference<>();
         CompletionStage<ServiceInstance> stage = future.whenComplete((res, err) -> {
             if (err != null) {
@@ -311,6 +311,12 @@ public class PolarisSelectorTest {
     }
 
     @Test
+    public void testEmptyToPolarisInstance() {
+        List<ServiceInstance> serviceInstances = null;
+        Assert.assertNull(PolarisTrans.toPolarisInstance(serviceInstances));
+    }
+
+    @Test
     public void testDestroy() {
         PolarisSelector clusterNaming = new PolarisSelector();
         clusterNaming.setPluginConfig(selectorConfig);
@@ -332,7 +338,7 @@ public class PolarisSelectorTest {
     }
 
     @Test
-    public void testGenPolarisConfiguration() {
+    public void testInit() {
         PolarisSelector polarisSelector = new PolarisSelector();
         try {
             polarisSelector.init();
@@ -357,7 +363,7 @@ public class PolarisSelectorTest {
     }
 
     @Test
-    public void testSelectOneFallback() {
+    public void testAsyncSelectOne() {
         PolarisSelector clusterNaming = new PolarisSelector();
         clusterNaming.setPluginConfig(selectorConfig);
         clusterNaming.init();
@@ -375,5 +381,43 @@ public class PolarisSelectorTest {
         });
         CompletableFuture.allOf(stage.toCompletableFuture()).join();
         Assert.assertNull(errorRef.get());
+    }
+
+    @Test
+    public void testEmptyAsyncSelectOne() {
+        PolarisSelector clusterNaming = new PolarisSelector();
+        clusterNaming.setPluginConfig(selectorConfig);
+        clusterNaming.init();
+        ServiceId serviceId = DataTest.newServiceId();
+        serviceId.setServiceName("service-metadata-select-one");
+        clusterNaming.warmup(serviceId);
+        Request request = DataTest.mockServiceMetadataRequest();
+        request.getMeta().setHashVal(null);
+        CompletionStage<ServiceInstance> future = clusterNaming.asyncSelectOne(serviceId, request);
+        AtomicReference<Throwable> errorRef = new AtomicReference<>();
+        CompletionStage<ServiceInstance> stage = future.whenComplete((res, err) -> {
+            if (err != null) {
+                errorRef.set(err);
+                err.printStackTrace();
+            }
+        });
+        CompletableFuture.allOf(stage.toCompletableFuture()).join();
+        Assert.assertNull(errorRef.get());
+    }
+
+    @Test
+    public void testExceptionAsyncSelectOne() {
+        PolarisSelector clusterNaming = new PolarisSelector();
+        clusterNaming.setPluginConfig(selectorConfig);
+        ServiceId serviceId = DataTest.newServiceId();
+        serviceId.setServiceName("fallback");
+        Request request = DataTest.request;
+        request.getMeta().setHashVal(null);
+        try {
+            CompletionStage<ServiceInstance> future = clusterNaming
+                    .asyncSelectOne(serviceId, request);
+        } catch (Exception e) {
+            return;
+        }
     }
 }

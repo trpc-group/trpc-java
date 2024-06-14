@@ -20,6 +20,7 @@ import java.util.Map;
 
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.factory.config.consumer.CircuitBreakerConfigImpl;
+import com.tencent.trpc.selector.polaris.PolarisSelector;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -230,5 +231,66 @@ public class PolarisTransTest {
         CircuitBreakerConfigImpl circuitBreakerConfig =
                 PolarisCommon.genCircuitBreakerConfiguration(configuration,extMap);
         Assert.assertEquals(1,circuitBreakerConfig.getChain().size());
+    }
+
+    @Test
+    public void testEmptyGenCircuitBreakerConfiguration() {
+        ConfigurationImpl configuration = new ConfigurationImpl();
+        configuration.setDefault();
+        Map<String, Object> extMap = null;
+        CircuitBreakerConfigImpl circuitBreakerConfig =
+                PolarisCommon.genCircuitBreakerConfiguration(configuration,extMap);
+        Assert.assertEquals(1,circuitBreakerConfig.getChain().size());
+    }
+
+    @Test
+    public void testEmptyGenPolarisConfiguration() {
+        Assert.assertNotNull(PolarisCommon.genPolarisConfiguration(null));
+    }
+
+    @Test
+    public void testGetSetName() {
+        Instance instance = Mockito.mock(Instance.class);
+        when(instance.getHost()).thenReturn("127.0.0.1");
+        when(instance.getPort()).thenReturn(111);
+        when(instance.isHealthy()).thenReturn(true);
+        when(instance.getRevision()).thenReturn("1.0.0");
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put(PolarisConstant.INTERNAL_SET_NAME_KEY, "set.sz.1");
+        metadata.put(PolarisConstant.INTERNAL_ENABLE_SET_KEY, "Y");
+        when(instance.getMetadata()).thenReturn(metadata);
+        Assert.assertEquals("set.sz.1",PolarisTrans.getSetName(instance));
+    }
+
+    @Test
+    public void testGetContainerName() {
+        Instance instance = Mockito.mock(Instance.class);
+        when(instance.getHost()).thenReturn("127.0.0.1");
+        when(instance.getPort()).thenReturn(111);
+        when(instance.isHealthy()).thenReturn(true);
+        when(instance.getRevision()).thenReturn("1.0.0");
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put(PolarisConstant.CONTAINER_NAME, "xxx1");
+        when(instance.getMetadata()).thenReturn(metadata);
+        Assert.assertEquals("xxx1",PolarisTrans.getContainerName(instance));
+    }
+
+    @Test
+    public void testPickMetaData() {
+        Assert.assertNotNull(PolarisTrans.pickMetaData(new HashMap<>(),false,"sz11"));
+    }
+
+    @Test
+    public void testEmptyTransfer2ServiceInstance() {
+        Assert.assertEquals(0,PolarisTrans.transfer2ServiceInstance(null,null).size());
+    }
+
+    @Test
+    public void testExceptionParseRouterResult() {
+        try {
+            PolarisTrans.parseRouterResult(null,null);
+        } catch (Exception e) {
+            return;
+        }
     }
 }
