@@ -420,4 +420,16 @@ public class PolarisSelectorTest {
             return;
         }
     }
+
+    @Test
+    public void testExceptionReport() {
+        PolarisSelector clusterNaming = new PolarisSelector();
+        clusterNaming.setPluginConfig(selectorConfig);
+        clusterNaming.init();
+        try {
+            clusterNaming.report(null, 1, -1L);
+        } catch (Exception e) {
+            return;
+        }
+    }
 }

@@ -20,6 +20,10 @@ import java.util.Map;
 
 import com.tencent.polaris.api.pojo.ServiceInstances;
 import com.tencent.polaris.factory.config.consumer.CircuitBreakerConfigImpl;
+import com.tencent.trpc.core.common.config.PluginConfig;
+import com.tencent.trpc.core.selector.SelectorManager;
+import com.tencent.trpc.core.selector.spi.Selector;
+import com.tencent.trpc.selector.open.polaris.DataTest;
 import com.tencent.trpc.selector.polaris.PolarisSelector;
 import org.junit.Assert;
 import org.junit.Test;
