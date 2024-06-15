@@ -27,6 +27,8 @@ import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.APIFactory;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
+import com.tencent.polaris.plugins.loadbalancer.random.WeightedRandomBalance;
+import com.tencent.polaris.plugins.loadbalancer.ringhash.ConsistentHashLoadBalance;
 import com.tencent.trpc.core.common.ConfigManager;
 import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.rpc.Request;
@@ -338,9 +340,10 @@ public class PolarisSelectorTest {
     }
 
     @Test
-    public void testInit() {
+    public void testExceptionInit() {
         PolarisSelector polarisSelector = new PolarisSelector();
         try {
+            polarisSelector.setPluginConfig(selectorConfig);
             polarisSelector.init();
             Assert.assertNull(polarisSelector.getPolarisAPI());
             polarisSelector.destroy();
@@ -350,7 +353,7 @@ public class PolarisSelectorTest {
     }
 
     @Test
-    public void testWarmup() {
+    public void testExceptionWarmup() {
         PolarisSelector clusterNaming = new PolarisSelector();
         clusterNaming.setPluginConfig(selectorConfig);
         clusterNaming.init();
@@ -384,7 +387,7 @@ public class PolarisSelectorTest {
     }
 
     @Test
-    public void testEmptyAsyncSelectOne() {
+    public void testGetCriteria() {
         PolarisSelector clusterNaming = new PolarisSelector();
         clusterNaming.setPluginConfig(selectorConfig);
         clusterNaming.init();
@@ -392,7 +395,7 @@ public class PolarisSelectorTest {
         serviceId.setServiceName("service-metadata-select-one");
         clusterNaming.warmup(serviceId);
         Request request = DataTest.mockServiceMetadataRequest();
-        request.getMeta().setHashVal(null);
+        request.getMeta().setHashVal("123333");
         CompletionStage<ServiceInstance> future = clusterNaming.asyncSelectOne(serviceId, request);
         AtomicReference<Throwable> errorRef = new AtomicReference<>();
         CompletionStage<ServiceInstance> stage = future.whenComplete((res, err) -> {
@@ -412,7 +415,6 @@ public class PolarisSelectorTest {
         ServiceId serviceId = DataTest.newServiceId();
         serviceId.setServiceName("fallback");
         Request request = DataTest.request;
-        request.getMeta().setHashVal(null);
         try {
             CompletionStage<ServiceInstance> future = clusterNaming
                     .asyncSelectOne(serviceId, request);
@@ -428,6 +430,19 @@ public class PolarisSelectorTest {
         clusterNaming.init();
         try {
             clusterNaming.report(null, 1, -1L);
+        } catch (Exception e) {
+            return;
+        }
+    }
+
+    @Test
+    public void testExceptionAsyncSelectAll() {
+        PolarisSelector clusterNaming = new PolarisSelector();
+        clusterNaming.setPluginConfig(selectorConfig);
+        clusterNaming.init();
+        try {
+            ServiceId serviceId = Mockito.mock(ServiceId.class);
+            clusterNaming.asyncSelectAll(serviceId,DataTest.request);
         } catch (Exception e) {
             return;
         }
