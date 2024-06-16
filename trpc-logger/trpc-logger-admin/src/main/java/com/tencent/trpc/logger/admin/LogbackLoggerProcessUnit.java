@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -15,10 +15,12 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.tencent.trpc.core.logger.LoggerLevel;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.slf4j.LoggerFactory;
 
 public class LogbackLoggerProcessUnit extends AbstractLoggerProcessUnit {
@@ -35,7 +37,7 @@ public class LogbackLoggerProcessUnit extends AbstractLoggerProcessUnit {
                 addLogger(logger.getName(), logger);
             }
         }
-        Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
         addLogger(rootLogger.getName(), rootLogger);
     }
 
