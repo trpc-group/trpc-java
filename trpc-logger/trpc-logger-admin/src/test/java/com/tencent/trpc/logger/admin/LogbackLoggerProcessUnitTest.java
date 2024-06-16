@@ -13,6 +13,7 @@ package com.tencent.trpc.logger.admin;
 
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
+
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.tencent.trpc.core.logger.LoggerLevel;
@@ -26,30 +27,33 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({LoggerFactory.class})
 public class LogbackLoggerProcessUnitTest {
 
+    public static final String LOGGER = "logger";
+    public static final String LOGGER_ROOT = "ROOT";
+    public static final String LOGGER_DEBUG = "DEBUG";
+
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
 
-    private LogbackLoggerProcessUnit logbackLoggerProcessUnit;
+    private LogbackLoggerProcessUnit logger;
 
     @Before
     public void setUp() throws Exception {
-        logbackLoggerProcessUnit = new LogbackLoggerProcessUnit();
-        logbackLoggerProcessUnit.setLoggerLevel("logger", LoggerLevel.ALL);
-        logbackLoggerProcessUnit.addLogger("logger", new Slf4jLogger(org.slf4j.LoggerFactory.getLogger("logger")));
+        logger = new LogbackLoggerProcessUnit();
+        logger.setLoggerLevel(LOGGER, LoggerLevel.ALL);
+        logger.addLogger(LOGGER, new Slf4jLogger(org.slf4j.LoggerFactory.getLogger(LOGGER)));
     }
 
     @Test
     public void testInit() {
         expectedEx.expect(ClassCastException.class);
         expectedEx.expectMessage("cannot be cast");
-        logbackLoggerProcessUnit.init();
+        logger.init();
     }
 
     @Test
@@ -57,34 +61,34 @@ public class LogbackLoggerProcessUnitTest {
     public void testInitSuccess() {
         mockStatic(LoggerFactory.class);
         when(LoggerFactory.getILoggerFactory()).thenReturn(new LoggerContext());
-        logbackLoggerProcessUnit.init();
+        logger.init();
     }
 
     @Test
     public void testGetLoggerLevelInfoByError() {
         expectedEx.expect(ClassCastException.class);
         expectedEx.expectMessage("cannot be cast");
-        Assert.assertNotNull(logbackLoggerProcessUnit.getLoggerLevelInfo());
+        Assert.assertNotNull(logger.getLoggerLevelInfo());
     }
 
     @Test
     public void testGetLoggerLevelInfo() {
         addLoggerToUnit();
-        List<LoggerLevelInfo> info = logbackLoggerProcessUnit.getLoggerLevelInfo();
+        List<LoggerLevelInfo> info = logger.getLoggerLevelInfo();
         Assert.assertNotNull(info);
     }
 
     @Test
     public void testSetLogger() {
         addLoggerToUnit();
-        String loggerLevel = logbackLoggerProcessUnit.setLoggerLevel("logger", LoggerLevel.ALL);
-        Assert.assertEquals("DEBUG", loggerLevel);
+        String loggerLevel = logger.setLoggerLevel(LOGGER, LoggerLevel.ALL);
+        Assert.assertEquals(LOGGER_DEBUG, loggerLevel);
     }
 
     private void addLoggerToUnit() {
         LoggerContext loggerContext = new LoggerContext();
-        Logger logger = loggerContext.getLogger("ROOT");
-        logbackLoggerProcessUnit.addLogger("logger", logger);
+        Logger logger = loggerContext.getLogger(LOGGER_ROOT);
+        this.logger.addLogger(LOGGER, logger);
     }
 
 }

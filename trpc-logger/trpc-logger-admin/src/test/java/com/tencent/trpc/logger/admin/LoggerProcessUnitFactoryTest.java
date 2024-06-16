@@ -2,6 +2,7 @@ package com.tencent.trpc.logger.admin;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import ch.qos.logback.classic.LoggerContext;
 import org.apache.logging.slf4j.Log4jLoggerFactory;
 import org.junit.Test;
@@ -11,7 +12,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.NOPLoggerFactory;
-
 
 @RunWith(PowerMockRunner.class)
 public class LoggerProcessUnitFactoryTest {

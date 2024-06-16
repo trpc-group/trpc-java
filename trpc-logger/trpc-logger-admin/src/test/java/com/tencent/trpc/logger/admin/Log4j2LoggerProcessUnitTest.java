@@ -21,6 +21,8 @@ import org.junit.rules.ExpectedException;
 
 public class Log4j2LoggerProcessUnitTest {
 
+    public static final String UNIT_TEST = "unit-test";
+    
     private Log4j2LoggerProcessUnit log4j2LoggerProcessUnit;
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
@@ -37,8 +39,8 @@ public class Log4j2LoggerProcessUnitTest {
 
     @Test
     public void testSetLogger() {
-        log4j2LoggerProcessUnit.addLogger("unit-test", new LoggerConfig());
-        String logger = log4j2LoggerProcessUnit.setLoggerLevel("unit-test", LoggerLevel.ALL);
+        log4j2LoggerProcessUnit.addLogger(UNIT_TEST, new LoggerConfig());
+        String logger = log4j2LoggerProcessUnit.setLoggerLevel(UNIT_TEST, LoggerLevel.ALL);
         Assert.assertEquals(logger, "ERROR");
     }
 
