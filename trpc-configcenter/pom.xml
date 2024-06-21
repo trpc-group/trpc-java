@@ -15,6 +15,7 @@
 
     <modules>
         <module>trpc-configcenter-nacos</module>
+        <module>trpc-configcenter-open-polaris</module>
     </modules>
 
     <dependencies>
