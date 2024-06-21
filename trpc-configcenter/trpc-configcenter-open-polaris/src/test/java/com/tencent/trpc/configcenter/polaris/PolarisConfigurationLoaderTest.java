@@ -18,15 +18,9 @@ import com.tencent.polaris.configuration.api.core.ConfigKVFile;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeEvent;
 import com.tencent.polaris.configuration.api.core.ConfigKVFileChangeListener;
 import com.tencent.polaris.configuration.api.core.ConfigPropertyChangeInfo;
-import com.tencent.polaris.configuration.client.internal.ConfigYamlFile;
 import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.configcenter.ConfigurationEvent;
 import com.tencent.trpc.core.configcenter.ConfigurationListener;
-import com.tencent.trpc.core.exception.ConfigCenterException;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +31,9 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 public class PolarisConfigurationLoaderTest {
 
@@ -57,18 +54,18 @@ public class PolarisConfigurationLoaderTest {
     }
 
     private PolarisConfig mockPluginConfig() {
-        Map<String, Object> params = new HashMap<>();
-        List<Map<String, Object>> configs = new ArrayList<>();
         Map<String, Object> group = new HashMap<>();
         group.put(PolarisConfig.POLARIS_GROUP_KEY, mockGroup);
         List<String> files = new ArrayList<>();
         files.add(mockFile);
         group.put(PolarisConfig.POLARIS_FILENAMES_KEY, files);
+        List<Map<String, Object>> configs = new ArrayList<>();
         configs.add(group);
 
+        Map<String, Object> params = new HashMap<>();
         params.put(PolarisConfig.POLARIS_NAMESPACE_KEY, "default");
         params.put(PolarisConfig.POLARIS_TIMEOUT_KEY, 5000);
-        params.put(PolarisConfig.POLARIS_TOKen_KEY, "123");
+        params.put(PolarisConfig.POLARIS_TOKEN_KEY, "123");
         params.put(PolarisConfig.POLARIS_CONFIGS_KEY, configs);
         params.put(PolarisConfig.POLARIS_SERVER_ADDR_KEY, Collections.singletonList("127.0.0.1:8093"));
 
@@ -87,7 +84,6 @@ public class PolarisConfigurationLoaderTest {
 
         String ret = loader.getValue("user.name", mockGroup);
         Assert.assertEquals("polaris", ret);
-
 
         ret = loader.getValue("user.name", mockGroup + "123");
         Assert.assertEquals(null, ret);
@@ -121,11 +117,13 @@ public class PolarisConfigurationLoaderTest {
         PolarisConfigurationLoader loader = mockLoader();
 
         Map<String, ConfigPropertyChangeInfo> changeInfos = new HashMap<>();
-        changeInfos.put("user.name", new ConfigPropertyChangeInfo("user.name", "", "polaris", ChangeType.ADDED));
+        changeInfos.put("user.name", new ConfigPropertyChangeInfo(
+                "user.name", "", "polaris", ChangeType.ADDED));
         ConfigKVFileChangeEvent changeEvent = new ConfigKVFileChangeEvent(changeInfos);
 
         ConfigFileService fetcher = loader.getFetcher();
-        Mockito.when(fetcher.getConfigPropertiesFile("default", mockGroup, mockFile)).thenReturn(new MockConfigKVFile(changeEvent));
+        Mockito.when(fetcher.getConfigPropertiesFile("default", mockGroup, mockFile))
+                .thenReturn(new MockConfigKVFile(changeEvent));
 
         loader.addListener(listener);
         latch.await(1, TimeUnit.SECONDS);
@@ -211,16 +209,6 @@ public class PolarisConfigurationLoaderTest {
         }
 
         @Override
-        public void addChangeListener(ConfigKVFileChangeListener listener) {
-            listener.onChange(event);
-        }
-
-        @Override
-        public void removeChangeListener(ConfigKVFileChangeListener listener) {
-
-        }
-
-        @Override
         public String getContent() {
             return null;
         }
@@ -246,11 +234,21 @@ public class PolarisConfigurationLoaderTest {
         }
 
         @Override
+        public void addChangeListener(ConfigKVFileChangeListener listener) {
+            listener.onChange(event);
+        }
+
+        @Override
         public void addChangeListener(ConfigFileChangeListener listener) {
         }
 
         @Override
         public void removeChangeListener(ConfigFileChangeListener listener) {
+
+        }
+
+        @Override
+        public void removeChangeListener(ConfigKVFileChangeListener listener) {
 
         }
 

@@ -12,14 +12,13 @@
 package com.tencent.trpc.configcenter.polaris;
 
 import com.tencent.trpc.core.common.config.PluginConfig;
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class PolarisConfigTest {
 
@@ -38,7 +37,7 @@ public class PolarisConfigTest {
 
         params.put(PolarisConfig.POLARIS_NAMESPACE_KEY, "default");
         params.put(PolarisConfig.POLARIS_TIMEOUT_KEY, 5000);
-        params.put(PolarisConfig.POLARIS_TOKen_KEY, "123");
+        params.put(PolarisConfig.POLARIS_TOKEN_KEY, "123");
         params.put(PolarisConfig.POLARIS_CONFIGS_KEY, configs);
         params.put(PolarisConfig.POLARIS_SERVER_ADDR_KEY, Collections.singletonList("127.0.0.1:8093"));
 
@@ -58,7 +57,7 @@ public class PolarisConfigTest {
             for (String filename : subConfig.getFilenames()) {
                 Assert.assertEquals(filename, "file-" + index);
             }
-            index ++;
+            index++;
         }
     }
 

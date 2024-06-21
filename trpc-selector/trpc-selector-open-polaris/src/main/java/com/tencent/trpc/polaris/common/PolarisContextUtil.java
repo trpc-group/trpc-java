@@ -21,13 +21,13 @@ import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.core.utils.JsonUtils;
 import com.tencent.trpc.core.utils.RpcContextUtils;
 import com.tencent.trpc.core.utils.StringUtils;
-
 import java.util.HashMap;
 import java.util.Map;
+
 public class PolarisContextUtil {
 
     /**
-     * It is mainly used for users to insert the MetadataContext of polarismesh into RpcClientContext, 
+     * It is mainly used for users to insert the MetadataContext of polarismesh into RpcClientContext,
      * and realize the transfer of polarismesh metadata between microservice frameworks.
      *
      * @param metadataContext {@link MetadataContext}
@@ -45,14 +45,16 @@ public class PolarisContextUtil {
      * @param request {@link Request}
      */
     public static void putAttachValue(Request request, MetadataContext metadataContext) {
-
-        MessageMetadataContainer callerContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, true);
+        MessageMetadataContainer callerContainer = metadataContext.getMetadataContainer(
+                MetadataType.MESSAGE, true);
         Map<String, String> transitiveHeaders = new HashMap<>(callerContainer.getTransitiveHeaders());
 
-        MessageMetadataContainer calleeContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, false);
+        MessageMetadataContainer calleeContainer = metadataContext.getMetadataContainer(
+                MetadataType.MESSAGE, false);
         transitiveHeaders.putAll(calleeContainer.getTransitiveHeaders());
 
-        RpcContextUtils.putAttachValue(request, PolarisConstant.RPC_CONTEXT_TRANSITIVE_METADATA, JsonUtils.toJson(transitiveHeaders));
+        RpcContextUtils.putAttachValue(request, PolarisConstant.RPC_CONTEXT_TRANSITIVE_METADATA,
+                JsonUtils.toJson(transitiveHeaders));
     }
 
     /**
@@ -63,17 +65,21 @@ public class PolarisContextUtil {
      * @return {@link MetadataContext}
      */
     public static MetadataContext getMetadataContext(Request request) {
-        String metadataValue = RpcContextUtils.getRequestAttachValue(request.getContext(), PolarisConstant.RPC_CONTEXT_TRANSITIVE_METADATA);
+        String metadataValue = RpcContextUtils.getRequestAttachValue(request.getContext(),
+                PolarisConstant.RPC_CONTEXT_TRANSITIVE_METADATA);
         if (StringUtils.isEmpty(metadataValue)) {
             metadataValue = new String((byte[]) request.getAttachment(PolarisConstant.RPC_CONTEXT_TRANSITIVE_METADATA));
             if (StringUtils.isEmpty(metadataValue)) {
                 return new MetadataContext(MetadataContext.DEFAULT_TRANSITIVE_PREFIX);
             }
         }
-        Map<String, String> transitiveHeaders = JsonUtils.fromJson(metadataValue, new TypeReference<Map<String, String>>() {});
+        Map<String, String> transitiveHeaders = JsonUtils.fromJson(metadataValue,
+                new TypeReference<Map<String, String>>() {
+                });
 
         MetadataContext metadataContext = new MetadataContext();
-        MessageMetadataContainer callerContainer = metadataContext.getMetadataContainer(MetadataType.MESSAGE, true);
+        MessageMetadataContainer callerContainer = metadataContext.getMetadataContainer(
+                MetadataType.MESSAGE, true);
         transitiveHeaders.forEach((headerKey, headerValue) -> {
             if (headerKey.startsWith(metadataContext.getTransitivePrefix())) {
                 headerKey = headerKey.replaceAll(metadataContext.getTransitivePrefix(), "");

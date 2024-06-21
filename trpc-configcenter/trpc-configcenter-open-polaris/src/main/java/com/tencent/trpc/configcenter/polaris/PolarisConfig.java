@@ -13,13 +13,11 @@ package com.tencent.trpc.configcenter.polaris;
 
 import com.google.common.base.Preconditions;
 import com.tencent.trpc.core.common.config.PluginConfig;
-import org.apache.commons.collections4.MapUtils;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.collections4.MapUtils;
 
 public class PolarisConfig {
 
@@ -131,8 +129,12 @@ public class PolarisConfig {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Config config = (Config) o;
             return Objects.equals(group, config.group) && Objects.equals(filenames, config.filenames);
         }
