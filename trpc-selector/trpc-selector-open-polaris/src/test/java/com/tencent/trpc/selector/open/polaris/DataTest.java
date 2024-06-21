@@ -135,6 +135,7 @@ public class DataTest {
         Request request = Mockito.mock(AbstractRequest.class);
         Mockito.when(request.getInvocation()).thenReturn(rpcInvocation);
         Mockito.when(request.getMeta()).thenReturn(new RequestMeta());
+        Mockito.when(request.getContext()).thenReturn(new RpcClientContext());
         return request;
     }
 
@@ -151,6 +152,7 @@ public class DataTest {
         Request request = Mockito.mock(AbstractRequest.class);
         Mockito.when(request.getInvocation()).thenReturn(rpcInvocation);
         Mockito.when(request.getMeta()).thenReturn(new RequestMeta());
+        Mockito.when(request.getContext()).thenReturn(new RpcClientContext());
         Map<String, Object> attachments = new HashMap<>();
         attachments.put(PolarisConstant.SELECTOR_SERVICE_NAME, "test-service-name");
         attachments.put(PolarisConstant.SELECTOR_NAMESPACE, "test-namespace");
