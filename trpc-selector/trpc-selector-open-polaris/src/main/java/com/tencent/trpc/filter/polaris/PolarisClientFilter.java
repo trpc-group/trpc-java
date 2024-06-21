@@ -22,7 +22,6 @@ import com.tencent.trpc.core.rpc.Response;
 import com.tencent.trpc.core.utils.RpcContextUtils;
 import com.tencent.trpc.polaris.common.PolarisConstant;
 import com.tencent.trpc.polaris.common.PolarisContextUtil;
-
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 
@@ -32,7 +31,8 @@ public class PolarisClientFilter implements Filter {
 
     @Override
     public CompletionStage<Response> filter(Invoker<?> filterChain, Request req) {
-        MetadataContext metadataContext = RpcContextUtils.getValueMapValue(req.getContext(), PolarisConstant.RPC_CONTEXT_POALRIS_METADATA);
+        MetadataContext metadataContext = RpcContextUtils.getValueMapValue(req.getContext(),
+                PolarisConstant.RPC_CONTEXT_POALRIS_METADATA);
         if (Objects.nonNull(metadataContext)) {
             PolarisContextUtil.putAttachValue(req, metadataContext);
         }

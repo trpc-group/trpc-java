@@ -58,8 +58,6 @@ import com.tencent.trpc.polaris.common.PolarisFutureUtil;
 import com.tencent.trpc.polaris.common.PolarisTrans;
 import com.tencent.trpc.proto.http.common.HttpConstants;
 import com.tencent.trpc.selector.polaris.common.PolarisCommon;
-
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -71,6 +69,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Base open source polaris selector
@@ -187,9 +186,11 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
         try {
             MetadataContext metadataContext = buildCalleeMetadataManager(request);
             MetadataContextHolder.set(metadataContext);
-            Executor executor = new ExecutorWrapper<>(selectorConfig.getWorkerPool().toExecutor(), () -> metadataContext, s -> {
+            Executor executor = new ExecutorWrapper<>(selectorConfig.getWorkerPool().toExecutor(),
+                    () -> metadataContext, s -> {
             });
-            CompletableFuture<InstancesResponse> future = CompletableFuture.supplyAsync(() -> polarisAPI.getOneInstance(req), executor);
+            CompletableFuture<InstancesResponse> future = CompletableFuture.supplyAsync(
+                    () -> polarisAPI.getOneInstance(req), executor);
             return future.thenCompose(res -> {
                 if (res != null && res.getInstances() != null && res.getInstances().length > 0) {
                     logger.debug("[selector] selector asyncSelectOne ServiceId:{} return success:{}",
@@ -340,10 +341,12 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
     }
 
     private static MetadataContext buildCalleeMetadataManager(Request request) {
-        MetadataContext manager = RpcContextUtils.getValueMapValue(request.getContext(), PolarisConstant.RPC_CONTEXT_POALRIS_METADATA);
+        MetadataContext manager = RpcContextUtils.getValueMapValue(request.getContext(),
+                PolarisConstant.RPC_CONTEXT_POALRIS_METADATA);
         if (Objects.isNull(manager)) {
             manager = new MetadataContext(MetadataContext.DEFAULT_TRANSITIVE_PREFIX);
-            RpcContextUtils.putValueMapValue(request.getContext(), PolarisConstant.RPC_CONTEXT_POALRIS_METADATA, manager);
+            RpcContextUtils.putValueMapValue(request.getContext(), PolarisConstant.RPC_CONTEXT_POALRIS_METADATA,
+                    manager);
         }
         MetadataContainerImpl calleeContainer = manager.getMetadataContainer(MetadataType.MESSAGE, false);
         calleeContainer.setMetadataProvider(new RequestMetadataProvider(request));
@@ -394,7 +397,8 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
                 }
                 if (attach.containsKey(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST)) {
                     // processing tRPC http protocol
-                    HttpServletRequest servletRequest = (HttpServletRequest) attach.get(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST);
+                    HttpServletRequest servletRequest = (HttpServletRequest) attach.get(
+                            HttpConstants.TRPC_ATTACH_SERVLET_REQUEST);
                     return servletRequest.getHeader(mapKey);
                 }
 

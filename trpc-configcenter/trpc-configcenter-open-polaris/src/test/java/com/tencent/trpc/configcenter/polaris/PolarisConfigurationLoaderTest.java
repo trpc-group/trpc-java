@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,9 +40,11 @@ public class PolarisConfigurationLoaderTest {
 
     private PolarisConfigurationLoader configurationLoader;
 
-    private final String mockGroup = "mock_group";
+    private final String MOCK_GROUP = "mock_group";
 
-    private final String mockFile = "mock_file.properties";
+    private final String MOCK_FILE = "mock_file.properties";
+
+    private final String USER_NAME = "user.name";
 
     private PolarisConfigurationLoader mockLoader() {
         PolarisConfigurationLoader loader = new PolarisConfigurationLoader();
@@ -55,9 +58,9 @@ public class PolarisConfigurationLoaderTest {
 
     private PolarisConfig mockPluginConfig() {
         Map<String, Object> group = new HashMap<>();
-        group.put(PolarisConfig.POLARIS_GROUP_KEY, mockGroup);
+        group.put(PolarisConfig.POLARIS_GROUP_KEY, MOCK_GROUP);
         List<String> files = new ArrayList<>();
-        files.add(mockFile);
+        files.add(MOCK_FILE);
         group.put(PolarisConfig.POLARIS_FILENAMES_KEY, files);
         List<Map<String, Object>> configs = new ArrayList<>();
         configs.add(group);
@@ -77,15 +80,20 @@ public class PolarisConfigurationLoaderTest {
         PolarisConfigurationLoader loader = mockLoader();
 
         ConfigKVFile mockKv = Mockito.mock(ConfigKVFile.class);
-        Mockito.when(mockKv.getProperty("user.name", null)).thenReturn("polaris");
+        Mockito.when(mockKv.getPropertyNames()).thenReturn(new HashSet<String>() {
+            {
+                add(USER_NAME);
+            }
+        });
+        Mockito.when(mockKv.getProperty(USER_NAME, null)).thenReturn("polaris");
 
         ConfigFileService fetcher = loader.getFetcher();
-        Mockito.when(fetcher.getConfigPropertiesFile("default", mockGroup, mockFile)).thenReturn(mockKv);
+        Mockito.when(fetcher.getConfigPropertiesFile("default", MOCK_GROUP, MOCK_FILE)).thenReturn(mockKv);
 
-        String ret = loader.getValue("user.name", mockGroup);
+        String ret = loader.getValue(USER_NAME, MOCK_GROUP);
         Assert.assertEquals("polaris", ret);
 
-        ret = loader.getValue("user.name", mockGroup + "123");
+        ret = loader.getValue(USER_NAME, MOCK_GROUP + "123");
         Assert.assertEquals(null, ret);
     }
 
@@ -98,9 +106,9 @@ public class PolarisConfigurationLoaderTest {
         Mockito.when(mockKv.getProperty("user.name", null)).thenReturn("polaris");
 
         ConfigFileService fetcher = loader.getFetcher();
-        Mockito.when(fetcher.getConfigPropertiesFile("default", mockGroup, mockFile)).thenReturn(mockKv);
+        Mockito.when(fetcher.getConfigPropertiesFile("default", MOCK_GROUP, MOCK_FILE)).thenReturn(mockKv);
 
-        Map<String, String> values = loader.getAllValue(mockGroup);
+        Map<String, String> values = loader.getAllValue(MOCK_GROUP);
         Assert.assertEquals("polaris", values.get("user.name"));
     }
 
@@ -122,7 +130,7 @@ public class PolarisConfigurationLoaderTest {
         ConfigKVFileChangeEvent changeEvent = new ConfigKVFileChangeEvent(changeInfos);
 
         ConfigFileService fetcher = loader.getFetcher();
-        Mockito.when(fetcher.getConfigPropertiesFile("default", mockGroup, mockFile))
+        Mockito.when(fetcher.getConfigPropertiesFile("default", MOCK_GROUP, MOCK_FILE))
                 .thenReturn(new MockConfigKVFile(changeEvent));
 
         loader.addListener(listener);

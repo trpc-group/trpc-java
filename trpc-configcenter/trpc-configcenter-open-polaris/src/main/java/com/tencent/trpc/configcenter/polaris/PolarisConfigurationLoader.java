@@ -30,7 +30,6 @@ import com.tencent.trpc.core.extension.InitializingExtension;
 import com.tencent.trpc.core.extension.PluginConfigAware;
 import com.tencent.trpc.core.utils.CollectionUtils;
 import com.tencent.trpc.core.utils.ConcurrentHashSet;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +38,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 public class PolarisConfigurationLoader implements ConfigurationLoader, PluginConfigAware, InitializingExtension,
@@ -77,7 +75,7 @@ public class PolarisConfigurationLoader implements ConfigurationLoader, PluginCo
             }
             return targetValue.compareAndSet(null, value);
         });
-        return null;
+        return targetValue.get();
     }
 
     @Override
@@ -158,8 +156,9 @@ public class PolarisConfigurationLoader implements ConfigurationLoader, PluginCo
                         kvFile.addChangeListener((ConfigKVFileChangeListener) event -> {
                             for (String changeKey : event.changedKeys()) {
                                 String newVal = String.valueOf(event.getPropertyNewValue(changeKey));
-                                ConfigurationEvent<String, String> kvEvent = new ConfigurationEvent<>(group, changeKey, newVal,
-                                        event.getPropertiesChangeType(changeKey).name());
+                                ConfigurationEvent<String, String> kvEvent =
+                                        new ConfigurationEvent<>(group, changeKey, newVal,
+                                                event.getPropertiesChangeType(changeKey).name());
                                 listeners.forEach(configurationListener -> configurationListener.onReload(kvEvent));
                             }
                         });
