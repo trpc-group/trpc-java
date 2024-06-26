@@ -2,8 +2,11 @@ package com.tencent.trpc.transport.netty;
 
 import com.tencent.trpc.core.common.Constants;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
+import com.tencent.trpc.core.transport.ClientTransport;
+import com.tencent.trpc.core.transport.ServerTransport;
 import com.tencent.trpc.core.transport.handler.ChannelHandlerAdapter;
 import com.tencent.trpc.core.utils.NetUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 
@@ -28,12 +31,13 @@ public class NettyTransportFactoryTest {
         configNetBlank.setIp(NetUtils.LOCAL_HOST);
         configNetBlank.setPort(18888);
         configNetBlank.setNetwork(Constants.NETWORK_UDP);
-        factory.create(configNetBlank, new ChannelHandlerAdapter() {
+        ServerTransport server = factory.create(configNetBlank, new ChannelHandlerAdapter() {
             @Override
             public void received(com.tencent.trpc.core.transport.Channel channel,
                                  Object message) {
             }
         }, new TransportServerCodecTest());
+        Assert.assertNotNull(server);
     }
 
 
@@ -54,12 +58,13 @@ public class NettyTransportFactoryTest {
         configNetBlank.setIp(NetUtils.LOCAL_HOST);
         configNetBlank.setPort(18888);
         configNetBlank.setNetwork(Constants.NETWORK_UDP);
-        factory.create(configNetBlank, new ChannelHandlerAdapter() {
+        ClientTransport client = factory.create(configNetBlank, new ChannelHandlerAdapter() {
             @Override
             public void received(com.tencent.trpc.core.transport.Channel channel,
                                  Object message) {
             }
         }, new TransportClientCodecTest());
+        Assert.assertNotNull(client);
     }
 
 }
