@@ -12,10 +12,13 @@
 package com.tencent.trpc.transport.netty;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Lists;
 import com.tencent.trpc.core.common.config.BaseProtocolConfig;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
+import com.tencent.trpc.core.compressor.support.GZipCompressor;
 import com.tencent.trpc.core.transport.Channel;
 import com.tencent.trpc.core.transport.ChannelHandler;
 import com.tencent.trpc.core.transport.codec.ServerCodec;
@@ -24,13 +27,20 @@ import com.tencent.trpc.core.utils.FutureUtils;
 import com.tencent.trpc.core.utils.NetUtils;
 import com.tencent.trpc.transport.netty.exception.TRPCNettyBindException;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+
+import io.netty.channel.ChannelPromise;
+import org.checkerframework.checker.units.qual.N;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +60,34 @@ import org.powermock.reflect.Whitebox;
 @PrepareForTest({NettyTcpServerTransport.class})
 public class NettyChannelTest {
 
+
+    @Test
+    public void doSend() throws InterruptedException {
+        io.netty.channel.Channel mockChannel = Mockito.mock(io.netty.channel.Channel.class);
+        NettyChannel nettyChannel = new NettyChannel(mockChannel, null);
+        String message = "Hello, Netty!";
+        ChannelPromise promise = Mockito.mock(ChannelPromise.class);
+        when(mockChannel.writeAndFlush(message)).thenReturn(promise);
+        when(promise.sync()).thenReturn(promise);
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        nettyChannel.doSend(message).thenAccept(v -> latch.countDown());
+    }
+
+    @Test
+    public void equalTest() {
+        NettyChannel nilConstruct = new NettyChannel();
+        NettyChannel otherChannel = nilConstruct;
+        nilConstruct.equals(null);
+        nilConstruct.equals(otherChannel);
+    }
+
+    @Test
+    public void ioChannel() {
+        ProtocolConfig config = new ProtocolConfig();
+        NettyChannel channel = new NettyChannel(null, config);
+        Assert.assertNull(channel.getIoChannel());
+    }
     /**
      * Test whether the connection release is OK under concurrent scenarios.
      */
@@ -325,7 +363,7 @@ public class NettyChannelTest {
         protocolConfig.setIp("127.0.0.1");
         protocolConfig.setIoThreads(2);
         protocolConfig.setBossThreads(1);
-        Assert.assertTrue(protocolConfig.getBossThreads() > 0);
+        assertTrue(protocolConfig.getBossThreads() > 0);
     }
 
 

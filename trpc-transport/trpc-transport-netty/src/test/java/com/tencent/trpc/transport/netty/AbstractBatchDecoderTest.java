@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -11,6 +11,7 @@
 
 package com.tencent.trpc.transport.netty;
 
+import static org.mockito.Mockito.mock;
 import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import io.netty.buffer.ByteBuf;
@@ -21,7 +22,9 @@ import io.netty.channel.ChannelHandlerContext;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+
 
 /**
  * Test Netty Decoder
@@ -74,6 +77,51 @@ public class AbstractBatchDecoderTest {
     }
 
     @Test
+    public void channelRaed() {
+        boolean noThrow = true;
+        ChannelHandlerContext ctx = mock(ChannelHandlerContext.class);
+        DecoderTest decoderTest = new DecoderTest();
+        ByteBuf data = Unpooled.copiedBuffer("Hello, World!".getBytes(StandardCharsets.UTF_8));
+        try {
+            decoderTest.channelRead(ctx, data);
+        } catch (Exception e) {
+            noThrow = false;
+        }
+        Assert.assertTrue(noThrow);
+    }
+
+    @Test
+    public void channelReadComplete() {
+        boolean noThrow = true;
+        ChannelHandlerContext ctx = mock(ChannelHandlerContext.class);
+        DecoderTest decoderTest = new DecoderTest();
+        try {
+            decoderTest.channelReadComplete(ctx);
+        } catch (Exception e) {
+            noThrow = false;
+        }
+        Assert.assertTrue(noThrow);
+    }
+
+    @Test
+    public void channelInactive() {
+        boolean noThrow = true;
+        DecoderTest decoderTest = new DecoderTest();
+        ChannelHandlerContext ctx = mock(ChannelHandlerContext.class);
+        ByteBuf data = Unpooled.copiedBuffer("Hello, World!".getBytes(StandardCharsets.UTF_8));
+        try {
+            // channel read fill data
+            decoderTest.channelRead(ctx, data);
+            decoderTest.channelInactive(ctx);
+        } catch (Exception e) {
+            noThrow = false;
+        }
+        Assert.assertTrue(noThrow);
+
+    }
+
+
+    @Test
     public void handlerRemoved0() {
         DecoderTest decoderTest = new DecoderTest();
         try {
@@ -85,6 +133,19 @@ public class AbstractBatchDecoderTest {
 
     @Test
     public void handlerRemoved() {
+        DecoderTest decoderTest = new DecoderTest();
+        ChannelHandlerContext ctx = mock(ChannelHandlerContext.class);
+        ByteBuf data = Unpooled.copiedBuffer("Hello, World!".getBytes(StandardCharsets.UTF_8));
+        decoderTest.channelRead(ctx, data);
+        try {
+            decoderTest.handlerRemoved(null);
+        } catch (Exception e) {
+            LOGGER.warn("handlerRemoved error {}", e);
+        }
+    }
+
+    @Test
+    public void handlerRemovedNodata() {
         DecoderTest decoderTest = new DecoderTest();
         try {
             decoderTest.handlerRemoved(null);
@@ -115,6 +176,10 @@ public class AbstractBatchDecoderTest {
     public void testCOMPOSITECUMULATOR() {
         DecoderTest.COMPOSITE_CUMULATOR.cumulate(ByteBufAllocator.DEFAULT,
                 new EmptyByteBuf(ByteBufAllocator.DEFAULT), new EmptyByteBuf(ByteBufAllocator.DEFAULT));
+        ByteBuf data = Unpooled.copiedBuffer("Hello, World!".getBytes(StandardCharsets.UTF_8));
+        data.retain();
+        DecoderTest.COMPOSITE_CUMULATOR.cumulate(ByteBufAllocator.DEFAULT,
+                data, new EmptyByteBuf(ByteBufAllocator.DEFAULT));
     }
 
     private class DecoderTest extends AbstractBatchDecoder {

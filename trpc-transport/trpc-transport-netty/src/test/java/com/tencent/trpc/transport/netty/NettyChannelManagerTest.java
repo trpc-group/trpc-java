@@ -11,13 +11,23 @@
 
 package com.tencent.trpc.transport.netty;
 
+import io.netty.channel.Channel;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.concurrent.ConcurrentMap;
 
 public class NettyChannelManagerTest {
 
     @Test
     public void test() {
         Assert.assertTrue(NettyChannelManager.getOrAddChannel(null, null) == null);
+    }
+
+
+    @Test
+    public void getChannelMap() {
+        ConcurrentMap<Channel, NettyChannel>  channelMap = NettyChannelManager.getChannelMap();
+        Assert.assertNotEquals(channelMap, null);
     }
 }
