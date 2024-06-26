@@ -11,21 +11,20 @@
 
 package com.tencent.trpc.transport.netty;
 
+import static org.mockito.Mockito.mock;
 import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
-import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.EmptyByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
+import io.netty.channel.ChannelHandlerContext;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
 
 /**
  * Test Netty Decoder
@@ -79,26 +78,46 @@ public class AbstractBatchDecoderTest {
 
     @Test
     public void channelRaed() {
+        boolean noThrow = true;
         ChannelHandlerContext ctx = mock(ChannelHandlerContext.class);
         DecoderTest decoderTest = new DecoderTest();
         ByteBuf data = Unpooled.copiedBuffer("Hello, World!".getBytes(StandardCharsets.UTF_8));
-        decoderTest.channelRead(ctx, data);
+        try {
+            decoderTest.channelRead(ctx, data);
+        } catch (Exception e) {
+            noThrow = false;
+        }
+        Assert.assertTrue(noThrow);
     }
 
     @Test
     public void channelReadComplete() {
+        boolean noThrow = true;
         ChannelHandlerContext ctx = mock(ChannelHandlerContext.class);
         DecoderTest decoderTest = new DecoderTest();
-        decoderTest.channelReadComplete(ctx);
+        try {
+            decoderTest.channelReadComplete(ctx);
+        } catch (Exception e) {
+            noThrow = false;
+        }
+        Assert.assertTrue(noThrow);
     }
 
     @Test
     public void channelInactive() {
+        boolean noThrow = true;
         DecoderTest decoderTest = new DecoderTest();
         ChannelHandlerContext ctx = mock(ChannelHandlerContext.class);
         ByteBuf data = Unpooled.copiedBuffer("Hello, World!".getBytes(StandardCharsets.UTF_8));
-        decoderTest.channelRead(ctx, data);
-        decoderTest.channelInactive(ctx);
+        try {
+            // channel read fill data
+            decoderTest.channelRead(ctx, data);
+            decoderTest.channelInactive(ctx);
+        } catch (Exception e) {
+            noThrow = false;
+        }
+        Assert.assertTrue(noThrow);
+
     }
 
 
