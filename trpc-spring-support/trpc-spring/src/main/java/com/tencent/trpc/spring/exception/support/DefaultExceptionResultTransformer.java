@@ -18,7 +18,6 @@ import com.tencent.trpc.core.utils.ProtoJsonConverter;
 import com.tencent.trpc.spring.exception.api.ExceptionResultTransformer;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -31,17 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultExceptionResultTransformer implements ExceptionResultTransformer {
 
     private static final Map<Class<? extends Message>, Builder> cache = new ConcurrentHashMap<>();
-
-    private static <T extends Message> Builder newBuilder(Class<T> clazz) {
-        Objects.requireNonNull(clazz, "protobuf message class must not be null");
-        return cache.computeIfAbsent(clazz, c -> {
-            try {
-                return (Builder) c.getMethod("newBuilder").invoke(null);
-            } catch (Exception e) {
-                throw new IllegalStateException("newBuilder for type '" + clazz + "' error", e);
-            }
-        }).getDefaultInstanceForType().newBuilderForType();
-    }
 
     @SuppressWarnings("unchecked")
     @Override
