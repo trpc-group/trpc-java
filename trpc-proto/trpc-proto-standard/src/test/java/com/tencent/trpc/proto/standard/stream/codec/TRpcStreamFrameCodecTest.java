@@ -13,11 +13,17 @@ package com.tencent.trpc.proto.standard.stream.codec;
 
 import com.tencent.trpc.core.common.config.BackendConfig;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
+import com.tencent.trpc.core.compressor.CompressorSupport;
 import com.tencent.trpc.core.compressor.support.SnappyCompressor;
+import com.tencent.trpc.core.serialization.SerializationSupport;
 import com.tencent.trpc.core.serialization.support.PBSerialization;
+import com.tencent.trpc.proto.standard.common.TRPCProtocol;
 import com.tencent.trpc.proto.standard.common.TRPCProtocol.TrpcStreamFrameType;
+import com.tencent.trpc.proto.standard.common.TRpcFrameType;
 import com.tencent.trpc.proto.standard.stream.codec.TRpcStreamFrameCodec.RpcCallInfo;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import org.junit.Assert;
 import org.junit.Test;
@@ -82,19 +88,59 @@ public class TRpcStreamFrameCodecTest {
     }
 
     @Test
+    public void encodeStreamResetFrame() {
+        ByteBufAllocator allocator = UnpooledByteBufAllocator.DEFAULT;
+        int streamId = 1;
+        int retCode = 500;
+        String errMsg = "Internal Server Error";
+
+        ByteBuf frame = TRpcStreamFrameCodec.encodeStreamResetFrame(allocator, streamId, retCode, errMsg);
+        Assert.assertNotNull(frame);
+        Assert.assertEquals(TRpcFrameType.CLOSE.getEncodedType(),
+                TRpcStreamFrameHeaderCodec.frameType(frame).getEncodedType());
+    }
+
+    @Test
     public void encodeStreamCloseFrame() {
     }
 
     @Test
     public void decodeStreamInitFrame() {
+        ByteBuf invalidFrame = Unpooled.buffer();
+        invalidFrame.writeBytes(new byte[]{0x00, 0x01, 0x02, 0x03});
+
+        try {
+            TRPCProtocol.TrpcStreamInitMeta initMeta = TRpcStreamFrameCodec.decodeStreamInitFrame(invalidFrame);
+            Assert.fail("Expected an IllegalArgumentException to be thrown");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue(e instanceof IllegalArgumentException);
+        }
     }
 
     @Test
     public void decodeStreamFeedbackFrame() {
+        ByteBuf invalidFrame = Unpooled.buffer();
+        invalidFrame.writeBytes(new byte[]{0x00, 0x01, 0x02, 0x03});
+
+        try {
+            TRPCProtocol.TrpcStreamFeedBackMeta feedBackMeta = TRpcStreamFrameCodec.decodeStreamFeedbackFrame(invalidFrame);
+            Assert.fail("Expected an IllegalArgumentException to be thrown");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue(e instanceof IllegalArgumentException);
+        }
     }
 
     @Test
     public void decodeStreamCloseFrame() {
+        ByteBuf invalidFrame = Unpooled.buffer();
+        invalidFrame.writeBytes(new byte[]{0x00, 0x01, 0x02, 0x03});
+
+        try {
+            TRPCProtocol.TrpcStreamCloseMeta closeMeta = TRpcStreamFrameCodec.decodeStreamCloseFrame(invalidFrame);
+            Assert.fail("Expected an IllegalArgumentException to be thrown");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue(e instanceof IllegalArgumentException);
+        }
     }
 
     @Test
@@ -107,6 +153,23 @@ public class TRpcStreamFrameCodecTest {
 
     @Test
     public void decodeDataFrameData() {
+        ProtocolConfig protocolConfig = getProtocolConfig("PBSerialization", "SnappyCompressor");
+        TRpcStreamFrameCodec codec = TRpcStreamFrameCodec.newDataFrameCodec(
+                protocolConfig,
+                UnpooledByteBufAllocator.DEFAULT,
+                0,
+                0
+        );
+
+        ByteBuf invalidFrame = Unpooled.buffer();
+        invalidFrame.writeBytes(new byte[]{0x00, 0x01, 0x02, 0x03});
+
+        try {
+            String data = codec.decodeDataFrameData(invalidFrame, String.class);
+            Assert.fail("Expected an IllegalArgumentException to be thrown");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue(e instanceof IllegalArgumentException);
+        }
     }
 
     private BackendConfig getBackendConfig(String serialization, String compressor) {

@@ -16,11 +16,15 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.protobuf.ByteString;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
+import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.proto.standard.common.TRPCProtocol.TrpcProtoVersion;
 import com.tencent.trpc.transport.netty.NettyChannel;
 import com.tencent.trpc.transport.netty.NettyChannelBuffer;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import org.apache.commons.lang3.ArrayUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class StandardPackageTest {
@@ -65,5 +69,54 @@ public class StandardPackageTest {
         assertTrue(ArrayUtils.isEquals(newPkg.getBodyBytes(), new byte[]{1, 2, 3, 4}));
         assertTrue(ArrayUtils.isEquals(newPkg.getHeadBytes(), head));
 
+        StandardPackage pkg2 = new StandardPackage();
+        pkg2.setBodyBytes(new byte[]{1, 2, 3, 4});
+        pkg2.setHeadBytes(head);
+        pkg2.getFrame().setHeadSize(pkg.getHeadBytes().length);
+        pkg2.getFrame()
+                .setSize(pkg.getBodyBytes().length + pkg.getHeadBytes().length
+                        + StandardFrame.FRAME_SIZE);
+        pkg2.getFrame().setMagic((short) 0x0000); // not equals FRAME_MAGIC
+        pkg2.getFrame().setState((byte) 1);
+        pkg2.getFrame().setStreamId(100);
+        pkg2.getFrame().setType((byte) 2);
+        pkg2.write(nettyChannelBuffer);
+        try {
+            StandardPackage newPkg2 = (StandardPackage) StandardPackage
+                    .decode(channel, nettyChannelBuffer, true);
+            Assert.fail("invalid frame magaic");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.assertTrue(e instanceof TRpcException);
+        }
+
+        StandardPackage pkg3 = new StandardPackage();
+        pkg3.setBodyBytes(new byte[]{1, 2, 3, 4});
+        pkg3.setHeadBytes(head);
+        pkg3.getFrame().setHeadSize(pkg.getHeadBytes().length);
+        pkg3.getFrame()
+                .setSize(pkg.getBodyBytes().length + pkg.getHeadBytes().length
+                        + StandardFrame.FRAME_SIZE);
+        pkg3.getFrame().setMagic((short) 0x930);
+        pkg3.getFrame().setState((byte) 1);
+        pkg3.getFrame().setStreamId(100);
+        pkg3.getFrame().setType((byte) 2);
+        ProtocolConfig config3 = new ProtocolConfig();
+        config3.setIp("127.0.0.1");
+        config3.setPort(54321);
+        config3.setDefault();
+        config3.setPayload(pkg.getBodyBytes().length + pkg.getHeadBytes().length);
+        NettyChannel channel3 = new NettyChannel(null, config3);
+        NettyChannelBuffer nettyChannelBuffer3 =
+                new NettyChannelBuffer(UnpooledByteBufAllocator.DEFAULT.buffer(65535));
+        pkg3.write(nettyChannelBuffer3);
+        try {
+            StandardPackage newPkg3 = (StandardPackage) StandardPackage
+                    .decode(channel3, nettyChannelBuffer3, true);
+            Assert.fail("pkg length > payload");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.assertTrue(e instanceof TRpcException);
+        }
     }
 }
