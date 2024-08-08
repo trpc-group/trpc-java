@@ -354,7 +354,10 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
         return manager;
     }
 
-    private static class RequestMetadataProvider implements MetadataProvider {
+    /**
+     * For testing, adjust the access scope of RequestMetadataProvider to public
+     */
+    public static class RequestMetadataProvider implements MetadataProvider {
 
         private final Request request;
 

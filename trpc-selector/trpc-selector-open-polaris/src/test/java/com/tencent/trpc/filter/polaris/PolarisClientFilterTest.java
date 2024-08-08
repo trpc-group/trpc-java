@@ -35,6 +35,7 @@ public class PolarisClientFilterTest {
 
     private static final String TEST_KEY = "test_key";
     private static final String TEST_VALUE = "test_value";
+    private static final String TEST_NONE_KEY = "test_none_key";
 
     @InjectMocks
     private PolarisClientFilter polarisClientFilter;
@@ -72,6 +73,7 @@ public class PolarisClientFilterTest {
         MessageMetadataContainer calleeContainer = metadataContext.getMetadataContainer(
                 MetadataType.MESSAGE, false);
         calleeContainer.setHeader(TEST_KEY, TEST_VALUE, TransitiveType.PASS_THROUGH);
+        calleeContainer.setHeader(TEST_NONE_KEY, TEST_VALUE, TransitiveType.NONE);
         RpcClientContext requestContext = new RpcClientContext();
         RpcContextUtils.putValueMapValue(requestContext,
                 PolarisConstant.RPC_CONTEXT_POALRIS_METADATA, metadataContext);
