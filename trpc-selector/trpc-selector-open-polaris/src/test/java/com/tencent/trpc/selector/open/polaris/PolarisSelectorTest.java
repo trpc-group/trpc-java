@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import org.junit.After;
@@ -251,7 +252,13 @@ public class PolarisSelectorTest {
             }
             CompletableFuture<InstancesResponse> instancesResponseCompletableFuture = CompletableFuture
                     .completedFuture(new InstancesResponse(getServiceInstances(size), null, null));
-            InstancesFuture instancesFuture = new InstancesFuture(instancesResponseCompletableFuture);
+            InstancesFuture instancesFuture = new InstancesFuture(() -> {
+                try {
+                    return instancesResponseCompletableFuture.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            });
             return instancesFuture;
         };
 

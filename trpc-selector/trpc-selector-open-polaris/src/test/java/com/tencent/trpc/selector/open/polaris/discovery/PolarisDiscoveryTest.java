@@ -39,8 +39,10 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-import javax.xml.ws.Holder;
+import java.util.concurrent.atomic.AtomicReference;
+
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
@@ -95,7 +97,13 @@ public class PolarisDiscoveryTest extends TestCase {
 
         CompletableFuture<InstancesResponse> instancesResponseCompletableFuture = CompletableFuture
                 .completedFuture(response);
-        InstancesFuture instancesFuture = new InstancesFuture(instancesResponseCompletableFuture);
+        InstancesFuture instancesFuture = new InstancesFuture(() -> {
+            try {
+                return instancesResponseCompletableFuture.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         ConsumerAPI consumerAPI = PowerMockito.mock(ConsumerAPI.class);
         PowerMockito.when(consumerAPI.asyncGetInstances(anyObject())).thenReturn(instancesFuture);
@@ -120,14 +128,14 @@ public class PolarisDiscoveryTest extends TestCase {
         serviceId.setParameters(params);
         CompletionStage<List<ServiceInstance>> stage =
                 discovery.asyncList(serviceId, Executors.newSingleThreadExecutor());
-        final Holder<List> result = new Holder<>();
+        AtomicReference<List> result = new AtomicReference<>();
         CountDownLatch countDownLatch = new CountDownLatch(1);
         stage.whenComplete((list, ex) -> {
-            result.value = list;
+            result.set(list);
             countDownLatch.countDown();
         });
         countDownLatch.await();
-        Assert.assertEquals(2, result.value.size());
+        Assert.assertEquals(2, result.get().size());
     }
 
     @Test
@@ -161,7 +169,13 @@ public class PolarisDiscoveryTest extends TestCase {
         InstancesResponse response = new InstancesResponse(serviceInstances, null, null);
         CompletableFuture<InstancesResponse> instancesResponseCompletableFuture = CompletableFuture
                 .completedFuture(response);
-        InstancesFuture instancesFuture = new InstancesFuture(instancesResponseCompletableFuture);
+        InstancesFuture instancesFuture = new InstancesFuture(() -> {
+            try {
+                return instancesResponseCompletableFuture.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
         ConsumerAPI consumerAPI = PowerMockito.mock(ConsumerAPI.class);
         PowerMockito.when(consumerAPI.asyncGetInstances(anyObject())).then(inv -> {
             throw new PolarisException(ErrorCode.INVALID_CONFIG, "test error");
@@ -190,7 +204,13 @@ public class PolarisDiscoveryTest extends TestCase {
         InstancesResponse response = new InstancesResponse(PowerMockito.mock(ServiceInstances.class), null, null);
         CompletableFuture<InstancesResponse> instancesResponseCompletableFuture = CompletableFuture
                 .completedFuture(response);
-        InstancesFuture instancesFuture = new InstancesFuture(instancesResponseCompletableFuture);
+        InstancesFuture instancesFuture = new InstancesFuture(() -> {
+            try {
+                return instancesResponseCompletableFuture.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
         ConsumerAPI consumerAPI = PowerMockito.mock(ConsumerAPI.class);
         PowerMockito.when(consumerAPI.asyncGetInstances(anyObject())).thenReturn(instancesFuture);
         PowerMockito.when(APIFactory.createConsumerAPIByConfig(anyObject()))
@@ -205,14 +225,14 @@ public class PolarisDiscoveryTest extends TestCase {
         serviceId.setParameters(params);
         CompletionStage<List<ServiceInstance>> stage =
                 discovery.asyncList(serviceId, Executors.newSingleThreadExecutor());
-        final Holder<List> result = new Holder<>();
+        AtomicReference<List> result = new AtomicReference<>();
         CountDownLatch countDownLatch = new CountDownLatch(1);
         stage.whenComplete((list, ex) -> {
-            result.value = list;
+            result.set(list);
             countDownLatch.countDown();
         });
         countDownLatch.await();
-        Assert.assertEquals(0, result.value.size());
+        Assert.assertEquals(0, result.get().size());
     }
 
     @Test
@@ -348,7 +368,13 @@ public class PolarisDiscoveryTest extends TestCase {
         CompletableFuture<InstancesResponse> instancesResponseCompletableFuture = CompletableFuture.supplyAsync(() -> {
             throw new NullPointerException();
         });
-        InstancesFuture instancesFuture = new InstancesFuture(instancesResponseCompletableFuture);
+        InstancesFuture instancesFuture = new InstancesFuture(() -> {
+            try {
+                return instancesResponseCompletableFuture.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         ConsumerAPI consumerAPI = PowerMockito.mock(ConsumerAPI.class);
         PowerMockito.when(consumerAPI.asyncGetInstances(anyObject())).thenReturn(instancesFuture);
@@ -363,17 +389,17 @@ public class PolarisDiscoveryTest extends TestCase {
                 ExtensionLoader.getExtensionLoader(Discovery.class).getExtension("polaris");
         CompletionStage<List<ServiceInstance>> stage =
                 discovery.asyncList(serviceId, Executors.newSingleThreadExecutor());
-        final Holder<List> result = new Holder<>();
-        final Holder<Throwable> exception = new Holder<>();
+        AtomicReference<List> result = new AtomicReference<>();
+        AtomicReference<Throwable> exception = new AtomicReference<>();
         CountDownLatch countDownLatch = new CountDownLatch(1);
         stage.whenComplete((list, ex) -> {
-            result.value = list;
-            exception.value = ex;
+            result.set(list);
+            exception.set(ex);
             countDownLatch.countDown();
         });
         countDownLatch.await();
-        Assert.assertEquals(result.value, null);
-        Assert.assertEquals(exception.value.getCause().getClass(), TRpcException.class);
+        Assert.assertEquals(result.get(), null);
+        Assert.assertEquals(exception.get().getCause().getClass(), TRpcException.class);
     }
 
 }
