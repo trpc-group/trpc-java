@@ -11,13 +11,17 @@
 
 package com.tencent.trpc.configcenter.polaris;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
+import com.tencent.trpc.configcenter.polaris.PolarisConfig.Config;
 import com.tencent.trpc.core.common.config.PluginConfig;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class PolarisConfigTest {
@@ -44,21 +48,47 @@ public class PolarisConfigTest {
         PluginConfig pluginConfig = new PluginConfig("", PolarisConfigurationLoader.class, params);
         PolarisConfig config = new PolarisConfig(pluginConfig);
 
-        Assert.assertEquals(Long.valueOf(5000L), config.getTimeout());
-        Assert.assertEquals("123", config.getToken());
-        Assert.assertEquals("default", config.getNamespace());
-        Assert.assertEquals(Collections.singletonList("127.0.0.1:8093"), config.getServerAddrs());
-        Assert.assertEquals(3, config.getConfigs().size());
+        assertEquals(Long.valueOf(5000L), config.getTimeout());
+        assertEquals("123", config.getToken());
+        assertEquals("default", config.getNamespace());
+        assertEquals(Collections.singletonList("127.0.0.1:8093"), config.getServerAddrs());
+        assertEquals(3, config.getConfigs().size());
 
         int index = 0;
         for (PolarisConfig.Config subConfig : config.getConfigs()) {
-            Assert.assertEquals(subConfig.getGroup(), "group-" + index);
-            Assert.assertEquals(subConfig.getFilenames().size(), 1);
+            assertEquals(subConfig.getGroup(), "group-" + index);
+            assertEquals(subConfig.getFilenames().size(), 1);
             for (String filename : subConfig.getFilenames()) {
-                Assert.assertEquals(filename, "file-" + index);
+                assertEquals(filename, "file-" + index);
             }
             index++;
         }
+    }
+
+    @Test
+    public void testConfig() {
+        String group = "testGroup";
+        List<String> filenames = Arrays.asList("file1", "file2");
+
+        Config config1 = new Config(group, filenames);
+        Config config2 = new Config(group, filenames);
+
+        // Test getters
+        assertEquals(group, config1.getGroup());
+        assertEquals(filenames, config1.getFilenames());
+
+        // Test setters
+        String newGroup = "newGroup";
+        List<String> newFilenames = Arrays.asList("file3", "file4");
+        config1.setGroup(newGroup);
+        config1.setFilename(newFilenames);
+        assertEquals(newGroup, config1.getGroup());
+        assertEquals(newFilenames, config1.getFilenames());
+
+        // Test equals and hashCode
+        assertEquals(config1, config1);
+        assertNotEquals(config1, config2);
+        assertNotEquals(config1.hashCode(), config2.hashCode());
     }
 
 }

@@ -143,6 +143,20 @@ public class PolarisConfigurationLoaderTest {
         Assert.assertEquals(event.getType(), ChangeType.ADDED.name());
     }
 
+    @Test
+    public void testInit() {
+        PolarisConfigurationLoader loader = mockLoader();
+        try {
+            PluginConfig pluginConfig = new PluginConfig("config", PolarisConfig.class);
+            loader.setPluginConfig(pluginConfig);
+            loader.init();
+            loader.removeListener(null);
+            loader.destroy();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private static class MockConfigKVFile implements ConfigKVFile {
 
         private final ConfigKVFileChangeEvent event;

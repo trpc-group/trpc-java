@@ -1,6 +1,7 @@
 package com.tencent.trpc.selector.open.polaris;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.trpc.core.constant.proto.HttpConstants;
@@ -66,9 +67,6 @@ public class RequestMetadataTest {
 
         // set context
         RpcContext clientContext = new RpcClientContext();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(TEST_HEADER_KEY, TEST_HEADER_VALUE);
-        clientContext.getReqAttachMap().put(FIELD_NAME_HEADERS, httpHeaders);
         request.setContext(clientContext);
     }
 
@@ -92,6 +90,10 @@ public class RequestMetadataTest {
     public void testGetMapValue()
             throws NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(TEST_HEADER_KEY, TEST_HEADER_VALUE);
+        request.getContext().getReqAttachMap().put(FIELD_NAME_HEADERS, httpHeaders);
+
         Constructor<RequestMetadataProvider> constructor = RequestMetadataProvider.class.
                 getDeclaredConstructor(Request.class);
         constructor.setAccessible(true);
@@ -109,5 +111,30 @@ public class RequestMetadataTest {
         assertEquals(TEST_HEADER_VALUE,
                 metadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER,
                         TEST_HEADER_KEY));
+    }
+
+    @Test
+    public void testGetNull() throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<RequestMetadataProvider> constructor = RequestMetadataProvider.class.
+                getDeclaredConstructor(Request.class);
+        constructor.setAccessible(true);
+        RequestMetadataProvider metadataProvider = constructor.newInstance(request);
+        String value = metadataProvider.getRawMetadataMapValue("", "");
+        assertNull(value);
+    }
+
+    @Test
+    public void testException() throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<RequestMetadataProvider> constructor = RequestMetadataProvider.class.
+                getDeclaredConstructor(Request.class);
+        constructor.setAccessible(true);
+        RequestMetadataProvider metadataProvider = constructor.newInstance(request);
+        RpcContext context = request.getContext();
+        context.getReqAttachMap().put(FIELD_NAME_HEADERS, "");
+        String value = metadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER,
+                TEST_HEADER_KEY);
+        assertNull(value);
     }
 }
