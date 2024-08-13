@@ -13,7 +13,6 @@ import com.tencent.trpc.core.rpc.RpcContext;
 import com.tencent.trpc.core.rpc.RpcInvocation;
 import com.tencent.trpc.core.rpc.common.RpcMethodInfo;
 import com.tencent.trpc.core.rpc.def.DefRequest;
-import com.tencent.trpc.demo.api.Hello.HelloReq;
 import com.tencent.trpc.demo.api.service.HelloServiceImpl;
 import com.tencent.trpc.selector.polaris.PolarisSelector.RequestMetadataProvider;
 import java.lang.reflect.Constructor;
@@ -60,7 +59,7 @@ public class RequestMetadataTest {
         HelloServiceImpl helloService = new HelloServiceImpl();
         Class<? extends HelloServiceImpl> helloClazz = helloService.getClass();
         RpcMethodInfo rpcMethodInfo = new RpcMethodInfo(helloClazz, helloClazz.getMethod(TEST_METHOD_NAME,
-                RpcContext.class, HelloReq.class));
+                RpcContext.class, String.class));
         RpcInvocation rpcInvocation = new RpcInvocation();
         rpcInvocation.setRpcMethodInfo(rpcMethodInfo);
         request.setInvocation(rpcInvocation);
