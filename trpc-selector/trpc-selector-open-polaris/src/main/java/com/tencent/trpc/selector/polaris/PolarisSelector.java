@@ -390,7 +390,7 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
                     Object springHeaders = attach.get(FIELD_NAME_HEADERS);
                     try {
                         // public String getFirst(String headerName)
-                        Method method = springHeaders.getClass().getMethod("getFirst");
+                        Method method = springHeaders.getClass().getMethod("getFirst", String.class);
                         Object val = method.invoke(springHeaders, mapKey);
                         return val == null ? null : (String) val;
                     } catch (Exception e) {
