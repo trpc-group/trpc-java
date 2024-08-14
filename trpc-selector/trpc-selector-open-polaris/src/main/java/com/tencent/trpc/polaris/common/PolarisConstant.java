@@ -207,5 +207,15 @@ public interface PolarisConstant {
      */
     String SELECTOR_ENV_NAME = "selector-env-name";
 
+    /**
+     * Tag identification for data transmission across tRPC processes
+     */
+    String RPC_CONTEXT_TRANSITIVE_METADATA = "tRPC-Polaris-Transitive-Metadata";
+
+    /**
+     * Data Transmission Label Identification for tRPC Process
+     */
+    String RPC_CONTEXT_POALRIS_METADATA = "tRPC-Polaris-Metadata";
+
 }
 

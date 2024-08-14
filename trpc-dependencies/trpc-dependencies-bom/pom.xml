@@ -59,8 +59,9 @@
         <jakarta.activation-api.version>1.2.1</jakarta.activation-api.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <jakarta.xml.bind-api.version>2.3.2</jakarta.xml.bind-api.version>
-        <jsr305.version>3.0.2</jsr305.version>
         <javassist.version>3.28.0-GA</javassist.version>
+        <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+        <jsr305.version>3.0.2</jsr305.version>
         <logback.version>1.2.13</logback.version>
         <logging.log4j.version>2.17.1</logging.log4j.version>
         <log4j2.ttl.thread.context.map.version>1.3.3</log4j2.ttl.thread.context.map.version>
@@ -83,7 +84,7 @@
         <opentelemetry.bom.alpha.version>1.26.0-alpha</opentelemetry.bom.alpha.version>
         <opentelemetry.bom.version>1.26.0</opentelemetry.bom.version>
         <okio.version>3.4.0</okio.version>
-        <polaris.open.version>1.13.0</polaris.open.version>
+        <polaris.open.version>1.15.5</polaris.open.version>
         <powermock.version>1.7.4</powermock.version>
         <protobuf-bom.version>3.21.9</protobuf-bom.version>
         <pgv.version>0.4.1</pgv.version>
@@ -113,7 +114,7 @@
         <dependencies>
             <dependency>
                 <groupId>com.tencent.polaris</groupId>
-                <artifactId>polaris-factory</artifactId>
+                <artifactId>polaris-all</artifactId>
                 <version>${polaris.open.version}</version>
             </dependency>
             <!--qos logback opensource dependencies-->
@@ -518,6 +519,11 @@
                 <version>${zookeeper.version}</version>
             </dependency>
             <!--eclipse opensource dependencies-->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.servlet-api.version}</version>
+            </dependency>
             <dependency>
                 <artifactId>jetty-server</artifactId>
                 <groupId>org.eclipse.jetty</groupId>

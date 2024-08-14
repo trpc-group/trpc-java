@@ -26,8 +26,19 @@ import com.tencent.polaris.api.rpc.InstancesResponse;
 import com.tencent.polaris.client.api.SDKContext;
 import com.tencent.polaris.factory.api.APIFactory;
 import com.tencent.polaris.factory.config.ConfigurationImpl;
+import com.tencent.polaris.metadata.core.MessageMetadataContainer;
+import com.tencent.polaris.metadata.core.MetadataProvider;
+import com.tencent.polaris.metadata.core.MetadataType;
+import com.tencent.polaris.metadata.core.impl.MetadataContainerImpl;
+import com.tencent.polaris.metadata.core.manager.MetadataContext;
+import com.tencent.polaris.metadata.core.manager.MetadataContextHolder;
 import com.tencent.polaris.plugins.loadbalancer.random.WeightedRandomBalance;
+import com.tencent.polaris.threadlocal.cross.ExecutorWrapper;
+import com.tencent.trpc.core.common.ConfigManager;
 import com.tencent.trpc.core.common.config.PluginConfig;
+import com.tencent.trpc.core.configcenter.ConfigurationManager;
+import com.tencent.trpc.core.configcenter.spi.ConfigurationLoader;
+import com.tencent.trpc.core.constant.proto.HttpConstants;
 import com.tencent.trpc.core.exception.ErrorCode;
 import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.core.exception.TRpcExtensionException;
@@ -41,18 +52,24 @@ import com.tencent.trpc.core.rpc.Request;
 import com.tencent.trpc.core.selector.ServiceId;
 import com.tencent.trpc.core.selector.ServiceInstance;
 import com.tencent.trpc.core.selector.spi.Selector;
+import com.tencent.trpc.core.utils.RpcContextUtils;
+import com.tencent.trpc.core.utils.StringUtils;
 import com.tencent.trpc.polaris.common.PolarisConstant;
 import com.tencent.trpc.polaris.common.PolarisFutureUtil;
 import com.tencent.trpc.polaris.common.PolarisTrans;
 import com.tencent.trpc.selector.polaris.common.PolarisCommon;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Base open source polaris selector
@@ -61,6 +78,8 @@ import java.util.stream.Collectors;
 public class PolarisSelector implements Selector, PluginConfigAware, InitializingExtension, DisposableExtension {
 
     public static final String NAME = "polaris";
+
+    private static final String FIELD_NAME_HEADERS = "headers";
 
     private static final Logger logger = LoggerFactory.getLogger(PolarisSelector.class);
 
@@ -153,12 +172,25 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
         req.setMetadata(PolarisTrans.trans2PolarisMetadata(serviceId.getParameters()));
         // ServiceInfo assignment, used to support request matching rules for rule routing
         req.setServiceInfo(PolarisTrans.getPolarisServiceInfo(pluginConfig.getProperties(), serviceId, request));
+        req.setExternalParameterSupplier(key -> {
+            String configCenter = ConfigManager.getInstance().getServerConfig()
+                    .getConfigCenter();
+            if (StringUtils.isEmpty(configCenter)) {
+                return Optional.empty();
+            }
+            ConfigurationLoader loader = ConfigurationManager.getConfigurationLoader(configCenter);
+            return Optional.ofNullable(loader.getValue(key, ConfigManager.getInstance().getServerConfig().getApp()));
+        });
         logger.debug("[asyncSelectOne] GetOneInstanceRequest:{}", req);
 
         try {
-            CompletableFuture<InstancesResponse> future = PolarisFutureUtil.toCompletableFuture(
-                    polarisAPI.asyncGetOneInstance(req),
-                    selectorConfig.getWorkerPool().toExecutor());
+            MetadataContext metadataContext = buildCalleeMetadataManager(request);
+            MetadataContextHolder.set(metadataContext);
+            Executor executor = new ExecutorWrapper<>(selectorConfig.getWorkerPool().toExecutor(),
+                    () -> metadataContext, s -> {
+            });
+            CompletableFuture<InstancesResponse> future = CompletableFuture.supplyAsync(
+                    () -> polarisAPI.getOneInstance(req), executor);
             return future.thenCompose(res -> {
                 if (res != null && res.getInstances() != null && res.getInstances().length > 0) {
                     logger.debug("[selector] selector asyncSelectOne ServiceId:{} return success:{}",
@@ -173,6 +205,8 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
             throw TRpcException
                     .newFrameException(ErrorCode.TRPC_CLIENT_ROUTER_ERR, "call polaris error",
                             e);
+        } finally {
+            MetadataContextHolder.remove();
         }
     }
 
@@ -303,6 +337,78 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
     public void destroy() throws TRpcExtensionException {
         if (null != polarisAPI) {
             polarisAPI.destroy();
+        }
+    }
+
+    private static MetadataContext buildCalleeMetadataManager(Request request) {
+        MetadataContext manager = RpcContextUtils.getValueMapValue(request.getContext(),
+                PolarisConstant.RPC_CONTEXT_POALRIS_METADATA);
+        if (Objects.isNull(manager)) {
+            manager = new MetadataContext(MetadataContext.DEFAULT_TRANSITIVE_PREFIX);
+            RpcContextUtils.putValueMapValue(request.getContext(), PolarisConstant.RPC_CONTEXT_POALRIS_METADATA,
+                    manager);
+        }
+        MetadataContainerImpl calleeContainer = manager.getMetadataContainer(MetadataType.MESSAGE, false);
+        calleeContainer.setMetadataProvider(new RequestMetadataProvider(request));
+        RpcContextUtils.putValueMapValue(request.getContext(), PolarisConstant.RPC_CONTEXT_POALRIS_METADATA, manager);
+        return manager;
+    }
+
+    /**
+     * For testing, adjust the access scope of RequestMetadataProvider to public
+     */
+    public static class RequestMetadataProvider implements MetadataProvider {
+
+        private final Request request;
+
+        private RequestMetadataProvider(Request request) {
+            this.request = request;
+        }
+
+        @Override
+        public String getRawMetadataStringValue(String key) {
+            key = key.toLowerCase();
+            switch (key) {
+                case MessageMetadataContainer.LABEL_KEY_CALLER_IP:
+                    return request.getMeta().getRemoteAddress().getHostName();
+                case MessageMetadataContainer.LABEL_KEY_METHOD:
+                    return request.getMeta().getCallInfo().getCalleeMethod();
+                case MessageMetadataContainer.LABEL_KEY_PATH:
+                    return request.getInvocation().getRpcMethodInfo().getServiceInterface().getCanonicalName();
+            }
+            return null;
+        }
+
+        @Override
+        public String getRawMetadataMapValue(String key, String mapKey) {
+            key = key.toLowerCase();
+            if (key.equals(MessageMetadataContainer.LABEL_MAP_KEY_HEADER)) {
+                Map<String, Object> attach = request.getContext().getReqAttachMap();
+                if (attach.containsKey(FIELD_NAME_HEADERS)) {
+                    // processing scg scenes
+                    // springHeaders define {@link org.springframework.http.HttpHeaders}
+                    Object springHeaders = attach.get(FIELD_NAME_HEADERS);
+                    try {
+                        // public String getFirst(String headerName)
+                        Method method = springHeaders.getClass().getMethod("getFirst", String.class);
+                        Object val = method.invoke(springHeaders, mapKey);
+                        return val == null ? null : (String) val;
+                    } catch (Exception e) {
+                        logger.error("[selector] get raw metadata from tRPC context fail, key:{}", mapKey, e);
+                        return null;
+                    }
+                }
+                if (attach.containsKey(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST)) {
+                    // processing tRPC http protocol
+                    HttpServletRequest servletRequest = (HttpServletRequest) attach.get(
+                            HttpConstants.TRPC_ATTACH_SERVLET_REQUEST);
+                    return servletRequest.getHeader(mapKey);
+                }
+
+                Object val = attach.get(mapKey);
+                return val == null ? null : String.valueOf(val);
+            }
+            return null;
         }
     }
 }

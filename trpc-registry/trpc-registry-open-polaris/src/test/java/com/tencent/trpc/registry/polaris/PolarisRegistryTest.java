@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -17,6 +17,8 @@ import static org.mockito.Matchers.anyObject;
 
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
+import com.tencent.polaris.api.plugin.server.ReportServiceContractRequest;
+import com.tencent.polaris.api.plugin.server.ReportServiceContractResponse;
 import com.tencent.polaris.api.rpc.InstanceDeregisterRequest;
 import com.tencent.polaris.api.rpc.InstanceHeartbeatRequest;
 import com.tencent.polaris.api.rpc.InstanceRegisterRequest;
@@ -71,8 +73,7 @@ public class PolarisRegistryTest extends TestCase {
                     public InstanceRegisterResponse register(
                             InstanceRegisterRequest instanceRegisterRequest) {
                         Assert.assertEquals(2000, instanceRegisterRequest.getTtl().intValue());
-                        InstanceRegisterResponse instanceRegisterResponse = new InstanceRegisterResponse("101", true);
-                        return instanceRegisterResponse;
+                        return new InstanceRegisterResponse("101", true);
                     }
 
                     @Override
@@ -85,6 +86,12 @@ public class PolarisRegistryTest extends TestCase {
                     public void heartbeat(InstanceHeartbeatRequest instanceHeartbeatRequest)
                             throws PolarisException {
                         Assert.assertEquals("101", instanceHeartbeatRequest.getInstanceID());
+                    }
+
+                    @Override
+                    public ReportServiceContractResponse reportServiceContract(
+                            ReportServiceContractRequest reportServiceContractRequest) throws PolarisException {
+                        return null;
                     }
 
                     @Override
