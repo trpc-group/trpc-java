@@ -95,6 +95,10 @@ public class Constants {
      */
     public static final String DEFAULT_SERVER_CLOSE_TIMEOUT = "30000";
     /**
+     * Default stop service wait timeout 5 s
+     */
+    public static final String DEFAULT_SERVER_WAIT_TIMEOUT = "5000";
+    /**
      * Default connection timeout 1 s
      */
     public static final String DEFAULT_CONNECT_TIMEOUT = "1000";

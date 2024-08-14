@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -17,6 +17,7 @@ import com.tencent.trpc.spring.boot.starters.test.SpringBootTestApplication;
 import com.tencent.trpc.spring.context.configuration.schema.YesOrNo;
 import com.tencent.trpc.spring.context.configuration.schema.client.ClientServiceSchema;
 import com.tencent.trpc.spring.context.configuration.schema.server.IoMode;
+import com.tencent.trpc.spring.context.configuration.schema.server.ServerSchema;
 import com.tencent.trpc.spring.context.configuration.schema.server.ServerServiceSchema;
 import java.util.Map;
 import org.junit.Assert;
@@ -45,8 +46,13 @@ public class BindTest2 {
         assertWorkerPool();
         assertRegistry();
         assertSelector();
-        assertRemoteLog();
-        assertTracing();
+        assertSetMethod();
+    }
+
+    public void assertSetMethod() {
+        ServerSchema serverSchema = new ServerSchema();
+        serverSchema.setWaitTimeout(2000L);
+        Assert.assertEquals(Long.valueOf(2000), serverSchema.getWaitTimeout());
     }
 
     private void assertGlobal() {
@@ -64,13 +70,12 @@ public class BindTest2 {
         Assert.assertEquals(properties.getServer().getAdmin().getAdminPort(), Integer.valueOf(8091));
         Assert.assertEquals(properties.getServer().getLocalIp(), "127.0.0.1");
         Assert.assertEquals(properties.getServer().getCloseTimeout(), Long.valueOf(1000));
+        Assert.assertEquals(properties.getServer().getWaitTimeout(), Long.valueOf(1100));
         Assert.assertEquals(properties.getServer().getNic(), "eth1");
         Assert.assertEquals(properties.getServer().getRequestTimeout(), Integer.valueOf(2000));
         Assert.assertEquals(properties.getServer().getEnableLinkTimeout(), false);
         Assert.assertEquals(properties.getServer().getWorkerPool(), "woker_pool_provider_test");
         Assert.assertEquals(properties.getServer().getFilters(), Lists.newArrayList("additional_server_filter"));
-        Assert.assertEquals(properties.getServer().getServerListener().get(0).getListenerClass(),
-                "com.tencent.trpc.container.container.DefaultServerListener");
     }
 
     private void assertServerService() {

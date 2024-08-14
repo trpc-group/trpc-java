@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -88,6 +88,12 @@ public class ServerConfig {
      */
     @ConfigProperty(value = Constants.DEFAULT_SERVER_CLOSE_TIMEOUT, type = Long.class)
     protected long closeTimeout;
+    /**
+     * When restarting the service, after unregistering the service,
+     * by default it will wait for <p>waitTimeout</p> milliseconds before shutting down the server.
+     */
+    @ConfigProperty(value = Constants.DEFAULT_SERVER_WAIT_TIMEOUT, type = Long.class)
+    protected long waitTimeout;
     /**
      * Default service registry (currently only supports one).
      */
@@ -324,6 +330,15 @@ public class ServerConfig {
     public void setCloseTimeout(long closeTimeout) {
         checkFiledModifyPrivilege();
         this.closeTimeout = closeTimeout;
+    }
+
+    public long getWaitTimeout() {
+        return waitTimeout;
+    }
+
+    public void setWaitTimeout(long waitTimeout) {
+        checkFiledModifyPrivilege();
+        this.waitTimeout = waitTimeout;
     }
 
     public List<String> getRegistryIds() {
