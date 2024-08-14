@@ -45,6 +45,12 @@ public class RequestMetadataTest {
     private Request request = new DefRequest();
     private InetAddress address;
 
+    /**
+     * The method to be run before the {@link org.junit.Test}. Init request and address.
+     *
+     * @throws UnknownHostException
+     * @throws NoSuchMethodException
+     */
     @Before
     public void before() throws UnknownHostException, NoSuchMethodException {
         // set meta
@@ -73,8 +79,8 @@ public class RequestMetadataTest {
     public void testGetRawMetadata()
             throws NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
-        Constructor<RequestMetadataProvider> constructor = RequestMetadataProvider.class.
-                getDeclaredConstructor(Request.class);
+        Constructor<RequestMetadataProvider> constructor = RequestMetadataProvider
+                .class.getDeclaredConstructor(Request.class);
         constructor.setAccessible(true);
         RequestMetadataProvider metadataProvider = constructor.newInstance(request);
         assertEquals(address.getHostName(),
@@ -83,6 +89,7 @@ public class RequestMetadataTest {
                 metadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_METHOD));
         assertEquals(request.getInvocation().getRpcMethodInfo().getServiceInterface().getCanonicalName(),
                 metadataProvider.getRawMetadataStringValue(MessageMetadataContainer.LABEL_KEY_PATH));
+        assertNull(metadataProvider.getRawMetadataStringValue(""));
     }
 
     @Test
@@ -93,8 +100,8 @@ public class RequestMetadataTest {
         httpHeaders.add(TEST_HEADER_KEY, TEST_HEADER_VALUE);
         request.getContext().getReqAttachMap().put(FIELD_NAME_HEADERS, httpHeaders);
 
-        Constructor<RequestMetadataProvider> constructor = RequestMetadataProvider.class.
-                getDeclaredConstructor(Request.class);
+        Constructor<RequestMetadataProvider> constructor = RequestMetadataProvider
+                .class.getDeclaredConstructor(Request.class);
         constructor.setAccessible(true);
         RequestMetadataProvider metadataProvider = constructor.newInstance(request);
         String value = metadataProvider.getRawMetadataMapValue(
@@ -115,8 +122,8 @@ public class RequestMetadataTest {
     @Test
     public void testGetNull() throws NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
-        Constructor<RequestMetadataProvider> constructor = RequestMetadataProvider.class.
-                getDeclaredConstructor(Request.class);
+        Constructor<RequestMetadataProvider> constructor = RequestMetadataProvider
+                .class.getDeclaredConstructor(Request.class);
         constructor.setAccessible(true);
         RequestMetadataProvider metadataProvider = constructor.newInstance(request);
         String value = metadataProvider.getRawMetadataMapValue("", "");
@@ -124,10 +131,24 @@ public class RequestMetadataTest {
     }
 
     @Test
+    public void testReqAttachMap() throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        Constructor<RequestMetadataProvider> constructor = RequestMetadataProvider
+                .class.getDeclaredConstructor(Request.class);
+        constructor.setAccessible(true);
+        RequestMetadataProvider metadataProvider = constructor.newInstance(request);
+        ConcurrentMap<String, Object> reqAttachMap = request.getContext().getReqAttachMap();
+        reqAttachMap.remove(FIELD_NAME_HEADERS);
+        reqAttachMap.remove(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST);
+        assertNull(metadataProvider.getRawMetadataMapValue(MessageMetadataContainer.LABEL_MAP_KEY_HEADER,
+                TEST_HEADER_KEY));
+    }
+
+    @Test
     public void testException() throws NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
-        Constructor<RequestMetadataProvider> constructor = RequestMetadataProvider.class.
-                getDeclaredConstructor(Request.class);
+        Constructor<RequestMetadataProvider> constructor = RequestMetadataProvider
+                .class.getDeclaredConstructor(Request.class);
         constructor.setAccessible(true);
         RequestMetadataProvider metadataProvider = constructor.newInstance(request);
         RpcContext context = request.getContext();

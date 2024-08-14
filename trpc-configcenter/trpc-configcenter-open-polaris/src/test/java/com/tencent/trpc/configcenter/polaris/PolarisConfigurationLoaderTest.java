@@ -147,10 +147,28 @@ public class PolarisConfigurationLoaderTest {
     public void testInit() {
         PolarisConfigurationLoader loader = mockLoader();
         try {
-            PluginConfig pluginConfig = new PluginConfig("config", PolarisConfig.class);
+            PluginConfig pluginConfig = new PluginConfig("polaris", PolarisConfigurationLoader.class);
             loader.setPluginConfig(pluginConfig);
             loader.init();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testRemove() {
+        PolarisConfigurationLoader loader = mockLoader();
+        try {
             loader.removeListener(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testDestory() {
+        PolarisConfigurationLoader loader = mockLoader();
+        try {
             loader.destroy();
         } catch (Exception e) {
             e.printStackTrace();

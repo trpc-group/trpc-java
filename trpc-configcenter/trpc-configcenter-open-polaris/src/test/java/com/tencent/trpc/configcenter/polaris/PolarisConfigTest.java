@@ -71,7 +71,6 @@ public class PolarisConfigTest {
         List<String> filenames = Arrays.asList("file1", "file2");
 
         Config config1 = new Config(group, filenames);
-        Config config2 = new Config(group, filenames);
 
         // Test getters
         assertEquals(group, config1.getGroup());
@@ -87,6 +86,7 @@ public class PolarisConfigTest {
 
         // Test equals and hashCode
         assertEquals(config1, config1);
+        Config config2 = new Config(group, filenames);
         assertNotEquals(config1, config2);
         assertNotEquals(config1.hashCode(), config2.hashCode());
     }
