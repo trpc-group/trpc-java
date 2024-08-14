@@ -170,6 +170,9 @@ public class NettyCodecAdapter {
                     }
                 }
             } while (message.isReadable());
+        } catch (Exception e) {
+            message.skipBytes(message.readableBytes());
+            throw e;
         } finally {
             NettyChannelManager.removeChannelIfDisconnected(ctx.channel());
         }

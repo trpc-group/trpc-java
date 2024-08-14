@@ -35,8 +35,12 @@ public class NettyChannel extends AbstractChannel {
         this.config = config;
         if (channel != null) {
             // can't get the remote address while using udp, so the remoteAddress is null
-            this.remoteAddress = ((InetSocketAddress) channel.remoteAddress());
-            this.localAddress = (InetSocketAddress) channel.localAddress();
+            if (channel.remoteAddress() instanceof InetSocketAddress) {
+                this.remoteAddress = ((InetSocketAddress) channel.remoteAddress());
+            }
+            if (channel.localAddress() instanceof InetSocketAddress) {
+                this.localAddress = (InetSocketAddress) channel.localAddress();
+            }
         }
         // listen for the close event
         if (channel != null && channel.closeFuture() != null) {
