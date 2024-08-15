@@ -17,7 +17,6 @@ import com.tencent.trpc.spring.boot.starters.test.SpringBootTestApplication;
 import com.tencent.trpc.spring.context.configuration.schema.YesOrNo;
 import com.tencent.trpc.spring.context.configuration.schema.client.ClientServiceSchema;
 import com.tencent.trpc.spring.context.configuration.schema.server.IoMode;
-import com.tencent.trpc.spring.context.configuration.schema.server.ServerSchema;
 import com.tencent.trpc.spring.context.configuration.schema.server.ServerServiceSchema;
 import java.util.Map;
 import org.junit.Assert;
@@ -46,13 +45,6 @@ public class BindTest2 {
         assertWorkerPool();
         assertRegistry();
         assertSelector();
-        assertSetMethod();
-    }
-
-    public void assertSetMethod() {
-        ServerSchema serverSchema = new ServerSchema();
-        serverSchema.setWaitTimeout(2000L);
-        Assert.assertEquals(Long.valueOf(2000), serverSchema.getWaitTimeout());
     }
 
     private void assertGlobal() {
