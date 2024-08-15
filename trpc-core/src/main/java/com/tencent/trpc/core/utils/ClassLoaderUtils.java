@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -23,10 +23,6 @@ public class ClassLoaderUtils {
      */
     public static ClassLoader getClassLoader(Class<?> clazz) {
         ClassLoader loader = ConfigManager.getInstance().getCachedClassLoader();
-        if (loader != null) {
-            return loader;
-        }
-        loader = Thread.currentThread().getContextClassLoader();
         if (loader != null) {
             return loader;
         }
