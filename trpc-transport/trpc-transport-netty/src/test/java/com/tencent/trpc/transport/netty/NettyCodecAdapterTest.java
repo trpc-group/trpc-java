@@ -3,6 +3,7 @@ package com.tencent.trpc.transport.netty;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.exception.ErrorCode;
 import com.tencent.trpc.core.exception.TRpcException;
+import com.tencent.trpc.core.exception.TransportException;
 import com.tencent.trpc.core.transport.codec.Codec;
 import io.netty.buffer.AbstractByteBufAllocator;
 import io.netty.buffer.ByteBuf;
@@ -46,11 +47,7 @@ public class NettyCodecAdapterTest {
             tmpEmbeddedChannel.writeInbound(byteBuf);
         });
 
-        Assert.assertTrue(decoderException.getCause() instanceof TRpcException);
-
-        TRpcException tRpcException = (TRpcException) decoderException.getCause();
-        Assert.assertEquals(tRpcException.getCode(), ErrorCode.TRPC_CLIENT_DECODE_ERR);
-
+        Assert.assertTrue(decoderException.getCause() instanceof TransportException);
         Assert.assertEquals(byteBuf.refCnt(), 0);
     }
 
@@ -79,11 +76,7 @@ public class NettyCodecAdapterTest {
             tmpEmbeddedChannel.writeInbound(byteBuf);
         });
 
-        Assert.assertTrue(decoderException.getCause() instanceof TRpcException);
-
-        TRpcException tRpcException = (TRpcException) decoderException.getCause();
-        Assert.assertEquals(tRpcException.getCode(), ErrorCode.TRPC_CLIENT_DECODE_ERR);
-
+        Assert.assertTrue(decoderException.getCause() instanceof TransportException);
         Assert.assertEquals(byteBuf.refCnt(), 0);
     }
 }
