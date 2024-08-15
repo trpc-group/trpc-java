@@ -360,26 +360,30 @@ public class ConfigManager {
             super.stopInternal();
             logger.info(">>>tRPC Server stopping");
             long closeTime = -1;
+            long waitTime = -1;
             // 1) unregister
             if (serverConfig != null) {
                 serverConfig.unregister();
                 closeTime = serverConfig.getCloseTimeout();
+                waitTime = serverConfig.getWaitTimeout();
             }
-            // 2) wait for threads to close
+            // 2) wait waitTime before stop service
+            Thread.sleep(waitTime);
+            // 3) wait for threads to close
             WorkerPoolManager.shutdown(closeTime, TimeUnit.MILLISECONDS);
-            // 3) service stop, do not accept new requests
+            // 4) service stop, do not accept new requests
             if (serverConfig != null) {
                 serverConfig.stop();
             }
-            // 4) business-related
+            // 5) business-related
             if (appInitializer != null) {
                 appInitializer.stop();
             }
-            // 5) close the client side
+            // 6) close the client side
             clientConfig.stop();
-            // 6) close plugins
+            // 7) close plugins
             ExtensionLoader.destroyAllPlugin();
-            // 7) close client cluster
+            // 8) close client cluster
             RpcClusterClientManager.close();
             logger.info(">>>tRPC Server stopped");
         }

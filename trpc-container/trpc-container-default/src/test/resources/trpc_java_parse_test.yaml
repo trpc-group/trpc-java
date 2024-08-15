@@ -22,6 +22,7 @@ server:
     admin_ip: 127.0.0.1
   local_ip: 127.0.0.1
   close_timeout: 1000
+  wait_timeout: 1200
   nic: eth1
   request_timeout: 2000
   enable_link_timeout: false

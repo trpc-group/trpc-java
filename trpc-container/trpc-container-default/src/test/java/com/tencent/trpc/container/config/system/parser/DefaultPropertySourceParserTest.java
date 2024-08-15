@@ -2,10 +2,10 @@ package com.tencent.trpc.container.config.system.parser;
 
 import com.tencent.trpc.container.config.system.Configuration;
 import com.tencent.trpc.core.utils.YamlParser;
+import java.util.Map;
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
-import java.util.Map;
 
 public class DefaultPropertySourceParserTest extends TestCase {
 
@@ -14,7 +14,7 @@ public class DefaultPropertySourceParserTest extends TestCase {
         Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("listener_default.yaml", Map.class);
         DefaultPropertySourceParser propertySourceParser = new DefaultPropertySourceParser();
         Map<String, Object> flattableMap = propertySourceParser.getFlattableMap(yamlConfigMap);
-        Assert.assertEquals(146, flattableMap.size());
+        Assert.assertEquals(147, flattableMap.size());
     }
 
     @Test

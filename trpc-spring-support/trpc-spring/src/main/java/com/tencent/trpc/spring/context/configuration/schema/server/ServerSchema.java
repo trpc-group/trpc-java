@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -86,9 +86,14 @@ public class ServerSchema {
     private List<String> filters = Lists.newArrayList();
 
     /**
-     * Service close timeout
+     * Server close timeout
      */
     private Long closeTimeout;
+
+    /**
+     * Server wait timeout
+     */
+    private Long waitTimeout;
 
     /**
      * Worker pool name
@@ -202,6 +207,14 @@ public class ServerSchema {
 
     public void setCloseTimeout(Long closeTimeout) {
         this.closeTimeout = closeTimeout;
+    }
+
+    public Long getWaitTimeout() {
+        return waitTimeout;
+    }
+
+    public void setWaitTimeout(Long waitTimeout) {
+        this.waitTimeout = waitTimeout;
     }
 
     public String getWorkerPool() {

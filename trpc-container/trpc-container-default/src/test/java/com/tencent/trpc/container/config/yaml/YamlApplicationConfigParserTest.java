@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -187,6 +187,7 @@ public class YamlApplicationConfigParserTest {
         assertEquals(serverConfig.getLocalIp(), "127.0.0.1");
         assertEquals(serverConfig.getNic(), "eth1");
         assertEquals(serverConfig.getCloseTimeout(), 1000);
+        assertEquals(serverConfig.getWaitTimeout(), 1200);
         assertEquals(serverConfig.getFilters().get(0), "filter");
         assertEquals(false, serverConfig.getEnableLinkTimeout());
         assertEquals(serverConfig.getRequestTimeout(), 2000);
@@ -324,5 +325,12 @@ public class YamlApplicationConfigParserTest {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void testSet() {
+        ServerConfig serverConfig = new ServerConfig();
+        serverConfig.setWaitTimeout(2000L);
+        assertEquals(2000L, serverConfig.getWaitTimeout());
     }
 }

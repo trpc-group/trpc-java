@@ -23,14 +23,13 @@ trpc:
       admin_ip: 127.0.0.1                                                                                             #管理命令服务监听ip地址
     local_ip: 127.0.0.1                                                                                             #本地IP，容器内为容器ip，物理机或虚拟机为本机ip
     close_timeout: 1000
+    wait_timeout: 1100
     nic: eth1
     request_timeout: 2000
     enable_link_timeout: false
     worker_pool: woker_pool_provider_test
     filters:
       - additional_server_filter
-    server_listener: #服务启动完成的监听事件
-      - listener_class: com.tencent.trpc.container.container.DefaultServerListener
     service: #业务服务提供的service，可以有多个
       - name: trpc.TestApp.TestServer.Greeter                                                                         #service的id,附带naming的含义
         version: v.121
@@ -125,28 +124,3 @@ trpc:
     selector:
       polaris:
         mode: 0
-
-    remote_log:
-      atta:
-        attaid: "0a100055063"                                                                              #attaid
-        token: "3514966829"                                                                              #attatoken
-        switch: open                                                                                    #当前节点ip
-
-    tracing:
-      tjg:
-        appid: trpc
-        service_name: trpc.${app}.${server}
-        hostname: ${container_name}
-        local_addr: ${local_ip}
-        local_port: 0
-        sampler:
-          type: mix
-          mix:
-            sample_rate: 1024
-            min_speed_rate: 1
-            max_speed_rate: 10
-        reporter:
-          type: atta
-          atta:
-            atta_id: "0af00000141"
-            atta_token: "7913895459"

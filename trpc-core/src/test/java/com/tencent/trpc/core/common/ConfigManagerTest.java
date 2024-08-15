@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -28,9 +28,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ConfigManagerTest {
-    
+
     private static final int TCP_PORT = 8090;
-    
+    private static final long WAIT_TIME = 2000;
+
     /**
      * ConfigManager start
      */
@@ -61,7 +62,7 @@ public class ConfigManagerTest {
         clientConfig.addBackendConfig(backendConfig);
         clientConfig.addBackendConfig(backendConfig2);
         ConfigManager.getInstance().setClientConfig(clientConfig);
-        
+
         ConfigManager.startTest();
     }
 
@@ -162,5 +163,18 @@ public class ConfigManagerTest {
 
             }
         });
+    }
+
+    @Test
+    public void testGracefulRestart() throws InterruptedException {
+        ConfigManager.startTest();
+        ServerConfig serverConfig = new ServerConfig();
+        serverConfig.setWaitTimeout(WAIT_TIME);
+        serverConfig.setCloseTimeout(WAIT_TIME);
+        serverConfig.setDefault();
+        ConfigManager.getInstance().setServerConfig(serverConfig);
+        ConfigManager.getInstance().start();
+        Thread.sleep(WAIT_TIME);
+        ConfigManager.getInstance().stop();
     }
 }
