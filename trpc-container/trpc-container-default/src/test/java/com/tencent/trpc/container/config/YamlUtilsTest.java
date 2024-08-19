@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -11,15 +11,15 @@
 
 package com.tencent.trpc.container.config;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
 
 
 /**
@@ -37,7 +37,7 @@ public class YamlUtilsTest {
         properties.put("string", "string");
         properties.put("integer", 10);
         properties.put("boolean", true);
-        properties.put("collection", Arrays.asList(1,2));
+        properties.put("collection", Arrays.asList(1, 2));
         this.yamlUtils = new YamlUtils("");
     }
 
@@ -100,7 +100,7 @@ public class YamlUtilsTest {
     }
 
     @Test
-    public void testGetStringList(){
+    public void testGetStringList() {
         List<String> collection = yamlUtils.getStringList(properties, "collection");
         Assert.assertNotNull(collection);
         try {

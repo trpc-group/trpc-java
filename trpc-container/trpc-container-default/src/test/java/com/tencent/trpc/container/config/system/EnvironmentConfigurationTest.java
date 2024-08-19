@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class EnvironmentConfigurationTest{
+public class EnvironmentConfigurationTest {
 
     private Environment environment;
 
@@ -57,6 +57,6 @@ public class EnvironmentConfigurationTest{
     @Test
     public void testGetInternalProperty() {
         Object internalProperty = environment.getInternalProperty("server.app");
-        Assert.assertEquals(internalProperty,"wechat");
+        Assert.assertEquals(internalProperty, "wechat");
     }
 }

@@ -40,11 +40,11 @@ public class PolarisConfigurationLoaderTest {
 
     private PolarisConfigurationLoader configurationLoader;
 
-    private final String MOCK_GROUP = "mock_group";
+    private static final String MOCK_GROUP = "mock_group";
 
-    private final String MOCK_FILE = "mock_file.properties";
+    private static final String MOCK_FILE = "mock_file.properties";
 
-    private final String USER_NAME = "user.name";
+    private static final String USER_NAME = "user.name";
 
     private PolarisConfigurationLoader mockLoader() {
         PolarisConfigurationLoader loader = new PolarisConfigurationLoader();
