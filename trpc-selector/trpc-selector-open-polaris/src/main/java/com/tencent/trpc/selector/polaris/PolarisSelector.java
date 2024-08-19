@@ -375,6 +375,8 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
                     return request.getMeta().getCallInfo().getCalleeMethod();
                 case MessageMetadataContainer.LABEL_KEY_PATH:
                     return request.getInvocation().getRpcMethodInfo().getServiceInterface().getCanonicalName();
+                default:
+                    // skip
             }
             return null;
         }
