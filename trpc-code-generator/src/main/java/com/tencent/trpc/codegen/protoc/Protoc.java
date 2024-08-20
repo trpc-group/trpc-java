@@ -11,6 +11,8 @@
 
 package com.tencent.trpc.codegen.protoc;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,15 +113,50 @@ public class Protoc {
     }
 
     private ProtocExecutionResult fetchProcessResult(Process p) {
+        StringBuilder outputBuilder = new StringBuilder();
+        StringBuilder errorBuilder = new StringBuilder();
+
+        // Using threads to asynchronously read output and error streams.
+        Thread outputThread = new Thread(() -> {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    outputBuilder.append(line).append(System.lineSeparator());
+                }
+            } catch (IOException e) {
+                log.error("failed to read output stream", e);
+            }
+        });
+
+        Thread errorThread = new Thread(() -> {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(p.getErrorStream(), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    errorBuilder.append(line).append(System.lineSeparator());
+                }
+            } catch (IOException e) {
+                log.error("failed to read error stream", e);
+            }
+        });
+
+        outputThread.start();
+        errorThread.start();
+
         try {
             int code = p.waitFor();
+            outputThread.join();
+            errorThread.join();
+
             if (code == 0) {
-                return ProtocExecutionResult.success(IOUtils.toString(p.getInputStream(), StandardCharsets.UTF_8));
+                return ProtocExecutionResult.success(outputBuilder.toString());
             } else {
                 return ProtocExecutionResult.fail("run protoc failed with exit-code " + code,
-                        IOUtils.toString(p.getErrorStream(), StandardCharsets.UTF_8), null);
+                        errorBuilder.toString(), null);
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             return ProtocExecutionResult.fail("execute protoc failed", null, e);
         }
     }
