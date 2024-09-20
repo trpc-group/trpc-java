@@ -52,7 +52,7 @@ public class ProviderInvokerHeadFilter implements Filter {
     public CompletionStage<Response> filter(Invoker<?> invoker, Request request) {
         RpcServerContext serverContext = (RpcServerContext) (request.getContext());
         prepareRequestInfoBeforeInvoke(request, (ProviderInvoker) invoker);
-        contextWithRemoteIp(serverContext, request);
+        contextWithRemoteCallerIp(serverContext, request);
         startLog(serverContext, request);
         CompletableFuture<Response> future = invoker.invoke(request).toCompletableFuture();
         if (logger.isDebugEnabled()) {
@@ -62,12 +62,12 @@ public class ProviderInvokerHeadFilter implements Filter {
     }
 
     /**
-     * Set the request remote IP to RpcServerContext, with the key as CTX_CALLER_REMOTE_IP.
+     * Set the request remote caller IP to RpcServerContext, with the key as CTX_CALLER_REMOTE_IP.
      *
      * @param serverContext RpcServerContext
      * @param request Request
      */
-    private void contextWithRemoteIp(RpcServerContext serverContext, Request request) {
+    private void contextWithRemoteCallerIp(RpcServerContext serverContext, Request request) {
         Optional.ofNullable(request.getMeta().getRemoteAddress()).ifPresent(remoteAddr
                 -> RpcContextUtils.putValueMapValue(serverContext, RpcContextValueKeys.CTX_CALLER_REMOTE_IP,
                 remoteAddr.getAddress().getHostAddress()));
