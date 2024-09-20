@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -14,12 +14,10 @@ package com.tencent.trpc.core.filter;
 import com.tencent.trpc.core.filter.spi.Filter;
 import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
-import com.tencent.trpc.core.rpc.ConsumerInvoker;
-import com.tencent.trpc.core.rpc.Invoker;
-import com.tencent.trpc.core.rpc.Request;
-import com.tencent.trpc.core.rpc.RequestMeta;
-import com.tencent.trpc.core.rpc.Response;
-import com.tencent.trpc.core.rpc.RpcContext;
+import com.tencent.trpc.core.rpc.*;
+import com.tencent.trpc.core.utils.RpcContextUtils;
+
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -43,6 +41,7 @@ public class ConsumerInvokerHeadFilter implements Filter {
         ConsumerInvoker consumerInvoker = (ConsumerInvoker) invoker;
         // combine with DefClusterInvocationHandler#genRequest to complete the information of the request.
         prepareRequestInfoBeforeInvoke(request, consumerInvoker);
+        contextWithRemoteCalleeIp(context, request);
         startLog(context, request);
         CompletableFuture<Response> future = invoker.invoke(request).toCompletableFuture();
         if (logger.isDebugEnabled()) {
@@ -58,6 +57,18 @@ public class ConsumerInvokerHeadFilter implements Filter {
             }
             return r;
         });
+    }
+
+    /**
+     * Set the request remote callee IP to RpcContext, with the key as CTX_CALLEE_REMOTE_IP.
+     *
+     * @param context RpcContext
+     * @param request Request
+     */
+    private void contextWithRemoteCalleeIp(RpcContext context, Request request) {
+        Optional.ofNullable(request.getMeta().getRemoteAddress()).ifPresent(remoteAddr
+                -> RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_CALLEE_REMOTE_IP,
+                remoteAddr.getAddress().getHostAddress()));
     }
 
     private void prepareRequestInfoBeforeInvoke(Request request,
