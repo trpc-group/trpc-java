@@ -47,7 +47,7 @@ public class ConsumerInvokerHeadFilter implements Filter {
         ConsumerInvoker consumerInvoker = (ConsumerInvoker) invoker;
         // combine with DefClusterInvocationHandler#genRequest to complete the information of the request.
         prepareRequestInfoBeforeInvoke(request, consumerInvoker);
-        contextWithRemoteCalleeIp(context, request);
+        contextWithRemoteCalleeAddr(context, request);
         startLog(context, request);
         CompletableFuture<Response> future = invoker.invoke(request).toCompletableFuture();
         if (logger.isDebugEnabled()) {
@@ -66,15 +66,21 @@ public class ConsumerInvokerHeadFilter implements Filter {
     }
 
     /**
-     * Set the request remote callee IP to RpcContext, with the key as CTX_CALLEE_REMOTE_IP.
+     * Set the request remote callee addr to RpcContext.
+     * Caller IP: CTX_CALLEE_REMOTE_IP
+     * Caller PORT: CTX_CALLEE_REMOTE_PORT
      *
      * @param context RpcContext
      * @param request Request
      */
-    private void contextWithRemoteCalleeIp(RpcContext context, Request request) {
+    private void contextWithRemoteCalleeAddr(RpcContext context, Request request) {
         Optional.ofNullable(request.getMeta().getRemoteAddress()).ifPresent(remoteAddr
-                -> RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_CALLEE_REMOTE_IP,
-                remoteAddr.getAddress().getHostAddress()));
+                -> {
+            RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_CALLEE_REMOTE_IP,
+                    remoteAddr.getAddress().getHostAddress());
+            RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_CALLEE_REMOTE_PORT,
+                    remoteAddr.getPort());
+        });
     }
 
     private void prepareRequestInfoBeforeInvoke(Request request,
