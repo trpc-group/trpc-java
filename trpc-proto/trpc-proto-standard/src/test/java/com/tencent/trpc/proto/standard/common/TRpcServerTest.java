@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -29,6 +29,7 @@ import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.core.exception.TransportException;
 import com.tencent.trpc.core.rpc.RpcClient;
 import com.tencent.trpc.core.rpc.RpcClientContext;
+import com.tencent.trpc.core.rpc.RpcContextValueKeys;
 import com.tencent.trpc.core.rpc.RpcServer;
 import com.tencent.trpc.core.rpc.RpcServerManager;
 import com.tencent.trpc.core.transport.Channel;
@@ -241,6 +242,7 @@ public class TRpcServerTest {
                 .println(">>>>>>>>>" + new String((byte[]) (context.getRspAttachMap().get("key"))));
         assertEquals(new String((byte[]) (context.getRspAttachMap().get("key")), Charsets.UTF_8),
                 "abc");
+        assertEquals("127.0.0.1",context.getValueMap().get(RpcContextValueKeys.CTX_CALLEE_REMOTE_IP));
     }
 
     @Test

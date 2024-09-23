@@ -52,7 +52,7 @@ public class ProviderInvokerHeadFilter implements Filter {
     public CompletionStage<Response> filter(Invoker<?> invoker, Request request) {
         RpcServerContext serverContext = (RpcServerContext) (request.getContext());
         prepareRequestInfoBeforeInvoke(request, (ProviderInvoker) invoker);
-        contextWithRemoteIp(serverContext, request);
+        contextWithRemoteCallerAddr(serverContext, request);
         startLog(serverContext, request);
         CompletableFuture<Response> future = invoker.invoke(request).toCompletableFuture();
         if (logger.isDebugEnabled()) {
@@ -62,15 +62,21 @@ public class ProviderInvokerHeadFilter implements Filter {
     }
 
     /**
-     * Set the request remote IP to RpcServerContext, with the key as CTX_CALLER_REMOTE_IP.
+     * Set the request remote caller addr to RpcServerContext.
+     * Caller IP: CTX_CALLER_REMOTE_IP
+     * Caller PORT: CTX_CALLER_REMOTE_PORT
      *
      * @param serverContext RpcServerContext
      * @param request Request
      */
-    private void contextWithRemoteIp(RpcServerContext serverContext, Request request) {
+    private void contextWithRemoteCallerAddr(RpcServerContext serverContext, Request request) {
         Optional.ofNullable(request.getMeta().getRemoteAddress()).ifPresent(remoteAddr
-                -> RpcContextUtils.putValueMapValue(serverContext, RpcContextValueKeys.CTX_CALLER_REMOTE_IP,
-                remoteAddr.getAddress().getHostAddress()));
+                -> {
+            RpcContextUtils.putValueMapValue(serverContext, RpcContextValueKeys.CTX_CALLER_REMOTE_IP,
+                    remoteAddr.getAddress().getHostAddress());
+            RpcContextUtils.putValueMapValue(serverContext, RpcContextValueKeys.CTX_CALLER_REMOTE_PORT,
+                    remoteAddr.getPort());
+        });
 
     }
 

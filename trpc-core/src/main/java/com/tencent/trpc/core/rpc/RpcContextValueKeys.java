@@ -24,9 +24,21 @@ public class RpcContextValueKeys {
      */
     public static final String CTX_TELEMETRY_TRACE_SPAN = "ctx_telemetry_trace_span";
     /**
-     * Remote IP.
+     * Caller Remote IP.
      */
     public static final String CTX_CALLER_REMOTE_IP = "ctx_caller_remote_ip";
+    /**
+     * Caller Remote PORT.
+     */
+    public static final String CTX_CALLER_REMOTE_PORT = "ctx_caller_remote_port";
+    /**
+     * Callee Remote IP.
+     */
+    public static final String CTX_CALLEE_REMOTE_IP = "ctx_callee_remote_ip";
+    /**
+     * Callee Remote PORT.
+     */
+    public static final String CTX_CALLEE_REMOTE_PORT = "ctx_callee_remote_port";
     /**
      * Full link timeout key.
      */

@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -20,6 +20,10 @@ import com.tencent.trpc.core.rpc.Request;
 import com.tencent.trpc.core.rpc.RequestMeta;
 import com.tencent.trpc.core.rpc.Response;
 import com.tencent.trpc.core.rpc.RpcContext;
+import com.tencent.trpc.core.rpc.RpcContextValueKeys;
+import com.tencent.trpc.core.utils.RpcContextUtils;
+
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -43,6 +47,7 @@ public class ConsumerInvokerHeadFilter implements Filter {
         ConsumerInvoker consumerInvoker = (ConsumerInvoker) invoker;
         // combine with DefClusterInvocationHandler#genRequest to complete the information of the request.
         prepareRequestInfoBeforeInvoke(request, consumerInvoker);
+        contextWithRemoteCalleeAddr(context, request);
         startLog(context, request);
         CompletableFuture<Response> future = invoker.invoke(request).toCompletableFuture();
         if (logger.isDebugEnabled()) {
@@ -57,6 +62,24 @@ public class ConsumerInvokerHeadFilter implements Filter {
                 context.setResponseUncodecDataSegment(r.getResponseUncodecDataSegment());
             }
             return r;
+        });
+    }
+
+    /**
+     * Set the request remote callee addr to RpcContext.
+     * Caller IP: CTX_CALLEE_REMOTE_IP
+     * Caller PORT: CTX_CALLEE_REMOTE_PORT
+     *
+     * @param context RpcContext
+     * @param request Request
+     */
+    private void contextWithRemoteCalleeAddr(RpcContext context, Request request) {
+        Optional.ofNullable(request.getMeta().getRemoteAddress()).ifPresent(remoteAddr
+                -> {
+            RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_CALLEE_REMOTE_IP,
+                    remoteAddr.getAddress().getHostAddress());
+            RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_CALLEE_REMOTE_PORT,
+                    remoteAddr.getPort());
         });
     }
 
