@@ -369,16 +369,16 @@ public class ConfigManager {
             }
             // 2) wait waitTime before stop service
             Thread.sleep(waitTime);
-            // 3) wait for threads to close
-            WorkerPoolManager.shutdown(closeTime, TimeUnit.MILLISECONDS);
-            // 4) service stop, do not accept new requests
+            // 3) service stop, do not accept new requests
             if (serverConfig != null) {
                 serverConfig.stop();
             }
-            // 5) business-related
+            // 4) business-related
             if (appInitializer != null) {
                 appInitializer.stop();
             }
+            // 5) wait for threads to close
+            WorkerPoolManager.shutdown(closeTime, TimeUnit.MILLISECONDS);
             // 6) close the client side
             clientConfig.stop();
             // 7) close plugins
