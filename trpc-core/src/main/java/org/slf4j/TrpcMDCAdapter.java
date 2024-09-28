@@ -12,13 +12,20 @@
 package org.slf4j;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
+import com.tencent.trpc.core.common.config.GlobalConfig;
+import com.tencent.trpc.core.logger.Logger;
+import com.tencent.trpc.core.logger.LoggerFactory;
+import com.tencent.trpc.core.utils.ConfigUtils;
 import com.tencent.trpc.core.utils.StringUtils;
+import org.slf4j.spi.MDCAdapter;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import org.slf4j.spi.MDCAdapter;
+
+import static com.tencent.trpc.core.common.Constants.ENABLE_TRPCMDCADAPTER;
 
 /**
  * TrpcMDCAdapter
@@ -32,11 +39,13 @@ import org.slf4j.spi.MDCAdapter;
  */
 public class TrpcMDCAdapter implements MDCAdapter {
 
+    private static final Logger logger = LoggerFactory.getLogger(TrpcMDCAdapter.class);
+
     private static final int WRITE_OPERATION = 1;
 
     private static final int READ_OPERATION = 2;
 
-    private static final TrpcMDCAdapter mtcMDCAdapter;
+    private static final TrpcMDCAdapter mtcMDCAdapter = new TrpcMDCAdapter();
 
     private final ThreadLocal<Map<String, String>> copyOnInheritThreadLocal = new TransmittableThreadLocal<>();
 
@@ -46,8 +55,12 @@ public class TrpcMDCAdapter implements MDCAdapter {
     private final ThreadLocal<Integer> lastOperation = new ThreadLocal<>();
 
     static {
-        mtcMDCAdapter = new TrpcMDCAdapter();
-        MDC.mdcAdapter = mtcMDCAdapter;
+        GlobalConfig globalConfig = ConfigUtils.loadGlobalConfig();
+        if (Boolean.parseBoolean(globalConfig.getExt()
+                .getOrDefault(ENABLE_TRPCMDCADAPTER, Boolean.TRUE).toString())) {
+            MDC.mdcAdapter = mtcMDCAdapter;
+            logger.info("enable TrpcMDCAdapter");
+        }
     }
 
     public static MDCAdapter init() {
