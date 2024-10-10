@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -23,9 +23,6 @@ import com.tencent.trpc.codegen.template.CodeType;
 import com.tencent.trpc.codegen.template.DefaultCodeTemplates;
 import com.tencent.trpc.codegen.template.FreeMarkerContextProvider;
 import com.tencent.trpc.codegen.template.FreeMarkerStringTemplateEngine;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.junit.Assert;
-import org.junit.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,8 +31,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class CodeGenerateTest {
+
     private static final Path rootPath = CodegenTestHelper.TEST_ROOT;
     private static final String protocExecutable = CodegenTestHelper.PROTOC_EXECUTABLE;
     private static final String protocGenValidateExecutable = CodegenTestHelper.PROTOC_GEN_VALIDATE_EXECUTABLE;
@@ -53,7 +54,7 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAPI.java"))));
         Assert.assertEquals("23446b6413c80bf8a1aa6ee234c6fba9",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAsyncAPI.java"))));
-        Assert.assertEquals("3e623a576d506dcd1cfc0b926fbf411c",
+        Assert.assertEquals("9caa57d08d0b3fcb9d617ac8d8d135e5",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterService.java"))));
     }
 
@@ -70,7 +71,7 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAPI.java"))));
         Assert.assertEquals("23446b6413c80bf8a1aa6ee234c6fba9",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAsyncAPI.java"))));
-        Assert.assertEquals("3e623a576d506dcd1cfc0b926fbf411c",
+        Assert.assertEquals("9caa57d08d0b3fcb9d617ac8d8d135e5",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterService.java"))));
     }
 
@@ -89,7 +90,7 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAsyncAPI.java"))));
         Assert.assertEquals("285ef96d563b7b5f87472ebb218f1624",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterStreamAPI.java"))));
-        Assert.assertEquals("499bd6e6e1f403d81e99fcd8387004cf",
+        Assert.assertEquals("2eb8ad08c973e8cb107cc596db1709b1",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterService.java"))));
     }
 
@@ -108,7 +109,7 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAsyncAPI.java"))));
         Assert.assertEquals("be4038417c2098b60a7af42e73c1abf6",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterStreamAPI.java"))));
-        Assert.assertEquals("499bd6e6e1f403d81e99fcd8387004cf",
+        Assert.assertEquals("2eb8ad08c973e8cb107cc596db1709b1",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterService.java"))));
     }
 
@@ -127,9 +128,9 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAsyncAPI.java"))));
         Assert.assertEquals("926fcc803803125fc0910f4b7c309b26",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterStreamAPI.java"))));
-        Assert.assertEquals("896df3723daf271602d65e43c73d4ef5",
+        Assert.assertEquals("9feac2c00a6b5fb137e0347e9d3c57a9",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterService.java"))));
-        Assert.assertEquals("22c6d98108f8dc39f930f8858339b150",
+        Assert.assertEquals("fa93e09f70c157d59019dd62610cb4f3",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("msg").resolve("Hello.java"))));
     }
 
@@ -148,9 +149,9 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAsyncAPI.java"))));
         Assert.assertEquals("e8108341efbc3d36bf3dcc9ba8ea0b41",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterStreamAPI.java"))));
-        Assert.assertEquals("896df3723daf271602d65e43c73d4ef5",
+        Assert.assertEquals("9feac2c00a6b5fb137e0347e9d3c57a9",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterService.java"))));
-        Assert.assertEquals("22c6d98108f8dc39f930f8858339b150",
+        Assert.assertEquals("fa93e09f70c157d59019dd62610cb4f3",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("msg").resolve("Hello.java"))));
     }
 
@@ -167,15 +168,15 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAPI.java"))));
         Assert.assertEquals("b7640a2fe62a3464ad25d0be603d1966",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAsyncAPI.java"))));
-        Assert.assertEquals("d90f08f0ebd5cecd449e411b2dac1783",
+        Assert.assertEquals("608f0a195f7e542aa11be2ff5fb82199",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloRequest.java"))));
-        Assert.assertEquals("a52dae5bc0e1b03a988246c2cb6a9977",
+        Assert.assertEquals("01e5a8f2f794ee7c81873fc62c93c31a",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloRequestOrBuilder.java"))));
-        Assert.assertEquals("ca83883609451fe9f4780c98fff28c21",
+        Assert.assertEquals("d24f652118fcd17e03b65c7423b71fbf",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloReply.java"))));
-        Assert.assertEquals("2e8a2d3f78269a5905e208e7e83a76a9",
+        Assert.assertEquals("d0341d2cdbeaca4557c25e6f07c65458",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloReplyOrBuilder.java"))));
-        Assert.assertEquals("61250eeb2890a5ebf57a99ff72678dad",
+        Assert.assertEquals("cbea0bc31f8ce927120b77c4b26475d5",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloNext.java"))));
     }
 
@@ -192,15 +193,15 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAPI.java"))));
         Assert.assertEquals("b7640a2fe62a3464ad25d0be603d1966",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAsyncAPI.java"))));
-        Assert.assertEquals("d90f08f0ebd5cecd449e411b2dac1783",
+        Assert.assertEquals("608f0a195f7e542aa11be2ff5fb82199",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloRequest.java"))));
-        Assert.assertEquals("a52dae5bc0e1b03a988246c2cb6a9977",
+        Assert.assertEquals("01e5a8f2f794ee7c81873fc62c93c31a",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloRequestOrBuilder.java"))));
-        Assert.assertEquals("ca83883609451fe9f4780c98fff28c21",
+        Assert.assertEquals("d24f652118fcd17e03b65c7423b71fbf",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloReply.java"))));
-        Assert.assertEquals("2e8a2d3f78269a5905e208e7e83a76a9",
+        Assert.assertEquals("d0341d2cdbeaca4557c25e6f07c65458",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloReplyOrBuilder.java"))));
-        Assert.assertEquals("61250eeb2890a5ebf57a99ff72678dad",
+        Assert.assertEquals("cbea0bc31f8ce927120b77c4b26475d5",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloNext.java"))));
     }
 
@@ -217,7 +218,7 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAPI.java"))));
         Assert.assertEquals("3d0ff8da3ace15f1bd055164ec1da4b9",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAsyncAPI.java"))));
-        Assert.assertEquals("a8842adf07bc0499035f6873b94a19f4",
+        Assert.assertEquals("b23d158eedf9ea3912703f084ff72ec2",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterService.java"))));
         Assert.assertEquals("9277fefe3ff6af9a95062d359db14ebe",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterServiceValidator.java"))));
@@ -236,7 +237,7 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAPI.java"))));
         Assert.assertEquals("3d0ff8da3ace15f1bd055164ec1da4b9",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAsyncAPI.java"))));
-        Assert.assertEquals("a8842adf07bc0499035f6873b94a19f4",
+        Assert.assertEquals("b23d158eedf9ea3912703f084ff72ec2",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterService.java"))));
         Assert.assertEquals("9277fefe3ff6af9a95062d359db14ebe",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterServiceValidator.java"))));
@@ -257,7 +258,7 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAsyncAPI.java"))));
         Assert.assertEquals("2f519ad1efafb3d145c5847e7831b559",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterStreamAPI.java"))));
-        Assert.assertEquals("bad82d6427f4def525e83bd900c445f5",
+        Assert.assertEquals("62ed6dc1ad9883094281a4bc35416c56",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloCamelCase.java"))));
     }
 
@@ -276,7 +277,7 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAsyncAPI.java"))));
         Assert.assertEquals("651a3065ac06e2b157ef7b8ba15bce6a",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterStreamAPI.java"))));
-        Assert.assertEquals("bad82d6427f4def525e83bd900c445f5",
+        Assert.assertEquals("62ed6dc1ad9883094281a4bc35416c56",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloCamelCase.java"))));
     }
 
@@ -295,7 +296,7 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterServiceAsyncAPI.java"))));
         Assert.assertEquals("777387facf2cbc71228c30de20ed2226",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterServiceStreamAPI.java"))));
-        Assert.assertEquals("7bc89a900c02959caadafdd48dcb7041",
+        Assert.assertEquals("640d503c66e105c9776037895a406613",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterService.java"))));
     }
 
@@ -314,7 +315,7 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterServiceAsyncAPI.java"))));
         Assert.assertEquals("a0c28a7babedf863e31740b320857b0f",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterServiceStreamAPI.java"))));
-        Assert.assertEquals("7bc89a900c02959caadafdd48dcb7041",
+        Assert.assertEquals("640d503c66e105c9776037895a406613",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterService.java"))));
     }
 
@@ -333,7 +334,7 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloWorldServiceAsyncAPI.java"))));
         Assert.assertEquals("446ff8e1c7479bb3f7da2d2c61cdf004",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloWorldServiceStreamAPI.java"))));
-        Assert.assertEquals("25701eeb32b07c8e1cd00ac26c1cfc58",
+        Assert.assertEquals("639e78687054ee0ae8a88749fc3f36c3",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterService.java"))));
     }
 
@@ -352,7 +353,7 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloWorldServiceAsyncAPI.java"))));
         Assert.assertEquals("8e86f7527ddb01d27b574c6de39270d1",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("HelloWorldServiceStreamAPI.java"))));
-        Assert.assertEquals("25701eeb32b07c8e1cd00ac26c1cfc58",
+        Assert.assertEquals("639e78687054ee0ae8a88749fc3f36c3",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterService.java"))));
     }
 
@@ -394,9 +395,9 @@ public class CodeGenerateTest {
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterAsyncAPI.java"))));
         Assert.assertEquals("926fcc803803125fc0910f4b7c309b26",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterStreamAPI.java"))));
-        Assert.assertEquals("896df3723daf271602d65e43c73d4ef5",
+        Assert.assertEquals("9feac2c00a6b5fb137e0347e9d3c57a9",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("GreeterService.java"))));
-        Assert.assertEquals("22c6d98108f8dc39f930f8858339b150",
+        Assert.assertEquals("fa93e09f70c157d59019dd62610cb4f3",
                 DigestUtils.md5Hex(Files.readAllBytes(java.resolve("msg").resolve("Hello.java"))));
     }
 

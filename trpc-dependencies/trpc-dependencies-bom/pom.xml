@@ -32,7 +32,7 @@
         <commons.lang.version>2.6</commons.lang.version>
         <commons.lang3.version>3.12.0</commons.lang3.version>
         <commons.pool2.version>2.3</commons.pool2.version>
-        <commons.io.version>2.12.0</commons.io.version>
+        <commons.io.version>2.15.1</commons.io.version>
         <commons.text.version>1.10.0</commons.text.version>
         <commons.beanutils.version>1.9.4</commons.beanutils.version>
         <nacos.config.sdk.version>0.2.12</nacos.config.sdk.version>
@@ -86,7 +86,7 @@
         <okio.version>3.4.0</okio.version>
         <polaris.open.version>1.15.5</polaris.open.version>
         <powermock.version>1.7.4</powermock.version>
-        <protobuf-bom.version>3.21.9</protobuf-bom.version>
+        <protobuf-bom.version>3.25.5</protobuf-bom.version>
         <pgv.version>0.4.1</pgv.version>
         <pgv.bin.version>0.6.13</pgv.bin.version>
         <quasar.version>0.7.9</quasar.version>
