@@ -281,7 +281,7 @@ public class ConfigManager {
             // 7) register service
             serverConfig.register();
             // 8) cache startup class loader
-            cachedClassLoader = Thread.currentThread().getContextClassLoader();
+            cachedClassLoader = ConfigManager.getInstance().getClass().getClassLoader();
         }
 
         private void warmupCodec() {
