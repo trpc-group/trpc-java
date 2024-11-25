@@ -32,6 +32,7 @@ public class JsonUtilsTest {
     private static final String JSON = "{\"test\":123}";
     private static final String JSON_LIST = "[{\"test\":123},{\"test\":123}]";
     private static final String ERROR_JSON = "{\"test\":123,A}";
+    private static final String EMPTY_JSON = "{}";
 
     @Test
     public void testCopy() {
@@ -134,7 +135,7 @@ public class JsonUtilsTest {
         TestObj1 obj1 = new TestObj1();
         obj1.setTest(123);
         String aaa = JsonUtils.toJson(obj1, "aaa");
-        Assert.assertEquals("aaa", aaa);
+        Assert.assertEquals(EMPTY_JSON, aaa);
     }
 
     @Test

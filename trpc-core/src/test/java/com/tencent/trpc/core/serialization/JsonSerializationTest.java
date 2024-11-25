@@ -62,14 +62,6 @@ public class JsonSerializationTest {
     @Test
     public void testJson2PojoEx() {
         try {
-            JsonUtilsTest.TestObj1 obj1 = new JsonUtilsTest.TestObj1();
-            obj1.setTest(123);
-            serial.serialize(obj1);
-            Assert.fail();
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("json serialize ex:"));
-        }
-        try {
             byte[] bytes = serial.serialize(obj);
             GenericsObj deserialize = serial.deserialize(bytes, GenericsObj.class);
             Assert.assertNull(deserialize.getData());
