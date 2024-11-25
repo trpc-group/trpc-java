@@ -32,6 +32,7 @@ public class JsonUtilsTest {
     private static final String JSON = "{\"test\":123}";
     private static final String JSON_LIST = "[{\"test\":123},{\"test\":123}]";
     private static final String ERROR_JSON = "{\"test\":123,A}";
+    private static final String EMPTY_JSON = "{}";
 
     @Test
     public void testCopy() {
@@ -184,6 +185,12 @@ public class JsonUtilsTest {
     }
 
 
+    @Test
+    public void testEmptyBeanSerial() {
+        TestEmptyBean testEmptyBean = new TestEmptyBean(10);
+        Assert.assertEquals(EMPTY_JSON, JsonUtils.toJson(testEmptyBean));
+    }
+
     public static class TestObj {
 
         private int testA;
@@ -230,6 +237,16 @@ public class JsonUtilsTest {
 
         public void setData(String data) {
             this.data = data;
+        }
+    }
+
+    public static class TestEmptyBean {
+
+        // without public getter method
+        private int field;
+
+        public TestEmptyBean(int field) {
+            this.field = field;
         }
     }
 }
