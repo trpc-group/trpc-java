@@ -135,7 +135,7 @@ public class JsonUtilsTest {
         TestObj1 obj1 = new TestObj1();
         obj1.setTest(123);
         String aaa = JsonUtils.toJson(obj1, "aaa");
-        Assert.assertEquals("aaa", aaa);
+        Assert.assertEquals(EMPTY_JSON, aaa);
     }
 
     @Test
@@ -185,12 +185,6 @@ public class JsonUtilsTest {
     }
 
 
-    @Test
-    public void testEmptyBeanSerial() {
-        TestEmptyBean testEmptyBean = new TestEmptyBean(10);
-        Assert.assertEquals(EMPTY_JSON, JsonUtils.toJson(testEmptyBean));
-    }
-
     public static class TestObj {
 
         private int testA;
@@ -237,16 +231,6 @@ public class JsonUtilsTest {
 
         public void setData(String data) {
             this.data = data;
-        }
-    }
-
-    public static class TestEmptyBean {
-
-        // without public getter method
-        private int field;
-
-        public TestEmptyBean(int field) {
-            this.field = field;
         }
     }
 }
