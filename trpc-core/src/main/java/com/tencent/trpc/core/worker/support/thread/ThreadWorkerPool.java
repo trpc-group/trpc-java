@@ -15,35 +15,26 @@ import com.tencent.trpc.core.common.NamedThreadFactory;
 import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.exception.LifecycleException;
 import com.tencent.trpc.core.exception.TRpcExtensionException;
-import com.tencent.trpc.core.extension.DisposableExtension;
-import com.tencent.trpc.core.extension.Extension;
-import com.tencent.trpc.core.extension.InitializingExtension;
-import com.tencent.trpc.core.extension.PluginConfigAware;
-import com.tencent.trpc.core.extension.RefreshableExtension;
+import com.tencent.trpc.core.extension.*;
 import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import com.tencent.trpc.core.management.PoolMXBean;
+import com.tencent.trpc.core.management.ThreadPerTaskExecutorMXBeanImpl;
 import com.tencent.trpc.core.management.ThreadPoolMXBean;
 import com.tencent.trpc.core.management.ThreadPoolMXBeanImpl;
 import com.tencent.trpc.core.management.support.MBeanRegistryHelper;
 import com.tencent.trpc.core.worker.AbstractWorkerPool;
 import com.tencent.trpc.core.worker.handler.TrpcThreadExceptionHandler;
 import com.tencent.trpc.core.worker.spi.WorkerPool;
+import org.reflections.ReflectionUtils;
+
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.LinkedTransferQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
-import org.reflections.ReflectionUtils;
 
 @Extension(ThreadWorkerPool.TYPE)
 public class ThreadWorkerPool extends AbstractWorkerPool
@@ -59,6 +50,8 @@ public class ThreadWorkerPool extends AbstractWorkerPool
     private static final String NAME = "name";
     private static final String SCHEDULER_NAME = "scheduler";
     private static final String FACTORY_NAME = "factory";
+    private static final String EXECUTORS_CLASS_NAME = "java.util.concurrent.Executors";
+    private static final String NEW_THREAD_PER_TASK_EXECUTOR_NAME = "newThreadPerTaskExecutor";
 
     private ExecutorService threadPool;
     private ThreadPoolConfig poolConfig;
@@ -91,7 +84,7 @@ public class ThreadWorkerPool extends AbstractWorkerPool
         uncaughtExceptionHandler = new TrpcThreadExceptionHandler(errorCount, businessError, protocolError);
 
         ThreadFactory threadFactory = null;
-        if (poolConfig.useFiber()) {
+        if (poolConfig.useVirtualThread() || poolConfig.useFiber()) {
             try {
                 // Since versions below OpenJDK 21 and Tencent JDK non-FIBER versions do not support coroutines,
                 // introducing the "java.lang.Thread.Builder.OfVirtual" dependency will result in an error,
@@ -105,7 +98,8 @@ public class ThreadWorkerPool extends AbstractWorkerPool
                 nameMethod.invoke(virtual, poolConfig.getNamePrefix(), 1);
                 // Only Tencent Kona JDK FIBER 8+ version support the scheduler method, OpenJDK 21 version does not
                 // support the scheduler method.
-                if (!poolConfig.isShareSchedule()
+                if (poolConfig.useFiber()
+                        && !poolConfig.isShareSchedule()
                         && containsMethod(virtualClazz.getDeclaredMethods(), SCHEDULER_NAME)) {
                     Method schedulerMethod = virtualClazz.getDeclaredMethod(SCHEDULER_NAME, Executor.class);
                     schedulerMethod.setAccessible(true);
@@ -124,13 +118,27 @@ public class ThreadWorkerPool extends AbstractWorkerPool
                     uncaughtExceptionHandler);
             logger.warn("If the server uses a synchronous interface, please increase the thread pool size");
         }
-
-        threadPool = new ThreadPoolExecutor(poolConfig.getCorePoolSize(),
-                poolConfig.getMaximumPoolSize(), poolConfig.getKeepAliveTimeSeconds(),
-                TimeUnit.SECONDS, poolConfig.getQueueSize() <= 0 ? new LinkedTransferQueue<>()
-                : new LinkedBlockingQueue<>(poolConfig.getQueueSize()), threadFactory);
-        ((ThreadPoolExecutor) threadPool).allowCoreThreadTimeOut(poolConfig.isAllowCoreThreadTimeOut());
-        threadPoolMXBean = new ThreadPoolMXBeanImpl((ThreadPoolExecutor) threadPool);
+        if (poolConfig.useVirtualThread()) {
+            try {
+                // Use JDK 21+ method Executors.newThreadPerTaskExecutor(ThreadFactory threadFactory)
+                // to create a virtual thread executor service
+                Class<?> executorsClazz = ReflectionUtils.forName(EXECUTORS_CLASS_NAME);
+                Method newThreadPerTaskExecutorMethod = executorsClazz.getDeclaredMethod(NEW_THREAD_PER_TASK_EXECUTOR_NAME, ThreadFactory.class);
+                threadPool = (ExecutorService) newThreadPerTaskExecutorMethod.invoke(executorsClazz, threadFactory);
+                threadPoolMXBean = new ThreadPerTaskExecutorMXBeanImpl(threadPool);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
+                logger.error("The current JDK version does not support virtual threads, please use OpenJDK 21+, " +
+                        "or remove use_virtual_thread config, error: ", exception);
+                throw new TRpcExtensionException("init worker pool with virtual threads failed", exception);
+            }
+        } else {
+            threadPool = new ThreadPoolExecutor(poolConfig.getCorePoolSize(),
+                    poolConfig.getMaximumPoolSize(), poolConfig.getKeepAliveTimeSeconds(),
+                    TimeUnit.SECONDS, poolConfig.getQueueSize() <= 0 ? new LinkedTransferQueue<>()
+                    : new LinkedBlockingQueue<>(poolConfig.getQueueSize()), threadFactory);
+            ((ThreadPoolExecutor) threadPool).allowCoreThreadTimeOut(poolConfig.isAllowCoreThreadTimeOut());
+            threadPoolMXBean = new ThreadPoolMXBeanImpl((ThreadPoolExecutor) threadPool);
+        }
         MBeanRegistryHelper.registerMBean(threadPoolMXBean, threadPoolMXBean.getObjectName());
     }
 

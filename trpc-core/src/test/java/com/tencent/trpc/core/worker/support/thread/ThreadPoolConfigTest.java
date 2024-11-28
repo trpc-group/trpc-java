@@ -64,6 +64,7 @@ public class ThreadPoolConfigTest {
         properties.put(ThreadPoolConfig.DAEMON, Boolean.FALSE);
         properties.put(ThreadPoolConfig.CLOSE_TIMEOUT, 10 * 1000);
         properties.put(ThreadPoolConfig.ALLOW_CORE_THREAD_TIMEOUT, Boolean.TRUE);
+        properties.put(ThreadPoolConfig.USE_VIRTUAL_THREAD, Boolean.FALSE);
         properties.put(ThreadPoolConfig.USE_FIBER, Boolean.TRUE);
         properties.put(ThreadPoolConfig.SHARE_SCHEDULE, Boolean.TRUE);
         ThreadPoolConfig config = ThreadPoolConfig.parse("1", properties);
@@ -77,6 +78,7 @@ public class ThreadPoolConfigTest {
         assertEquals(2000, config.getMaximumPoolSize());
         assertEquals("test", config.getNamePrefix());
         assertEquals(0, config.getQueueSize());
+        assertFalse(config.useVirtualThread());
         assertTrue(config.useFiber());
         assertTrue(config.isShareSchedule());
     }
