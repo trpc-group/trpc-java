@@ -11,7 +11,8 @@ public class ThreadPerTaskExecutorMXBeanTest {
     @Test
     public void testThreadPerTaskExecutorMXBean() {
         ExecutorService executorService = PowerMockito.mock(ExecutorService.class);
-        ThreadPoolMXBean mxBean = new ThreadPerTaskExecutorMXBeanImpl(executorService);
+        ThreadPerTaskExecutorWrapper wrapper = ThreadPerTaskExecutorWrapper.wrap(executorService);
+        ThreadPoolMXBean mxBean = new ThreadPerTaskExecutorMXBeanImpl(wrapper);
         Assert.assertEquals(0, mxBean.getPoolSize());
         Assert.assertEquals(0, mxBean.getActiveThreadCount());
         Assert.assertEquals(0, mxBean.getTaskCount());

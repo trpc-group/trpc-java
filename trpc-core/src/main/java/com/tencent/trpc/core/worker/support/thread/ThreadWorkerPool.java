@@ -18,10 +18,7 @@ import com.tencent.trpc.core.exception.TRpcExtensionException;
 import com.tencent.trpc.core.extension.*;
 import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
-import com.tencent.trpc.core.management.PoolMXBean;
-import com.tencent.trpc.core.management.ThreadPerTaskExecutorMXBeanImpl;
-import com.tencent.trpc.core.management.ThreadPoolMXBean;
-import com.tencent.trpc.core.management.ThreadPoolMXBeanImpl;
+import com.tencent.trpc.core.management.*;
 import com.tencent.trpc.core.management.support.MBeanRegistryHelper;
 import com.tencent.trpc.core.worker.AbstractWorkerPool;
 import com.tencent.trpc.core.worker.handler.TrpcThreadExceptionHandler;
@@ -123,9 +120,12 @@ public class ThreadWorkerPool extends AbstractWorkerPool
                 // Use JDK 21+ method Executors.newThreadPerTaskExecutor(ThreadFactory threadFactory)
                 // to create a virtual thread executor service
                 Class<?> executorsClazz = ReflectionUtils.forName(EXECUTORS_CLASS_NAME);
-                Method newThreadPerTaskExecutorMethod = executorsClazz.getDeclaredMethod(NEW_THREAD_PER_TASK_EXECUTOR_NAME, ThreadFactory.class);
-                threadPool = (ExecutorService) newThreadPerTaskExecutorMethod.invoke(executorsClazz, threadFactory);
-                threadPoolMXBean = new ThreadPerTaskExecutorMXBeanImpl(threadPool);
+                Method newThreadPerTaskExecutorMethod = executorsClazz
+                        .getDeclaredMethod(NEW_THREAD_PER_TASK_EXECUTOR_NAME, ThreadFactory.class);
+                ThreadPerTaskExecutorWrapper wrappedThreadPool = ThreadPerTaskExecutorWrapper
+                        .wrap((ExecutorService) newThreadPerTaskExecutorMethod.invoke(executorsClazz, threadFactory));
+                threadPool = wrappedThreadPool;
+                threadPoolMXBean = new ThreadPerTaskExecutorMXBeanImpl(wrappedThreadPool);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
                 logger.error("The current JDK version does not support virtual threads, please use OpenJDK 21+, " +
                         "or remove use_virtual_thread config, error: ", exception);
