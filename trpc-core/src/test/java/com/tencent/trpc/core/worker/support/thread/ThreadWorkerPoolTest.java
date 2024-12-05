@@ -13,13 +13,15 @@ package com.tencent.trpc.core.worker.support.thread;
 
 import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.exception.TRpcException;
+import com.tencent.trpc.core.exception.TRpcExtensionException;
 import com.tencent.trpc.core.management.PoolMXBean;
 import com.tencent.trpc.core.management.PoolMXBean.WorkerPoolType;
 import com.tencent.trpc.core.management.ThreadPoolMXBean;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ThreadWorkerPoolTest {
 
@@ -76,6 +78,32 @@ public class ThreadWorkerPoolTest {
         ThreadWorkerPool threadWorkerPool = new ThreadWorkerPool();
         threadWorkerPool.setPluginConfig(poolPluginConfig);
         threadWorkerPool.init();
+    }
+
+    @Test
+    public void testVirtualThreads() {
+        Map<String, Object> properties = getProperties();
+        properties.put(ThreadPoolConfig.USE_VIRTUAL_THREAD, Boolean.TRUE);
+        PluginConfig poolPluginConfig = new PluginConfig("work_pool", ThreadWorkerPool.class,
+                properties);
+        ThreadWorkerPool threadWorkerPool = new ThreadWorkerPool();
+        threadWorkerPool.setPluginConfig(poolPluginConfig);
+        try {
+            threadWorkerPool.init();
+        } catch (TRpcExtensionException e) {
+            // not in java21+
+            return;
+        }
+        PoolMXBean report = threadWorkerPool.report();
+        ThreadPoolMXBean threadPoolMXBean = (ThreadPoolMXBean) report;
+        Assert.assertEquals(0, threadPoolMXBean.getPoolSize());
+        Assert.assertEquals(0, threadPoolMXBean.getTaskCount());
+        Assert.assertEquals(0, threadPoolMXBean.getCompletedTaskCount());
+        Assert.assertEquals(0, threadPoolMXBean.getActiveThreadCount());
+        Assert.assertEquals(WorkerPoolType.THREAD.getName(), threadPoolMXBean.getType());
+        Assert.assertEquals(0, threadPoolMXBean.getCorePoolSize());
+        Assert.assertEquals(Integer.MAX_VALUE, threadPoolMXBean.getMaximumPoolSize());
+        Assert.assertNotNull(report.toString());
     }
 
 }

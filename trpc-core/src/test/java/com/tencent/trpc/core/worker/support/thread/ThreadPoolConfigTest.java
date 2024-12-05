@@ -19,6 +19,8 @@ import static org.junit.Assert.assertTrue;
 import com.tencent.trpc.core.worker.WorkerPoolManager;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 public class ThreadPoolConfigTest {
@@ -36,6 +38,7 @@ public class ThreadPoolConfigTest {
         config.setNamePrefix("namePrefix");
         config.setUseFiber(Boolean.TRUE);
         config.setShareSchedule(Boolean.TRUE);
+        config.setUseVirtualThread(Boolean.FALSE);
         assertFalse(config.isAllowCoreThreadTimeOut());
         assertEquals(50, config.getCloseTimeout());
         assertEquals(40, config.getCorePoolSize());
@@ -64,6 +67,7 @@ public class ThreadPoolConfigTest {
         properties.put(ThreadPoolConfig.DAEMON, Boolean.FALSE);
         properties.put(ThreadPoolConfig.CLOSE_TIMEOUT, 10 * 1000);
         properties.put(ThreadPoolConfig.ALLOW_CORE_THREAD_TIMEOUT, Boolean.TRUE);
+        properties.put(ThreadPoolConfig.USE_VIRTUAL_THREAD, Boolean.FALSE);
         properties.put(ThreadPoolConfig.USE_FIBER, Boolean.TRUE);
         properties.put(ThreadPoolConfig.SHARE_SCHEDULE, Boolean.TRUE);
         ThreadPoolConfig config = ThreadPoolConfig.parse("1", properties);
@@ -77,7 +81,23 @@ public class ThreadPoolConfigTest {
         assertEquals(2000, config.getMaximumPoolSize());
         assertEquals("test", config.getNamePrefix());
         assertEquals(0, config.getQueueSize());
+        assertFalse(config.useVirtualThread());
         assertTrue(config.useFiber());
         assertTrue(config.isShareSchedule());
+    }
+
+    @Test
+    public void testValidate() {
+        ThreadPoolConfig config = new ThreadPoolConfig();
+        config.setCorePoolSize(-1);
+        Assert.assertThrows(IllegalArgumentException.class, config::validate);
+        config.setCorePoolSize(0);
+        config.setQueueSize(-1);
+        Assert.assertThrows(IllegalArgumentException.class, config::validate);
+        config.setQueueSize(0);
+        config.setCloseTimeout(-1);
+        Assert.assertThrows(IllegalArgumentException.class, config::validate);
+        config.setCloseTimeout(0);
+        config.validate();
     }
 }
