@@ -37,6 +37,7 @@ import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.ThreadFactory;
@@ -197,6 +198,17 @@ public class ThreadWorkerPool extends AbstractWorkerPool
     @Override
     public void execute(Task task) {
         threadPool.execute(() -> {
+            try {
+                task.run();
+            } catch (Throwable ex) {
+                logger.error("", ex);
+            }
+        });
+    }
+
+    @Override
+    public Future submit(Task task) {
+        return threadPool.submit(() -> {
             try {
                 task.run();
             } catch (Throwable ex) {

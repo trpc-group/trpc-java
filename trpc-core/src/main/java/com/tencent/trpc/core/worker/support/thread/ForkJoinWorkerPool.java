@@ -33,6 +33,7 @@ import java.math.BigInteger;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -110,6 +111,17 @@ public class ForkJoinWorkerPool extends AbstractWorkerPool implements PluginConf
             }
         });
 
+    }
+
+    @Override
+    public Future submit(Task task) throws RejectedExecutionException {
+        return forkJoinPool.submit(() -> {
+            try {
+                task.run();
+            } catch (Throwable ex) {
+                logger.error("submit task failure:", ex);
+            }
+        });
     }
 
     @Override

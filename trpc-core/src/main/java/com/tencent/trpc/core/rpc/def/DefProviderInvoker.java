@@ -79,7 +79,7 @@ public class DefProviderInvoker<T> implements ProviderInvoker<T> {
      * @param costTime elapsed time in ms
      * @return timeout in ms
      */
-    private LeftTimeout parseTimeout(final Request request, final long costTime) {
+    public LeftTimeout parseTimeout(final Request request, final long costTime) {
         // The timeout set by the caller, minus the network time, queue waiting time, etc. to get the remaining time
         int reqLeftTimeout = request.getMeta().getTimeout() - (int) costTime;
         // The timeout set by the callee

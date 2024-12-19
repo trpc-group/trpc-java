@@ -56,6 +56,13 @@ public class ProviderConfig<T> implements Cloneable {
      */
     @ConfigProperty(value = Constants.DEFAULT_SERVER_TIMEOUT_MS, type = Integer.class, override = true)
     protected int requestTimeout;
+
+    /**
+     * Execute timeout interrupt.
+     */
+    @ConfigProperty(value="false",type=Boolean.class,override = true)
+    protected boolean timeoutInterrupt;
+
     /**
      * Thread pool configuration.
      */
@@ -288,6 +295,16 @@ public class ProviderConfig<T> implements Cloneable {
         this.requestTimeout = requestTimeout;
     }
 
+    public boolean getTimeoutInterrupt() {
+        checkFiledModifyPrivilege();
+        return timeoutInterrupt;
+    }
+
+    public void setTimeoutInterrupt(boolean timeoutInterrupt) {
+        checkFiledModifyPrivilege();
+        this.timeoutInterrupt = timeoutInterrupt;
+    }
+
     public String getWorkerPool() {
         if (null != workerPool) {
             return workerPool;
@@ -335,5 +352,7 @@ public class ProviderConfig<T> implements Cloneable {
         checkFiledModifyPrivilege();
         this.enableLinkTimeout = enableLinkTimeout;
     }
+
+
 
 }

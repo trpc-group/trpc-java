@@ -15,6 +15,7 @@ import com.tencent.trpc.core.extension.Extensible;
 import com.tencent.trpc.core.management.PoolMXBean;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
@@ -26,6 +27,8 @@ public interface WorkerPool {
     String getName();
 
     void execute(Task task) throws RejectedExecutionException;
+
+    Future submit(Task task) throws RejectedExecutionException;
 
     PoolMXBean report();
 

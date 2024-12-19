@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -35,6 +35,8 @@ import com.tencent.trpc.core.rpc.common.RpcMethodInfo;
 import com.tencent.trpc.core.rpc.common.RpcMethodInfoAndInvoker;
 import com.tencent.trpc.core.rpc.def.DecodableValue;
 import com.tencent.trpc.core.rpc.def.DefMethodInfoRegister;
+import com.tencent.trpc.core.rpc.def.DefProviderInvoker;
+import com.tencent.trpc.core.rpc.def.LeftTimeout;
 import com.tencent.trpc.core.transport.Channel;
 import com.tencent.trpc.core.transport.ServerTransport;
 import com.tencent.trpc.core.transport.codec.ServerCodec;
@@ -47,7 +49,10 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -233,13 +238,38 @@ public class DefRpcServer extends AbstractRpcServer {
             }
             try {
                 ProviderInvoker<?> invoker = rpcMethodInfoAndInvoker.getInvoker();
-                invoker.getConfig().getWorkerPoolObj().execute(() -> {
+                final ProviderConfig<?> config = invoker.getConfig();
+                final long start = System.nanoTime();
+                Future<?> future = config.getWorkerPoolObj().submit(() -> {
                     try {
                         dispatch(channel, invoker, request);
                     } catch (Throwable ex) {
                         LOG.error("Dispatch request|" + request + " error", ex);
                     }
                 });
+
+                // if enable timeout interrupt and execute timeout, interrupt thread.
+                if (config.getTimeoutInterrupt()) {
+                    int timeout = 0;
+                    if (config.getEnableLinkTimeout() && invoker instanceof DefProviderInvoker) {
+                        // link timeout need modify
+                        long costTime = System.currentTimeMillis() - request.getMeta().getCreateTime();
+                        LeftTimeout leftTimeout = ((DefProviderInvoker) invoker).parseTimeout(request, costTime);
+                        timeout = leftTimeout.getLeftTimeout() - (int)((System.nanoTime() - start) / 1000000000);
+                    } else {
+                        timeout = config.getRequestTimeout() - (int)((System.nanoTime() - start) / 1000000000);
+                    }
+                    LOG.debug("Dispatch request timeout:{} ms", timeout);
+                    try {
+                        future.get(timeout, TimeUnit.MILLISECONDS);
+                    } catch (TimeoutException te) {
+                        LOG.error("Dispatch request [" + request + "]  timeout,interrupt thread.");
+                        boolean cancelSuccess = future.cancel(true);
+                        LOG.info("Interrupt thread success?{}", cancelSuccess);
+                    } catch (Throwable t) {
+                        throw t;
+                    }
+                }
             } catch (Throwable ex) {
                 LOG.error("Dispatch request [" + request + "]  error", ex);
                 if (ex instanceof RejectedExecutionException) {
@@ -269,7 +299,7 @@ public class DefRpcServer extends AbstractRpcServer {
                 return route;
             } else if (ex) {
                 throw TRpcException.newFrameException(ErrorCode.TRPC_SERVER_NOFUNC_ERR,
-                        "Not found {func=%s}", invocation.getFunc());
+                                                      "Not found {func=%s}", invocation.getFunc());
             }
             return null;
         }
@@ -296,7 +326,7 @@ public class DefRpcServer extends AbstractRpcServer {
             if (null == request.getInvocation()) {
                 throw new IllegalArgumentException(
                         String.format("Server(%s), request(%s), Request invocation is null",
-                                protocolConfig.toSimpleString(), requestToString(request)));
+                                      protocolConfig.toSimpleString(), requestToString(request)));
             }
             RpcInvocation invocation = request.getInvocation();
             invocation.setRpcMethodInfo(methodInfo);
@@ -340,7 +370,9 @@ public class DefRpcServer extends AbstractRpcServer {
             if (request.getMeta().isOneWay()) {
                 try {
                     invoke(invoker, request).whenComplete((r, t) ->
-                            printException(request, t, "onewayInvoke exception"));
+                                                                  printException(request,
+                                                                                 t,
+                                                                                 "onewayInvoke exception"));
                 } catch (Throwable ex) {
                     printException(request, ex, "onewayInvoke exception");
                 }
@@ -387,8 +419,8 @@ public class DefRpcServer extends AbstractRpcServer {
                     });
                 } else {
                     LOG.error("Found rpcServiceName={}, rpcMethodName={}, return value is <null>",
-                            request.getInvocation().getRpcServiceName(),
-                            request.getInvocation().getRpcMethodName());
+                              request.getInvocation().getRpcServiceName(),
+                              request.getInvocation().getRpcMethodName());
                 }
             } else {
                 LOG.error(
@@ -410,7 +442,7 @@ public class DefRpcServer extends AbstractRpcServer {
                                 String msg) {
             Response response =
                     RpcUtils.newResponse(request, null,
-                            TRpcException.newException(errorCode, bizCode, msg));
+                                         TRpcException.newException(errorCode, bizCode, msg));
             if (channel.isConnected()) {
                 channel.send(response).whenComplete((rx, tx) -> {
                     if (tx != null) {
@@ -419,7 +451,7 @@ public class DefRpcServer extends AbstractRpcServer {
                 });
             } else {
                 LOG.error("Request{" + requestToString(request) + "} reply error, channel={" + channel
-                        + "} is close or disconnect");
+                                  + "} is close or disconnect");
             }
         }
 

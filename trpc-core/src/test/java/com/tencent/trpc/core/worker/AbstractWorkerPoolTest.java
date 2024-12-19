@@ -13,6 +13,7 @@ package com.tencent.trpc.core.worker;
 
 import com.tencent.trpc.core.management.ForkJoinPoolMXBeanImpl;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,6 +44,11 @@ public class AbstractWorkerPoolTest {
             @Override
             public void execute(Task task) throws RejectedExecutionException {
 
+            }
+
+            @Override
+            public Future submit(Task task) throws RejectedExecutionException {
+                return null;
             }
 
             @Override
