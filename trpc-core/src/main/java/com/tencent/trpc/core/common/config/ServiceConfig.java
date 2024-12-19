@@ -144,6 +144,11 @@ public class ServiceConfig extends BaseProtocolConfig {
      */
     @ConfigProperty(value = "false", type = Boolean.class, override = true)
     protected Boolean enableLinkTimeout;
+    /**
+     * Enable execute timeout interrupt.
+     */
+    @ConfigProperty(value="false",type=Boolean.class,override = true)
+    protected Boolean enableTimeoutInterrupt;
 
     protected AtomicBoolean setDefault = new AtomicBoolean(Boolean.FALSE);
     protected AtomicBoolean initialized = new AtomicBoolean(Boolean.FALSE);
@@ -623,4 +628,12 @@ public class ServiceConfig extends BaseProtocolConfig {
         this.enableLinkTimeout = enableLinkTimeout;
     }
 
+    public Boolean getEnableTimeoutInterrupt() {
+        return enableTimeoutInterrupt;
+    }
+
+    public void setEnableTimeoutInterrupt(Boolean enableTimeoutInterrupt) {
+        checkFiledModifyPrivilege();
+        this.enableTimeoutInterrupt = enableTimeoutInterrupt;
+    }
 }
