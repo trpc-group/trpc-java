@@ -75,6 +75,11 @@ public class ServerConfig {
     @ConfigProperty(value = "false", type = Boolean.class)
     protected Boolean enableLinkTimeout;
     /**
+     * Whether to enable execute timeout interrupt.
+     */
+    @ConfigProperty(value="false",type=Boolean.class)
+    protected Boolean enableTimeoutInterrupt;
+    /**
      * Whether to disable default filters:
      * <p>{@link com.tencent.trpc.core.filter.ProviderInvokerHeadFilter}</p>
      * <p>{@link com.tencent.trpc.core.filter.ProviderInvokerTailFilter}</p>
@@ -411,6 +416,15 @@ public class ServerConfig {
     public void setRunListeners(List<String> runListeners) {
         checkFiledModifyPrivilege();
         this.runListeners = runListeners;
+    }
+
+    public Boolean getEnableTimeoutInterrupt() {
+        return enableTimeoutInterrupt;
+    }
+
+    public void setEnableTimeoutInterrupt(Boolean enableTimeoutInterrupt) {
+        checkFiledModifyPrivilege();
+        this.enableTimeoutInterrupt = enableTimeoutInterrupt;
     }
 
 }

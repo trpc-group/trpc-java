@@ -58,7 +58,7 @@ public class ProviderConfig<T> implements Cloneable {
     protected int requestTimeout;
 
     /**
-     * Enable execute timeout interrupt.
+     * Whether to enable execute timeout interrupt.
      */
     @ConfigProperty(value="false",type=Boolean.class,override = true)
     protected Boolean enableTimeoutInterrupt;

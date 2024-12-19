@@ -145,7 +145,7 @@ public class ServiceConfig extends BaseProtocolConfig {
     @ConfigProperty(value = "false", type = Boolean.class, override = true)
     protected Boolean enableLinkTimeout;
     /**
-     * Enable execute timeout interrupt.
+     * Whether to enable execute timeout interrupt.
      */
     @ConfigProperty(value="false",type=Boolean.class,override = true)
     protected Boolean enableTimeoutInterrupt;
