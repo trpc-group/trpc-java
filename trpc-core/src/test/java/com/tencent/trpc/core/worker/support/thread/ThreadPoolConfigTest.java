@@ -38,7 +38,7 @@ public class ThreadPoolConfigTest {
         config.setNamePrefix("namePrefix");
         config.setUseFiber(Boolean.TRUE);
         config.setShareSchedule(Boolean.TRUE);
-        config.setUseVirtualThread(Boolean.FALSE);
+        config.setUseThreadPerTaskExecutor(Boolean.FALSE);
         assertFalse(config.isAllowCoreThreadTimeOut());
         assertEquals(50, config.getCloseTimeout());
         assertEquals(40, config.getCorePoolSize());
@@ -67,7 +67,7 @@ public class ThreadPoolConfigTest {
         properties.put(ThreadPoolConfig.DAEMON, Boolean.FALSE);
         properties.put(ThreadPoolConfig.CLOSE_TIMEOUT, 10 * 1000);
         properties.put(ThreadPoolConfig.ALLOW_CORE_THREAD_TIMEOUT, Boolean.TRUE);
-        properties.put(ThreadPoolConfig.USE_VIRTUAL_THREAD, Boolean.FALSE);
+        properties.put(ThreadPoolConfig.USE_THREAD_PER_TASK_EXECUTOR, Boolean.FALSE);
         properties.put(ThreadPoolConfig.USE_FIBER, Boolean.TRUE);
         properties.put(ThreadPoolConfig.SHARE_SCHEDULE, Boolean.TRUE);
         ThreadPoolConfig config = ThreadPoolConfig.parse("1", properties);
@@ -81,7 +81,7 @@ public class ThreadPoolConfigTest {
         assertEquals(2000, config.getMaximumPoolSize());
         assertEquals("test", config.getNamePrefix());
         assertEquals(0, config.getQueueSize());
-        assertFalse(config.useVirtualThread());
+        assertFalse(config.useThreadPerTaskExecutor());
         assertTrue(config.useFiber());
         assertTrue(config.isShareSchedule());
     }

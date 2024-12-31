@@ -96,7 +96,7 @@ public class ThreadWorkerPool extends AbstractWorkerPool
         uncaughtExceptionHandler = new TrpcThreadExceptionHandler(errorCount, businessError, protocolError);
 
         ThreadFactory threadFactory = null;
-        if (poolConfig.useVirtualThread() || poolConfig.useFiber()) {
+        if (poolConfig.useVirtualThread()) {
             try {
                 // Since versions below OpenJDK 21 and Tencent JDK non-FIBER versions do not support coroutines,
                 // introducing the "java.lang.Thread.Builder.OfVirtual" dependency will result in an error,
@@ -130,7 +130,7 @@ public class ThreadWorkerPool extends AbstractWorkerPool
                     uncaughtExceptionHandler);
             logger.warn("If the server uses a synchronous interface, please increase the thread pool size");
         }
-        if (poolConfig.useVirtualThread()) {
+        if (poolConfig.useThreadPerTaskExecutor()) {
             try {
                 // Use JDK 21+ method Executors.newThreadPerTaskExecutor(ThreadFactory threadFactory)
                 // to create a virtual thread executor service
@@ -142,18 +142,16 @@ public class ThreadWorkerPool extends AbstractWorkerPool
                 threadPool = wrappedThreadPool;
                 threadPoolMXBean = new ThreadPerTaskExecutorMXBeanImpl(wrappedThreadPool);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
-                logger.error("The current JDK version does not support virtual threads, please use OpenJDK 21+, " +
-                        "or remove use_virtual_thread config, error: ", exception);
-                throw new TRpcExtensionException("init worker pool with virtual threads failed", exception);
+                logger.warn("The current JDK version does not support virtual threads, please use OpenJDK 21+, " +
+                        "or remove use_thread_per_task_executor config, error: ", exception);
             }
-        } else {
-            threadPool = new ThreadPoolExecutor(poolConfig.getCorePoolSize(),
-                    poolConfig.getMaximumPoolSize(), poolConfig.getKeepAliveTimeSeconds(),
-                    TimeUnit.SECONDS, poolConfig.getQueueSize() <= 0 ? new LinkedTransferQueue<>()
-                    : new LinkedBlockingQueue<>(poolConfig.getQueueSize()), threadFactory);
-            ((ThreadPoolExecutor) threadPool).allowCoreThreadTimeOut(poolConfig.isAllowCoreThreadTimeOut());
-            threadPoolMXBean = new ThreadPoolMXBeanImpl((ThreadPoolExecutor) threadPool);
         }
+        threadPool = new ThreadPoolExecutor(poolConfig.getCorePoolSize(),
+                poolConfig.getMaximumPoolSize(), poolConfig.getKeepAliveTimeSeconds(),
+                TimeUnit.SECONDS, poolConfig.getQueueSize() <= 0 ? new LinkedTransferQueue<>()
+                : new LinkedBlockingQueue<>(poolConfig.getQueueSize()), threadFactory);
+        ((ThreadPoolExecutor) threadPool).allowCoreThreadTimeOut(poolConfig.isAllowCoreThreadTimeOut());
+        threadPoolMXBean = new ThreadPoolMXBeanImpl((ThreadPoolExecutor) threadPool);
         MBeanRegistryHelper.registerMBean(threadPoolMXBean, threadPoolMXBean.getObjectName());
     }
 

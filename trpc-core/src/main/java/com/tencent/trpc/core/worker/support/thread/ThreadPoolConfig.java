@@ -67,7 +67,7 @@ public class ThreadPoolConfig {
      * See java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()
      * or java.util.concurrent.Executors.newThreadPerTaskExecutor(ThreadFactory)
      */
-    public static final String USE_VIRTUAL_THREAD = "use_virtual_thread";
+    public static final String USE_THREAD_PER_TASK_EXECUTOR = "use_thread_per_task_executor";
     /**
      * Whether to use coroutine.
      */
@@ -104,7 +104,7 @@ public class ThreadPoolConfig {
     private String namePrefix;
     private boolean daemon = Boolean.TRUE;
     private int closeTimeout = DEFAULT_CLOSE_TIMEOUT;
-    private boolean useVirtualThread;
+    private boolean useThreadPerTaskExecutor;
     private boolean useFiber;
     private int fiberParallel;
     private boolean shareSchedule;
@@ -121,23 +121,21 @@ public class ThreadPoolConfig {
         Objects.requireNonNull(extMap, "extMap");
         ThreadPoolConfig config = new ThreadPoolConfig();
         config.id = id;
-        config.useVirtualThread = MapUtils.getBooleanValue(extMap, USE_VIRTUAL_THREAD, Boolean.FALSE);
-        if (!config.useVirtualThread) {
-            config.useFiber = MapUtils.getBooleanValue(extMap, USE_FIBER, Boolean.FALSE);
-            if (config.useFiber()) {
-                config.corePoolSize = MapUtils.getIntValue(extMap, CORE_POOL_SIZE, DEFAULT_BIZ_VIRTUAL_CORE_THREADS);
-                config.maximumPoolSize = MapUtils.getIntValue(extMap, MAXIMUM_POOL_SIZE, DEFAULT_BIZ_VIRTUAL_MAX_THREADS);
-                config.shareSchedule = MapUtils.getBooleanValue(extMap, SHARE_SCHEDULE, Boolean.TRUE);
-                config.fiberParallel = MapUtils.getIntValue(extMap, FIBER_PARALLEL, Constants.CPUS);
-            } else {
-                config.corePoolSize = MapUtils.getIntValue(extMap, CORE_POOL_SIZE, 0);
-                config.maximumPoolSize = MapUtils.getIntValue(extMap, MAXIMUM_POOL_SIZE, config.corePoolSize);
-            }
-            config.keepAliveTimeSeconds = MapUtils.getLongValue(extMap, KEEP_ALIVE_TIME_SECONDS,
-                    DEFAULT_KEEP_ALIVE_TIME_SECONDS);
-            config.queueSize = MapUtils.getIntValue(extMap, QUEUE_SIZE, DEFAULT_QUEUE_SIZE);
-            config.allowCoreThreadTimeOut = MapUtils.getBoolean(extMap, ALLOW_CORE_THREAD_TIMEOUT, Boolean.TRUE);
+        config.useThreadPerTaskExecutor = MapUtils.getBooleanValue(extMap, USE_THREAD_PER_TASK_EXECUTOR, Boolean.FALSE);
+        config.useFiber = MapUtils.getBooleanValue(extMap, USE_FIBER, Boolean.FALSE);
+        if (config.useFiber()) {
+            config.corePoolSize = MapUtils.getIntValue(extMap, CORE_POOL_SIZE, DEFAULT_BIZ_VIRTUAL_CORE_THREADS);
+            config.maximumPoolSize = MapUtils.getIntValue(extMap, MAXIMUM_POOL_SIZE, DEFAULT_BIZ_VIRTUAL_MAX_THREADS);
+            config.shareSchedule = MapUtils.getBooleanValue(extMap, SHARE_SCHEDULE, Boolean.TRUE);
+            config.fiberParallel = MapUtils.getIntValue(extMap, FIBER_PARALLEL, Constants.CPUS);
+        } else {
+            config.corePoolSize = MapUtils.getIntValue(extMap, CORE_POOL_SIZE, 0);
+            config.maximumPoolSize = MapUtils.getIntValue(extMap, MAXIMUM_POOL_SIZE, config.corePoolSize);
         }
+        config.keepAliveTimeSeconds = MapUtils.getLongValue(extMap, KEEP_ALIVE_TIME_SECONDS,
+                DEFAULT_KEEP_ALIVE_TIME_SECONDS);
+        config.queueSize = MapUtils.getIntValue(extMap, QUEUE_SIZE, DEFAULT_QUEUE_SIZE);
+        config.allowCoreThreadTimeOut = MapUtils.getBoolean(extMap, ALLOW_CORE_THREAD_TIMEOUT, Boolean.TRUE);
         config.namePrefix = MapUtils.getString(extMap, NAME_PREFIX, id);
         config.daemon = MapUtils.getBoolean(extMap, DAEMON, Boolean.TRUE);
         config.closeTimeout = MapUtils.getIntValue(extMap, CLOSE_TIMEOUT, DEFAULT_CLOSE_TIMEOUT);
@@ -169,7 +167,7 @@ public class ThreadPoolConfig {
         map.put(NAME_PREFIX, namePrefix);
         map.put(DAEMON, daemon);
         map.put(CLOSE_TIMEOUT, closeTimeout);
-        map.put(USE_VIRTUAL_THREAD, useVirtualThread);
+        map.put(USE_THREAD_PER_TASK_EXECUTOR, useThreadPerTaskExecutor);
         map.put(USE_FIBER, useFiber);
         map.put(FIBER_PARALLEL, fiberParallel);
         map.put(SHARE_SCHEDULE, shareSchedule);
@@ -257,12 +255,12 @@ public class ThreadPoolConfig {
         return this;
     }
 
-    public boolean useVirtualThread() {
-        return useVirtualThread;
+    public boolean useThreadPerTaskExecutor() {
+        return useThreadPerTaskExecutor;
     }
 
-    public void setUseVirtualThread(boolean useVirtualThread) {
-        this.useVirtualThread = useVirtualThread;
+    public void setUseThreadPerTaskExecutor(boolean useThreadPerTaskThread) {
+        this.useThreadPerTaskExecutor = useThreadPerTaskThread;
     }
 
     public boolean useFiber() {
@@ -271,6 +269,10 @@ public class ThreadPoolConfig {
 
     public void setUseFiber(boolean useFiber) {
         this.useFiber = useFiber;
+    }
+
+    public boolean useVirtualThread() {
+        return useThreadPerTaskExecutor || useFiber;
     }
 
     public boolean isShareSchedule() {
