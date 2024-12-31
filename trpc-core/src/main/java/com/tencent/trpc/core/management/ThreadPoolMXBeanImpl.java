@@ -13,11 +13,8 @@ package com.tencent.trpc.core.management;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
 
-public class ThreadPoolMXBeanImpl extends BaseThreadPoolMXBean {
+public class ThreadPoolMXBeanImpl extends AbstractThreadPoolMXBean {
 
 
     private final ThreadPoolExecutor threadPool;

@@ -8,7 +8,7 @@ import com.tencent.trpc.core.logger.LoggerFactory;
  * <p>
  * JEP 444 recommends using JFR to monitor virtual threads.
  */
-public class ThreadPerTaskExecutorMXBeanImpl extends BaseThreadPoolMXBean {
+public class ThreadPerTaskExecutorMXBeanImpl extends AbstractThreadPoolMXBean {
 
     protected static final Logger logger = LoggerFactory.getLogger(ThreadPerTaskExecutorMXBeanImpl.class);
 
