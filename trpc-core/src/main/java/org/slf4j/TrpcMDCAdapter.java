@@ -13,11 +13,13 @@ package org.slf4j;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import com.tencent.trpc.core.utils.StringUtils;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.helpers.ThreadLocalMapOfStacks;
 import org.slf4j.spi.MDCAdapter;
 
 /**
@@ -39,6 +41,7 @@ public class TrpcMDCAdapter implements MDCAdapter {
     private static final TrpcMDCAdapter mtcMDCAdapter;
 
     private final ThreadLocal<Map<String, String>> copyOnInheritThreadLocal = new TransmittableThreadLocal<>();
+    private final ThreadLocalMapOfStacks threadLocalMapOfDeques = new ThreadLocalMapOfStacks();
 
     /**
      * Keeps track of the last operation performed
@@ -139,6 +142,22 @@ public class TrpcMDCAdapter implements MDCAdapter {
         lastOperation.set(READ_OPERATION);
         return Optional.ofNullable(copyOnInheritThreadLocal.get())
                 .map(HashMap::new).orElse(null);
+    }
+
+    public void pushByKey(String key, String value) {
+        this.threadLocalMapOfDeques.pushByKey(key, value);
+    }
+
+    public String popByKey(String key) {
+        return this.threadLocalMapOfDeques.popByKey(key);
+    }
+
+    public Deque<String> getCopyOfDequeByKey(String key) {
+        return this.threadLocalMapOfDeques.getCopyOfDequeByKey(key);
+    }
+
+    public void clearDequeByKey(String key) {
+        this.threadLocalMapOfDeques.clearDequeByKey(key);
     }
 
     @SuppressWarnings("unchecked")
