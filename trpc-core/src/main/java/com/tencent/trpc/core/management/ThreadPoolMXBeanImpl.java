@@ -13,26 +13,14 @@ package com.tencent.trpc.core.management;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
 
-public class ThreadPoolMXBeanImpl implements ThreadPoolMXBean {
+public class ThreadPoolMXBeanImpl extends AbstractThreadPoolMXBean {
 
-    private static final AtomicInteger threadPoolIndex = new AtomicInteger(1);
 
     private final ThreadPoolExecutor threadPool;
 
-    private final String objectName;
-
     public ThreadPoolMXBeanImpl(ThreadPoolExecutor threadPool) {
         this.threadPool = Objects.requireNonNull(threadPool, "threadPool is null");
-        this.objectName = WorkerPoolType.THREAD.getName() + BAR + threadPoolIndex.getAndIncrement();
-    }
-
-    @Override
-    public String getType() {
-        return WorkerPoolType.THREAD.getName();
     }
 
     @Override
@@ -65,13 +53,5 @@ public class ThreadPoolMXBeanImpl implements ThreadPoolMXBean {
         return threadPool.getMaximumPoolSize();
     }
 
-    @Override
-    public ObjectName getObjectName() {
-        try {
-            return new ObjectName(WORKER_POOL_MXBEAN_DOMAIN_TYPE + ",name=" + objectName);
-        } catch (MalformedObjectNameException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
 
 }

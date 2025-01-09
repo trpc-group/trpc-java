@@ -23,6 +23,8 @@ import com.tencent.trpc.core.extension.RefreshableExtension;
 import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import com.tencent.trpc.core.management.PoolMXBean;
+import com.tencent.trpc.core.management.ThreadPerTaskExecutorMXBeanImpl;
+import com.tencent.trpc.core.management.ThreadPerTaskExecutorWrapper;
 import com.tencent.trpc.core.management.ThreadPoolMXBean;
 import com.tencent.trpc.core.management.ThreadPoolMXBeanImpl;
 import com.tencent.trpc.core.management.support.MBeanRegistryHelper;
@@ -59,6 +61,8 @@ public class ThreadWorkerPool extends AbstractWorkerPool
     private static final String NAME = "name";
     private static final String SCHEDULER_NAME = "scheduler";
     private static final String FACTORY_NAME = "factory";
+    private static final String EXECUTORS_CLASS_NAME = "java.util.concurrent.Executors";
+    private static final String NEW_THREAD_PER_TASK_EXECUTOR_NAME = "newThreadPerTaskExecutor";
 
     private ExecutorService threadPool;
     private ThreadPoolConfig poolConfig;
@@ -90,41 +94,27 @@ public class ThreadWorkerPool extends AbstractWorkerPool
         protocolError = new AtomicLong(0);
         uncaughtExceptionHandler = new TrpcThreadExceptionHandler(errorCount, businessError, protocolError);
 
-        ThreadFactory threadFactory = null;
-        if (poolConfig.useFiber()) {
+        ThreadFactory threadFactory = getThreadFactory(poolConfig);
+        if (poolConfig.useVirtualThreadPerTaskExecutor()) {
             try {
-                // Since versions below OpenJDK 21 and Tencent JDK non-FIBER versions do not support coroutines,
-                // introducing the "java.lang.Thread.Builder.OfVirtual" dependency will result in an error,
-                // so we create coroutines through reflection, which is compatible with JDKs that do not support
-                // coroutines. When the JDK does not support coroutines, it downgrades to threads.
-                Class<?> threadClazz = ReflectionUtils.forName(THREAD_CLASS_NAME);
-                Method ofVirtualMethod = threadClazz.getDeclaredMethod(OF_VIRTUAL_NAME);
-                Object virtual = ofVirtualMethod.invoke(threadClazz);
-                Class<?> virtualClazz = ofVirtualMethod.getReturnType();
-                Method nameMethod = virtualClazz.getMethod(NAME, String.class, long.class);
-                nameMethod.invoke(virtual, poolConfig.getNamePrefix(), 1);
-                // Only Tencent Kona JDK FIBER 8+ version support the scheduler method, OpenJDK 21 version does not
-                // support the scheduler method.
-                if (!poolConfig.isShareSchedule()
-                        && containsMethod(virtualClazz.getDeclaredMethods(), SCHEDULER_NAME)) {
-                    Method schedulerMethod = virtualClazz.getDeclaredMethod(SCHEDULER_NAME, Executor.class);
-                    schedulerMethod.setAccessible(true);
-                    schedulerMethod.invoke(virtual, Executors.newWorkStealingPool(poolConfig.getFiberParallel()));
-                }
-                Method factoryMethod = virtualClazz.getMethod(FACTORY_NAME);
-                threadFactory = (ThreadFactory) factoryMethod.invoke(virtual);
+                // Use JDK 21+ method Executors.newThreadPerTaskExecutor(ThreadFactory threadFactory)
+                // to create a virtual thread executor service
+                Class<?> executorsClazz = ReflectionUtils.forName(EXECUTORS_CLASS_NAME);
+                Method newThreadPerTaskExecutorMethod = executorsClazz
+                        .getDeclaredMethod(NEW_THREAD_PER_TASK_EXECUTOR_NAME, ThreadFactory.class);
+                ThreadPerTaskExecutorWrapper wrappedThreadPool = ThreadPerTaskExecutorWrapper
+                        .wrap((ExecutorService) newThreadPerTaskExecutorMethod.invoke(executorsClazz, threadFactory));
+                threadPool = wrappedThreadPool;
+                threadPoolMXBean = new ThreadPerTaskExecutorMXBeanImpl(wrappedThreadPool);
+                MBeanRegistryHelper.registerMBean(threadPoolMXBean, threadPoolMXBean.getObjectName());
+                logger.info("Successfully created an executor that assigns each task to a "
+                        + "new virtual thread for processing");
+                return;
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
-                logger.error("The current JDK version cannot use coroutines, please use OpenJDK 21+ or Tencent "
-                        + "Kona JDK FIBER 8+ version, error: ", exception);
+                logger.warn("The current JDK version does not support virtual threads, please use OpenJDK 21+, "
+                        + "or remove use_thread_per_task_executor config, error: ", exception);
             }
         }
-        // If coroutines cannot be used, downgrade to threads
-        if (threadFactory == null) {
-            threadFactory = new NamedThreadFactory(poolConfig.getNamePrefix(), poolConfig.isDaemon(),
-                    uncaughtExceptionHandler);
-            logger.warn("If the server uses a synchronous interface, please increase the thread pool size");
-        }
-
         threadPool = new ThreadPoolExecutor(poolConfig.getCorePoolSize(),
                 poolConfig.getMaximumPoolSize(), poolConfig.getKeepAliveTimeSeconds(),
                 TimeUnit.SECONDS, poolConfig.getQueueSize() <= 0 ? new LinkedTransferQueue<>()
@@ -215,9 +205,50 @@ public class ThreadWorkerPool extends AbstractWorkerPool
         return this.uncaughtExceptionHandler;
     }
 
-    private boolean containsMethod(Method[] methods, String name) {
+    private ThreadFactory getThreadFactory(ThreadPoolConfig poolConfig) {
+        ThreadFactory threadFactory = null;
+        // Whether to use virtual threads
+        if (poolConfig.useFiber() || poolConfig.useVirtualThreadPerTaskExecutor()) {
+            try {
+                // Since versions below OpenJDK 21 and Tencent JDK non-FIBER versions do not support virtual threads,
+                // introducing the "java.lang.Thread.Builder.OfVirtual" dependency will result in an error,
+                // so we create virtual threads through reflection, which is compatible with JDKs that do not support
+                // virtual threads. When the JDK does not support virtual threads, it downgrades to thread.
+                Class<?> threadClazz = ReflectionUtils.forName(THREAD_CLASS_NAME);
+                Method ofVirtualMethod = threadClazz.getDeclaredMethod(OF_VIRTUAL_NAME);
+                Object virtual = ofVirtualMethod.invoke(threadClazz);
+                Class<?> virtualClazz = ofVirtualMethod.getReturnType();
+                Method nameMethod = virtualClazz.getMethod(NAME, String.class, long.class);
+                nameMethod.invoke(virtual, poolConfig.getNamePrefix(), 1);
+                // Only Tencent Kona JDK FIBER 8+ version support the scheduler method, OpenJDK 21 version does not
+                // support the scheduler method.
+                if (poolConfig.useFiber()
+                        && !poolConfig.isShareSchedule()
+                        && containsMethod(virtualClazz.getDeclaredMethods(), SCHEDULER_NAME)) {
+                    Method schedulerMethod = virtualClazz.getDeclaredMethod(SCHEDULER_NAME, Executor.class);
+                    schedulerMethod.setAccessible(true);
+                    schedulerMethod.invoke(virtual, Executors.newWorkStealingPool(poolConfig.getFiberParallel()));
+                }
+                Method factoryMethod = virtualClazz.getMethod(FACTORY_NAME);
+                threadFactory = (ThreadFactory) factoryMethod.invoke(virtual);
+                logger.info("Successfully created virtual thread factory");
+                return threadFactory;
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
+                logger.error("The current JDK version cannot use virtual threads, please use OpenJDK 21+ or "
+                        + "Tencent Kona JDK FIBER 8+ version, error: ", exception);
+            }
+        }
+        // If virtual threads cannot be used, downgrade to threads
+        threadFactory = new NamedThreadFactory(poolConfig.getNamePrefix(), poolConfig.isDaemon(),
+                uncaughtExceptionHandler);
+        logger.warn("Successfully created thread factory. If the server uses a synchronous interface, "
+                + "please increase the thread pool size");
+        return threadFactory;
+    }
+
+    private boolean containsMethod(Method[] methods, String methodName) {
         for (Method method : methods) {
-            if (method.getName().equals(name)) {
+            if (method.getName().equals(methodName)) {
                 return true;
             }
         }

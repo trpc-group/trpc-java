@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -61,6 +61,13 @@ public class ThreadPoolConfig {
      */
     public static final String CLOSE_TIMEOUT = "close_timeout";
     /**
+     * Whether to use virtual threads for Java21.
+     * <p>
+     * See java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()
+     * or java.util.concurrent.Executors.newThreadPerTaskExecutor(ThreadFactory)
+     */
+    public static final String USE_VIRTUAL_THREAD_PER_TASK_EXECUTOR = "use_virtual_thread_per_task_executor";
+    /**
      * Whether to use coroutine.
      */
     public static final String USE_FIBER = "use_fiber";
@@ -96,6 +103,10 @@ public class ThreadPoolConfig {
     private String namePrefix;
     private boolean daemon = Boolean.TRUE;
     private int closeTimeout = DEFAULT_CLOSE_TIMEOUT;
+    /**
+     * Whether to use virtual threads Executors.newThreadPerTaskExecutor
+     */
+    private boolean useVirtualThreadPerTaskExecutor;
     private boolean useFiber;
     private int fiberParallel;
     private boolean shareSchedule;
@@ -112,6 +123,8 @@ public class ThreadPoolConfig {
         Objects.requireNonNull(extMap, "extMap");
         ThreadPoolConfig config = new ThreadPoolConfig();
         config.id = id;
+        config.useVirtualThreadPerTaskExecutor = MapUtils.getBooleanValue(extMap, USE_VIRTUAL_THREAD_PER_TASK_EXECUTOR,
+                Boolean.FALSE);
         config.useFiber = MapUtils.getBooleanValue(extMap, USE_FIBER, Boolean.FALSE);
         if (config.useFiber()) {
             config.corePoolSize = MapUtils.getIntValue(extMap, CORE_POOL_SIZE, DEFAULT_BIZ_VIRTUAL_CORE_THREADS);
@@ -139,11 +152,11 @@ public class ThreadPoolConfig {
     }
 
     public void validate() {
-        PreconditionUtils.checkArgument(corePoolSize > 0, "id[%s],corePoolSize[%s] should > 0", id,
+        PreconditionUtils.checkArgument(corePoolSize >= 0, "id[%s],corePoolSize[%s] should >= 0", id,
                 corePoolSize);
-        PreconditionUtils.checkArgument(queueSize >= 0, "id[%s],queueSize[%s] should > 0", id,
+        PreconditionUtils.checkArgument(queueSize >= 0, "id[%s],queueSize[%s] should >= 0", id,
                 queueSize);
-        PreconditionUtils.checkArgument(closeTimeout >= 0, "id[%s],queueSize[%s] should > 0", id,
+        PreconditionUtils.checkArgument(closeTimeout >= 0, "id[%s],queueSize[%s] should >= 0", id,
                 closeTimeout);
     }
 
@@ -157,6 +170,7 @@ public class ThreadPoolConfig {
         map.put(NAME_PREFIX, namePrefix);
         map.put(DAEMON, daemon);
         map.put(CLOSE_TIMEOUT, closeTimeout);
+        map.put(USE_VIRTUAL_THREAD_PER_TASK_EXECUTOR, useVirtualThreadPerTaskExecutor);
         map.put(USE_FIBER, useFiber);
         map.put(FIBER_PARALLEL, fiberParallel);
         map.put(SHARE_SCHEDULE, shareSchedule);
@@ -242,6 +256,14 @@ public class ThreadPoolConfig {
     public ThreadPoolConfig setCloseTimeout(int closeTimeout) {
         this.closeTimeout = closeTimeout;
         return this;
+    }
+
+    public boolean useVirtualThreadPerTaskExecutor() {
+        return useVirtualThreadPerTaskExecutor;
+    }
+
+    public void setUseVirtualThreadPerTaskExecutor(boolean useVirtualThreadPerTaskExecutor) {
+        this.useVirtualThreadPerTaskExecutor = useVirtualThreadPerTaskExecutor;
     }
 
     public boolean useFiber() {
