@@ -1,3 +1,14 @@
+/*
+ * Tencent is pleased to support the open source community by making tRPC available.
+ *
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
+ * All rights reserved.
+ *
+ * If you have downloaded a copy of the tRPC source code from Tencent,
+ * please note that tRPC source code is licensed under the Apache 2.0 License,
+ * A copy of the Apache 2.0 License can be found in the LICENSE file.
+ */
+
 package com.tencent.trpc.core.management;
 
 import java.util.Collection;
@@ -12,6 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 public class ThreadPerTaskExecutorWrapper implements ExecutorService {
+
     private final ExecutorService executorService;
     private final AtomicLong submittedTaskCount = new AtomicLong();
     private final AtomicLong completedTaskCount = new AtomicLong();
@@ -24,14 +36,6 @@ public class ThreadPerTaskExecutorWrapper implements ExecutorService {
         return new ThreadPerTaskExecutorWrapper(executorService);
     }
 
-    public long getSubmittedTaskCount() {
-        return submittedTaskCount.get();
-    }
-
-    public long getCompletedTaskCount() {
-        return completedTaskCount.get();
-    }
-
     private TaskCountingRunnable wrap(Runnable task) {
         return new TaskCountingRunnable(task);
     }
@@ -40,7 +44,16 @@ public class ThreadPerTaskExecutorWrapper implements ExecutorService {
         return new TaskCountingCallable<>(task);
     }
 
+    public long getSubmittedTaskCount() {
+        return submittedTaskCount.get();
+    }
+
+    public long getCompletedTaskCount() {
+        return completedTaskCount.get();
+    }
+
     private class TaskCountingRunnable implements Runnable {
+
         private final Runnable task;
 
         public TaskCountingRunnable(Runnable task) {
@@ -59,6 +72,7 @@ public class ThreadPerTaskExecutorWrapper implements ExecutorService {
     }
 
     private class TaskCountingCallable<T> implements Callable<T> {
+
         private final Callable<T> task;
 
         public TaskCountingCallable(Callable<T> task) {
@@ -125,7 +139,8 @@ public class ThreadPerTaskExecutorWrapper implements ExecutorService {
     }
 
     @Override
-    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
+    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
+            throws InterruptedException {
         List<TaskCountingCallable<T>> wrappedTasks = tasks.stream()
                 .map(this::wrap)
                 .collect(Collectors.toList());
@@ -141,7 +156,8 @@ public class ThreadPerTaskExecutorWrapper implements ExecutorService {
     }
 
     @Override
-    public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
+            throws InterruptedException, ExecutionException, TimeoutException {
         List<TaskCountingCallable<T>> wrappedTasks = tasks.stream()
                 .map(this::wrap)
                 .collect(Collectors.toList());

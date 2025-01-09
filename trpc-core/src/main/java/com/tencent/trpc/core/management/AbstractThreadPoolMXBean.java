@@ -1,5 +1,3 @@
-package com.tencent.trpc.core.management;
-
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
@@ -11,9 +9,11 @@ package com.tencent.trpc.core.management;
  * A copy of the Apache 2.0 License can be found in the LICENSE file.
  */
 
+package com.tencent.trpc.core.management;
+
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractThreadPoolMXBean implements ThreadPoolMXBean {
 

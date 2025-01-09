@@ -1,8 +1,15 @@
-package com.tencent.trpc.core.management;
+/*
+ * Tencent is pleased to support the open source community by making tRPC available.
+ *
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
+ * All rights reserved.
+ *
+ * If you have downloaded a copy of the tRPC source code from Tencent,
+ * please note that tRPC source code is licensed under the Apache 2.0 License,
+ * A copy of the Apache 2.0 License can be found in the LICENSE file.
+ */
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.powermock.api.mockito.PowerMockito;
+package com.tencent.trpc.core.management;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +21,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import org.junit.Assert;
+import org.junit.Test;
+import org.powermock.api.mockito.PowerMockito;
 
 public class ThreadPerTaskExecutorWrapperTest {
 

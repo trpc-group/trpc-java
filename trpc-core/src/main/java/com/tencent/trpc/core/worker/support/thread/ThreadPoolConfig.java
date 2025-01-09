@@ -11,18 +11,17 @@
 
 package com.tencent.trpc.core.worker.support.thread;
 
+import static com.tencent.trpc.core.common.Constants.DEFAULT_BIZ_VIRTUAL_CORE_THREADS;
+import static com.tencent.trpc.core.common.Constants.DEFAULT_BIZ_VIRTUAL_MAX_THREADS;
+
 import com.google.common.collect.Maps;
 import com.tencent.trpc.core.common.Constants;
 import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.utils.PreconditionUtils;
-import org.apache.commons.collections4.MapUtils;
-
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
-import static com.tencent.trpc.core.common.Constants.DEFAULT_BIZ_VIRTUAL_CORE_THREADS;
-import static com.tencent.trpc.core.common.Constants.DEFAULT_BIZ_VIRTUAL_MAX_THREADS;
+import org.apache.commons.collections4.MapUtils;
 
 /**
  * Fork join pool configuration class.
@@ -67,7 +66,7 @@ public class ThreadPoolConfig {
      * See java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()
      * or java.util.concurrent.Executors.newThreadPerTaskExecutor(ThreadFactory)
      */
-    public static final String USE_THREAD_PER_TASK_EXECUTOR = "use_thread_per_task_executor";
+    public static final String USE_VIRTUAL_THREAD_PER_TASK_EXECUTOR = "use_virtual_thread_per_task_executor";
     /**
      * Whether to use coroutine.
      */
@@ -104,7 +103,10 @@ public class ThreadPoolConfig {
     private String namePrefix;
     private boolean daemon = Boolean.TRUE;
     private int closeTimeout = DEFAULT_CLOSE_TIMEOUT;
-    private boolean useThreadPerTaskExecutor;
+    /**
+     * Whether to use virtual threads Executors.newThreadPerTaskExecutor
+     */
+    private boolean useVirtualThreadPerTaskExecutor;
     private boolean useFiber;
     private int fiberParallel;
     private boolean shareSchedule;
@@ -112,7 +114,7 @@ public class ThreadPoolConfig {
     /**
      * Parse thread pool configuration information and generate configuration class.
      *
-     * @param id     plugin name
+     * @param id plugin name
      * @param extMap configuration
      * @return thread pool config
      */
@@ -121,7 +123,8 @@ public class ThreadPoolConfig {
         Objects.requireNonNull(extMap, "extMap");
         ThreadPoolConfig config = new ThreadPoolConfig();
         config.id = id;
-        config.useThreadPerTaskExecutor = MapUtils.getBooleanValue(extMap, USE_THREAD_PER_TASK_EXECUTOR, Boolean.FALSE);
+        config.useVirtualThreadPerTaskExecutor = MapUtils.getBooleanValue(extMap, USE_VIRTUAL_THREAD_PER_TASK_EXECUTOR,
+                Boolean.FALSE);
         config.useFiber = MapUtils.getBooleanValue(extMap, USE_FIBER, Boolean.FALSE);
         if (config.useFiber()) {
             config.corePoolSize = MapUtils.getIntValue(extMap, CORE_POOL_SIZE, DEFAULT_BIZ_VIRTUAL_CORE_THREADS);
@@ -167,7 +170,7 @@ public class ThreadPoolConfig {
         map.put(NAME_PREFIX, namePrefix);
         map.put(DAEMON, daemon);
         map.put(CLOSE_TIMEOUT, closeTimeout);
-        map.put(USE_THREAD_PER_TASK_EXECUTOR, useThreadPerTaskExecutor);
+        map.put(USE_VIRTUAL_THREAD_PER_TASK_EXECUTOR, useVirtualThreadPerTaskExecutor);
         map.put(USE_FIBER, useFiber);
         map.put(FIBER_PARALLEL, fiberParallel);
         map.put(SHARE_SCHEDULE, shareSchedule);
@@ -255,12 +258,12 @@ public class ThreadPoolConfig {
         return this;
     }
 
-    public boolean useThreadPerTaskExecutor() {
-        return useThreadPerTaskExecutor;
+    public boolean useVirtualThreadPerTaskExecutor() {
+        return useVirtualThreadPerTaskExecutor;
     }
 
-    public void setUseThreadPerTaskExecutor(boolean useThreadPerTaskThread) {
-        this.useThreadPerTaskExecutor = useThreadPerTaskThread;
+    public void setUseVirtualThreadPerTaskExecutor(boolean useVirtualThreadPerTaskExecutor) {
+        this.useVirtualThreadPerTaskExecutor = useVirtualThreadPerTaskExecutor;
     }
 
     public boolean useFiber() {
@@ -269,10 +272,6 @@ public class ThreadPoolConfig {
 
     public void setUseFiber(boolean useFiber) {
         this.useFiber = useFiber;
-    }
-
-    public boolean useVirtualThread() {
-        return useThreadPerTaskExecutor || useFiber;
     }
 
     public boolean isShareSchedule() {
