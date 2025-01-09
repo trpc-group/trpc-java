@@ -11,7 +11,6 @@
 
 package com.tencent.trpc.core.worker.support.thread;
 
-import com.tencent.trpc.core.common.Constants;
 import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.core.exception.TRpcExtensionException;
@@ -25,6 +24,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class ThreadWorkerPoolTest {
+
+    public static final int DEFALUT_POOL_SIZE = 2;
 
     @Test
     public void testInit() {
@@ -57,8 +58,8 @@ public class ThreadWorkerPoolTest {
 
     private Map<String, Object> getProperties() {
         Map<String, Object> properties = new HashMap<>();
-        properties.put(ThreadPoolConfig.CORE_POOL_SIZE, 2);
-        properties.put(ThreadPoolConfig.MAXIMUM_POOL_SIZE, 2);
+        properties.put(ThreadPoolConfig.CORE_POOL_SIZE, DEFALUT_POOL_SIZE);
+        properties.put(ThreadPoolConfig.MAXIMUM_POOL_SIZE, DEFALUT_POOL_SIZE);
         properties.put(ThreadPoolConfig.KEEP_ALIVE_TIME_SECONDS, 300000);
         properties.put(ThreadPoolConfig.QUEUE_SIZE, 0);
         properties.put(ThreadPoolConfig.NAME_PREFIX, "test");
@@ -106,8 +107,8 @@ public class ThreadWorkerPoolTest {
             Assert.assertEquals(0, threadPoolMXBean.getCorePoolSize());
             Assert.assertEquals(Integer.MAX_VALUE, threadPoolMXBean.getMaximumPoolSize());
         } else {
-            Assert.assertEquals(Constants.DEFAULT_BIZ_THREADS, threadPoolMXBean.getCorePoolSize());
-            Assert.assertEquals(Constants.DEFAULT_BIZ_THREADS, threadPoolMXBean.getMaximumPoolSize());
+            Assert.assertEquals(DEFALUT_POOL_SIZE, threadPoolMXBean.getCorePoolSize());
+            Assert.assertEquals(DEFALUT_POOL_SIZE, threadPoolMXBean.getMaximumPoolSize());
         }
         Assert.assertNotNull(report.toString());
     }
