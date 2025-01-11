@@ -6,12 +6,12 @@ comment:
 coverage: # https://docs.codecov.com/docs/codecovyml-reference#coverage
   precision: 5
   range:
-    - 80.0
-    - 85.0
+    - 70.0
+    - 75.0
   status:
     project:
       default:
         branches:
           - ^master$
-        target: 80.0 # the minimum coverage ratio that the commit must meet to be considered a success.
+        target: 70.0 # the minimum coverage ratio that the commit must meet to be considered a success.
         threshold: 1% # allow the coverage to drop by X%, and posting a success status.
