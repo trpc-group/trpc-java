@@ -127,7 +127,7 @@ public class RpcClusterClientManager {
             } finally {
                 logger.warn("RpcClient in clusterName={}, naming={}, remove rpc client{}, due to unused time > {} ms",
                         bConfig.getName(), bConfig.getNamingOptions().getServiceNaming(),
-                        e.getProtocolConfig().toSimpleString(), e.getProtocolConfig().getIdleTimeout());
+                        e.getProtocolConfig().toSimpleString(), bConfig.getIdleTimeout());
             }
         }));
     }
@@ -148,10 +148,14 @@ public class RpcClusterClientManager {
     public static RpcClient getOrCreateClient(BackendConfig bConfig, ProtocolConfig pConfig) {
         Preconditions.checkNotNull(bConfig, "backendConfig can't not be null");
         Map<String, RpcClientProxy> map = CLUSTER_MAP.computeIfAbsent(bConfig, k -> new ConcurrentHashMap<>());
-        RpcClientProxy rpcClientProxy = map.computeIfAbsent(pConfig.toUniqId(),
-                uniqId -> createRpcClientProxy(pConfig));
-        rpcClientProxy.updateLastUsedNanos();
-        return rpcClientProxy;
+        return map.compute(pConfig.toUniqId(),
+                (uniqId, client) -> {
+                    if (client == null) {
+                        client = createRpcClientProxy(pConfig);
+                    }
+                    client.updateLastUsedNanos();
+                    return client;
+                });
     }
 
     private static RpcClientProxy createRpcClientProxy(ProtocolConfig protocolConfig) {
@@ -252,7 +256,7 @@ public class RpcClusterClientManager {
 
         private RpcClient delegate;
 
-        private long lastUsedNanos = System.nanoTime();
+        private volatile long lastUsedNanos = System.nanoTime();
 
         RpcClientProxy(RpcClient delegate) {
             this.delegate = delegate;
