@@ -127,7 +127,7 @@ public class RpcClusterClientManager {
             } finally {
                 logger.warn("RpcClient in clusterName={}, naming={}, remove rpc client{}, due to unused time > {} ms",
                         bConfig.getName(), bConfig.getNamingOptions().getServiceNaming(),
-                        e.getProtocolConfig().toSimpleString(), e.getProtocolConfig().getIdleTimeout());
+                        e.getProtocolConfig().toSimpleString(), bConfig.getIdleTimeout());
             }
         }));
     }
@@ -252,7 +252,7 @@ public class RpcClusterClientManager {
 
         private RpcClient delegate;
 
-        private long lastUsedNanos = System.nanoTime();
+        private volatile long lastUsedNanos = System.nanoTime();
 
         RpcClientProxy(RpcClient delegate) {
             this.delegate = delegate;
