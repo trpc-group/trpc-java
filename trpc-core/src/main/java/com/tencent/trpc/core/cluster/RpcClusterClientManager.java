@@ -148,14 +148,10 @@ public class RpcClusterClientManager {
     public static RpcClient getOrCreateClient(BackendConfig bConfig, ProtocolConfig pConfig) {
         Preconditions.checkNotNull(bConfig, "backendConfig can't not be null");
         Map<String, RpcClientProxy> map = CLUSTER_MAP.computeIfAbsent(bConfig, k -> new ConcurrentHashMap<>());
-        return map.compute(pConfig.toUniqId(),
-                (uniqId, client) -> {
-                    if (client == null) {
-                        client = createRpcClientProxy(pConfig);
-                    }
-                    client.updateLastUsedNanos();
-                    return client;
-                });
+        RpcClientProxy rpcClientProxy = map.computeIfAbsent(pConfig.toUniqId(),
+                uniqId -> createRpcClientProxy(pConfig));
+        rpcClientProxy.updateLastUsedNanos();
+        return rpcClientProxy;
     }
 
     private static RpcClientProxy createRpcClientProxy(ProtocolConfig protocolConfig) {
