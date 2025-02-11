@@ -20,6 +20,7 @@ import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.utils.PreconditionUtils;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.collections4.MapUtils;
 
@@ -62,9 +63,8 @@ public class ThreadPoolConfig {
     public static final String CLOSE_TIMEOUT = "close_timeout";
     /**
      * Whether to use virtual threads for Java21.
-     * <p>
-     * See java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()
-     * or java.util.concurrent.Executors.newThreadPerTaskExecutor(ThreadFactory)
+     * See {@link Executors#newVirtualThreadPerTaskExecutor}
+     * or {@link Executors#newThreadPerTaskExecutor}
      */
     public static final String USE_VIRTUAL_THREAD_PER_TASK_EXECUTOR = "use_virtual_thread_per_task_executor";
     /**

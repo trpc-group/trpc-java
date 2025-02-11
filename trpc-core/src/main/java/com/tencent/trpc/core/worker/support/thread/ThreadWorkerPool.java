@@ -112,7 +112,7 @@ public class ThreadWorkerPool extends AbstractWorkerPool
                 return;
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
                 logger.warn("The current JDK version does not support virtual threads, please use OpenJDK 21+, "
-                        + "or remove use_thread_per_task_executor config, error: ", exception);
+                        + "or remove use_virtual_thread_per_task_executor config, error: ", exception);
             }
         }
         threadPool = new ThreadPoolExecutor(poolConfig.getCorePoolSize(),
