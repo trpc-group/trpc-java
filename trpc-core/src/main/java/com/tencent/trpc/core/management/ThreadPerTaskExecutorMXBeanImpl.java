@@ -16,7 +16,6 @@ import com.tencent.trpc.core.logger.LoggerFactory;
 
 /**
  * Implementation of ThreadPoolMXBean for ThreadPerTaskExecutor using ThreadPerTaskExecutorWrapper.
- * <p>
  * JEP 444 recommends using JFR to monitor virtual threads.
  */
 public class ThreadPerTaskExecutorMXBeanImpl extends AbstractThreadPoolMXBean {
