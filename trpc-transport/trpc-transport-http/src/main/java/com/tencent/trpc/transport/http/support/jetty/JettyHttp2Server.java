@@ -43,7 +43,7 @@ public class JettyHttp2Server extends JettyHttpsServer {
 
     @Override
     protected ServerConnector buildServerConnector(Server server, ProtocolConfig config,
-            SslContextFactory sslContextFactory, HttpConfiguration httpConfig,
+            SslContextFactory.Server sslContextFactory, HttpConfiguration httpConfig,
             HttpConfiguration httpsConfig) {
         // 1. Config the h2 factory
         HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(httpsConfig);

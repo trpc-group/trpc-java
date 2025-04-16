@@ -26,7 +26,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.util.ssl.SslContextFactory.Client;
 
 
 /**
@@ -50,7 +49,7 @@ public class JettyHttpsServer extends JettyHttpServer {
         ProtocolConfig config = getConfig();
 
         // 1. Configure SSL certificate, which uses TLS by default and is suitable for HTTPS and h2.
-        SslContextFactory sslContextFactory = new Client();
+        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
         sslContextFactory.setKeyStorePath(String.valueOf(config.getExtMap().get(KEYSTORE_PATH)));
         sslContextFactory
                 .setKeyStorePassword(String.valueOf(config.getExtMap().get(KEYSTORE_PASS)));
@@ -82,7 +81,7 @@ public class JettyHttpsServer extends JettyHttpServer {
      * @return the Jetty's {@link ServerConnector}
      */
     protected ServerConnector buildServerConnector(Server server, ProtocolConfig config,
-            SslContextFactory sslContextFactory, HttpConfiguration httpConfig,
+            SslContextFactory.Server sslContextFactory, HttpConfiguration httpConfig,
             HttpConfiguration httpsConfig) {
         // 1. Configure ssl factory
         SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory, HTTP1_SCHEME);
