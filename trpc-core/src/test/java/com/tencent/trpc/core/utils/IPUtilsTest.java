@@ -14,13 +14,11 @@ package com.tencent.trpc.core.utils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.lang.reflect.InvocationTargetException;
-
 public class IPUtilsTest {
 
     @Test
     public void testTransfer() {
-        String host = "9.12.53.243";
+        String host = "19.12.53.243";
         int ipInt = IPUtils.ip2int(host);
         byte[] ipBytes = IPUtils.ip2bytes(host);
         String newIp = IPUtils.bytes2ip(ipBytes);
