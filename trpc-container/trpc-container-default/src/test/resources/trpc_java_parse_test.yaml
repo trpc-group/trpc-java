@@ -67,7 +67,7 @@ server:
       registrys:
         polaris2:
           namespace: java-sdk-test-service2
-          token: 5e43887a00c4465085fb89eaa0e414b3
+          token: xxx
           instance_id: feda4ceffed0b7b08cf5ec665dcd320e50434549
           name: trpc.TestApp.TestServer.Greeter3
 
@@ -173,7 +173,7 @@ plugins:
       register_self: true
       service:
         - namespace: java-sdk-test-service2
-          token: 5e43887a00c4465085fb89eaa0e414b4
+          token: xxxx
           instance_id: feda4ceffed0b7b08cf5ec665dcd320e50434549
           name: trpc.TestApp.TestServer.Greeter
   selector:

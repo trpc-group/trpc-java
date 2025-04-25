@@ -34,4 +34,4 @@ trpc:
           - instance_id: 0938d8c7303d976bafa761ff588fb41e2192740d #服务注册所需要的 id
             name: trpc.ep.ods_collector.test
             namespace: Development #环境类型，分正式production和非正式development两种类型
-            token: d70b7d820f6144a2bb42e55cc6567f21 #服务注册所需要的 token
+            token: xxxx #服务注册所需要的 token
