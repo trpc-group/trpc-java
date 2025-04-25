@@ -225,9 +225,9 @@ public class YamlApplicationConfigParserTest {
         assertEquals(serviceConfig.getFilters().get(1), "filter2");
         assertEquals(serviceConfig.getWorkerPool(), "woker_pool_provider_test2");
         assertEquals(serviceConfig.getRegistries().get("polaris").get("token"),
-                "5e43887a00c4465085fb89eaa0e414b4");
+                "xxxx");
         assertEquals(serviceConfig.getRegistries().get("polaris2").get("token"),
-                "5e43887a00c4465085fb89eaa0e414b3");
+                "xxxx");
         ProviderConfig providerConfig = serviceConfig.getProviderConfigs().get(0);
         assertEquals(providerConfig.getRefClazz(), "com.tencent.trpc.container.demo.GreeterServiceImp");
         assertEquals(serviceConfig.getWorkerPool(), "woker_pool_provider_test2");

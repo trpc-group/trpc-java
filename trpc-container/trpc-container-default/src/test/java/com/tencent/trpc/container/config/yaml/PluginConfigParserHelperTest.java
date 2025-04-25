@@ -86,7 +86,7 @@ public class PluginConfigParserHelperTest {
         List<Map<String, Object>> services = (List<Map<String, Object>>) config.getProperties()
                 .get(ConfigConstants.SERVICE);
         Assert.assertEquals(services.get(0).get("namespace"), "java-sdk-test-service1");
-        Assert.assertEquals(services.get(0).get("token"), "5e43887a00c4465085fb89eaa0e414b4");
+        Assert.assertEquals(services.get(0).get("token"), "xxxx");
         Assert.assertEquals(services.get(0).get("instance_id"),
                 "feda4ceffed0b7b08cf5ec665dcd320e50434549");
         Assert.assertEquals(services.get(0).get("name"), "trpc.TestApp.TestServer.Greeter");
