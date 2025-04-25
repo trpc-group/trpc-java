@@ -151,7 +151,7 @@ plugins:
       register_self: true
       service:
         - namespace: java-sdk-test-service1                                                                         #环境类型，分正式production和非正式development两种类型
-          token: xxxxx                                                                   #服务注册所需要的 token
+          token: xxxx                                                                   #服务注册所需要的 token
           instance_id: feda4ceffed0b7b08cf5ec665dcd320e50434549                                                     #服务注册所需要的 id
           name: trpc.TestApp.TestServer.Greeter
   selector:

@@ -47,6 +47,7 @@ public class YamlApplicationConfigParserTest {
 
     @Test
     public void parse() {
+        ConfigManager.stopTest();
         ConfigManager applicationConfig =
                 new YamlApplicationConfigParser().parseFromClassPath("trpc_java_parse_test.yaml");
         assert applicationConfig != null;
@@ -227,7 +228,7 @@ public class YamlApplicationConfigParserTest {
         assertEquals(serviceConfig.getRegistries().get("polaris").get("token"),
                 "xxxx");
         assertEquals(serviceConfig.getRegistries().get("polaris2").get("token"),
-                "xxx");
+                "xxxx");
         ProviderConfig providerConfig = serviceConfig.getProviderConfigs().get(0);
         assertEquals(providerConfig.getRefClazz(), "com.tencent.trpc.container.demo.GreeterServiceImp");
         assertEquals(serviceConfig.getWorkerPool(), "woker_pool_provider_test2");
@@ -259,6 +260,7 @@ public class YamlApplicationConfigParserTest {
 
     @Test
     public void testServerIpParse() {
+        ConfigManager.stopTest();
         ConfigManager applicationConfig = new YamlApplicationConfigParser()
                 .parseFromClassPath("trpc_java_ip_parse_test.yaml");
         applicationConfig.setDefault();
@@ -271,6 +273,7 @@ public class YamlApplicationConfigParserTest {
 
     @Test
     public void testParseMap() {
+        ConfigManager.stopTest();
         String path = YamlParser.class.getClassLoader().getResource("trpc_java.yaml").getPath();
         Map<String, Object> map = new YamlApplicationConfigParser().parseMap(path);
         Assert.assertNotEquals(map.size(), 0);
@@ -278,6 +281,7 @@ public class YamlApplicationConfigParserTest {
 
     @Test
     public void testParseMap_confPath() {
+        ConfigManager.stopTest();
         TRpcSystemProperties.setProperties(TRpcSystemProperties.CONFIG_PATH, "");
         Map<String, Object> map1 = new YamlApplicationConfigParser().parseMap("");
         Assert.assertNotNull(map1);
@@ -314,7 +318,7 @@ public class YamlApplicationConfigParserTest {
 
     @Test
     public void testEx() {
-
+        ConfigManager.stopTest();
         try {
             new YamlApplicationConfigParser().parseMap("abc");
             TRpcSystemProperties.setProperties(TRpcSystemProperties.CONFIG_PATH, "abc");
