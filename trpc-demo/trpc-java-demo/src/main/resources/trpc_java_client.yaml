@@ -9,19 +9,19 @@ client: # Client configs
     - demoFilter
   service:
     - name: trpc.TestApp.TestServer.Greeter1  # Service name
-      interface: com.tencent.trpc.demo.proto.GreeterserviceAPI  # Service interface
+      interface: com.tencent.trpc.demo.proto.GreeterServiceAPI  # Service interface
       naming_url: ip://127.0.0.1:12321  # Router address
       network: tcp                      # Network type, tcp or udp
     - name: trpc.TestApp.TestServer.Greeter2  # Service name
-      interface: com.tencent.trpc.demo.proto.Greeterservice2API # Service interface
+      interface: com.tencent.trpc.demo.proto.GreeterService2API # Service interface
       naming_url: ip://127.0.0.1:12321  # Router address
       network: udp                      # Network type, tcp or udp
     - name: trpc.TestApp.TestServer.Greeter3  # Service name
-      interface: com.tencent.trpc.demo.proto.GreeterserviceAPI  # Service interface
+      interface: com.tencent.trpc.demo.proto.GreeterServiceAPI  # Service interface
       naming_url: ip://127.0.0.1:12322  # Router address
       protocol: http                    # Protocol type, default is trpc
     - name: trpc.TestApp.TestServer.Greeter4  # Service name
-      interface: com.tencent.trpc.demo.proto.Greeterservice2API # Service interface
+      interface: com.tencent.trpc.demo.proto.GreeterService2API # Service interface
       naming_url: ip://127.0.0.1:12322  # Router address
       protocol: http                    # Protocol type, default is trpc
 
