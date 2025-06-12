@@ -100,7 +100,17 @@ public class WorkerPoolManagerTest {
         WorkerPoolManager.refresh(WorkerPoolManager.DEF_NAMING_WORKER_POOL_NAME, pluginConfig);
         WorkerPool workerPool = WorkerPoolManager.get(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME);
         Assert.assertNotNull(workerPool);
+    }
 
+    @Test
+    public void testWorkPool() {
+        this.testRegistDefaultPluginConfig();
+        PluginConfig pluginConfig = WorkerPoolManager
+                .newThreadWorkerPoolConfig(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME,
+                        20,20, Boolean.FALSE);
+        WorkerPoolManager.refresh(WorkerPoolManager.DEF_NAMING_WORKER_POOL_NAME, pluginConfig);
+        WorkerPool workerPool = WorkerPoolManager.get(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME);
+        Assert.assertNotNull(workerPool);
     }
 
     /**

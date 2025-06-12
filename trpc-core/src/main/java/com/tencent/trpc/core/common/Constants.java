@@ -74,9 +74,13 @@ public class Constants {
      */
     public static final String DEFAULT_BOSS_THREADS = "1";
     /**
-     * Default business thread count cpus * 2
+     * Default business core thread count 50
      */
-    public static final int DEFAULT_BIZ_THREADS = CPUS * 2;
+    public static final int DEFAULT_CORE_THREADS = 50;
+    /**
+     * Default business max thread count 200
+     */
+    public static final int DEFAULT_MAX_THREADS = 200;
     /**
      * Default coroutine pool core count
      */
