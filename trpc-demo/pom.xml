@@ -12,11 +12,11 @@
 
     <artifactId>trpc-demo</artifactId>
     <packaging>pom</packaging>
-    <description>Trpc Parent Project ${project.version}</description>
+    <description>trpc-demo</description>
     <name>trpc</name>
 
     <properties>
-        <skip_maven_deploy>true</skip_maven_deploy>
+        <maven.deploy.skip>true</maven.deploy.skip>
         <trpc-maven-plugin.version>1.0.0</trpc-maven-plugin.version>
     </properties>
     <modules>
@@ -36,9 +36,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
