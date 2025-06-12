@@ -63,11 +63,11 @@ public class WorkerPoolManager {
 
     static {
         DEF_PROVIDER_WORKER_POOL_CONFIG = newThreadWorkerPoolConfig(DEF_PROVIDER_WORKER_POOL_NAME,
-                Constants.DEFAULT_BIZ_THREADS, Boolean.FALSE);
+                Constants.DEFAULT_CORE_THREADS, Constants.DEFAULT_MAX_THREADS, Boolean.FALSE);
         DEF_CONSUMER_WORKER_POOL_CONFIG = newThreadWorkerPoolConfig(DEF_CONSUMER_WORKER_POOL_NAME,
-                Constants.DEFAULT_BIZ_THREADS, Boolean.FALSE);
+                Constants.DEFAULT_CORE_THREADS, Constants.DEFAULT_MAX_THREADS, Boolean.FALSE);
         DEF_NAMING_WORKER_POOL_CONFIG = newThreadWorkerPoolConfig(DEF_NAMING_WORKER_POOL_NAME,
-                Constants.DEFAULT_BIZ_THREADS, Boolean.FALSE);
+                Constants.DEFAULT_CORE_THREADS, Constants.DEFAULT_MAX_THREADS, Boolean.FALSE);
         shareScheduler = new ScheduledThreadPoolExecutor(Math.min(Constants.CPUS, 4),
                 // Parameters can be considered for startup parameter configuration
                 new NamedThreadFactory("trpc_share_scheduler"));
@@ -120,6 +120,11 @@ public class WorkerPoolManager {
 
     public static PluginConfig newThreadWorkerPoolConfig(String name, int thread, boolean useFiber) {
         return ThreadWorkerPool.newThreadWorkerPoolConfig(name, thread, useFiber);
+    }
+
+    public static PluginConfig newThreadWorkerPoolConfig(String name, int corePoolSize,
+            int maxPoolSize, boolean useFiber) {
+        return ThreadWorkerPool.newThreadWorkerPoolConfig(name, corePoolSize, maxPoolSize, useFiber);
     }
 
     /**

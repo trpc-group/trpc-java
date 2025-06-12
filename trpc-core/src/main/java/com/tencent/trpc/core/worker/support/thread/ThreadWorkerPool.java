@@ -74,10 +74,15 @@ public class ThreadWorkerPool extends AbstractWorkerPool
     private UncaughtExceptionHandler uncaughtExceptionHandler;
 
     public static PluginConfig newThreadWorkerPoolConfig(String name, int corePoolSize, boolean useFiber) {
+        return newThreadWorkerPoolConfig(name, corePoolSize, corePoolSize, useFiber);
+    }
+
+    public static PluginConfig newThreadWorkerPoolConfig(String name,
+            int corePoolSize, int maxPoolSize, boolean useFiber) {
         ThreadPoolConfig poolConfig = new ThreadPoolConfig();
         poolConfig.setUseFiber(useFiber);
         poolConfig.setCorePoolSize(corePoolSize);
-        poolConfig.setMaximumPoolSize(corePoolSize);
+        poolConfig.setMaximumPoolSize(maxPoolSize);
         poolConfig.setShareSchedule(Boolean.TRUE);
         return new PluginConfig(name, WorkerPool.class, ThreadWorkerPool.class, poolConfig.toMap());
     }
