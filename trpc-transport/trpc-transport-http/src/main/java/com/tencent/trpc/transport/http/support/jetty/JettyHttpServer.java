@@ -136,8 +136,8 @@ public class JettyHttpServer extends AbstractHttpServer {
         int threads = config.getIoThreads();
         QueuedThreadPool threadPool = new QueuedThreadPool();
         threadPool.setDaemon(true);
-        threadPool.setMaxThreads(Math.max(threads, 4));
-        threadPool.setMinThreads(Math.max(threads, 4));
+        threadPool.setMaxThreads(Math.max(threads, Constants.DEFAULT_MAX_THREADS));
+        threadPool.setMinThreads(Math.max(threads, Constants.DEFAULT_CORE_THREADS));
         threadPool.setIdleTimeout(Math.max(config.getIdleTimeout(), Integer.parseInt(Constants.DEFAULT_IDLE_TIMEOUT)));
         return threadPool;
     }
