@@ -239,7 +239,8 @@ public class BackendConfigTest {
     public void test() {
         ExtensionLoader
                 .registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
-        ExtensionLoader.registerPlugin(ThreadWorkerPool.newThreadWorkerPoolConfig("thread", 10,10, Boolean.FALSE));
+        ExtensionLoader.registerPlugin(ThreadWorkerPool.newThreadWorkerPoolConfig("thread", 10,
+                10, Boolean.FALSE));
         BackendConfig config = new BackendConfig();
         config.setCallee("trpc.calleeapp.calleeserver.calleeservice.calleemethod");
         config.setNamingUrl("ip://127.0.0.1:8888");
