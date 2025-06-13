@@ -30,7 +30,7 @@ package com.tencent.trpc.transport.http.common;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 /**
  * Utility class used to manage {@link ServletContext}s.
