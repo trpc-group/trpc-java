@@ -20,7 +20,7 @@
     </modules>
 
     <properties>
-        <skip_maven_deploy>true</skip_maven_deploy>
+        <maven.deploy.skip>true</maven.deploy.skip>
 
         <google.android.annotations.version>4.1.1.4</google.android.annotations.version>
         <!-- reactor-bom and springboot need to be consistent with the version of the jar package in the trpc-dependencies-bom.pom.xml file -->
@@ -85,9 +85,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <configuration>
-                        <skip>true</skip>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.jacoco</groupId>

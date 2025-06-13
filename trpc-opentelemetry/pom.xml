@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>trpc-opentelemetry</artifactId>
+    <name>trpc-opentelemetry</name>
 
     <dependencies>
         <dependency>

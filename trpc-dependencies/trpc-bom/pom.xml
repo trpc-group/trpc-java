@@ -8,24 +8,63 @@
     <artifactId>trpc-bom</artifactId>
     <version>1.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <description>trpc-bom</description>
+    <name>trpc</name>
+    <url>https://github.com/trpc-group/trpc-java</url>
+
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>https://opensource.org/license/apache-2-0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/trpc-group/trpc-java</url>
+        <connection>
+            scm:git:git@github.com:trpc-group/trpc-java.git
+        </connection>
+        <developerConnection>
+            scm:git:ssh://git@github.com/trpc-group/trpc-java.git
+        </developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>Base Zhang</name>
+            <email>basezhang@vip.qq.com</email>
+        </developer>
+        <developer>
+            <name>Shore Wang</name>
+            <email>wangxiao1208@foxmail.com</email>
+        </developer>
+        <developer>
+            <name>Thirteen Wang</name>
+            <email>779754345@qq.com</email>
+        </developer>
+        <developer>
+            <name>Shiyou Wu</name>
+            <email>258154927@qq.com</email>
+        </developer>
+        <developer>
+            <name>Kelgon Wu</name>
+            <email>kelgonwu@126.com</email>
+        </developer>
+        <developer>
+            <name>Layne Xiong</name>
+            <email>wardseptember@163.com</email>
+        </developer>
+    </developers>
 
     <properties>
+        <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
         <maven.gpg.version>3.1.0</maven.gpg.version>
         <maven.deploy.version>3.0.0</maven.deploy.version>
         <maven.source.version>3.0.1</maven.source.version>
         <maven.javadoc.version>3.0.1</maven.javadoc.version>
     </properties>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
@@ -194,9 +233,14 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <version>${maven.deploy.version}</version>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${central-publishing-maven-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central-repo</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>

@@ -8,6 +8,7 @@
         <version>1.4.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <name>trpc-spring</name>
 
     <artifactId>trpc-spring</artifactId>
 

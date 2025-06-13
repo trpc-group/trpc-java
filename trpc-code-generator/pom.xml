@@ -12,6 +12,7 @@
 
     <artifactId>trpc-code-generator</artifactId>
     <packaging>jar</packaging>
+    <name>trpc-code-generator</name>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
