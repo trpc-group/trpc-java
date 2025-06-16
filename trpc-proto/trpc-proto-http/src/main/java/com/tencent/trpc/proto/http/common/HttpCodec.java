@@ -17,16 +17,18 @@ import com.tencent.trpc.core.rpc.Response;
 import com.tencent.trpc.core.serialization.spi.Serialization;
 import com.tencent.trpc.core.serialization.support.JSONSerialization;
 import com.tencent.trpc.core.serialization.support.PBSerialization;
+import com.tencent.trpc.core.utils.JsonUtils;
 import com.tencent.trpc.core.utils.ProtoJsonConverter;
 import com.tencent.trpc.proto.http.util.StreamUtils;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.http.HttpHeaders;
 
@@ -179,6 +181,33 @@ public class HttpCodec {
             bean = serialization.deserialize(contentBytes, msgType);
         }
         return bean;
+    }
+
+    /**
+     * Convert HTTP request body to Parameterized Types POJO
+     *
+     * @param request HttpServletRequest
+     * @param type the type of decoded param
+     * @return decoded param
+     * @throws Exception if param parsing failed
+     */
+    public Object convertToParameterizedBean(HttpServletRequest request, Type type) throws Exception {
+        Map<String, Object> params = new HashMap<>();
+        if (HttpConstants.HTTP_METHOD_GET.equalsIgnoreCase(request.getMethod())) {
+            Enumeration<String> parameterNames = request.getParameterNames();
+            while (parameterNames.hasMoreElements()) {
+                String param = parameterNames.nextElement();
+                params.put(param, request.getParameter(param));
+            }
+            return JsonUtils.fromJson(JsonUtils.toJson(params), type);
+        }
+        String contentType = request.getContentType().toLowerCase();
+        if (contentType.startsWith(HttpConstants.CONTENT_TYPE_JSON)) {
+            return JsonUtils.fromInputStream(request.getInputStream(), type);
+        } else {
+            // unsupported content-type
+            throw new IllegalArgumentException("unsupported content-type " + contentType);
+        }
     }
 
     /**

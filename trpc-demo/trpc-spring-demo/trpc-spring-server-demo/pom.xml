@@ -16,6 +16,11 @@
             <groupId>com.tencent.trpc</groupId>
             <artifactId>trpc-springmvc</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.tencent.trpc</groupId>
+            <artifactId>trpc-spring-demo-api</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

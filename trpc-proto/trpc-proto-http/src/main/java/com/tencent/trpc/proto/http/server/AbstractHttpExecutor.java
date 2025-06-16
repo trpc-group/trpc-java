@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -19,11 +19,11 @@ import com.tencent.trpc.core.exception.ErrorCode;
 import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
-import com.tencent.trpc.core.rpc.RpcContext;
 import com.tencent.trpc.core.rpc.CallInfo;
 import com.tencent.trpc.core.rpc.ProviderInvoker;
 import com.tencent.trpc.core.rpc.RequestMeta;
 import com.tencent.trpc.core.rpc.Response;
+import com.tencent.trpc.core.rpc.RpcContext;
 import com.tencent.trpc.core.rpc.RpcInvocation;
 import com.tencent.trpc.core.rpc.RpcServerContext;
 import com.tencent.trpc.core.rpc.common.RpcMethodInfo;
@@ -38,6 +38,9 @@ import com.tencent.trpc.proto.http.common.HttpConstants;
 import com.tencent.trpc.proto.http.common.RpcServerContextWithHttp;
 import com.tencent.trpc.proto.http.common.TrpcServletRequestWrapper;
 import com.tencent.trpc.proto.http.common.TrpcServletResponseWrapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -46,8 +49,6 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 
@@ -99,7 +100,7 @@ public abstract class AbstractHttpExecutor {
      * Get the mapped internal method.
      *
      * @param object the key to query the mapped internal method, maby {@link HttpServletRequest} or directly
-     * {@link RpcMethodInfoAndInvoker}.
+     *         {@link RpcMethodInfoAndInvoker}.
      * @return the mapped internal method
      */
     protected abstract RpcMethodInfoAndInvoker getRpcMethodInfoAndInvoker(Object object);
@@ -301,16 +302,23 @@ public abstract class AbstractHttpExecutor {
             throw new UnsupportedOperationException("only support trpc service signature");
         }
 
-        Class<?> reqType = (Class<?>) paramsTypes[1];
+        Type type = paramsTypes[1];
         Object[] arguments = new Object[1];
-        if (Message.class.isAssignableFrom(reqType)) {
-            arguments[0] = httpCodec.convertToPBParam(request, (Class<? extends Message>) reqType);
-        } else if (Map.class.isAssignableFrom(reqType)) {
-            arguments[0] = httpCodec.convertToJsonParam(request);
+        if (type instanceof ParameterizedType) {
+            // ParameterizedType params
+            arguments[0] = httpCodec.convertToParameterizedBean(request, type);
         } else {
-            // Directly convert to POJO.
-            arguments[0] = httpCodec.convertToJavaBean(request, reqType);
+            Class<?> reqType = (Class<?>) type;
+            if (Message.class.isAssignableFrom(reqType)) {
+                arguments[0] = httpCodec.convertToPBParam(request, (Class<? extends Message>) reqType);
+            } else if (Map.class.isAssignableFrom(reqType)) {
+                arguments[0] = httpCodec.convertToJsonParam(request);
+            } else {
+                // Directly convert to POJO
+                arguments[0] = httpCodec.convertToJavaBean(request, reqType);
+            }
         }
+
         return arguments;
     }
 

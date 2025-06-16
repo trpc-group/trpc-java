@@ -9,6 +9,7 @@
     <modules>
         <module>trpc-spring-server-demo</module>
         <module>trpc-spring-client-demo</module>
+        <module>trpc-spring-demo-api</module>
     </modules>
     <packaging>pom</packaging>
 

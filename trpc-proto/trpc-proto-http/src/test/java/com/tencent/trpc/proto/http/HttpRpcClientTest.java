@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -43,11 +43,14 @@ import tests.service.GreeterJavaBeanService.InnerMsg;
 import tests.service.GreeterJavaBeanService.RequestBean;
 import tests.service.GreeterJavaBeanService.ResponseBean;
 import tests.service.GreeterJsonService;
+import tests.service.GreeterParameterizedService;
+import tests.service.GreeterParameterizedService.RequestParameterizedBean;
 import tests.service.GreeterService;
 import tests.service.HelloRequestProtocol.HelloRequest;
 import tests.service.HelloRequestProtocol.HelloResponse;
 import tests.service.impl1.GreeterJavaBeanServiceImpl;
 import tests.service.impl1.GreeterJsonServiceImpl1;
+import tests.service.impl1.GreeterParameterizedServiceImpl;
 import tests.service.impl1.GreeterServiceImpl1;
 
 public class HttpRpcClientTest {
@@ -58,15 +61,12 @@ public class HttpRpcClientTest {
     private static final String CST_BASE_PATH2 = "/test-base-path";
     private static final String TEST_MESSAGE = "hello";
     private static final String TEST_INNER_MESSAGE = "tRPC-Java!";
-
-    private static ServerConfig serverConfig;
-
     private static final String CONTAINER_KEY = "test-container";
     private static final String FULL_SET_KEY = "test-fullset";
-
     private static final Integer REQUEST_TIMEOUT = 1000;
     private static final Integer MAX_CONNECTIONS = 20480;
     private static final Integer CONNECTION_REQUEST_TIMEOUT_VALUE = 900;
+    private static ServerConfig serverConfig;
 
     @BeforeClass
     public static void startHttpServer() {
@@ -91,28 +91,33 @@ public class HttpRpcClientTest {
         javaBeanService.setServiceInterface(GreeterJavaBeanService.class);
         javaBeanService.setRef(new GreeterJavaBeanServiceImpl());
 
+        ProviderConfig<GreeterParameterizedService> parameterizedService = new ProviderConfig<>();
+        parameterizedService.setServiceInterface(GreeterParameterizedService.class);
+        parameterizedService.setRef(new GreeterParameterizedServiceImpl());
+
         HashMap<String, ServiceConfig> providers = new HashMap<>();
 
         ServiceConfig serviceConfig1 = getServiceConfig(gspc, "test.server1", NetUtils.LOCAL_HOST,
                 18088, HTTP_SCHEME, "jetty");
         providers.put(serviceConfig1.getName(), serviceConfig1);
-
         ServiceConfig serviceConfig2 = getServiceConfig(gjspc, "test.server2", NetUtils.LOCAL_HOST,
                 18088, HTTP_SCHEME, "jetty");
         providers.put(serviceConfig2.getName(), serviceConfig2);
-
         ServiceConfig serviceConfig3 = getServiceConfig(gspc, "test.server3", NetUtils.LOCAL_HOST,
                 18089, HTTP_SCHEME, "jetty", CST_BASE_PATH1);
         providers.put(serviceConfig3.getName(), serviceConfig3);
-
         ServiceConfig serviceConfig4 = getServiceConfig(gjspc, "test.server4", NetUtils.LOCAL_HOST,
                 18089, HTTP_SCHEME, "jetty", CST_BASE_PATH2);
         providers.put(serviceConfig4.getName(), serviceConfig4);
-
         ServiceConfig serviceConfig5 = getServiceConfig(javaBeanService, "test.server5",
                 NetUtils.LOCAL_HOST,
                 18088, HTTP_SCHEME, "jetty");
         providers.put(serviceConfig5.getName(), serviceConfig5);
+
+        ServiceConfig serviceConfig6 = getServiceConfig(parameterizedService, "test.server6",
+                NetUtils.LOCAL_HOST,
+                18088, HTTP_SCHEME, "jetty");
+        providers.put(serviceConfig6.getName(), serviceConfig6);
 
         ServerConfig sc = new ServerConfig();
         sc.setServiceMap(providers);
@@ -289,6 +294,41 @@ public class HttpRpcClientTest {
             Assert.fail("no exception thrown");
         } catch (TRpcException e) {
             Assert.assertEquals(404, e.getBizCode());
+        } finally {
+            backendConfig.stop();
+        }
+    }
+
+    @Test
+    public void testHttpRpcClientWithParameterizedBean() {
+        // 1)准备配置
+        BackendConfig backendConfig = new BackendConfig();
+        backendConfig.setName("serviceId");
+        backendConfig.setRequestTimeout(REQUEST_TIMEOUT);
+        backendConfig.setMaxConns(MAX_CONNECTIONS);
+        backendConfig.setNamingUrl("ip://127.0.0.1:18088");
+        backendConfig.setKeepAlive(false);
+        backendConfig.setConnsPerAddr(4);
+        backendConfig.setProtocol("http");
+        ConsumerConfig<GreeterParameterizedService> consumerConfig = new ConsumerConfig<>();
+        consumerConfig.setServiceInterface(GreeterParameterizedService.class);
+        consumerConfig.setBackendConfig(backendConfig);
+        try {
+            // 2)获取代理
+            GreeterParameterizedService proxy = consumerConfig.getProxy();
+
+            for (int i = 0; i < 20; i++) {
+                final String msg = "I am";
+                final String innerMsg = " ParameterizedBean!";
+
+                RpcClientContext context = new RpcClientContext();
+                Map helloResponse = proxy
+                        .sayHelloParameterized(context, RequestParameterizedBean.of("message", msg + innerMsg));
+                Assert.assertNotNull(helloResponse);
+                String rspMessage = (String) helloResponse.get("message");
+                logger.info("http rpc client request result: {}", rspMessage);
+                Assert.assertTrue(rspMessage.contains(msg));
+            }
         } finally {
             backendConfig.stop();
         }

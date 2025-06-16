@@ -14,3 +14,8 @@ trpc:
         interface: com.tencent.trpc.demo.proto.GreeterService2AsyncAPI  # Service interface
         protocol: http  # Protocol type, default is trpc
         basePath: /rest # The base path of the client service url address
+      - name: trpc.TestApp.TestServer.Greeter3  # Service name
+        naming_url: ip://127.0.0.1:12322  # Router address
+        interface: com.tencent.trpc.GreeterService3API  # Service interface
+        protocol: http  # Protocol type, default is trpc
+        basePath: /rest # The base path of the client service url address
