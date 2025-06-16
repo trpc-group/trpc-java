@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>trpc-springmvc</artifactId>
+    <name>trpc-springmvc</name>
 
     <properties>
         <springboot.version>2.2.2.RELEASE</springboot.version>

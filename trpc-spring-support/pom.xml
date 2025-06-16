@@ -11,6 +11,7 @@
 
     <artifactId>trpc-spring-support</artifactId>
     <packaging>pom</packaging>
+    <name>trpc-spring-support</name>
 
     <modules>
         <module>trpc-spring</module>

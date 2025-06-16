@@ -8,17 +8,55 @@
     <artifactId>trpc-dependencies-bom</artifactId>
     <version>1.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <description>trpc-dependencies-bom</description>
+    <name>trpc</name>
+    <url>https://github.com/trpc-group/trpc-java</url>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>https://opensource.org/license/apache-2-0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/trpc-group/trpc-java</url>
+        <connection>
+            scm:git:git@github.com:trpc-group/trpc-java.git
+        </connection>
+        <developerConnection>
+            scm:git:ssh://git@github.com/trpc-group/trpc-java.git
+        </developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>Base Zhang</name>
+            <email>basezhang@vip.qq.com</email>
+        </developer>
+        <developer>
+            <name>Shore Wang</name>
+            <email>wangxiao1208@foxmail.com</email>
+        </developer>
+        <developer>
+            <name>Thirteen Wang</name>
+            <email>779754345@qq.com</email>
+        </developer>
+        <developer>
+            <name>Shiyou Wu</name>
+            <email>258154927@qq.com</email>
+        </developer>
+        <developer>
+            <name>Kelgon Wu</name>
+            <email>kelgonwu@126.com</email>
+        </developer>
+        <developer>
+            <name>Layne Xiong</name>
+            <email>wardseptember@163.com</email>
+        </developer>
+    </developers>
 
     <properties>
         <auto-service.version>1.1.0</auto-service.version>
@@ -26,6 +64,7 @@
         <apollo.version>2.1.0</apollo.version>
         <byte.buddy.version>1.14.9</byte.buddy.version>
         <caffeine.version>2.9.3</caffeine.version>
+        <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
         <commons.codec.version>1.15</commons.codec.version>
         <commons.collections4.version>4.4</commons.collections4.version>
         <commons.configurations.version>2.10.1</commons.configurations.version>
@@ -950,9 +989,14 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <version>${maven.deploy.version}</version>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${central-publishing-maven-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central-repo</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
