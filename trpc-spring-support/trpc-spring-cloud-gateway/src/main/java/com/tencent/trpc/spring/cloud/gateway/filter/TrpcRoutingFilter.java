@@ -83,7 +83,13 @@ public class TrpcRoutingFilter implements GatewayFilter {
         ServerHttpRequest request = exchange.getRequest();
         return DataBufferUtils.join(request.getBody())
                 .map(body -> requestRewriter.resolver(exchange, route, body))
-                .map(body -> client.asyncInvoke(request, route, body.asByteBuffer().array()))
+                .map(body -> {
+                    java.nio.ByteBuffer byteBuffer = body.asByteBuffer();
+                    byte[] bytes = new byte[byteBuffer.remaining()];
+                    byteBuffer.get(bytes);
+                    byteBuffer.rewind();
+                    return client.asyncInvoke(request, route, bytes);
+                })
                 .flatMap(result -> this.responseRewriter.write(exchange, route.getMetadata(), result));
     }
 

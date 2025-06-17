@@ -16,7 +16,7 @@ import com.tencent.trpc.core.rpc.Invoker;
 import com.tencent.trpc.core.rpc.Request;
 import com.tencent.trpc.core.rpc.Response;
 import java.util.concurrent.CompletionStage;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 

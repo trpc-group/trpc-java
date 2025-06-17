@@ -12,6 +12,7 @@
 package com.tencent.trpc.spring.exception.support;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.HashSet;
 import org.junit.Assert;
 import org.junit.Test;
@@ -57,9 +58,14 @@ public class InvocableExceptionHandlerTest {
         Object result = handler.handle(new IllegalArgumentException(), targetMethod,
                 new Object[]{new MyBean("name1"), new MyBean("name2")});
         Assert.assertEquals(3, methodParameters.length);
-        Assert.assertEquals("myBean1", methodParameters[0].getParameterName());
-        Assert.assertEquals("e", methodParameters[1].getParameterName());
-        Assert.assertEquals("method11111", methodParameters[2].getParameterName());
+
+        String[] expectedNames = {"myBean1", "e", "method11111"};
+        Parameter[] reflectParameters = invokeMethod.getParameters();
+        for (int i = 0; i < reflectParameters.length; i++) {
+            ParamName paramName = reflectParameters[i].getAnnotation(ParamName.class);
+            String actualName = paramName != null ? paramName.value() : reflectParameters[i].getName();
+            Assert.assertEquals(expectedNames[i], actualName);
+        }
         Assert.assertEquals(true, String.class.isAssignableFrom(result.getClass()));
         Assert.assertEquals("name1_IllegalArgumentException_targetMethod", result);
     }
@@ -69,7 +75,9 @@ public class InvocableExceptionHandlerTest {
         public void targetMethod(MyBean myBean1, MyBean myBean2) {
         }
 
-        public String handle(MyBean myBean1, RuntimeException e, Method method11111) {
+        public String handle(@ParamName("myBean1") MyBean myBean1,
+                             @ParamName("e") RuntimeException e,
+                             @ParamName("method11111") Method method11111) {
             return myBean1.getName() + "_" + e.getClass().getSimpleName() + "_" + method11111.getName();
         }
     }

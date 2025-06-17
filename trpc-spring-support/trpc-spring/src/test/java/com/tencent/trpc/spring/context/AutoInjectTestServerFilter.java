@@ -18,7 +18,7 @@ import com.tencent.trpc.core.rpc.Response;
 import com.tencent.trpc.spring.context.TRpcConfigAutoRegistryTest.InjectByFieldBean;
 import com.tencent.trpc.spring.context.TRpcConfigAutoRegistryTest.InjectBySetterBean;
 import java.util.concurrent.CompletionStage;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class AutoInjectTestServerFilter implements Filter {

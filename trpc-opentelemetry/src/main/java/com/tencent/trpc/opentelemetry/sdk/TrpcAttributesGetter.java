@@ -13,7 +13,7 @@ package com.tencent.trpc.opentelemetry.sdk;
 
 import com.tencent.trpc.core.rpc.Request;
 import io.opentelemetry.instrumentation.api.instrumenter.rpc.RpcAttributesGetter;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * TRPC general attribute setting class

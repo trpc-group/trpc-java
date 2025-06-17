@@ -12,7 +12,7 @@
 package com.tencent.trpc.springmvc;
 
 import com.tencent.trpc.proto.http.common.HttpCodec;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class TRpcHttpCodec extends HttpCodec {
 

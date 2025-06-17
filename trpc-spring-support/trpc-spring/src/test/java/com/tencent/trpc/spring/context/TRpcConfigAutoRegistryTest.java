@@ -25,7 +25,7 @@ import com.tencent.trpc.spring.context.TRpcConfigAutoRegistryTest.TRpcConfigAuto
 import com.tencent.trpc.spring.context.configuration.TRpcConfigManagerCustomizer;
 import com.tencent.trpc.spring.test.TRpcConfigManagerTestUtils;
 import com.tencent.trpc.spring.test.TestSpringApplication;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -350,7 +350,9 @@ public class TRpcConfigAutoRegistryTest {
         }
 
         @Autowired
-        public InjectByConstructorBean(TestService myTestService1, TestService myTestService2,
+        public InjectByConstructorBean(
+                @Qualifier("myTestService1") TestService myTestService1,
+                @Qualifier("myTestService2") TestService myTestService2,
                 @Qualifier("myTestService1") TestService myTestService) {
             this.myTestService1 = myTestService1;
             this.myTestService2 = myTestService2;
@@ -398,6 +400,8 @@ public class TRpcConfigAutoRegistryTest {
             return testService1;
         }
 
+        @Autowired
+        @Qualifier("myTestService1")
         public void setTestService1(TestService testService1) {
             this.testService1 = testService1;
         }
@@ -406,6 +410,8 @@ public class TRpcConfigAutoRegistryTest {
             return testService2;
         }
 
+        @Autowired
+        @Qualifier("myTestService2")
         public void setTestService2(TestService testService2) {
             this.testService2 = testService2;
         }
@@ -415,6 +421,7 @@ public class TRpcConfigAutoRegistryTest {
         }
 
         @Autowired
+        @Qualifier("myTestService1")
         public void setMyTestService1(TestService myTestService1) {
             this.myTestService1 = myTestService1;
         }
@@ -424,6 +431,7 @@ public class TRpcConfigAutoRegistryTest {
         }
 
         @Autowired
+        @Qualifier("myTestService2")
         public void setMyTestService2(TestService myTestService2) {
             this.myTestService2 = myTestService2;
         }

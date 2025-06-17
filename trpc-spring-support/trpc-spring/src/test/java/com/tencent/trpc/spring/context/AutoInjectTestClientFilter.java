@@ -17,8 +17,9 @@ import com.tencent.trpc.core.rpc.Request;
 import com.tencent.trpc.core.rpc.Response;
 import com.tencent.trpc.spring.context.TRpcConfigAutoRegistryTest.TestService;
 import java.util.concurrent.CompletionStage;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class AutoInjectTestClientFilter implements Filter {
 
@@ -31,6 +32,7 @@ public class AutoInjectTestClientFilter implements Filter {
     }
 
     @Autowired
+    @Qualifier("myTestService1")
     public void setMyTestService1(TestService myTestService1) {
         this.myTestService1 = myTestService1;
     }

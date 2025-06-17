@@ -16,7 +16,7 @@ import com.tencent.trpc.spring.annotation.TRpcClient;
 import com.tencent.trpc.spring.boot.starters.test.GreeterService;
 import com.tencent.trpc.spring.boot.starters.test.HelloRequestProtocol.HelloRequest;
 import com.tencent.trpc.spring.boot.starters.test.HelloRequestProtocol.HelloResponse;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;

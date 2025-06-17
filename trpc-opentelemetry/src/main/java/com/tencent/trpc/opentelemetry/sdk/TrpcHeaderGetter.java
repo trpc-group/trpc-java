@@ -19,7 +19,7 @@ import com.tencent.trpc.opentelemetry.spi.ITrpcRequestGetter;
 import io.opentelemetry.context.propagation.TextMapGetter;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Service request header trace parsing adaptation class

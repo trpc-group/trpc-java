@@ -18,7 +18,7 @@ import com.tencent.trpc.spring.boot.starters.test.AutoInjectTestFilter;
 import com.tencent.trpc.spring.boot.starters.test.HelloRequestProtocol.HelloRequest;
 import com.tencent.trpc.spring.boot.starters.test.HelloRequestProtocol.HelloResponse;
 import com.tencent.trpc.spring.boot.starters.test.SpringBootTestApplication;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

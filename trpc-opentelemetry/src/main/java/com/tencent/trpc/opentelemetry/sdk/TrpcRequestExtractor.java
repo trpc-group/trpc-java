@@ -24,7 +24,7 @@ import io.opentelemetry.instrumentation.api.instrumenter.AttributesExtractor;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * TRPC request parser for parsing and adding additional request information to the context
