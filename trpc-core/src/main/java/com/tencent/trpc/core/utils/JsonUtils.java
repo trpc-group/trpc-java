@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -23,6 +23,7 @@ import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 
 /**
  * JSON utility.
@@ -68,6 +69,26 @@ public class JsonUtils {
             logger.error("object mapper readValue error:", e);
             throw TRpcException.newException(ErrorCode.JSON_DESERIALIZATION_ERR, 0,
                     "object mapper readValue error, jsonStream:%s, clz:%s", is, clz);
+        }
+    }
+
+    /**
+     * json to Type
+     *
+     * @param is JSON input stream
+     * @param type the class of the Type to deserialize
+     * @param <T> the type of the deserialized object
+     * @return the deserialized object
+     */
+    public static <T> T fromInputStream(InputStream is, Type type) {
+        try {
+            return objectMapper
+                    .readValue(is, objectMapper.getTypeFactory().constructType(type));
+        } catch (Exception e) {
+            logger.error("object mapper readValue error:", e);
+            throw TRpcException.newException(ErrorCode.JSON_DESERIALIZATION_ERR, 0,
+                    "object mapper readValue to Type error, jsonStream:%s, type:%s",
+                    is, type.getTypeName());
         }
     }
 
@@ -123,6 +144,26 @@ public class JsonUtils {
             throw TRpcException.newException(ErrorCode.JSON_DESERIALIZATION_ERR, 0,
                     "object mapper readValue error, json:%s, typeReference:%s", json,
                     typeReference);
+        }
+    }
+
+    /**
+     * json to Type
+     *
+     * @param json JSON string
+     * @param type the type reference of the object to deserialize
+     * @param <T> the type of the deserialized object
+     * @return the deserialized object
+     */
+    public static <T> T fromJson(String json, Type type) {
+        try {
+            return objectMapper
+                    .readValue(json, objectMapper.getTypeFactory().constructType(type));
+        } catch (Exception e) {
+            logger.error("object mapper readValue error:", e);
+            throw TRpcException.newException(ErrorCode.JSON_DESERIALIZATION_ERR, 0,
+                    "object mapper readValue to Type error, json:%s, type:%s", json,
+                    type.getTypeName());
         }
     }
 

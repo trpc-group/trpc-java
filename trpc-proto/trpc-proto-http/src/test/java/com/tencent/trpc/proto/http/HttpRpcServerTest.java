@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -40,11 +40,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import tests.service.GreeterJavaBeanService;
 import tests.service.GreeterJsonService;
+import tests.service.GreeterParameterizedService;
 import tests.service.GreeterService;
 import tests.service.HelloRequestProtocol.HelloRequest;
 import tests.service.TestBeanConvertWithGetMethodRsp;
 import tests.service.impl1.GreeterJavaBeanServiceImpl;
 import tests.service.impl1.GreeterJsonServiceImpl1;
+import tests.service.impl1.GreeterParameterizedServiceImpl;
 import tests.service.impl1.GreeterServiceImpl1;
 
 public class HttpRpcServerTest {
@@ -72,18 +74,26 @@ public class HttpRpcServerTest {
         javaBeanService.setServiceInterface(GreeterJavaBeanService.class);
         javaBeanService.setRef(new GreeterJavaBeanServiceImpl());
 
+        ProviderConfig<GreeterParameterizedService> parameterizedService = new ProviderConfig<>();
+        parameterizedService.setServiceInterface(GreeterParameterizedService.class);
+        parameterizedService.setRef(new GreeterParameterizedServiceImpl());
+
         HashMap<String, ServiceConfig> providers = new HashMap<>();
-        ServiceConfig serviceConfig1 = getServiceConfig(gspc, "test.server1", NetUtils.ANY_HOST,
+        ServiceConfig serviceConfig1 = getServiceConfig(gspc, "test.server1", NetUtils.LOCAL_HOST,
                 18090, HTTP_SCHEME, "jetty");
         providers.put(serviceConfig1.getName(), serviceConfig1);
-
-        ServiceConfig serviceConfig2 = getServiceConfig(gjspc, "test.server2", NetUtils.ANY_HOST,
+        ServiceConfig serviceConfig2 = getServiceConfig(gjspc, "test.server2", NetUtils.LOCAL_HOST,
                 18090, HTTP_SCHEME, "jetty");
         providers.put(serviceConfig2.getName(), serviceConfig2);
-
         ServiceConfig serviceConfig3 = getServiceConfig(javaBeanService, "test.server3",
-                NetUtils.ANY_HOST, 18090, HTTP_SCHEME, "jetty");
+                NetUtils.LOCAL_HOST,
+                18090, HTTP_SCHEME, "jetty");
         providers.put(serviceConfig3.getName(), serviceConfig3);
+
+        ServiceConfig serviceConfig4 = getServiceConfig(parameterizedService, "test.server4",
+                NetUtils.LOCAL_HOST,
+                18090, HTTP_SCHEME, "jetty");
+        providers.put(serviceConfig4.getName(), serviceConfig4);
 
         ServerConfig sc = new ServerConfig();
         sc.setServiceMap(providers);
@@ -523,6 +533,45 @@ public class HttpRpcServerTest {
     public void testGetWithJavaBean() throws Exception {
         String strUrl =
                 "http://localhost:18090/tencent.trpc.http.GreeterJavaBeanService/sayHello?message=";
+        URL url = new URL(strUrl + "hello");
+        HttpURLConnection connection = null;
+        InputStream in = null;
+
+        try {
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(200);
+            connection.setReadTimeout(1000);
+            connection.setDoOutput(false);
+            connection.setDoInput(true);
+
+            int responseCode = connection.getResponseCode();
+            logger.info("response code is {}", responseCode);
+
+            Assert.assertEquals(200, responseCode);
+
+            in = connection.getInputStream();
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            StreamUtils.copy(in, bos);
+
+            logger.error("http response is: {}",
+                    new String(bos.toByteArray(), StandardCharsets.UTF_8));
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
+    @Test
+    public void testGetWithParameterizedBean() throws Exception {
+        String strUrl =
+                "http://localhost:18090/tencent.trpc.http.GreeterParameterizedService/sayHelloParameterized?message=";
         URL url = new URL(strUrl + "hello");
         HttpURLConnection connection = null;
         InputStream in = null;

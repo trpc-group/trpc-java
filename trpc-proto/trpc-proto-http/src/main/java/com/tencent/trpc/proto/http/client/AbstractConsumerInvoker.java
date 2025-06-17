@@ -201,9 +201,10 @@ public abstract class AbstractConsumerInvoker<T> implements ConsumerInvoker<T> {
         if (paramsTypes.length <= 1) {
             return null;
         }
-        Class<?> reqType = (Class<?>) paramsTypes[1];
-
-        if (Message.class.isAssignableFrom(reqType)) {
+        Type reqType = paramsTypes[1];
+        // The protobuf Message type uses ProtoJsonConverter for JSON data conversion,
+        // the other types use JsonUtils, supporting request parameters with generic type parameters
+        if (reqType instanceof Class<?> && Message.class.isAssignableFrom((Class<?>) reqType)) {
             Map<String, Object> jsonData = ProtoJsonConverter.messageToMap((Message) param);
             return JsonUtils.toJson(jsonData);
         } else {
