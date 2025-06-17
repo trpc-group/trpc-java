@@ -21,17 +21,9 @@ import com.tencent.trpc.core.rpc.anno.TRpcService;
 import com.tencent.trpc.core.rpc.def.DefProviderInvoker;
 import com.tencent.trpc.core.utils.NetUtils;
 import com.tencent.trpc.proto.standard.common.TRPCProtocol;
-import java.net.InetSocketAddress;
-import javax.ws.rs.HttpMethod;
-import org.eclipse.jetty.http.HttpFields;
-import org.eclipse.jetty.http.HttpURI;
-import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.http.MetaData;
-import org.eclipse.jetty.server.HttpChannel;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpOutput;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Response;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -59,7 +51,7 @@ public class DefaultHttpExecutorTest {
     }
 
     @Test
-    public void testRegist() {
+    public void testRegist() throws Exception {
         HTTP_EXECUTOR.register(INVOKER);
 
         QueuedThreadPool threadPool = new QueuedThreadPool();
@@ -76,23 +68,15 @@ public class DefaultHttpExecutorTest {
         connector.setAcceptQueueSize(60);
         server.addConnector(connector);
 
-        HttpChannel httpChannel = new HttpChannel(connector, new HttpConfiguration(),
-                null, null);
-        Request request = new Request(httpChannel, null);
-        request.setMetaData(
-                new MetaData.Request(HttpMethod.GET,
-                        new HttpURI(
-                                "http://localhost:8080/hello/trpc.test.rpc.Hello/sayHello?verison=1"),
-                        HttpVersion.HTTP_1_0, new HttpFields()));
-        request.setMethod(HttpMethod.GET);
-        request.setPathInfo("/trpc.test.rpc.Hello/sayHello");
-        request.setRemoteAddr(new InetSocketAddress("127.0.0.1", 8080));
+        server.start();
+        try {
+            URL url = new URL("http://localhost:8080/hello/trpc.test.rpc.Hello/sayHello?verison=1");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
 
-        Response response = new Response(new HttpChannel(connector, new HttpConfiguration(),
-                null, null),
-                new HttpOutput(new HttpChannel(connector, new HttpConfiguration(), null,
-                        null)));
-        HTTP_EXECUTOR.execute(request, response);
+        } finally {
+            server.stop();
+        }
     }
 
     @Test
