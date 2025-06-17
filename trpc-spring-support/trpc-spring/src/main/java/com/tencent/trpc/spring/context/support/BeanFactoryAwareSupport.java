@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.spring.context.support;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;

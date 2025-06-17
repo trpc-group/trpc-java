@@ -17,7 +17,7 @@ import com.tencent.trpc.spring.exception.api.ExceptionHandlerResolver;
 import com.tencent.trpc.spring.exception.api.ExceptionResultTransformer;
 import java.lang.reflect.Method;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import org.springframework.aop.framework.autoproxy.AbstractBeanFactoryAwareAdvisingPostProcessor;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;

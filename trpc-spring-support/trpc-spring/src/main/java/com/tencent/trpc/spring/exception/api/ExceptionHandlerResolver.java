@@ -12,7 +12,7 @@
 package com.tencent.trpc.spring.exception.api;
 
 import java.lang.reflect.Method;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Resolver interface that resolve the exception thrown by a tRPC service invocation to

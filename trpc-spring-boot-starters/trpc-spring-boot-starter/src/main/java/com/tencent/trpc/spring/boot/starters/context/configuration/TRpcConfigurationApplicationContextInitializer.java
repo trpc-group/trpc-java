@@ -21,7 +21,7 @@ import com.tencent.trpc.spring.boot.starters.context.configuration.bind.LoggingT
 import com.tencent.trpc.spring.boot.starters.context.configuration.bind.TRpcConfigurationBindResult;
 import com.tencent.trpc.spring.boot.starters.context.configuration.bind.TRpcConfigurationBindResultReporter;
 import com.tencent.trpc.spring.boot.starters.context.configuration.bind.TRpcConfigurationBinder;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;

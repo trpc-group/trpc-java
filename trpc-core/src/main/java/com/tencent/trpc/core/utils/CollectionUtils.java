@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Collection utility.

@@ -20,7 +20,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import com.tencent.trpc.core.rpc.RpcInvocation;
 import com.tencent.trpc.core.rpc.common.RpcMethodInfo;
 import com.tencent.trpc.proto.http.common.HttpConstants;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;

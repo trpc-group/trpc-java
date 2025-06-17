@@ -18,7 +18,7 @@ import com.tencent.trpc.opentelemetry.sdk.TrpcTool;
 import com.tencent.trpc.opentelemetry.spi.ITrpcResponseExtractor;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Default implementation of {@link ITrpcResponseExtractor}

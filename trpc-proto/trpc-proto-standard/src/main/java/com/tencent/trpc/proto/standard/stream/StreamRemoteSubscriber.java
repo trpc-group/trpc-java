@@ -23,7 +23,7 @@ import com.tencent.trpc.proto.standard.stream.config.TRpcStreamConstants;
 import io.netty.buffer.ByteBuf;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 import org.reactivestreams.Subscription;
 import reactor.core.publisher.BaseSubscriber;

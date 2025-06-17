@@ -15,7 +15,7 @@ import com.tencent.trpc.core.rpc.Request;
 import com.tencent.trpc.opentelemetry.spi.ITrpcRequestGetter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Default implementation of {@link ITrpcRequestGetter}

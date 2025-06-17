@@ -13,7 +13,7 @@ package com.tencent.trpc.spring.aop;
 
 import com.tencent.trpc.core.rpc.anno.TRpcMethod;
 import com.tencent.trpc.core.rpc.anno.TRpcService;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.support.AbstractPointcutAdvisor;
 import org.springframework.aop.support.ComposablePointcut;
