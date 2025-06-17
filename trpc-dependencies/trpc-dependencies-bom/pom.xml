@@ -6,7 +6,7 @@
 
     <groupId>com.tencent.trpc</groupId>
     <artifactId>trpc-dependencies-bom</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.1</version>
     <packaging>pom</packaging>
     <description>trpc-dependencies-bom</description>
     <name>trpc</name>
@@ -114,6 +114,7 @@
         <maven.resolver.version>1.4.1</maven.resolver.version>
         <metrics.version>3.0.2</metrics.version>
         <mockito_core.version>5.5.0</mockito_core.version>
+        <mockito-inline.version>5.2.0</mockito-inline.version>
         <nacos.version>1.4.2</nacos.version>
         <nacos.client.version>2.2.1</nacos.client.version>
         <objenesis.version>3.3</objenesis.version>
@@ -803,7 +804,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-inline</artifactId>
-                <version>${mockito_core.version}</version>
+                <version>${mockito-inline.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
