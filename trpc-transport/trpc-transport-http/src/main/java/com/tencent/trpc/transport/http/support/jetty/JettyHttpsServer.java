@@ -85,7 +85,7 @@ public class JettyHttpsServer extends JettyHttpServer {
             SslContextFactory sslContextFactory, HttpConfiguration httpConfig,
             HttpConfiguration httpsConfig) {
         // 1. Configure ssl factory
-        SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory, HTTP1_SCHEME);
+        SslConnectionFactory ssl = new SslConnectionFactory((SslContextFactory.Server) sslContextFactory, HTTP1_SCHEME);
 
         // 2. Configure the connector of https
         ServerConnector http2Connector = new ServerConnector(server, ssl,

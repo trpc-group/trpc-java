@@ -53,7 +53,7 @@ public class JettyHttp2Server extends JettyHttpsServer {
         alpn.setDefaultProtocol(HTTP2_SCHEME);
 
         // 3. Config ssl factory
-        SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory, alpn.getProtocol());
+        SslConnectionFactory ssl = new SslConnectionFactory((SslContextFactory.Server) sslContextFactory, alpn.getProtocol());
 
         // 4. Config the connector of h2
         ServerConnector http2Connector = new ServerConnector(server, ssl, alpn, h2,
