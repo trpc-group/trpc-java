@@ -97,6 +97,7 @@ public class BackendConfigTest {
         config.setNamingUrl("a://b");
         config.setTarget("a://b");
         config.setRequestTimeout(10);
+        config.setBackupRequestTimeMs(100);
         config.setProtocol("trpc");
         config.setSerialization("pb");
         config.setCompressor("gzip");
@@ -129,6 +130,7 @@ public class BackendConfigTest {
         assertEquals(70, config.getConnsPerAddr());
         assertEquals(80, config.getConnTimeout());
         assertEquals(10, config.getRequestTimeout());
+        assertEquals(100, config.getBackupRequestTimeMs());
         assertEquals(true, config.isIoThreadGroupShare());
         assertEquals(1000, config.getIoThreads());
         assertEquals("/trpc", config.getBasePath());
@@ -358,6 +360,54 @@ public class BackendConfigTest {
         } finally {
             config.stop();
         }
+    }
+
+    @Test
+    public void testSetDestinationSet() {
+        BackendConfig config = new BackendConfig();
+        config.setNamingUrl("polaris://127.0.0.1:8888");
+        config.setDestinationSet("testSet");
+        Object metaData = config.getNamingMap().get(Constants.METADATA);
+        assertNotNull(metaData);
+        assertTrue(metaData instanceof Map);
+        assertEquals("testSet", ((Map<?, ?>) metaData).get(Constants.POLARIS_PLUGIN_SET_NAME_KEY));
+    }
+
+    @Test
+    public void testNewConsumerConfig() {
+        BackendConfig config = new BackendConfig();
+        ConsumerConfig<GenericClient> consumerConfig = config.newConsumerConfig(GenericClient.class);
+        assertNotNull(consumerConfig);
+        assertEquals(GenericClient.class, consumerConfig.getServiceInterface());
+    }
+
+    @Test
+    public void testOverrideConfigDefault() {
+        BackendConfig config = new BackendConfig();
+        ClientConfig clientConfig = new ClientConfig();
+        clientConfig.setRequestTimeout(5000);
+        config.overrideConfigDefault(clientConfig);
+        assertEquals(5000, config.getRequestTimeout());
+    }
+
+    @Test
+    public void testMergeConfig() {
+        BackendConfig config = new BackendConfig();
+        ClientConfig clientConfig = new ClientConfig();
+        clientConfig.setFilters(Lists.newArrayList("testFilter"));
+        config.mergeConfig(clientConfig);
+        assertEquals(1, config.getFilters().size());
+        assertEquals("testFilter", config.getFilters().get(0));
+    }
+
+    @Test
+    public void testGenerateProtocolConfig() {
+        BackendConfig config = new BackendConfig();
+        ProtocolConfig protocolConfig = config.generateProtocolConfig("127.0.0.1", 8080, "tcp");
+        assertNotNull(protocolConfig);
+        assertEquals("127.0.0.1", protocolConfig.getIp());
+        assertEquals(8080, protocolConfig.getPort());
+        assertEquals("tcp", protocolConfig.getNetwork());
     }
 
     public static final class RemoteLoggerTest extends RemoteLoggerFilter {
