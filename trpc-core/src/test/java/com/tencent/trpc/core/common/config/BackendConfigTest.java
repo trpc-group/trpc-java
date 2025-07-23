@@ -149,16 +149,14 @@ public class BackendConfigTest {
     }
 
     @Test
-    public void testSetCallee() {
-        ExtensionLoader
-                .registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
+    public void testNoSetCallee() {
+        ExtensionLoader.registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
         BackendConfig config = new BackendConfig();
         config.setName("trpc.calleeapp.calleeserver.calleeservice.calleemethod");
         config.setNamingUrl("ip://127.0.0.1:8888");
         config.setExtMap(ImmutableMap.of("attalog", (Object) "attalog"));
         config.setFilters(Lists.newArrayList("attalog"));
         config.setGroup("group");
-        config.setCallee("trpc.app.server.service");
         config.init();
         assertEquals(config.getCalleeApp(), "");
         assertEquals(config.getCalleeServer(), "");
@@ -167,9 +165,25 @@ public class BackendConfigTest {
     }
 
     @Test
+    public void testSetCallee() {
+        ExtensionLoader.registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
+        BackendConfig config = new BackendConfig();
+        config.setName("trpc.calleeapp.calleeserver.calleeservice.calleemethod");
+        config.setNamingUrl("ip://127.0.0.1:8888");
+        config.setExtMap(ImmutableMap.of("attalog", (Object) "attalog"));
+        config.setFilters(Lists.newArrayList("attalog"));
+        config.setGroup("group");
+        config.setCallee("trpc.app.server.service");
+        config.init();
+        assertEquals(config.getCalleeApp(), "app");
+        assertEquals(config.getCalleeServer(), "server");
+        assertEquals(config.getCalleeService(), "service");
+        assertEquals("trpc.app.server.service", config.getCallee());
+    }
+
+    @Test
     public void testNameSpace() {
-        ExtensionLoader
-                .registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
+        ExtensionLoader.registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
         BackendConfig config = new BackendConfig();
         config.setName("trpc.calleeapp.calleeserver.calleeservice.calleemethod");
         config.setNamingUrl("ip://127.0.0.1:8888");
@@ -183,16 +197,15 @@ public class BackendConfigTest {
         config.init();
         config.toString();
         assertEquals(0, config.getNamingMap().size());
-        assertEquals(config.getCalleeApp(), "");
-        assertEquals(config.getCalleeServer(), "");
-        assertEquals(config.getCalleeService(), "");
+        assertEquals(config.getCalleeApp(), "app");
+        assertEquals(config.getCalleeServer(), "server");
+        assertEquals(config.getCalleeService(), "service");
         assertEquals(config.getNamingOptions().getExtMap().get("namespace"), "abc");
     }
 
     @Test
     public void testIp() {
-        ExtensionLoader
-                .registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
+        ExtensionLoader.registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
         ExtensionLoader.registerPlugin(ThreadWorkerPool.newThreadWorkerPoolConfig("thread", 10, Boolean.FALSE));
         BackendConfig config = new BackendConfig();
         config.setNamingUrl("ip://127.0.0.1:8888");
@@ -237,10 +250,8 @@ public class BackendConfigTest {
 
     @Test
     public void test() {
-        ExtensionLoader
-                .registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
-        ExtensionLoader.registerPlugin(ThreadWorkerPool.newThreadWorkerPoolConfig("thread", 10,
-                10, Boolean.FALSE));
+        ExtensionLoader.registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
+        ExtensionLoader.registerPlugin(ThreadWorkerPool.newThreadWorkerPoolConfig("thread", 10, Boolean.FALSE));
         BackendConfig config = new BackendConfig();
         config.setCallee("trpc.calleeapp.calleeserver.calleeservice.calleemethod");
         config.setNamingUrl("ip://127.0.0.1:8888");
@@ -273,9 +284,9 @@ public class BackendConfigTest {
             assertEquals(config.getServiceInterface(), GenericClient.class);
             assertEquals(config.getRequestTimeout(), 1234);
             assertEquals(config.getVersion(), "v888");
-            assertEquals(config.getCalleeApp(), "");
-            assertEquals(config.getCalleeServer(), "");
-            assertEquals(config.getCalleeService(), "");
+            assertEquals(config.getCalleeApp(), "calleeapp");
+            assertEquals(config.getCalleeServer(), "calleeserver");
+            assertEquals(config.getCalleeService(), "calleeservice");
             ServiceId serviceId = config.toNamingServiceId();
             assertEquals(serviceId.getGroup(), "group");
             assertEquals(serviceId.getServiceName(), "127.0.0.1:8888");
@@ -294,8 +305,7 @@ public class BackendConfigTest {
         config.setServiceInterface(GenericClient.class);
         config.setName("client");
         config.setNamingUrl("ip://127.0.0.1:12345");
-        ConfigManager.getInstance().getClientConfig().getBackendConfigMap()
-                .put("client", config);
+        ConfigManager.getInstance().getClientConfig().getBackendConfigMap().put("client", config);
         ConsumerConfig<GenericClient> consumerConfig = new ConsumerConfig<>();
         consumerConfig.setBackendConfig(config);
         consumerConfig.setServiceInterface(GenericClient.class);
@@ -317,8 +327,7 @@ public class BackendConfigTest {
 
     @Test
     public void testNotDefault() {
-        ExtensionLoader
-                .registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
+        ExtensionLoader.registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
         ExtensionLoader.registerPlugin(ThreadWorkerPool.newThreadWorkerPoolConfig("thread", 10, Boolean.FALSE));
         BackendConfig config = new BackendConfig();
         config.setName("trpc.calleeapp.calleeserver.calleeservice.calleemethod");
