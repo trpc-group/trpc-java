@@ -428,7 +428,9 @@ public class BackendConfig extends BaseProtocolConfig {
     protected void setCalleeInfo() {
         String serviceNaming = getNamingOptions().getServiceNaming();
         // callee is set to serviceNaming, setting is not supported
-        callee = serviceNaming;
+        if (StringUtils.isEmpty(callee)) {
+            callee = serviceNaming;
+        }
 
         // in the TRPC scenario, serviceId is in the format trpc.calleeapp.calleeserver.calleeservice
         if (StringUtils.isNotBlank(callee) && callee.startsWith(Constants.STANDARD_NAMING_PRE)) {

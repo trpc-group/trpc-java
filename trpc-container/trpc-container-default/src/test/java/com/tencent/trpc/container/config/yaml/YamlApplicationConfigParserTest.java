@@ -125,7 +125,7 @@ public class YamlApplicationConfigParserTest {
         assertEquals(backendConfig.getNamespace(), "dev2");
         assertEquals(backendConfig.getGroup(), "g1");
         assertEquals(backendConfig.getVersion(), "v1");
-        assertEquals(backendConfig.getCallee(), "127.0.0.1:12345");
+        assertEquals(backendConfig.getCallee(), "trpc.TestApp.TestServer.GreeterCallee");
         assertEquals(backendConfig.getFilters().get(0), "filter");
         assertEquals(backendConfig.getRequestTimeout(), 2000);
         assertEquals(backendConfig.getProtocol(), "trpc");

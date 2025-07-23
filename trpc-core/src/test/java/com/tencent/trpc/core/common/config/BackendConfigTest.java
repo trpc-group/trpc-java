@@ -97,6 +97,7 @@ public class BackendConfigTest {
         config.setNamingUrl("a://b");
         config.setTarget("a://b");
         config.setRequestTimeout(10);
+        config.setBackupRequestTimeMs(100);
         config.setProtocol("trpc");
         config.setSerialization("pb");
         config.setCompressor("gzip");
@@ -129,6 +130,7 @@ public class BackendConfigTest {
         assertEquals(70, config.getConnsPerAddr());
         assertEquals(80, config.getConnTimeout());
         assertEquals(10, config.getRequestTimeout());
+        assertEquals(100, config.getBackupRequestTimeMs());
         assertEquals(true, config.isIoThreadGroupShare());
         assertEquals(1000, config.getIoThreads());
         assertEquals("/trpc", config.getBasePath());
@@ -149,16 +151,14 @@ public class BackendConfigTest {
     }
 
     @Test
-    public void testSetCallee() {
-        ExtensionLoader
-                .registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
+    public void testNoSetCallee() {
+        ExtensionLoader.registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
         BackendConfig config = new BackendConfig();
         config.setName("trpc.calleeapp.calleeserver.calleeservice.calleemethod");
         config.setNamingUrl("ip://127.0.0.1:8888");
         config.setExtMap(ImmutableMap.of("attalog", (Object) "attalog"));
         config.setFilters(Lists.newArrayList("attalog"));
         config.setGroup("group");
-        config.setCallee("trpc.app.server.service");
         config.init();
         assertEquals(config.getCalleeApp(), "");
         assertEquals(config.getCalleeServer(), "");
@@ -167,9 +167,25 @@ public class BackendConfigTest {
     }
 
     @Test
+    public void testSetCallee() {
+        ExtensionLoader.registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
+        BackendConfig config = new BackendConfig();
+        config.setName("trpc.calleeapp.calleeserver.calleeservice.calleemethod");
+        config.setNamingUrl("ip://127.0.0.1:8888");
+        config.setExtMap(ImmutableMap.of("attalog", (Object) "attalog"));
+        config.setFilters(Lists.newArrayList("attalog"));
+        config.setGroup("group");
+        config.setCallee("trpc.app.server.service");
+        config.init();
+        assertEquals(config.getCalleeApp(), "app");
+        assertEquals(config.getCalleeServer(), "server");
+        assertEquals(config.getCalleeService(), "service");
+        assertEquals("trpc.app.server.service", config.getCallee());
+    }
+
+    @Test
     public void testNameSpace() {
-        ExtensionLoader
-                .registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
+        ExtensionLoader.registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
         BackendConfig config = new BackendConfig();
         config.setName("trpc.calleeapp.calleeserver.calleeservice.calleemethod");
         config.setNamingUrl("ip://127.0.0.1:8888");
@@ -183,16 +199,15 @@ public class BackendConfigTest {
         config.init();
         config.toString();
         assertEquals(0, config.getNamingMap().size());
-        assertEquals(config.getCalleeApp(), "");
-        assertEquals(config.getCalleeServer(), "");
-        assertEquals(config.getCalleeService(), "");
+        assertEquals(config.getCalleeApp(), "app");
+        assertEquals(config.getCalleeServer(), "server");
+        assertEquals(config.getCalleeService(), "service");
         assertEquals(config.getNamingOptions().getExtMap().get("namespace"), "abc");
     }
 
     @Test
     public void testIp() {
-        ExtensionLoader
-                .registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
+        ExtensionLoader.registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
         ExtensionLoader.registerPlugin(ThreadWorkerPool.newThreadWorkerPoolConfig("thread", 10, Boolean.FALSE));
         BackendConfig config = new BackendConfig();
         config.setNamingUrl("ip://127.0.0.1:8888");
@@ -237,10 +252,8 @@ public class BackendConfigTest {
 
     @Test
     public void test() {
-        ExtensionLoader
-                .registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
-        ExtensionLoader.registerPlugin(ThreadWorkerPool.newThreadWorkerPoolConfig("thread", 10,
-                10, Boolean.FALSE));
+        ExtensionLoader.registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
+        ExtensionLoader.registerPlugin(ThreadWorkerPool.newThreadWorkerPoolConfig("thread", 10, Boolean.FALSE));
         BackendConfig config = new BackendConfig();
         config.setCallee("trpc.calleeapp.calleeserver.calleeservice.calleemethod");
         config.setNamingUrl("ip://127.0.0.1:8888");
@@ -273,9 +286,9 @@ public class BackendConfigTest {
             assertEquals(config.getServiceInterface(), GenericClient.class);
             assertEquals(config.getRequestTimeout(), 1234);
             assertEquals(config.getVersion(), "v888");
-            assertEquals(config.getCalleeApp(), "");
-            assertEquals(config.getCalleeServer(), "");
-            assertEquals(config.getCalleeService(), "");
+            assertEquals(config.getCalleeApp(), "calleeapp");
+            assertEquals(config.getCalleeServer(), "calleeserver");
+            assertEquals(config.getCalleeService(), "calleeservice");
             ServiceId serviceId = config.toNamingServiceId();
             assertEquals(serviceId.getGroup(), "group");
             assertEquals(serviceId.getServiceName(), "127.0.0.1:8888");
@@ -294,8 +307,7 @@ public class BackendConfigTest {
         config.setServiceInterface(GenericClient.class);
         config.setName("client");
         config.setNamingUrl("ip://127.0.0.1:12345");
-        ConfigManager.getInstance().getClientConfig().getBackendConfigMap()
-                .put("client", config);
+        ConfigManager.getInstance().getClientConfig().getBackendConfigMap().put("client", config);
         ConsumerConfig<GenericClient> consumerConfig = new ConsumerConfig<>();
         consumerConfig.setBackendConfig(config);
         consumerConfig.setServiceInterface(GenericClient.class);
@@ -317,8 +329,7 @@ public class BackendConfigTest {
 
     @Test
     public void testNotDefault() {
-        ExtensionLoader
-                .registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
+        ExtensionLoader.registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
         ExtensionLoader.registerPlugin(ThreadWorkerPool.newThreadWorkerPoolConfig("thread", 10, Boolean.FALSE));
         BackendConfig config = new BackendConfig();
         config.setName("trpc.calleeapp.calleeserver.calleeservice.calleemethod");
@@ -349,6 +360,54 @@ public class BackendConfigTest {
         } finally {
             config.stop();
         }
+    }
+
+    @Test
+    public void testSetDestinationSet() {
+        BackendConfig config = new BackendConfig();
+        config.setNamingUrl("polaris://127.0.0.1:8888");
+        config.setDestinationSet("testSet");
+        Object metaData = config.getNamingMap().get(Constants.METADATA);
+        assertNotNull(metaData);
+        assertTrue(metaData instanceof Map);
+        assertEquals("testSet", ((Map<?, ?>) metaData).get(Constants.POLARIS_PLUGIN_SET_NAME_KEY));
+    }
+
+    @Test
+    public void testNewConsumerConfig() {
+        BackendConfig config = new BackendConfig();
+        ConsumerConfig<GenericClient> consumerConfig = config.newConsumerConfig(GenericClient.class);
+        assertNotNull(consumerConfig);
+        assertEquals(GenericClient.class, consumerConfig.getServiceInterface());
+    }
+
+    @Test
+    public void testOverrideConfigDefault() {
+        BackendConfig config = new BackendConfig();
+        ClientConfig clientConfig = new ClientConfig();
+        clientConfig.setRequestTimeout(5000);
+        config.overrideConfigDefault(clientConfig);
+        assertEquals(5000, config.getRequestTimeout());
+    }
+
+    @Test
+    public void testMergeConfig() {
+        BackendConfig config = new BackendConfig();
+        ClientConfig clientConfig = new ClientConfig();
+        clientConfig.setFilters(Lists.newArrayList("testFilter"));
+        config.mergeConfig(clientConfig);
+        assertEquals(1, config.getFilters().size());
+        assertEquals("testFilter", config.getFilters().get(0));
+    }
+
+    @Test
+    public void testGenerateProtocolConfig() {
+        BackendConfig config = new BackendConfig();
+        ProtocolConfig protocolConfig = config.generateProtocolConfig("127.0.0.1", 8080, "tcp");
+        assertNotNull(protocolConfig);
+        assertEquals("127.0.0.1", protocolConfig.getIp());
+        assertEquals(8080, protocolConfig.getPort());
+        assertEquals("tcp", protocolConfig.getNetwork());
     }
 
     public static final class RemoteLoggerTest extends RemoteLoggerFilter {
