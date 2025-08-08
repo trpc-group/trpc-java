@@ -164,7 +164,7 @@ public class NetUtils {
         try {
             InetAddress address = InetAddress.getLocalHost();
             // if it is a loopback address, get the IPv4 address
-            if (address.isLoopbackAddress()) {
+            if (address != null && address.isLoopbackAddress()) {
                 address = getInet4Address();
             }
             if (address != null) {

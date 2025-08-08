@@ -11,6 +11,9 @@
 
 package com.tencent.trpc.logger.admin;
 
+import static com.tencent.trpc.core.exception.ErrorCode.TRPC_INVOKE_UNKNOWN_ERR;
+
+import com.tencent.trpc.core.exception.TRpcException;
 import org.slf4j.LoggerFactory;
 
 public class LoggerProcessUnitFactory {
@@ -36,6 +39,9 @@ public class LoggerProcessUnitFactory {
                 loggerProcessUnit = new UnSupportLoggerProcessUnit();
                 break;
             default:
+        }
+        if (loggerProcessUnit == null) {
+            throw TRpcException.newException(TRPC_INVOKE_UNKNOWN_ERR, 0, "LoggerFactoryEnum is not support");
         }
         loggerProcessUnit.init();
         return loggerProcessUnit;
