@@ -73,7 +73,7 @@
         <commons.pool2.version>2.3</commons.pool2.version>
         <commons.io.version>2.15.1</commons.io.version>
         <commons.text.version>1.10.0</commons.text.version>
-        <commons.beanutils.version>1.9.4</commons.beanutils.version>
+        <commons.beanutils.version>1.11.0</commons.beanutils.version>
         <nacos.config.sdk.version>0.2.12</nacos.config.sdk.version>
         <curator.version>5.0.0</curator.version>
         <consul-api.version>1.4.5</consul-api.version>
@@ -86,11 +86,11 @@
         <httpcore.version>4.4.15</httpcore.version>
         <httpcore5.version>5.2.1</httpcore5.version>
         <hutool.all.version>5.8.28</hutool.all.version>
-        <jackson.version>2.15.0-rc2</jackson.version>
+        <jackson.version>2.15.4</jackson.version>
         <javax.ws.rs.version>2.1.1</javax.ws.rs.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <jetty.alpn.boot.version>8.1.13.v20181017</jetty.alpn.boot.version>
-        <jetty.version>9.4.55.v20240627</jetty.version>
+        <jetty.version>9.4.57.v20241219</jetty.version>
         <joda-time.version>2.7</joda-time.version>
         <jprotobuf.version>2.4.14</jprotobuf.version>
         <junit.version>4.13.2</junit.version>
@@ -138,7 +138,7 @@
         <snappy.version>1.1.10.4</snappy.version>
         <spring.version>5.3.27</spring.version>
         <springboot.version>2.7.12</springboot.version>
-        <spring.cloud.gateway.version>3.1.5</spring.cloud.gateway.version>
+        <spring.cloud.gateway.version>3.1.10</spring.cloud.gateway.version>
         <transmittable.version>2.12.4</transmittable.version>
         <zookeeper.version>3.8.4</zookeeper.version>
 

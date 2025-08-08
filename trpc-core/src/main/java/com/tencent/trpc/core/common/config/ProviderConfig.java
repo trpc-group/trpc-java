@@ -184,6 +184,9 @@ public class ProviderConfig<T> implements Cloneable {
                 }
             }
         }
+        if (ref == null) {
+            throw new IllegalArgumentException("ProviderConfig ref is null");
+        }
         Preconditions.checkArgument(getRef() != null, "ServiceImpl is null");
         // 2) Ensure serviceInterface
         if (serviceInterface == null) {

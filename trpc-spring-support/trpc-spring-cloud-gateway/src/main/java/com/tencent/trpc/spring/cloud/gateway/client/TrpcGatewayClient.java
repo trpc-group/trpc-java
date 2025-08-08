@@ -51,7 +51,7 @@ public class TrpcGatewayClient implements GatewayClient {
     @Override
     public void open(Route route) {
         Preconditions.checkNotNull(route, "Create GenericClient fail: Route is null! Please check route config!");
-        if (route != null && route.getUri() != null) {
+        if (route.getUri() != null) {
             callInfo = parseCallInfo(route.getUri().getSchemeSpecificPart());
         } else {
             callInfo = new CallInfo();
