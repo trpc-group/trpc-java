@@ -402,6 +402,7 @@ public class ServiceConfig extends BaseProtocolConfig {
         tempProtocolConfig.setReusePort(this.getReusePort());
         tempProtocolConfig.setSign(this.getSign());
         tempProtocolConfig.setDefault();
+        tempProtocolConfig.setServiceConfig(this);
         return tempProtocolConfig;
     }
 

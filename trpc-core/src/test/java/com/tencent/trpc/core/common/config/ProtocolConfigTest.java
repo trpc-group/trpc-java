@@ -14,6 +14,7 @@ package com.tencent.trpc.core.common.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.ImmutableMap;
@@ -90,6 +91,8 @@ public class ProtocolConfigTest {
         config.setExplicitFlushAfterFlushes(1024);
         config.setCompressMinBytes(10);
         config.setDefault();
+        ServiceConfig serviceConfig = new ServiceConfig();
+        config.setServiceConfig(serviceConfig);
         assertEquals("127.1.1.1", config.getIp());
         assertEquals("", config.getName());
         assertEquals(8080, config.getPort());
@@ -124,5 +127,6 @@ public class ProtocolConfigTest {
         assertFalse(config.useEpoll());
         assertEquals(10, config.getCompressMinBytes());
         assertTrue(config.isSetDefault());
+        assertSame(serviceConfig, config.getServiceConfig());
     }
 }
