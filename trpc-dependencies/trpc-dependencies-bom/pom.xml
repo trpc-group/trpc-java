@@ -73,7 +73,7 @@
         <commons.pool2.version>2.3</commons.pool2.version>
         <commons.io.version>2.15.1</commons.io.version>
         <commons.text.version>1.10.0</commons.text.version>
-        <commons.beanutils.version>1.11</commons.beanutils.version>
+        <commons.beanutils.version>1.11.0</commons.beanutils.version>
         <nacos.config.sdk.version>0.2.12</nacos.config.sdk.version>
         <curator.version>5.0.0</curator.version>
         <consul-api.version>1.4.5</consul-api.version>
