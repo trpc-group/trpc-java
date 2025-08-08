@@ -252,7 +252,6 @@ public class ProtocolConfig extends BaseProtocolConfig implements Cloneable {
 
     public  void setServiceConfig(ServiceConfig serviceConfig) {
         checkFiledModifyPrivilege();
-        Preconditions.checkArgument(serviceConfig != null, "serviceConfig cannot be null");
         this.serviceConfig = serviceConfig;
     }
 
