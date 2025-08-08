@@ -48,6 +48,8 @@ public class ProtocolConfig extends BaseProtocolConfig implements Cloneable {
     protected volatile boolean setDefault = false;
     protected volatile boolean inited = false;
 
+    protected ServiceConfig serviceConfig;
+
     public static ProtocolConfig newInstance() {
         return new ProtocolConfig();
     }
@@ -242,6 +244,16 @@ public class ProtocolConfig extends BaseProtocolConfig implements Cloneable {
 
     public boolean isInited() {
         return inited;
+    }
+
+    public ServiceConfig getServiceConfig() {
+        return serviceConfig;
+    }
+
+    public  void setServiceConfig(ServiceConfig serviceConfig) {
+        checkFiledModifyPrivilege();
+        Preconditions.checkArgument(serviceConfig != null, "serviceConfig cannot be null");
+        this.serviceConfig = serviceConfig;
     }
 
 }
