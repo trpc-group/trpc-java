@@ -86,7 +86,7 @@
         <httpcore.version>4.4.15</httpcore.version>
         <httpcore5.version>5.2.1</httpcore5.version>
         <hutool.all.version>5.8.28</hutool.all.version>
-        <jackson.version>2.15</jackson.version>
+        <jackson.version>2.15.4</jackson.version>
         <javax.ws.rs.version>2.1.1</javax.ws.rs.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <jetty.alpn.boot.version>8.1.13.v20181017</jetty.alpn.boot.version>
