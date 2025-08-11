@@ -8,7 +8,7 @@
     <parent>
         <artifactId>trpc-parent</artifactId>
         <groupId>com.tencent.trpc</groupId>
-        <version>1.5.1</version>
+        <version>1.5.1-SNAPSHOT</version>
     </parent>
 
     <description>Trpc Parent Project ${project.version}</description>

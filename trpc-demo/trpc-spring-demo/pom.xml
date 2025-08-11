@@ -15,7 +15,7 @@
     <parent>
         <groupId>com.tencent.trpc</groupId>
         <artifactId>trpc-demo</artifactId>
-        <version>1.5.1</version>
+        <version>1.5.1-SNAPSHOT</version>
     </parent>
 
     <name>trpc-spring-demo Maven Webapp</name>
