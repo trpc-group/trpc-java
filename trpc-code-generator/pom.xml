@@ -7,7 +7,7 @@
     <parent>
         <artifactId>trpc-parent</artifactId>
         <groupId>com.tencent.trpc</groupId>
-        <version>1.5.1-SNAPSHOT</version>
+        <version>1.5.1</version>
     </parent>
 
     <artifactId>trpc-code-generator</artifactId>

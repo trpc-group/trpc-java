@@ -37,7 +37,7 @@ public class Version {
      * IS_FORMAL_VERSION: Do not modify the line number of this line. If you want to modify it, be sure to change
      * deploy.sh atthe same time.
      */
-    public static final boolean IS_FORMAL_VERSION = false;
+    public static final boolean IS_FORMAL_VERSION = true;
 
     /**
      * Version returns the version number of the trpc framework.

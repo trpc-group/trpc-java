@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.tencent.trpc</groupId>
         <artifactId>trpc-parent</artifactId>
-        <version>1.5.1-SNAPSHOT</version>
+        <version>1.5.1</version>
     </parent>
 
     <artifactId>trpc-limiter</artifactId>

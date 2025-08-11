@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.tencent.trpc</groupId>
         <artifactId>trpc-demo</artifactId>
-        <version>1.5.1-SNAPSHOT</version>
+        <version>1.5.1</version>
     </parent>
     <name>trpc-demo</name>
     <description>Demo project for Spring Boot</description>
