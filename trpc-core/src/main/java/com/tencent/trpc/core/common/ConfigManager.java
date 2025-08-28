@@ -114,6 +114,7 @@ public class ConfigManager {
         RpcClusterClientManager.reset();
         RpcServerManager.reset();
         WorkerPoolManager.reset();
+
         instance.setDefault = false;
     }
 
@@ -343,10 +344,10 @@ public class ConfigManager {
                         try {
                             String selectorId = nm.getSelectorId();
                             SelectorManager.getManager().get(selectorId).warmup(backendConfig.toNamingServiceId());
-                            logger.warn("Warm up selector success。(selectorId={},naming={}) ", selectorId,
+                            logger.warn("Warm up selector success.(selectorId={},naming={}) ", selectorId,
                                     backendConfig.getNamingOptions().getServiceNaming());
                         } catch (Exception ex) {
-                            logger.warn("Warm up selector exception。(selectorId={}, naming={}) ",
+                            logger.warn("Warm up selector exception.(selectorId={}, naming={}) ",
                                     nm.getSelectorId(), nm.getServiceNaming(), ex);
                         }
                     });
