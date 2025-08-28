@@ -22,6 +22,7 @@ import com.tencent.trpc.core.common.config.ServiceConfig;
 import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.core.utils.RpcContextUtils;
 import com.tencent.trpc.proto.standard.common.HelloRequestProtocol.HelloRequest;
+import com.tencent.trpc.proto.support.DefResponseFutureManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -68,6 +69,7 @@ public class TcpConcurrentTest {
         List<TestResult> results = new ArrayList<>();
         for (int i = 0; i < concurrent; i++) {
             BackendConfig config = new BackendConfig();
+            DefResponseFutureManager.reset();
             config.setNamingUrl("ip://127.0.0.1:" + TCP_PORT);
             config.setConnsPerAddr(1);
             config.setNetwork("tcp");

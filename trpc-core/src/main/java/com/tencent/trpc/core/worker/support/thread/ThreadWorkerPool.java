@@ -149,6 +149,10 @@ public class ThreadWorkerPool extends AbstractWorkerPool
                 shutdownGraceful(timeoutMills);
             }
         }
+        // 注销MBean注册
+        if (this.threadPoolMXBean != null) {
+            MBeanRegistryHelper.unregisterMBean(this.threadPoolMXBean.getObjectName());
+        }
     }
 
     @Override
