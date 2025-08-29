@@ -465,6 +465,7 @@ public class TRpcServerTest {
     public void testDefaultMethod() {
         HelloRequest.Builder builder = HelloRequest.newBuilder();
         builder.setMessage(ByteString.copyFromUtf8("hello"));
+        DefResponseFutureManager.reset();
         HelloServiceApi serviceApi = helloClientConfig.getProxy();
         HelloResponse response = serviceApi.doDefaultMethod(new RpcClientContext(), builder.build());
         Assert.assertEquals(response.getMessage().toStringUtf8(), "this is default method");
