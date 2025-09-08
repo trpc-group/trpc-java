@@ -32,7 +32,7 @@ import org.junit.Test;
 
 public class TcpConcurrentTest {
 
-    private static final int TCP_PORT = 12321;
+    private static final int TCP_PORT = 12421;
     ProviderConfig<ConcurrentTestService> providerConfig;
     ServiceConfig serviceConfig;
 
