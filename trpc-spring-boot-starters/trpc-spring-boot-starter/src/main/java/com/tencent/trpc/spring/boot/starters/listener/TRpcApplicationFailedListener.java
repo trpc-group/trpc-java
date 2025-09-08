@@ -19,7 +19,7 @@ import org.springframework.core.annotation.Order;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Handle the application failed event, the reason is TRpcLifecycleManager is called before the application failed.
+ * Handle the application failed event, the reason is TRpcLifecycleManager called before the application failed.
  */
 @Order
 public class TRpcApplicationFailedListener implements ApplicationListener<ApplicationFailedEvent> {
