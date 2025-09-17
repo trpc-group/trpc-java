@@ -201,41 +201,41 @@ public class ConfigManagerTest {
         configManager.stop();
     }
 
-    @Test
+@Test
     public void testRegisterShutdownListener() {
-        // 重置ConfigManager状态，避免setUp()中的listener1配置影响
+        // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
         ConfigManager.startTest();
         
         ConfigManager configManager = ConfigManager.getInstance();
         
-        // 设置最小配置，不使用listener1
+        // Set minimal configuration, do not use listener1
         ServerConfig serverConfig = new ServerConfig();
-        serverConfig.setRunListeners(Lists.newArrayList()); // 空的runListeners列表
+        serverConfig.setRunListeners(Lists.newArrayList()); // Empty runListeners list
         configManager.setServerConfig(serverConfig);
         
         TestShutdownListener listener = new TestShutdownListener();
         
         configManager.registerShutdownListener(listener);
         
-        // 验证listener已注册，通过启动和停止容器来测试
-        configManager.start(false); // 不注册shutdown hook
+        // Verify listener is registered by starting and stopping the container
+        configManager.start(false); // Do not register shutdown hook
         configManager.stop();
         
         assertTrue("Shutdown listener should be called", listener.isShutdownCalled());
     }
 
-    @Test
+@Test
     public void testUnregisterShutdownListener() {
-        // 重置ConfigManager状态，避免setUp()中的listener1配置影响
+        // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
         ConfigManager.startTest();
         
         ConfigManager configManager = ConfigManager.getInstance();
         
-        // 设置最小配置，不使用listener1
+        // Set minimal configuration, do not use listener1
         ServerConfig serverConfig = new ServerConfig();
-        serverConfig.setRunListeners(Lists.newArrayList()); // 空的runListeners列表
+        serverConfig.setRunListeners(Lists.newArrayList()); // Empty runListeners list
         configManager.setServerConfig(serverConfig);
         
         TestShutdownListener listener = new TestShutdownListener();
@@ -243,24 +243,24 @@ public class ConfigManagerTest {
         configManager.registerShutdownListener(listener);
         configManager.unregisterShutdownListener(listener);
         
-        // 验证listener被注销后不会被调用
+        // Verify listener is not called after being unregistered
         configManager.start(false);
         configManager.stop();
         
         assertFalse("Shutdown listener should not be called after unregister", listener.isShutdownCalled());
     }
 
-    @Test
+@Test
     public void testMultipleShutdownListeners() {
-        // 重置ConfigManager状态，避免setUp()中的listener1配置影响
+        // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
         ConfigManager.startTest();
         
         ConfigManager configManager = ConfigManager.getInstance();
         
-        // 设置最小配置，不使用listener1
+        // Set minimal configuration, do not use listener1
         ServerConfig serverConfig = new ServerConfig();
-        serverConfig.setRunListeners(Lists.newArrayList()); // 空的runListeners列表
+        serverConfig.setRunListeners(Lists.newArrayList()); // Empty runListeners list
         configManager.setServerConfig(serverConfig);
         
         TestShutdownListener listener1 = new TestShutdownListener("listener1");
@@ -279,20 +279,20 @@ public class ConfigManagerTest {
         assertTrue("Listener3 should be called", listener3.isShutdownCalled());
     }
 
-    @Test
+@Test
     public void testNullShutdownListenerHandling() {
-        // 重置ConfigManager状态，避免setUp()中的listener1配置影响
+        // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
         ConfigManager.startTest();
         
         ConfigManager configManager = ConfigManager.getInstance();
         
-        // 设置最小配置，不使用listener1
+        // Set minimal configuration, do not use listener1
         ServerConfig serverConfig = new ServerConfig();
-        serverConfig.setRunListeners(Lists.newArrayList()); // 空的runListeners列表
+        serverConfig.setRunListeners(Lists.newArrayList()); // Empty runListeners list
         configManager.setServerConfig(serverConfig);
         
-        // 验证空listener不会导致异常
+        // Verify null listener does not cause exceptions
         configManager.registerShutdownListener(null);
         configManager.unregisterShutdownListener(null);
         
@@ -300,17 +300,17 @@ public class ConfigManagerTest {
         configManager.stop();
     }
 
-    @Test
+@Test
     public void testShutdownListenerExceptionHandling() {
-        // 重置ConfigManager状态，避免setUp()中的listener1配置影响
+        // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
         ConfigManager.startTest();
         
         ConfigManager configManager = ConfigManager.getInstance();
         
-        // 设置最小配置，不使用listener1
+        // Set minimal configuration, do not use listener1
         ServerConfig serverConfig = new ServerConfig();
-        serverConfig.setRunListeners(Lists.newArrayList()); // 空的runListeners列表
+        serverConfig.setRunListeners(Lists.newArrayList()); // Empty runListeners list
         configManager.setServerConfig(serverConfig);
         
         TestShutdownListener goodListener = new TestShutdownListener("good");
@@ -322,23 +322,23 @@ public class ConfigManagerTest {
         configManager.start(false);
         configManager.stop();
         
-        // 即使一个listener抛出异常，其他listener也应该被调用
+        // Verify other listeners are called even if one listener throws an exception
         assertTrue("Good listener should be called despite bad listener exception", goodListener.isShutdownCalled());
         assertTrue("Bad listener should be called even with exception", badListener.isShutdownCalled());
     }
 
-    @Test
+@Test
     public void testConfigManagerShutdownListenerOnly() {
-        // 创建一个独立的测试，专门测试ShutdownListener功能，不依赖listener1
+        // Create an isolated test specifically for ShutdownListener functionality, not dependent on listener1
         ConfigManager.stopTest();
         
-        // 重新初始化以确保扩展被正确加载
+        // Reinitialize to ensure extensions are properly loaded
         ConfigManager.startTest();
         ConfigManager configManager = ConfigManager.getInstance();
         
-        // 设置最小配置，不使用listener1
+        // Set minimal configuration, do not use listener1
         ServerConfig serverConfig = new ServerConfig();
-        serverConfig.setRunListeners(Lists.newArrayList()); // 空的runListeners列表
+        serverConfig.setRunListeners(Lists.newArrayList()); // Empty runListeners list
         configManager.setServerConfig(serverConfig);
         
         TestShutdownListener testListener = new TestShutdownListener("isolated-test");
@@ -350,15 +350,15 @@ public class ConfigManagerTest {
             
             assertTrue("Shutdown listener should be called", testListener.isShutdownCalled());
         } catch (Exception e) {
-            // 即使启动失败，shutdown listener也应该被调用
+            // Shutdown listener should be called even if startup fails
             assertTrue("Shutdown listener should be called even on startup failure", 
                       testListener.isShutdownCalled());
         }
     }
 
-    @Test
+@Test
     public void testShutdownListenerWithStartupFailure() {
-        // 专门测试启动失败时ShutdownListener是否仍然被调用
+        // Specifically test if ShutdownListener is still called when startup fails
         ConfigManager.stopTest();
         ConfigManager.startTest();
         ConfigManager configManager = ConfigManager.getInstance();
@@ -366,25 +366,25 @@ public class ConfigManagerTest {
         TestShutdownListener testListener = new TestShutdownListener("startup-failure-test");
         configManager.registerShutdownListener(testListener);
         
-        // 故意设置一个不存在的listener来触发启动失败
+        // Deliberately set a nonexistent listener to trigger startup failure
         ServerConfig serverConfig = new ServerConfig();
         serverConfig.setRunListeners(Lists.newArrayList("nonexistent-listener"));
         configManager.setServerConfig(serverConfig);
         
         try {
             configManager.start(false);
-            // 如果没有异常，正常停止
+            // If no exception, stop normally
             configManager.stop();
         } catch (Exception e) {
-            // 预期会有异常，但ShutdownListener应该在异常处理过程中被调用
+            // Exception is expected, but ShutdownListener should be called during exception handling
         }
         
-        assertTrue("Shutdown listener should be called even when startup fails", 
+assertTrue("Shutdown listener should be called even when startup fails", 
                   testListener.isShutdownCalled());
     }
 
     /**
-     * 测试用的ShutdownListener实现
+     * Test ShutdownListener implementation
      */
     private static class TestShutdownListener implements ShutdownListener {
         private final String name;
