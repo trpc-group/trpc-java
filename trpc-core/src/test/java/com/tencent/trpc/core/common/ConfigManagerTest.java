@@ -75,7 +75,7 @@ public class ConfigManagerTest {
         ConfigManager.stopTest();
     }
 
-@Test
+    @Test
     public void testStart() {
         // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
@@ -180,7 +180,7 @@ public class ConfigManagerTest {
         });
     }
 
-@Test
+    @Test
     public void testGracefulRestart() throws InterruptedException {
         // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
@@ -201,7 +201,7 @@ public class ConfigManagerTest {
         configManager.stop();
     }
 
-@Test
+    @Test
     public void testRegisterShutdownListener() {
         // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
@@ -225,7 +225,7 @@ public class ConfigManagerTest {
         assertTrue("Shutdown listener should be called", listener.isShutdownCalled());
     }
 
-@Test
+    @Test
     public void testUnregisterShutdownListener() {
         // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
@@ -250,7 +250,7 @@ public class ConfigManagerTest {
         assertFalse("Shutdown listener should not be called after unregister", listener.isShutdownCalled());
     }
 
-@Test
+    @Test
     public void testMultipleShutdownListeners() {
         // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
@@ -279,7 +279,7 @@ public class ConfigManagerTest {
         assertTrue("Listener3 should be called", listener3.isShutdownCalled());
     }
 
-@Test
+    @Test
     public void testNullShutdownListenerHandling() {
         // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
@@ -300,7 +300,7 @@ public class ConfigManagerTest {
         configManager.stop();
     }
 
-@Test
+    @Test
     public void testShutdownListenerExceptionHandling() {
         // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
@@ -327,7 +327,7 @@ public class ConfigManagerTest {
         assertTrue("Bad listener should be called even with exception", badListener.isShutdownCalled());
     }
 
-@Test
+    @Test
     public void testConfigManagerShutdownListenerOnly() {
         // Create an isolated test specifically for ShutdownListener functionality, not dependent on listener1
         ConfigManager.stopTest();
@@ -356,7 +356,7 @@ public class ConfigManagerTest {
         }
     }
 
-@Test
+    @Test
     public void testShutdownListenerWithStartupFailure() {
         // Specifically test if ShutdownListener is still called when startup fails
         ConfigManager.stopTest();
@@ -379,7 +379,7 @@ public class ConfigManagerTest {
             // Exception is expected, but ShutdownListener should be called during exception handling
         }
         
-assertTrue("Shutdown listener should be called even when startup fails", 
+        assertTrue("Shutdown listener should be called even when startup fails",
                   testListener.isShutdownCalled());
     }
 
@@ -417,7 +417,7 @@ assertTrue("Shutdown listener should be called even when startup fails",
         }
     }
 
-@Test
+    @Test
     public void testShutdownHook() {
         // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
