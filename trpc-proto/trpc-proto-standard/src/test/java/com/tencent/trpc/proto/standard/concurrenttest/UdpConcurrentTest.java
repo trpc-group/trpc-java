@@ -116,7 +116,7 @@ public class UdpConcurrentTest {
     }
 
     private void startServer() {
-        // 1)服务接口配置
+        // 1) Service interface configuration
         ProviderConfig<ConcurrentTestService> providerConfig = new ProviderConfig<>();
         providerConfig.setRef(new ConcurrentTestServiceImpl());
         serviceConfig = getServiceConfig();
