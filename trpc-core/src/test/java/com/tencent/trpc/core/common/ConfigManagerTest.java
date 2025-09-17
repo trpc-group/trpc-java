@@ -75,7 +75,7 @@ public class ConfigManagerTest {
         ConfigManager.stopTest();
     }
 
-    @Test
+@Test
     public void testStart() {
         // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
@@ -180,7 +180,7 @@ public class ConfigManagerTest {
         });
     }
 
-    @Test
+@Test
     public void testGracefulRestart() throws InterruptedException {
         // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
@@ -417,7 +417,7 @@ public class ConfigManagerTest {
         }
     }
 
-    @Test
+@Test
     public void testShutdownHook() {
         // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
