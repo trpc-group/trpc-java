@@ -34,7 +34,6 @@ public class DefTimeoutManager implements TimeoutManager {
     public Future<?> watch(final Runnable task, long timeout) {
         FutureAdapter<?> adapter = new FutureAdapter(task);
         adapter.wrap = timer.newTimeout(adapter, timeout, TimeUnit.MILLISECONDS);
-
         return adapter;
     }
 
