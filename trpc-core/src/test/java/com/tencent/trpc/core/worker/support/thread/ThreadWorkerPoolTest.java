@@ -147,4 +147,23 @@ public class ThreadWorkerPoolTest {
                 mBeanServer.isRegistered(objectName));
     }
 
+    /**
+     * Test close method when threadPoolMXBean is null (covers the null check branch)
+     */
+    @Test
+    public void testCloseWithNullMXBean() throws Exception {
+        Map<String, Object> properties = getProperties();
+        PluginConfig poolPluginConfig = new PluginConfig("work_pool", ThreadWorkerPool.class,
+                properties);
+        ThreadWorkerPool threadWorkerPool = new ThreadWorkerPool();
+        threadWorkerPool.setPluginConfig(poolPluginConfig);
+        
+        // Don't call init() so threadPoolMXBean remains null
+        // This should not throw any exception when closing
+        threadWorkerPool.close(1000);
+        
+        // Verify no exception is thrown and method completes successfully
+        Assert.assertTrue("Close method should complete successfully even with null MXBean", true);
+    }
+
 }

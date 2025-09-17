@@ -109,4 +109,25 @@ public class ForkJoinWorkerPoolTest {
         Assert.assertFalse("MBean should be unregistered after close", 
                 mBeanServer.isRegistered(objectName));
     }
+
+    /**
+     * Test close method when forkJoinPoolMXBean is null (covers the null check branch)
+     */
+    @Test
+    public void testCloseWithNullMXBean() throws Exception {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(ForkJoinPoolConfig.PARALLELISM, PARALLELISM);
+        properties.put(ForkJoinPoolConfig.TIMEOUT_MS, TIMEOUT_MILLS);
+        PluginConfig poolPluginConfig = new PluginConfig(ForkJoinWorkerPool.NAME, ThreadWorkerPool.class,
+                properties);
+        ForkJoinWorkerPool forkJoinWorkerPool = new ForkJoinWorkerPool();
+        forkJoinWorkerPool.setPluginConfig(poolPluginConfig);
+        
+        // Don't call init() so forkJoinPoolMXBean remains null
+        // This should not throw any exception when closing
+        forkJoinWorkerPool.close(1000);
+        
+        // Verify no exception is thrown and method completes successfully
+        Assert.assertTrue("Close method should complete successfully even with null MXBean", true);
+    }
 }
