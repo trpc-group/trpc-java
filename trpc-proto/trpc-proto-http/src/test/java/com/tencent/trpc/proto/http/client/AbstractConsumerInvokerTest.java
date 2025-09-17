@@ -1,6 +1,4 @@
 /*
-
-
  * Tencent is pleased to support the open source community by making tRPC available.
  *
  * Copyright (C) 2023 Tencent.
@@ -58,32 +56,32 @@ public class AbstractConsumerInvokerTest {
 
     @Before
     public void setUp() {
-        // 创建 mock 对象
+        // Create mock objects
         mockClient = mock(AbstractRpcClient.class);
         mockConfig = mock(ConsumerConfig.class);
         mockProtocolConfig = mock(ProtocolConfig.class);
         mockBackendConfig = mock(BackendConfig.class);
         mockWorkerPool = mock(WorkerPool.class);
 
-        // 设置 mock 对象的行为
+        // Configure mock object behavior
         when(mockConfig.getBackendConfig()).thenReturn(mockBackendConfig);
         when(mockBackendConfig.getWorkerPoolObj()).thenReturn(mockWorkerPool);
         when(mockProtocolConfig.getIp()).thenReturn("127.0.0.1");
         when(mockProtocolConfig.getPort()).thenReturn(8080);
         when(mockProtocolConfig.getExtMap()).thenReturn(new HashMap<String, Object>());
 
-        // 创建测试实例
+        // Create test instance
         testInvoker = new TestConsumerInvoker(mockClient, mockConfig, mockProtocolConfig);
     }
 
     @After
     public void tearDown() {
-        // 重置静态状态
+        // Reset static state
         AbstractConsumerInvoker.reset();
     }
 
     /**
-     * 测试 ShutdownListener 不为空
+     * Test that ShutdownListener is not null
      */
     @Test
     public void testShutdownListenerNotNull() {
@@ -92,18 +90,18 @@ public class AbstractConsumerInvokerTest {
     }
 
     /**
-     * 测试 onShutdown 方法的日志输出和执行
+     * Test the log output and execution of onShutdown method
      */
     @Test
     public void testOnShutdownExecution() {
-        // 获取 ShutdownListener
+        // Get ShutdownListener
         ShutdownListener shutdownListener = testInvoker.getShutdownListener();
         assertNotNull("ShutdownListener should not be null", shutdownListener);
 
-        // 测试 onShutdown 方法不会抛出异常
+        // Test that onShutdown method does not throw exceptions
         try {
             shutdownListener.onShutdown();
-            // 如果没有异常，测试通过
+            // If no exception occurs, test passes
             assertTrue("onShutdown method should execute without exceptions", true);
         } catch (Exception e) {
             throw new AssertionError("onShutdown method should not throw exceptions", e);
@@ -111,14 +109,14 @@ public class AbstractConsumerInvokerTest {
     }
 
     /**
-     * 测试多次调用 onShutdown 方法的安全性
+     * Test the safety of calling onShutdown method multiple times
      */
     @Test
     public void testMultipleOnShutdownCalls() {
         ShutdownListener shutdownListener = testInvoker.getShutdownListener();
         assertNotNull("ShutdownListener should not be null", shutdownListener);
 
-        // 多次调用 onShutdown 方法，确保不会出现异常
+        // Call onShutdown method multiple times to ensure no exceptions occur
         try {
             shutdownListener.onShutdown();
             shutdownListener.onShutdown();
@@ -130,26 +128,26 @@ public class AbstractConsumerInvokerTest {
     }
 
     /**
-     * 测试 ShutdownListener 的类型
+     * Test the type of ShutdownListener
      */
     @Test
     public void testShutdownListenerType() {
         ShutdownListener shutdownListener = testInvoker.getShutdownListener();
         assertNotNull("ShutdownListener should not be null", shutdownListener);
         
-        // 验证 ShutdownListener 是内部类的实例
+        // Verify that ShutdownListener is an instance of the inner class
         String className = shutdownListener.getClass().getSimpleName();
         assertTrue("ShutdownListener should be InternalShutdownListener", 
                 className.contains("InternalShutdownListener"));
     }
 
     /**
-     * 测试静态方法 stop() 和 reset() 的调用
+     * Test the invocation of static methods stop() and reset()
      */
     @Test
     public void testStaticMethods() {
         try {
-            // 测试静态方法调用不会抛出异常
+            // Test that static method calls do not throw exceptions
             AbstractConsumerInvoker.stop();
             AbstractConsumerInvoker.reset();
             assertTrue("Static methods should execute without exceptions", true);
@@ -159,18 +157,18 @@ public class AbstractConsumerInvokerTest {
     }
 
     /**
-     * 测试 HTTP 协议的默认配置（不包含 keystore 配置）
+     * Test default configuration for HTTP protocol (without keystore configuration)
      */
     @Test
     public void testHttpSchemeWithoutKeystore() throws Exception {
-        // 创建不包含 keystore 配置的 extMap
+        // Create extMap without keystore configuration
         Map<String, Object> extMap = new HashMap<>();
         when(mockProtocolConfig.getExtMap()).thenReturn(extMap);
 
-        // 创建新的测试实例
+        // Create new test instance
         TestConsumerInvoker httpInvoker = new TestConsumerInvoker(mockClient, mockConfig, mockProtocolConfig);
 
-        // 通过反射获取 scheme 字段来验证
+        // Verify by accessing the scheme field via reflection
         Field schemeField = AbstractConsumerInvoker.class.getDeclaredField("scheme");
         schemeField.setAccessible(true);
         String scheme = (String) schemeField.get(httpInvoker);
@@ -179,20 +177,20 @@ public class AbstractConsumerInvokerTest {
     }
 
     /**
-     * 测试 HTTPS 协议的配置（包含 keystore 配置）
+     * Test HTTPS protocol configuration (with keystore configuration)
      */
     @Test
     public void testHttpsSchemeWithKeystore() throws Exception {
-        // 创建包含 keystore 配置的 extMap
+        // Create extMap with keystore configuration
         Map<String, Object> extMap = new HashMap<>();
         extMap.put(KEYSTORE_PATH, "/path/to/keystore.jks");
         extMap.put(KEYSTORE_PASS, "password123");
         when(mockProtocolConfig.getExtMap()).thenReturn(extMap);
 
-        // 创建新的测试实例
+        // Create new test instance
         TestConsumerInvoker httpsInvoker = new TestConsumerInvoker(mockClient, mockConfig, mockProtocolConfig);
 
-        // 通过反射获取 scheme 字段来验证
+        // Verify by accessing the scheme field via reflection
         Field schemeField = AbstractConsumerInvoker.class.getDeclaredField("scheme");
         schemeField.setAccessible(true);
         String scheme = (String) schemeField.get(httpsInvoker);
@@ -201,19 +199,19 @@ public class AbstractConsumerInvokerTest {
     }
 
     /**
-     * 测试只有 KEYSTORE_PATH 但没有 KEYSTORE_PASS 的情况（应该使用 HTTP）
+     * Test case with only KEYSTORE_PATH but no KEYSTORE_PASS (should use HTTP)
      */
     @Test
     public void testHttpSchemeWithOnlyKeystorePath() throws Exception {
-        // 创建只包含 KEYSTORE_PATH 的 extMap
+        // Create extMap with only KEYSTORE_PATH
         Map<String, Object> extMap = new HashMap<>();
         extMap.put(KEYSTORE_PATH, "/path/to/keystore.jks");
         when(mockProtocolConfig.getExtMap()).thenReturn(extMap);
 
-        // 创建新的测试实例
+        // Create new test instance
         TestConsumerInvoker httpInvoker = new TestConsumerInvoker(mockClient, mockConfig, mockProtocolConfig);
 
-        // 通过反射获取 scheme 字段来验证
+        // Verify by accessing the scheme field via reflection
         Field schemeField = AbstractConsumerInvoker.class.getDeclaredField("scheme");
         schemeField.setAccessible(true);
         String scheme = (String) schemeField.get(httpInvoker);
@@ -222,19 +220,19 @@ public class AbstractConsumerInvokerTest {
     }
 
     /**
-     * 测试只有 KEYSTORE_PASS 但没有 KEYSTORE_PATH 的情况（应该使用 HTTP）
+     * Test case with only KEYSTORE_PASS but no KEYSTORE_PATH (should use HTTP)
      */
     @Test
     public void testHttpSchemeWithOnlyKeystorePass() throws Exception {
-        // 创建只包含 KEYSTORE_PASS 的 extMap
+        // Create extMap with only KEYSTORE_PASS
         Map<String, Object> extMap = new HashMap<>();
         extMap.put(KEYSTORE_PASS, "password123");
         when(mockProtocolConfig.getExtMap()).thenReturn(extMap);
 
-        // 创建新的测试实例
+        // Create new test instance
         TestConsumerInvoker httpInvoker = new TestConsumerInvoker(mockClient, mockConfig, mockProtocolConfig);
 
-        // 通过反射获取 scheme 字段来验证
+        // Verify by accessing the scheme field via reflection
         Field schemeField = AbstractConsumerInvoker.class.getDeclaredField("scheme");
         schemeField.setAccessible(true);
         String scheme = (String) schemeField.get(httpInvoker);
@@ -243,27 +241,27 @@ public class AbstractConsumerInvokerTest {
     }
 
     /**
-     * 测试 URI 构建在不同协议下的正确性
+     * Test URI construction correctness under different protocols
      */
     @Test
     public void testUriConstructionWithDifferentSchemes() throws Exception {
-        // 设置 mock 对象的基本配置
+        // Configure basic settings for mock objects
         when(mockConfig.getBackendConfig().getBasePath()).thenReturn("/api");
         
-        // 创建 mock request 和 invocation
+        // Create mock request and invocation
         Request mockRequest = mock(Request.class);
         com.tencent.trpc.core.rpc.RpcInvocation mockInvocation = mock(com.tencent.trpc.core.rpc.RpcInvocation.class);
         when(mockRequest.getInvocation()).thenReturn(mockInvocation);
         when(mockInvocation.getFunc()).thenReturn("/test");
 
-        // 测试 HTTP 协议的 URI
+        // Test URI for HTTP protocol
         Map<String, Object> httpExtMap = new HashMap<>();
         when(mockProtocolConfig.getExtMap()).thenReturn(httpExtMap);
         TestConsumerInvoker httpInvoker = new TestConsumerInvoker(mockClient, mockConfig, mockProtocolConfig);
         URI httpUri = httpInvoker.getUri(mockRequest);
         assertEquals("HTTP URI scheme should be http", HTTP_SCHEME, httpUri.getScheme());
 
-        // 测试 HTTPS 协议的 URI
+        // Test URI for HTTPS protocol
         Map<String, Object> httpsExtMap = new HashMap<>();
         httpsExtMap.put(KEYSTORE_PATH, "/path/to/keystore.jks");
         httpsExtMap.put(KEYSTORE_PASS, "password123");
@@ -274,7 +272,7 @@ public class AbstractConsumerInvokerTest {
     }
 
     /**
-     * 测试用的 ConsumerInvoker 实现类
+     * Test ConsumerInvoker implementation class for testing purposes
      */
     private static class TestConsumerInvoker extends AbstractConsumerInvoker<TestService> {
 
@@ -285,13 +283,13 @@ public class AbstractConsumerInvokerTest {
 
         @Override
         public Response send(Request request) throws Exception {
-            // 简单的测试实现
+            // Simple test implementation
             return null;
         }
     }
 
     /**
-     * 测试用的服务接口
+     * Test service interface for testing purposes
      */
     private interface TestService {
         String testMethod(String input);
