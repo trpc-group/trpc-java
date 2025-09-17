@@ -1,4 +1,6 @@
 /*
+
+
  * Tencent is pleased to support the open source community by making tRPC available.
  *
  * Copyright (C) 2023 Tencent.
@@ -13,8 +15,13 @@ package com.tencent.trpc.proto.http.client;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static com.tencent.trpc.transport.http.common.Constants.KEYSTORE_PATH;
+import static com.tencent.trpc.transport.http.common.Constants.KEYSTORE_PASS;
+import static com.tencent.trpc.transport.http.common.Constants.HTTPS_SCHEME;
+import static com.tencent.trpc.transport.http.common.Constants.HTTP_SCHEME;
 
 import com.tencent.trpc.core.common.ShutdownListener;
 import com.tencent.trpc.core.common.config.BackendConfig;
@@ -26,7 +33,10 @@ import com.tencent.trpc.core.rpc.AbstractRpcClient;
 import com.tencent.trpc.core.rpc.Request;
 import com.tencent.trpc.core.rpc.Response;
 import com.tencent.trpc.core.worker.spi.WorkerPool;
+import java.lang.reflect.Field;
+import java.net.URI;
 import java.util.HashMap;
+import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -146,6 +156,121 @@ public class AbstractConsumerInvokerTest {
         } catch (Exception e) {
             throw new AssertionError("Static methods should not throw exceptions", e);
         }
+    }
+
+    /**
+     * 测试 HTTP 协议的默认配置（不包含 keystore 配置）
+     */
+    @Test
+    public void testHttpSchemeWithoutKeystore() throws Exception {
+        // 创建不包含 keystore 配置的 extMap
+        Map<String, Object> extMap = new HashMap<>();
+        when(mockProtocolConfig.getExtMap()).thenReturn(extMap);
+
+        // 创建新的测试实例
+        TestConsumerInvoker httpInvoker = new TestConsumerInvoker(mockClient, mockConfig, mockProtocolConfig);
+
+        // 通过反射获取 scheme 字段来验证
+        Field schemeField = AbstractConsumerInvoker.class.getDeclaredField("scheme");
+        schemeField.setAccessible(true);
+        String scheme = (String) schemeField.get(httpInvoker);
+
+        assertEquals("Should use HTTP scheme when keystore is not configured", HTTP_SCHEME, scheme);
+    }
+
+    /**
+     * 测试 HTTPS 协议的配置（包含 keystore 配置）
+     */
+    @Test
+    public void testHttpsSchemeWithKeystore() throws Exception {
+        // 创建包含 keystore 配置的 extMap
+        Map<String, Object> extMap = new HashMap<>();
+        extMap.put(KEYSTORE_PATH, "/path/to/keystore.jks");
+        extMap.put(KEYSTORE_PASS, "password123");
+        when(mockProtocolConfig.getExtMap()).thenReturn(extMap);
+
+        // 创建新的测试实例
+        TestConsumerInvoker httpsInvoker = new TestConsumerInvoker(mockClient, mockConfig, mockProtocolConfig);
+
+        // 通过反射获取 scheme 字段来验证
+        Field schemeField = AbstractConsumerInvoker.class.getDeclaredField("scheme");
+        schemeField.setAccessible(true);
+        String scheme = (String) schemeField.get(httpsInvoker);
+
+        assertEquals("Should use HTTPS scheme when keystore is configured", HTTPS_SCHEME, scheme);
+    }
+
+    /**
+     * 测试只有 KEYSTORE_PATH 但没有 KEYSTORE_PASS 的情况（应该使用 HTTP）
+     */
+    @Test
+    public void testHttpSchemeWithOnlyKeystorePath() throws Exception {
+        // 创建只包含 KEYSTORE_PATH 的 extMap
+        Map<String, Object> extMap = new HashMap<>();
+        extMap.put(KEYSTORE_PATH, "/path/to/keystore.jks");
+        when(mockProtocolConfig.getExtMap()).thenReturn(extMap);
+
+        // 创建新的测试实例
+        TestConsumerInvoker httpInvoker = new TestConsumerInvoker(mockClient, mockConfig, mockProtocolConfig);
+
+        // 通过反射获取 scheme 字段来验证
+        Field schemeField = AbstractConsumerInvoker.class.getDeclaredField("scheme");
+        schemeField.setAccessible(true);
+        String scheme = (String) schemeField.get(httpInvoker);
+
+        assertEquals("Should use HTTP scheme when only KEYSTORE_PATH is configured", HTTP_SCHEME, scheme);
+    }
+
+    /**
+     * 测试只有 KEYSTORE_PASS 但没有 KEYSTORE_PATH 的情况（应该使用 HTTP）
+     */
+    @Test
+    public void testHttpSchemeWithOnlyKeystorePass() throws Exception {
+        // 创建只包含 KEYSTORE_PASS 的 extMap
+        Map<String, Object> extMap = new HashMap<>();
+        extMap.put(KEYSTORE_PASS, "password123");
+        when(mockProtocolConfig.getExtMap()).thenReturn(extMap);
+
+        // 创建新的测试实例
+        TestConsumerInvoker httpInvoker = new TestConsumerInvoker(mockClient, mockConfig, mockProtocolConfig);
+
+        // 通过反射获取 scheme 字段来验证
+        Field schemeField = AbstractConsumerInvoker.class.getDeclaredField("scheme");
+        schemeField.setAccessible(true);
+        String scheme = (String) schemeField.get(httpInvoker);
+
+        assertEquals("Should use HTTP scheme when only KEYSTORE_PASS is configured", HTTP_SCHEME, scheme);
+    }
+
+    /**
+     * 测试 URI 构建在不同协议下的正确性
+     */
+    @Test
+    public void testUriConstructionWithDifferentSchemes() throws Exception {
+        // 设置 mock 对象的基本配置
+        when(mockConfig.getBackendConfig().getBasePath()).thenReturn("/api");
+        
+        // 创建 mock request 和 invocation
+        Request mockRequest = mock(Request.class);
+        com.tencent.trpc.core.rpc.RpcInvocation mockInvocation = mock(com.tencent.trpc.core.rpc.RpcInvocation.class);
+        when(mockRequest.getInvocation()).thenReturn(mockInvocation);
+        when(mockInvocation.getFunc()).thenReturn("/test");
+
+        // 测试 HTTP 协议的 URI
+        Map<String, Object> httpExtMap = new HashMap<>();
+        when(mockProtocolConfig.getExtMap()).thenReturn(httpExtMap);
+        TestConsumerInvoker httpInvoker = new TestConsumerInvoker(mockClient, mockConfig, mockProtocolConfig);
+        URI httpUri = httpInvoker.getUri(mockRequest);
+        assertEquals("HTTP URI scheme should be http", HTTP_SCHEME, httpUri.getScheme());
+
+        // 测试 HTTPS 协议的 URI
+        Map<String, Object> httpsExtMap = new HashMap<>();
+        httpsExtMap.put(KEYSTORE_PATH, "/path/to/keystore.jks");
+        httpsExtMap.put(KEYSTORE_PASS, "password123");
+        when(mockProtocolConfig.getExtMap()).thenReturn(httpsExtMap);
+        TestConsumerInvoker httpsInvoker = new TestConsumerInvoker(mockClient, mockConfig, mockProtocolConfig);
+        URI httpsUri = httpsInvoker.getUri(mockRequest);
+        assertEquals("HTTPS URI scheme should be https", HTTPS_SCHEME, httpsUri.getScheme());
     }
 
     /**
