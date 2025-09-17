@@ -35,7 +35,7 @@ import java.util.concurrent.Future;
  *
  * @see DefResponseFuture
  */
-public class DefResponseFutureManager implements ShutdownListener {
+public class DefResponseFutureManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefResponseFutureManager.class);
 
@@ -47,9 +47,14 @@ public class DefResponseFutureManager implements ShutdownListener {
      * Store
      */
     private final ConcurrentMap<Long, DefResponseFuture> futureMap = new ConcurrentHashMap<>();
+    
+    /**
+     * Internal shutdown listener that handles the shutdown of this manager
+     */
+    private final ShutdownListener shutdownListener = new InternalShutdownListener();
 
-public DefResponseFutureManager() {
-        ConfigManager.getInstance().registerShutdownListener(this);
+    public DefResponseFutureManager() {
+        ConfigManager.getInstance().registerShutdownListener(shutdownListener);
     }
 
     /**
@@ -167,12 +172,23 @@ public DefResponseFutureManager() {
     }
 
     /**
-     * Shutdown listener implementation to handle container shutdown
+     * Get the internal shutdown listener for testing purposes
+     *
+     * @return the internal shutdown listener
      */
-    @Override
-    public void onShutdown() {
-        LOG.info("DefResponseFutureManager received shutdown notification");
-        stop();
+    public ShutdownListener getShutdownListener() {
+        return shutdownListener;
+    }
+
+    /**
+     * Internal shutdown listener implementation
+     */
+    private class InternalShutdownListener implements ShutdownListener {
+        @Override
+        public void onShutdown() {
+            LOG.info("DefResponseFutureManager received shutdown notification");
+            DefResponseFutureManager.this.stop();
+        }
     }
 
     /**
