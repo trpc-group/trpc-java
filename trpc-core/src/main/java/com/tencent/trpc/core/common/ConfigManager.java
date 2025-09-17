@@ -114,7 +114,6 @@ public class ConfigManager {
         RpcClusterClientManager.reset();
         RpcServerManager.reset();
         WorkerPoolManager.reset();
-
         instance.setDefault = false;
     }
 
