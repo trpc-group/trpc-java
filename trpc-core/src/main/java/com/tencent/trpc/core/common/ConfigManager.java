@@ -44,6 +44,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class ConfigManager {
@@ -55,6 +56,12 @@ public class ConfigManager {
      * Container startup listener
      */
     private final Set<TRPCRunListener> tRPCRunListeners = Sets.newConcurrentHashSet();
+
+    /**
+     * Shutdown listeners for decoupled cleanup, using WeakHashMap to prevent classloader leaks
+     */
+    private final Map<ShutdownListener, Boolean> shutdownListeners = new WeakHashMap<>();
+
     /**
      * Business initialization
      */
@@ -251,6 +258,41 @@ public class ConfigManager {
         tRPCRunListeners.add(trpcRunListener);
     }
 
+    /**
+     * Get all shutdown listeners loaded via SPI.
+     * 
+     * @return set of shutdown listeners
+     */
+    public void registerShutdownListener(ShutdownListener listener) {
+        if (listener != null) {
+            shutdownListeners.put(listener, Boolean.TRUE);
+        }
+    }
+
+    /**
+     * Unregister a shutdown listener.
+     *
+     * @param listener the shutdown listener to unregister
+     */
+    public void unregisterShutdownListener(ShutdownListener listener) {
+        if (listener != null) {
+            shutdownListeners.remove(listener);
+        }
+    }
+
+    /**
+     * Notify all registered shutdown listeners.
+     */
+    private void notifyShutdownListeners() {
+        shutdownListeners.keySet().forEach(listener -> {
+            try {
+                listener.onShutdown();
+            } catch (Exception e) {
+                logger.error("Error executing shutdown listener: {}", listener.getClass().getName(), e);
+            }
+        });
+    }
+
     @Override
     public String toString() {
         return "ApplicationConfig {globalConfig=" + globalConfig + ", serverConfig=" + serverConfig
@@ -385,6 +427,10 @@ public class ConfigManager {
             ExtensionLoader.destroyAllPlugin();
             // 8) close client cluster
             RpcClusterClientManager.close();
+
+            // Notify all shutdown listeners before actual shutdown
+            notifyShutdownListeners();
+
             logger.info(">>>tRPC Server stopped");
         }
 
