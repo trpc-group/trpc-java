@@ -42,7 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * 测试 AbstractConsumerInvoker 的 ShutdownListener 功能
+ * Test the ShutdownListener functionality of AbstractConsumerInvoker
  */
 public class AbstractConsumerInvokerTest {
 
