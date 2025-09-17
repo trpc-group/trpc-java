@@ -75,17 +75,17 @@ public class ConfigManagerTest {
         ConfigManager.stopTest();
     }
 
-    @Test
+@Test
     public void testStart() {
-        // 重置ConfigManager状态，避免setUp()中的listener1配置影响
+        // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
         ConfigManager.startTest();
         
         ConfigManager configManager = ConfigManager.getInstance();
         
-        // 设置最小配置，不使用listener1
+        // Set minimal configuration, do not use listener1
         ServerConfig serverConfig = new ServerConfig();
-        serverConfig.setRunListeners(Lists.newArrayList()); // 空的runListeners列表
+        serverConfig.setRunListeners(Lists.newArrayList()); // Empty runListeners list
         configManager.setServerConfig(serverConfig);
         
         configManager.start();
@@ -180,9 +180,9 @@ public class ConfigManagerTest {
         });
     }
 
-    @Test
+@Test
     public void testGracefulRestart() throws InterruptedException {
-        // 重置ConfigManager状态，避免setUp()中的listener1配置影响
+        // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
         ConfigManager.startTest();
         
@@ -190,7 +190,7 @@ public class ConfigManagerTest {
         ServerConfig serverConfig = new ServerConfig();
         serverConfig.setWaitTimeout(WAIT_TIME);
         serverConfig.setCloseTimeout(WAIT_TIME);
-        serverConfig.setRunListeners(Lists.newArrayList()); // 空的runListeners列表
+        serverConfig.setRunListeners(Lists.newArrayList()); // Empty runListeners list
         serverConfig.setDefault();
 
         final ConfigManager configManager = ConfigManager.getInstance();
@@ -417,9 +417,9 @@ assertTrue("Shutdown listener should be called even when startup fails",
         }
     }
 
-    @Test
+@Test
     public void testShutdownHook() {
-        // 重置ConfigManager状态，避免setUp()中的listener1配置影响
+        // Reset ConfigManager state to avoid influence from listener1 configuration in setUp()
         ConfigManager.stopTest();
         ConfigManager.startTest();
 

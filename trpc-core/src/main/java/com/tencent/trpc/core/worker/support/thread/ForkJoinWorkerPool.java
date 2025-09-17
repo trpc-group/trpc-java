@@ -127,7 +127,7 @@ public class ForkJoinWorkerPool extends AbstractWorkerPool implements PluginConf
             }
         }
 
-        // 注销MBean注册
+        // unregister MBean
         if (this.forkJoinPoolMXBean != null) {
             MBeanRegistryHelper.unregisterMBean(this.forkJoinPoolMXBean.getObjectName());
         }
