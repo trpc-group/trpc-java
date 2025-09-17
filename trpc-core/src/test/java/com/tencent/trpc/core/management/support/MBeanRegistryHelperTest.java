@@ -109,6 +109,29 @@ public class MBeanRegistryHelperTest {
     }
 
     /**
+     * Test unregisterMBean method exception handling by creating a scenario that triggers exception
+     * This test covers the exception handling branch in unregisterMBean method
+     */
+    @Test
+    public void testUnregisterMBeanException() throws Exception {
+        // Test with null ObjectName which should cause RuntimeOperationsException
+        // in the isRegistered(null) call, which will trigger the exception handling branch
+        
+        // This should not throw any exception - the exception should be caught and logged
+        try {
+            MBeanRegistryHelper.unregisterMBean(null);
+            // If we reach here, it means the exception was properly caught and handled
+        } catch (Exception e) {
+            // If any exception escapes, the test should fail
+            Assert.fail("Exception should have been caught and logged, but was thrown: " + e.getMessage());
+        }
+        
+        // The test passes if no exception is thrown (exception is caught and logged)
+        // The logger.warn("unregister mbean exception: ", e) line should be executed
+        // This covers the exception handling branch that was previously untested
+    }
+
+    /**
      * Test MBean interface for testing purposes
      */
     public interface TestMBean {
