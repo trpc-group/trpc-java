@@ -58,6 +58,8 @@ public abstract class AbstractHttpExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractHttpExecutor.class);
 
+    private volatile boolean isTimeout = false;
+
     /**
      * Http codec tool
      */
@@ -82,6 +84,7 @@ public abstract class AbstractHttpExecutor {
                 requestTimeout = methodInfoAndInvoker.getInvoker().getConfig().getRequestTimeout();
             }
             if (requestTimeout > 0 && !countDownLatch.await(requestTimeout, TimeUnit.MILLISECONDS)) {
+                isTimeout = true;
                 throw TRpcException.newFrameException(ErrorCode.TRPC_SERVER_TIMEOUT_ERR,
                         "wait http request execute timeout");
             } else {
@@ -128,6 +131,10 @@ public abstract class AbstractHttpExecutor {
             CompletionStage<Response> future = invoker.invoke(rpcRequest);
             future.whenComplete((result, t) -> {
                 try {
+                    if (isTimeout) {
+                        return;
+                    }
+
                     // Throw the call exception, which will be handled uniformly by the exception handling program.
                     if (t != null) {
                         throw t;
