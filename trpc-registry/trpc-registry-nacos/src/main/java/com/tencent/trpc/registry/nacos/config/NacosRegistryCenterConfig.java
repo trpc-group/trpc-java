@@ -42,7 +42,7 @@ public class NacosRegistryCenterConfig {
     /**
      * Get configuration based on assertion
      *
-     * @param NameToSelect assertion
+     * @param nameToSelect assertion
      * @return Configuration
      */
     public Map<String, String> getParameters(Predicate<String> nameToSelect) {
