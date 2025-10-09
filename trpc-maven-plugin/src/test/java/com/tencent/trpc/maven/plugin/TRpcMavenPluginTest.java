@@ -107,6 +107,26 @@ public class TRpcMavenPluginTest extends AbstractMojoTestCase {
         assertTrue(Files.exists(base.resolve("pom.xml")));
     }
 
+    /**
+     * Simulate 'mvn trpc:gen-code' on maven project at src/test/resources/TEST-5.
+     */
+    public void test5() throws Exception {
+        executeTest("TEST-5");
+        Path base = Paths.get("src", "test", "resources", "TEST-5", "target", "generated-sources",
+                "trpc", "java").toAbsolutePath();
+        Path output = base.resolve(Paths.get("com", "tencent", "test", "helloworld"));
+        assertTrue(Files.exists(output));
+        assertTrue(Files.exists(output.resolve("module1/GreeterAPI.java")));
+        assertTrue(Files.exists(output.resolve("module1/GreeterAsyncAPI.java")));
+        assertTrue(Files.exists(output.resolve("module1/GreeterSvr.java")));
+        assertTrue(Files.exists(output.resolve("module1/GreeterSvrValidator.java")));
+        assertTrue(Files.exists(output.resolve("module2/GreeterAPI.java")));
+        assertTrue(Files.exists(output.resolve("module2/GreeterAsyncAPI.java")));
+        assertTrue(Files.exists(output.resolve("module2/GreeterSvr.java")));
+        assertTrue(Files.exists(output.resolve("module2/GreeterSvrValidator.java")));
+        assertTrue(Files.exists(base.resolve("pom.xml")));
+    }
+
     private void executeTest(String root) throws Exception {
         MavenProject project = readMavenProject(new File("src/test/resources/" + root));
         MavenSession session = newMavenSession(project);

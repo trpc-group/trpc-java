@@ -122,7 +122,7 @@ public class TRpcCodeGenerator {
         try {
             Files.createDirectories(tmpPath);
             List<Path> importPaths = prepareImportPaths();
-            Path descriptorFile = generateDescriptorFile(getProtoFiles(true), importPaths);
+            Path descriptorFile = generateDescriptorFile(getProtoFiles(false), importPaths);
             Files.createDirectories(tmpOutPath);
             List<Descriptors.FileDescriptor> fdList = compileDescriptorSet(descriptorFile);
             Map<String, Object> customVariables = codeGeneratorHook.getCustomVariables(fdList);
