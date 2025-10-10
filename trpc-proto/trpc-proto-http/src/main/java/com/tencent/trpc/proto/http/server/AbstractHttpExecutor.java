@@ -73,8 +73,12 @@ public abstract class AbstractHttpExecutor {
         try {
             DefRequest rpcRequest = buildDefRequest(request, response, methodInfoAndInvoker);
             CompletableFuture<Void> completionFuture = new CompletableFuture<>();
+
             // use a thread pool for asynchronous processing
             invokeRpcRequest(methodInfoAndInvoker.getInvoker(), rpcRequest, completionFuture, responded);
+
+            // If the request carries a timeout, use this timeout to wait for the request to be processed.
+            // If not carried, use the default timeout.
             long requestTimeout = rpcRequest.getMeta().getTimeout();
             if (requestTimeout <= 0) {
                 requestTimeout = methodInfoAndInvoker.getInvoker().getConfig().getRequestTimeout();
@@ -84,7 +88,8 @@ public abstract class AbstractHttpExecutor {
                     completionFuture.get(requestTimeout, TimeUnit.MILLISECONDS);
                 } catch (TimeoutException ex) {
                     if (responded.compareAndSet(false, true)) {
-                        sendTimeoutResponse(request, response);
+                        doErrorReply(request, response, TRpcException.newFrameException(ErrorCode.TRPC_SERVER_TIMEOUT_ERR,
+                                "wait http request execute timeout"));
                     }
                 }
             } else {
@@ -120,10 +125,10 @@ public abstract class AbstractHttpExecutor {
             AtomicBoolean responded) {
 
         WorkerPool workerPool = invoker.getConfig().getWorkerPoolObj();
-        if (workerPool == null) {
-            logger.error("Worker pool is not available");
+        if (null == workerPool) {
+            logger.error("dispatch rpcRequest [{}]  error, workerPool is empty", rpcRequest);
             completionFuture.completeExceptionally(
-                    TRpcException.newFrameException(ErrorCode.TRPC_SERVER_NOSERVICE_ERR, "Worker pool not available")
+                    TRpcException.newFrameException(ErrorCode.TRPC_SERVER_NOSERVICE_ERR, "not found service, workerPool is empty")
             );
             return;
         }
@@ -180,20 +185,6 @@ public abstract class AbstractHttpExecutor {
             }
         } finally {
             completionFuture.completeExceptionally(t);
-        }
-    }
-
-    /**
-     * Send timeout response
-     */
-    private void sendTimeoutResponse(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            response.setStatus(HttpStatus.SC_GATEWAY_TIMEOUT);
-            response.getWriter().write("Request Timeout");
-            response.flushBuffer();
-            logger.warn("Request timeout: {} {}", request.getMethod(), request.getRequestURI());
-        } catch (IOException e) {
-            logger.error("Failed to send timeout response", e);
         }
     }
 
