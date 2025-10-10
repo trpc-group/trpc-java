@@ -90,7 +90,8 @@ public abstract class AbstractHttpExecutor {
                     completionFuture.get(requestTimeout, TimeUnit.MILLISECONDS);
                 } catch (TimeoutException ex) {
                     if (responded.compareAndSet(false, true)) {
-                        doErrorReply(request, response, TRpcException.newFrameException(ErrorCode.TRPC_SERVER_TIMEOUT_ERR,
+                        doErrorReply(request, response,
+                                TRpcException.newFrameException(ErrorCode.TRPC_SERVER_TIMEOUT_ERR,
                                 "wait http request execute timeout"));
                     }
                 }
@@ -130,9 +131,8 @@ public abstract class AbstractHttpExecutor {
 
         if (null == workerPool) {
             logger.error("dispatch rpcRequest [{}]  error, workerPool is empty", rpcRequest);
-            completionFuture.completeExceptionally(
-                    TRpcException.newFrameException(ErrorCode.TRPC_SERVER_NOSERVICE_ERR, "not found service, workerPool is empty")
-            );
+            completionFuture.completeExceptionally(TRpcException.newFrameException(ErrorCode.TRPC_SERVER_NOSERVICE_ERR,
+                            "not found service, workerPool is empty"));
             return;
         }
 
