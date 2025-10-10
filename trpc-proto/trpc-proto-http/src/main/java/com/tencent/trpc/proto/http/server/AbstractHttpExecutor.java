@@ -71,7 +71,9 @@ public abstract class AbstractHttpExecutor {
             RpcMethodInfoAndInvoker methodInfoAndInvoker) {
         AtomicBoolean responded = new AtomicBoolean(false);
         try {
+
             DefRequest rpcRequest = buildDefRequest(request, response, methodInfoAndInvoker);
+
             CompletableFuture<Void> completionFuture = new CompletableFuture<>();
 
             // use a thread pool for asynchronous processing
@@ -125,6 +127,7 @@ public abstract class AbstractHttpExecutor {
             AtomicBoolean responded) {
 
         WorkerPool workerPool = invoker.getConfig().getWorkerPoolObj();
+
         if (null == workerPool) {
             logger.error("dispatch rpcRequest [{}]  error, workerPool is empty", rpcRequest);
             completionFuture.completeExceptionally(
@@ -179,9 +182,8 @@ public abstract class AbstractHttpExecutor {
         try {
             if (responded.compareAndSet(false, true)) {
                 HttpServletRequest request = getOriginalRequest(rpcRequest);
-                logger.warn("Request processing failed: {}", request.getRequestURI(), t);
-                httpErrorReply(request, response,
-                        ErrorResponse.create(request, HttpStatus.SC_INTERNAL_SERVER_ERROR, t));
+                logger.warn("reply message error, channel: [{}], msg:[{}]", request.getRemoteAddr(), request, t);
+                httpErrorReply(request, response, ErrorResponse.create(request, HttpStatus.SC_SERVICE_UNAVAILABLE, t));
             }
         } finally {
             completionFuture.completeExceptionally(t);
