@@ -43,6 +43,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -58,8 +59,6 @@ public abstract class AbstractHttpExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractHttpExecutor.class);
 
-    private volatile boolean isTimeout = false;
-
     /**
      * Http codec tool
      */
@@ -68,6 +67,7 @@ public abstract class AbstractHttpExecutor {
     protected void execute(HttpServletRequest request, HttpServletResponse response,
             RpcMethodInfoAndInvoker methodInfoAndInvoker) {
 
+        AtomicBoolean isTimeout = new AtomicBoolean(false);
         try {
 
             DefRequest rpcRequest = buildDefRequest(request, response, methodInfoAndInvoker);
@@ -75,7 +75,7 @@ public abstract class AbstractHttpExecutor {
             CountDownLatch countDownLatch = new CountDownLatch(1);
 
             // use a thread pool for asynchronous processing
-            invokeRpcRequest(methodInfoAndInvoker.getInvoker(), rpcRequest, countDownLatch);
+            invokeRpcRequest(methodInfoAndInvoker.getInvoker(), rpcRequest, countDownLatch, isTimeout);
 
             // If the request carries a timeout, use this timeout to wait for the request to be processed.
             // If not carried, use the default timeout.
@@ -84,7 +84,7 @@ public abstract class AbstractHttpExecutor {
                 requestTimeout = methodInfoAndInvoker.getInvoker().getConfig().getRequestTimeout();
             }
             if (requestTimeout > 0 && !countDownLatch.await(requestTimeout, TimeUnit.MILLISECONDS)) {
-                isTimeout = true;
+                isTimeout.set(true);
                 throw TRpcException.newFrameException(ErrorCode.TRPC_SERVER_TIMEOUT_ERR,
                         "wait http request execute timeout");
             } else {
@@ -112,7 +112,8 @@ public abstract class AbstractHttpExecutor {
      *
      * @param countDownLatch latch used to wait for the request processing
      */
-    private void invokeRpcRequest(ProviderInvoker<?> invoker, DefRequest rpcRequest, CountDownLatch countDownLatch) {
+    private void invokeRpcRequest(ProviderInvoker<?> invoker, DefRequest rpcRequest, CountDownLatch countDownLatch,
+            AtomicBoolean isTimeout) {
 
         WorkerPool workerPool = invoker.getConfig().getWorkerPoolObj();
 
@@ -131,7 +132,7 @@ public abstract class AbstractHttpExecutor {
             CompletionStage<Response> future = invoker.invoke(rpcRequest);
             future.whenComplete((result, t) -> {
                 try {
-                    if (isTimeout) {
+                    if (isTimeout.get()) {
                         return;
                     }
 
