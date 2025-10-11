@@ -138,8 +138,9 @@ public abstract class AbstractHttpExecutor {
 
         workerPool.execute(() -> {
             try {
+                // Get the original http response
                 HttpServletResponse response = getOriginalResponse(rpcRequest);
-
+                // Invoke the routing implementation method to handle the request.
                 CompletionStage<Response> rpcFuture = invoker.invoke(rpcRequest);
 
                 rpcFuture.whenComplete((result, throwable) -> {
@@ -148,14 +149,18 @@ public abstract class AbstractHttpExecutor {
                             return;
                         }
 
+                        // Throw the call exception, which will be handled uniformly by the exception handling program.
                         if (throwable != null) {
                             throw throwable;
                         }
 
+                        // Throw a business logic exception, which will be handled uniformly
+                        // by the exception handling program.
                         if (result.getException() != null) {
                             throw result.getException();
                         }
 
+                        // normal response
                         if (responded.compareAndSet(false, true)) {
                             response.setStatus(HttpStatus.SC_OK);
                             httpCodec.writeHttpResponse(response, result);
