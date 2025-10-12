@@ -36,4 +36,20 @@ public class MBeanRegistryHelper {
         }
     }
 
+    /**
+     * Unregister mbean
+     *
+     * @param objectName mbean object name {@link ObjectName}
+     */
+    public static void unregisterMBean(ObjectName objectName) {
+        try {
+            MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+            if (mBeanServer.isRegistered(objectName)) {
+                mBeanServer.unregisterMBean(objectName);
+            }
+        } catch (Exception e) {
+            logger.warn("unregister mbean exception: ", e);
+        }
+    }
+
 }
