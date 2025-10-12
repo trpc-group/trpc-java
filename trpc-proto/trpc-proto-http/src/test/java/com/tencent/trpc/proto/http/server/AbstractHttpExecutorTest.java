@@ -160,7 +160,6 @@ public class AbstractHttpExecutorTest {
         PowerMockito.doThrow(new IOException("response error")).when(abstractHttpExecutor, "httpErrorReply",
                 any(HttpServletRequest.class), any(HttpServletResponse.class), any(ErrorResponse.class));
 
-        // Call real method
         when(abstractHttpExecutor, "handleError", throwable, rpcRequest, response, responded, completionFuture)
                 .thenCallRealMethod();
 
