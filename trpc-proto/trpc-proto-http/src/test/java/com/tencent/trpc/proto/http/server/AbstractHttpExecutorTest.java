@@ -168,7 +168,6 @@ public class AbstractHttpExecutorTest {
         Whitebox.invokeMethod(abstractHttpExecutor, "handleError", throwable, rpcRequest, response,
                 responded, completionFuture);
 
-        // Assert
         assertTrue("responded should be set to true", responded.get());
         assertTrue("completionFuture should be completed exceptionally", completionFuture.isCompletedExceptionally());
 
