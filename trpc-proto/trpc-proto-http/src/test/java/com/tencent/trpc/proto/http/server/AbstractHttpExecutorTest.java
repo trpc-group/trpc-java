@@ -164,7 +164,6 @@ public class AbstractHttpExecutorTest {
         when(abstractHttpExecutor, "handleError", throwable, rpcRequest, response, responded, completionFuture)
                 .thenCallRealMethod();
 
-        // Act
         Whitebox.invokeMethod(abstractHttpExecutor, "handleError", throwable, rpcRequest, response,
                 responded, completionFuture);
 
