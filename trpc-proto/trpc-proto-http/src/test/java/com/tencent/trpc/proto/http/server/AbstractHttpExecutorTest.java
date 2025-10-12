@@ -172,7 +172,6 @@ public class AbstractHttpExecutorTest {
         assertTrue("responded should be set to true", responded.get());
         assertTrue("completionFuture should be completed exceptionally", completionFuture.isCompletedExceptionally());
 
-        // Verify the original throwable is used for completing exceptionally
         try {
             completionFuture.get();
             fail("Should have thrown exception");
