@@ -31,7 +31,7 @@ public class Version {
      * VERSION: Do not modify the line number of this line. If you want to modify it, be sure to change deploy.sh at
      * the same time.
      */
-    public static final String VERSION = "v1.4.0";
+    public static final String VERSION = "v2.0.1";
     public static final String SNAPSHOT_VERSION = VERSION + VERSION_SUFFIX;
     /**
      * IS_FORMAL_VERSION: Do not modify the line number of this line. If you want to modify it, be sure to change

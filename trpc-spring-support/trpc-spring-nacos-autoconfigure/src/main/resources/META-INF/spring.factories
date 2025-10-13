@@ -1,2 +1,0 @@
-com.tencent.trpc.nacos.auto.configuration=\
-  com.tencent.trpc.nacos.auto.configuration.NacosConfigAutoConfiguration

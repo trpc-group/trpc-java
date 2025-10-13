@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -11,6 +11,7 @@
 
 package com.tencent.trpc.spring.demo.server;
 
+import com.tencent.trpc.GreeterService3API;
 import com.tencent.trpc.demo.proto.GreeterService2AsyncAPI;
 import com.tencent.trpc.demo.proto.GreeterServiceAsyncAPI;
 import com.tencent.trpc.spring.annotation.TRpcClient;
@@ -21,6 +22,7 @@ public class ProxyService {
 
     public static final String SERVICE_NAME1 = "trpc.TestApp.TestServer.Greeter1";
     public static final String SERVICE_NAME2 = "trpc.TestApp.TestServer.Greeter2";
+    public static final String SERVICE_NAME3 = "trpc.TestApp.TestServer.Greeter3";
 
     @TRpcClient(id = SERVICE_NAME1)
     private GreeterServiceAsyncAPI greeterService;
@@ -28,12 +30,19 @@ public class ProxyService {
     @TRpcClient(id = SERVICE_NAME2)
     private GreeterService2AsyncAPI greeterService2;
 
+    @TRpcClient(id = SERVICE_NAME3)
+    private GreeterService3API greeterService3;
+
     public GreeterServiceAsyncAPI getGreeterService() {
         return greeterService;
     }
 
     public GreeterService2AsyncAPI getGreeterService2() {
         return greeterService2;
+    }
+
+    public GreeterService3API getGreeterService3() {
+        return greeterService3;
     }
 
 }
