@@ -89,9 +89,9 @@
         <maven.source.version>3.0.1</maven.source.version>
         <maven.exec.version>3.0.1</maven.exec.version>
         <maven.jar.version>3.1.2</maven.jar.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.version>3.7.0</maven.compiler.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.version>3.11.0</maven.compiler.version>
         <maven.gpg.version>3.1.0</maven.gpg.version>
         <maven.ignore.testfailure>false</maven.ignore.testfailure>
         <maven.surefire.version>2.22.0</maven.surefire.version>
