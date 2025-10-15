@@ -29,8 +29,10 @@ import com.tencent.trpc.core.rpc.ProviderInvoker;
 import com.tencent.trpc.core.rpc.RpcInvocation;
 import com.tencent.trpc.core.rpc.common.RpcMethodInfo;
 import com.tencent.trpc.core.rpc.common.RpcMethodInfoAndInvoker;
+import com.tencent.trpc.core.rpc.def.DefRequest;
 import com.tencent.trpc.core.worker.spi.WorkerPool;
 import com.tencent.trpc.core.worker.spi.WorkerPool.Task;
+import com.tencent.trpc.proto.http.common.HttpCodec;
 import com.tencent.trpc.proto.http.common.HttpConstants;
 import java.util.concurrent.CompletableFuture;
 import javax.servlet.http.HttpServletRequest;
@@ -93,10 +95,15 @@ public class AbstractHttpExecutorTest {
         when(abstractHttpExecutor, "execute", request, response, methodInfoAndInvoker).thenCallRealMethod();
         doCallRealMethod().when(abstractHttpExecutor, "doErrorReply", any(), any(), any());
         doCallRealMethod().when(abstractHttpExecutor, "httpErrorReply", any(), any(), any());
+        DefRequest defRequest = new DefRequest();
+        doReturn(defRequest).when(abstractHttpExecutor, "buildDefRequest", any(), any(), any());
+        HttpCodec httpCodec = mock(HttpCodec.class);
+        Whitebox.setInternalState(abstractHttpExecutor, "httpCodec", httpCodec);
+        when(abstractHttpExecutor, "invokeRpcRequest", any(), any(), any(), any()).thenCallRealMethod();
 
         Whitebox.invokeMethod(abstractHttpExecutor, "execute", request, response, methodInfoAndInvoker);
 
-        verify(response).setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);
+        verify(response).setStatus(HttpStatus.SC_REQUEST_TIMEOUT);
     }
 
     @Test
@@ -137,10 +144,15 @@ public class AbstractHttpExecutorTest {
         when(abstractHttpExecutor, "execute", request, response, methodInfoAndInvoker).thenCallRealMethod();
         doCallRealMethod().when(abstractHttpExecutor, "doErrorReply", any(), any(), any());
         doCallRealMethod().when(abstractHttpExecutor, "httpErrorReply", any(), any(), any());
+        DefRequest defRequest = new DefRequest();
+        doReturn(defRequest).when(abstractHttpExecutor, "buildDefRequest", any(), any(), any());
+        HttpCodec httpCodec = mock(HttpCodec.class);
+        Whitebox.setInternalState(abstractHttpExecutor, "httpCodec", httpCodec);
+        when(abstractHttpExecutor, "invokeRpcRequest", any(), any(), any(), any()).thenCallRealMethod();
 
         Whitebox.invokeMethod(abstractHttpExecutor, "execute", request, response, methodInfoAndInvoker);
 
-        verify(response).setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);
+        verify(response).setStatus(HttpStatus.SC_REQUEST_TIMEOUT);
     }
 
     @Test
@@ -183,9 +195,14 @@ public class AbstractHttpExecutorTest {
         when(abstractHttpExecutor, "execute", request, response, methodInfoAndInvoker).thenCallRealMethod();
         doCallRealMethod().when(abstractHttpExecutor, "doErrorReply", any(), any(), any());
         doCallRealMethod().when(abstractHttpExecutor, "httpErrorReply", any(), any(), any());
+        DefRequest defRequest = new DefRequest();
+        doReturn(defRequest).when(abstractHttpExecutor, "buildDefRequest", any(), any(), any());
+        HttpCodec httpCodec = mock(HttpCodec.class);
+        Whitebox.setInternalState(abstractHttpExecutor, "httpCodec", httpCodec);
+        when(abstractHttpExecutor, "invokeRpcRequest", any(), any(), any(), any()).thenCallRealMethod();
 
         Whitebox.invokeMethod(abstractHttpExecutor, "execute", request, response, methodInfoAndInvoker);
 
-        verify(response).setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);
+        verify(response).setStatus(HttpStatus.SC_REQUEST_TIMEOUT);
     }
 }
