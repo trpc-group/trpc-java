@@ -35,6 +35,7 @@ import com.tencent.trpc.core.worker.spi.WorkerPool.Task;
 import com.tencent.trpc.proto.http.common.HttpCodec;
 import com.tencent.trpc.proto.http.common.HttpConstants;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpStatus;
@@ -107,102 +108,36 @@ public class AbstractHttpExecutorTest {
     }
 
     @Test
-    public void execute_shouldHandleInvokeException() throws Exception {
+    public void handleError_shouldHandleErrorCorrectly() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         AbstractHttpExecutor abstractHttpExecutor = mock(AbstractHttpExecutor.class);
-        RpcMethodInfoAndInvoker methodInfoAndInvoker = mock(RpcMethodInfoAndInvoker.class);
-        RpcMethodInfo methodInfo = mock(RpcMethodInfo.class);
-        ProviderInvoker<?> invoker = mock(ProviderInvoker.class);
-        ProviderConfig providerConfig = mock(ProviderConfig.class);
-        WorkerPool workerPool = mock(WorkerPool.class);
+        DefRequest defRequest = new DefRequest();
+        AtomicBoolean responded = new AtomicBoolean(false);
+        CompletableFuture<Void> completionFuture = new CompletableFuture<>();
+        Throwable testException = new RuntimeException("Test error");
 
-        when(methodInfoAndInvoker.getMethodInfo()).thenReturn(methodInfo);
-        doReturn(invoker).when(methodInfoAndInvoker, "getInvoker");
-        when(invoker.getConfig()).thenReturn(providerConfig);
-        when(providerConfig.getRequestTimeout()).thenReturn(5000);
-        when(providerConfig.getWorkerPoolObj()).thenReturn(workerPool);
-
-        when(request.getAttribute(HttpConstants.REQUEST_ATTRIBUTE_TRPC_SERVICE)).thenReturn("trpc.demo.server");
-        when(request.getAttribute(HttpConstants.REQUEST_ATTRIBUTE_TRPC_METHOD)).thenReturn("hello");
         when(request.getRemoteAddr()).thenReturn("127.0.0.1");
-        when(request.getRemotePort()).thenReturn(8080);
         when(request.getMethod()).thenReturn("POST");
         when(request.getRequestURI()).thenReturn("/api/test");
+        when(request.getQueryString()).thenReturn("param=value");
 
-        doAnswer(invocation -> {
-            Task task = invocation.getArgumentAt(0, Task.class);
-            task.run();
-            return null;
-        }).when(workerPool).execute(any(Task.class));
+        defRequest.getAttachments().put(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST, request);
 
-        CompletableFuture<com.tencent.trpc.core.rpc.Response> failedFuture = new CompletableFuture<>();
-        failedFuture.completeExceptionally(new RuntimeException("Service invoke failed"));
-        when(invoker.invoke(any())).thenReturn(failedFuture);
-
-        doReturn(null).when(abstractHttpExecutor, "parseRpcParams", any(), any());
-        when(abstractHttpExecutor, "execute", request, response, methodInfoAndInvoker).thenCallRealMethod();
-        doCallRealMethod().when(abstractHttpExecutor, "doErrorReply", any(), any(), any());
-        doCallRealMethod().when(abstractHttpExecutor, "httpErrorReply", any(), any(), any());
-        DefRequest defRequest = new DefRequest();
-        doReturn(defRequest).when(abstractHttpExecutor, "buildDefRequest", any(), any(), any());
         HttpCodec httpCodec = mock(HttpCodec.class);
         Whitebox.setInternalState(abstractHttpExecutor, "httpCodec", httpCodec);
-        when(abstractHttpExecutor, "invokeRpcRequest", any(), any(), any(), any()).thenCallRealMethod();
 
-        Whitebox.invokeMethod(abstractHttpExecutor, "execute", request, response, methodInfoAndInvoker);
-
-        verify(response).setStatus(HttpStatus.SC_REQUEST_TIMEOUT);
-    }
-
-    @Test
-    public void execute_shouldHandleResponseException() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        AbstractHttpExecutor abstractHttpExecutor = mock(AbstractHttpExecutor.class);
-        RpcMethodInfoAndInvoker methodInfoAndInvoker = mock(RpcMethodInfoAndInvoker.class);
-        RpcMethodInfo methodInfo = mock(RpcMethodInfo.class);
-        ProviderInvoker<?> invoker = mock(ProviderInvoker.class);
-        ProviderConfig providerConfig = mock(ProviderConfig.class);
-        WorkerPool workerPool = mock(WorkerPool.class);
-
-        when(methodInfoAndInvoker.getMethodInfo()).thenReturn(methodInfo);
-        doReturn(invoker).when(methodInfoAndInvoker, "getInvoker");
-        when(invoker.getConfig()).thenReturn(providerConfig);
-        when(providerConfig.getRequestTimeout()).thenReturn(5000);
-        when(providerConfig.getWorkerPoolObj()).thenReturn(workerPool);
-
-        when(request.getAttribute(HttpConstants.REQUEST_ATTRIBUTE_TRPC_SERVICE)).thenReturn("trpc.demo.server");
-        when(request.getAttribute(HttpConstants.REQUEST_ATTRIBUTE_TRPC_METHOD)).thenReturn("hello");
-        when(request.getRemoteAddr()).thenReturn("127.0.0.1");
-        when(request.getRemotePort()).thenReturn(8080);
-        when(request.getMethod()).thenReturn("POST");
-        when(request.getRequestURI()).thenReturn("/api/test");
-
-        doAnswer(invocation -> {
-            Task task = invocation.getArgumentAt(0, Task.class);
-            task.run();
-            return null;
-        }).when(workerPool).execute(any(Task.class));
-
-        com.tencent.trpc.core.rpc.Response rpcResponse = mock(com.tencent.trpc.core.rpc.Response.class);
-        when(rpcResponse.getException()).thenReturn(
-                TRpcException.newFrameException(ErrorCode.TRPC_SERVER_VALIDATE_ERR, "Validation failed"));
-        CompletableFuture<com.tencent.trpc.core.rpc.Response> responseFuture = CompletableFuture.completedFuture(rpcResponse);
-        when(invoker.invoke(any())).thenReturn(responseFuture);
-
-        doReturn(null).when(abstractHttpExecutor, "parseRpcParams", any(), any());
-        when(abstractHttpExecutor, "execute", request, response, methodInfoAndInvoker).thenCallRealMethod();
-        doCallRealMethod().when(abstractHttpExecutor, "doErrorReply", any(), any(), any());
+        doCallRealMethod().when(abstractHttpExecutor, "handleError", any(Throwable.class), any(DefRequest.class),
+                any(HttpServletResponse.class), any(AtomicBoolean.class), any(CompletableFuture.class));
         doCallRealMethod().when(abstractHttpExecutor, "httpErrorReply", any(), any(), any());
-        DefRequest defRequest = new DefRequest();
-        doReturn(defRequest).when(abstractHttpExecutor, "buildDefRequest", any(), any(), any());
-        HttpCodec httpCodec = mock(HttpCodec.class);
-        Whitebox.setInternalState(abstractHttpExecutor, "httpCodec", httpCodec);
-        when(abstractHttpExecutor, "invokeRpcRequest", any(), any(), any(), any()).thenCallRealMethod();
+        doReturn(request).when(abstractHttpExecutor, "getOriginalRequest", any());
 
-        Whitebox.invokeMethod(abstractHttpExecutor, "execute", request, response, methodInfoAndInvoker);
+        Whitebox.invokeMethod(abstractHttpExecutor, "handleError", testException, defRequest, response,
+                responded, completionFuture);
 
-        verify(response).setStatus(HttpStatus.SC_REQUEST_TIMEOUT);
+        assertEquals(true, responded.get());
+        assertEquals(true, completionFuture.isCompletedExceptionally());
+        verify(response).setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);
+        verify(httpCodec).writeHttpResponse(any(HttpServletResponse.class), any());
     }
 }
