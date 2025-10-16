@@ -71,6 +71,65 @@ public class AbstractHttpExecutorTest {
     }
 
     @Test
+    public void execute_shouldCompleteSuccessfully() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getAttribute(HttpConstants.REQUEST_ATTRIBUTE_TRPC_SERVICE)).thenReturn("trpc.demo.server");
+        when(request.getAttribute(HttpConstants.REQUEST_ATTRIBUTE_TRPC_METHOD)).thenReturn("hello");
+        when(request.getRemoteAddr()).thenReturn("127.0.0.1");
+        when(request.getRemotePort()).thenReturn(8080);
+
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        RpcMethodInfo methodInfo = mock(RpcMethodInfo.class);
+        ProviderInvoker<?> invoker = mock(ProviderInvoker.class);
+
+        // 创建一个成功的响应
+        com.tencent.trpc.core.rpc.def.DefResponse successResponse =
+                new com.tencent.trpc.core.rpc.def.DefResponse();
+        successResponse.setValue("success");
+        CompletableFuture<Response> successFuture = CompletableFuture.completedFuture(successResponse);
+        when(invoker.invoke(any())).thenReturn(successFuture);
+
+        ProviderConfig providerConfig = mock(ProviderConfig.class);
+        when(providerConfig.getRequestTimeout()).thenReturn(0); // 不设置超时，走completionFuture.get()分支
+        WorkerPool workerPool = mock(WorkerPool.class);
+        doAnswer(invocation -> {
+            Object arg = invocation.getArguments()[0];
+            if (arg instanceof Runnable) {
+                ((Runnable) arg).run();
+            } else if (arg instanceof Task) {
+                ((Task) arg).run();
+            }
+            return null;
+        }).when(workerPool).execute(any());
+        when(providerConfig.getWorkerPoolObj()).thenReturn(workerPool);
+        when(invoker.getConfig()).thenReturn(providerConfig);
+
+        RpcMethodInfoAndInvoker methodInfoAndInvoker = mock(RpcMethodInfoAndInvoker.class);
+        when(methodInfoAndInvoker.getMethodInfo()).thenReturn(methodInfo);
+        doReturn(invoker).when(methodInfoAndInvoker, "getInvoker");
+
+        AbstractHttpExecutor abstractHttpExecutor = mock(AbstractHttpExecutor.class);
+        DefRequest defRequest = new DefRequest();
+        defRequest.getAttachments().put(HttpConstants.TRPC_ATTACH_SERVLET_RESPONSE, response);
+        defRequest.getAttachments().put(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST, request);
+        doReturn(defRequest).when(abstractHttpExecutor, "buildDefRequest", any(), any(), any());
+
+        HttpCodec httpCodec = mock(HttpCodec.class);
+        Whitebox.setInternalState(abstractHttpExecutor, "httpCodec", httpCodec);
+        doReturn(response).when(abstractHttpExecutor, "getOriginalResponse", any());
+        doCallRealMethod().when(abstractHttpExecutor, "execute", request, response, methodInfoAndInvoker);
+        doCallRealMethod().when(abstractHttpExecutor, "invokeRpcRequest", any(), any(), any(), any());
+
+        // 执行测试
+        Whitebox.invokeMethod(abstractHttpExecutor, "execute", request, response, methodInfoAndInvoker);
+
+        // 验证正常响应
+        verify(response).setStatus(HttpStatus.SC_OK);
+        verify(httpCodec).writeHttpResponse(response, successResponse);
+        verify(response).flushBuffer();
+    }
+
+    @Test
     public void execute_shouldHandleTimeoutException() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getAttribute(HttpConstants.REQUEST_ATTRIBUTE_TRPC_SERVICE)).thenReturn("trpc.demo.server");
