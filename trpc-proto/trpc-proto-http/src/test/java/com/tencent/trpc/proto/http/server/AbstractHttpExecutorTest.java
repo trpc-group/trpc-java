@@ -27,6 +27,7 @@ import com.tencent.trpc.core.exception.ErrorCode;
 import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.core.rpc.ProviderInvoker;
 import com.tencent.trpc.core.rpc.RpcInvocation;
+import com.tencent.trpc.core.rpc.Response;
 import com.tencent.trpc.core.rpc.common.RpcMethodInfo;
 import com.tencent.trpc.core.rpc.common.RpcMethodInfoAndInvoker;
 import com.tencent.trpc.core.rpc.def.DefRequest;
@@ -134,6 +135,103 @@ public class AbstractHttpExecutorTest {
 
         Whitebox.invokeMethod(abstractHttpExecutor, "handleError", testException, defRequest, response,
                 responded, completionFuture);
+
+        assertEquals(true, responded.get());
+        assertEquals(true, completionFuture.isCompletedExceptionally());
+        verify(response).setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);
+        verify(httpCodec).writeHttpResponse(any(HttpServletResponse.class), any());
+    }
+
+    @Test
+    public void invokeRpcRequest_shouldHandleThrowable() throws Exception {
+        AbstractHttpExecutor abstractHttpExecutor = mock(AbstractHttpExecutor.class);
+        ProviderInvoker<?> invoker = mock(ProviderInvoker.class);
+        ProviderConfig providerConfig = mock(ProviderConfig.class);
+        WorkerPool workerPool = mock(WorkerPool.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        DefRequest defRequest = new DefRequest();
+        AtomicBoolean responded = new AtomicBoolean(false);
+        CompletableFuture<Void> completionFuture = new CompletableFuture<>();
+        HttpCodec httpCodec = mock(HttpCodec.class);
+        Whitebox.setInternalState(abstractHttpExecutor, "httpCodec", httpCodec);
+
+        defRequest.getAttachments().put(HttpConstants.TRPC_ATTACH_SERVLET_RESPONSE, response);
+        defRequest.getAttachments().put(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST, request);
+
+        when(invoker.getConfig()).thenReturn(providerConfig);
+        when(providerConfig.getWorkerPoolObj()).thenReturn(workerPool);
+
+        doAnswer(invocation -> {
+            Object arg = invocation.getArguments()[0];
+            if (arg instanceof Runnable) {
+                ((Runnable) arg).run();
+            } else if (arg instanceof Task) {
+                ((Task) arg).run();
+            }
+            return null;
+        }).when(workerPool).execute(any());
+
+        CompletableFuture<Response> failedFuture = new CompletableFuture<>();
+        failedFuture.completeExceptionally(new RuntimeException("boom"));
+        when(invoker.invoke(any())).thenReturn(failedFuture);
+        doReturn(response).when(abstractHttpExecutor, "getOriginalResponse", any());
+        doReturn(request).when(abstractHttpExecutor, "getOriginalRequest", any());
+        doCallRealMethod().when(abstractHttpExecutor, "invokeRpcRequest", any(), any(), any(), any());
+        doCallRealMethod().when(abstractHttpExecutor, "httpErrorReply", any(), any(), any());
+        doCallRealMethod().when(abstractHttpExecutor, "handleError", any(Throwable.class), any(DefRequest.class),
+                any(HttpServletResponse.class), any(AtomicBoolean.class), any(CompletableFuture.class));
+
+        Whitebox.invokeMethod(abstractHttpExecutor, "invokeRpcRequest", invoker, defRequest, completionFuture,
+                responded);
+
+        assertEquals(true, responded.get());
+        assertEquals(true, completionFuture.isCompletedExceptionally());
+        verify(response).setStatus(org.apache.http.HttpStatus.SC_SERVICE_UNAVAILABLE);
+        verify(httpCodec).writeHttpResponse(any(HttpServletResponse.class), any());
+    }
+
+    @Test
+    public void invokeRpcRequest_shouldHandleInvokeThrowsExceptionDirectly() throws Exception {
+        AbstractHttpExecutor abstractHttpExecutor = mock(AbstractHttpExecutor.class);
+        ProviderInvoker<?> invoker = mock(ProviderInvoker.class);
+        ProviderConfig providerConfig = mock(ProviderConfig.class);
+        WorkerPool workerPool = mock(WorkerPool.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        DefRequest defRequest = new DefRequest();
+        AtomicBoolean responded = new AtomicBoolean(false);
+        CompletableFuture<Void> completionFuture = new CompletableFuture<>();
+        HttpCodec httpCodec = mock(HttpCodec.class);
+        Whitebox.setInternalState(abstractHttpExecutor, "httpCodec", httpCodec);
+
+        defRequest.getAttachments().put(HttpConstants.TRPC_ATTACH_SERVLET_RESPONSE, response);
+        defRequest.getAttachments().put(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST, request);
+
+        when(invoker.getConfig()).thenReturn(providerConfig);
+        when(providerConfig.getWorkerPoolObj()).thenReturn(workerPool);
+
+        doAnswer(invocation -> {
+            Object arg = invocation.getArguments()[0];
+            if (arg instanceof Runnable) {
+                ((Runnable) arg).run();
+            } else if (arg instanceof Task) {
+                ((Task) arg).run();
+            }
+            return null;
+        }).when(workerPool).execute(any());
+
+        when(invoker.invoke(any())).thenThrow(new RuntimeException("boom-direct"));
+
+        doReturn(response).when(abstractHttpExecutor, "getOriginalResponse", any());
+        doReturn(request).when(abstractHttpExecutor, "getOriginalRequest", any());
+        doCallRealMethod().when(abstractHttpExecutor, "invokeRpcRequest", any(), any(), any(), any());
+        doCallRealMethod().when(abstractHttpExecutor, "httpErrorReply", any(), any(), any());
+        doCallRealMethod().when(abstractHttpExecutor, "handleError", any(Throwable.class), any(DefRequest.class),
+                any(HttpServletResponse.class), any(AtomicBoolean.class), any(CompletableFuture.class));
+
+        Whitebox.invokeMethod(abstractHttpExecutor, "invokeRpcRequest", invoker, defRequest, completionFuture,
+                responded);
 
         assertEquals(true, responded.get());
         assertEquals(true, completionFuture.isCompletedExceptionally());
