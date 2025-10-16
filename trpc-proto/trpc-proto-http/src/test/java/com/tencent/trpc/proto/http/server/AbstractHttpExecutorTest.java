@@ -113,73 +113,61 @@ public class AbstractHttpExecutorTest {
         AbstractHttpExecutor executor = mock(AbstractHttpExecutor.class);
         doReturn(null).when(executor, "parseRpcParams", request, methodInfo);
         when(executor, "buildRpcInvocation", request, methodInfo).thenCallRealMethod();
-        
         RpcInvocation invocation = Whitebox.invokeMethod(executor, "buildRpcInvocation", request, methodInfo);
+        
         assertEquals("/trpc.demo.server/hello", invocation.getFunc());
     }
 
     @Test
     public void testExecuteSuccess() throws Exception {
-        HttpServletRequest request = mockRequest();
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        RpcMethodInfo methodInfo = mock(RpcMethodInfo.class);
         ProviderInvoker<?> invoker = mock(ProviderInvoker.class);
-
         DefResponse successResponse = new DefResponse();
         successResponse.setValue("success");
         CompletableFuture<Response> successFuture = CompletableFuture.completedFuture(successResponse);
         when(invoker.invoke(any())).thenReturn(successFuture);
-
         ProviderConfig config = mockProviderConfig(0);
         when(invoker.getConfig()).thenReturn(config);
-
+        RpcMethodInfo methodInfo = mock(RpcMethodInfo.class);
         RpcMethodInfoAndInvoker methodInfoAndInvoker = mock(RpcMethodInfoAndInvoker.class);
         when(methodInfoAndInvoker.getMethodInfo()).thenReturn(methodInfo);
         doReturn(invoker).when(methodInfoAndInvoker, "getInvoker");
-
-        AbstractHttpExecutor executor = mockExecutorWithCodec();
+        HttpServletRequest request = mockRequest();
+        HttpServletResponse response = mock(HttpServletResponse.class);
         DefRequest defRequest = mockDefRequest(request, response);
+        AbstractHttpExecutor executor = mockExecutorWithCodec();
         doReturn(defRequest).when(executor, "buildDefRequest", any(), any(), any());
         doReturn(response).when(executor, "getOriginalResponse", any());
         doCallRealMethod().when(executor, "execute", request, response, methodInfoAndInvoker);
         doCallRealMethod().when(executor, "invokeRpcRequest", any(), any(), any(), any());
-
         Whitebox.invokeMethod(executor, "execute", request, response, methodInfoAndInvoker);
-
-        HttpCodec httpCodec = Whitebox.getInternalState(executor, "httpCodec");
         verify(response).setStatus(HttpStatus.SC_OK);
+        HttpCodec httpCodec = Whitebox.getInternalState(executor, "httpCodec");
         verify(httpCodec).writeHttpResponse(response, successResponse);
         verify(response).flushBuffer();
     }
 
     @Test
     public void testExecuteTimeout() throws Exception {
-        HttpServletRequest request = mockRequest();
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        
-        RpcMethodInfo methodInfo = mock(RpcMethodInfo.class);
         ProviderInvoker<?> invoker = mock(ProviderInvoker.class);
         CompletableFuture<Response> neverCompleteFuture = new CompletableFuture<>();
         when(invoker.invoke(any())).thenReturn(neverCompleteFuture);
-        
         ProviderConfig config = mockProviderConfig(100);
         when(invoker.getConfig()).thenReturn(config);
-
+        RpcMethodInfo methodInfo = mock(RpcMethodInfo.class);
         RpcMethodInfoAndInvoker methodInfoAndInvoker = mock(RpcMethodInfoAndInvoker.class);
         when(methodInfoAndInvoker.getMethodInfo()).thenReturn(methodInfo);
         doReturn(invoker).when(methodInfoAndInvoker, "getInvoker");
-
+        HttpServletRequest request = mockRequest();
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        DefRequest defRequest = new DefRequest();
         AbstractHttpExecutor executor = mockExecutorWithCodec();
         doReturn(null).when(executor, "parseRpcParams", any(), any());
-        DefRequest defRequest = new DefRequest();
         doReturn(defRequest).when(executor, "buildDefRequest", any(), any(), any());
         when(executor, "execute", request, response, methodInfoAndInvoker).thenCallRealMethod();
         doCallRealMethod().when(executor, "doErrorReply", any(), any(), any());
         doCallRealMethod().when(executor, "httpErrorReply", any(), any(), any());
         when(executor, "invokeRpcRequest", any(), any(), any(), any()).thenCallRealMethod();
-
         Whitebox.invokeMethod(executor, "execute", request, response, methodInfoAndInvoker);
-
         verify(response).setStatus(HttpStatus.SC_REQUEST_TIMEOUT);
     }
 
@@ -190,34 +178,30 @@ public class AbstractHttpExecutorTest {
         when(request.getMethod()).thenReturn("POST");
         when(request.getRequestURI()).thenReturn("/api/test");
         when(request.getQueryString()).thenReturn("param=value");
-
-        HttpServletResponse response = mock(HttpServletResponse.class);
         DefRequest defRequest = new DefRequest();
         defRequest.getAttachments().put(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST, request);
-
+        HttpServletResponse response = mock(HttpServletResponse.class);
         AbstractHttpExecutor executor = mockExecutorWithCodec();
         doCallRealMethod().when(executor, "handleError", any(Throwable.class), any(DefRequest.class),
                 any(HttpServletResponse.class), any(AtomicBoolean.class), any(CompletableFuture.class));
         doCallRealMethod().when(executor, "httpErrorReply", any(), any(), any());
         doReturn(request).when(executor, "getOriginalRequest", any());
-
         AtomicBoolean responded = new AtomicBoolean(false);
         CompletableFuture<Void> completionFuture = new CompletableFuture<>();
         Throwable testException = new RuntimeException("Test error");
         Whitebox.invokeMethod(executor, "handleError", testException, defRequest, response,
                 responded, completionFuture);
-
-        HttpCodec httpCodec = Whitebox.getInternalState(executor, "httpCodec");
         assertTrue(responded.get());
         assertTrue(completionFuture.isCompletedExceptionally());
         verify(response).setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);
+        HttpCodec httpCodec = Whitebox.getInternalState(executor, "httpCodec");
         verify(httpCodec).writeHttpResponse(any(HttpServletResponse.class), any());
     }
 
     @Test
     public void testInvokeRpcWithException() throws Exception {
-        HttpServletResponse response = mock(HttpServletResponse.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
         DefRequest defRequest = mockDefRequest(request, response);
 
         ProviderConfig config = mockProviderConfig(0);
@@ -238,18 +222,18 @@ public class AbstractHttpExecutorTest {
         AtomicBoolean responded = new AtomicBoolean(false);
         CompletableFuture<Void> completionFuture = new CompletableFuture<>();
         Whitebox.invokeMethod(executor, "invokeRpcRequest", invoker, defRequest, completionFuture, responded);
-
-        HttpCodec httpCodec = Whitebox.getInternalState(executor, "httpCodec");
+        
         assertTrue(responded.get());
         assertTrue(completionFuture.isCompletedExceptionally());
         verify(response).setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);
+        HttpCodec httpCodec = Whitebox.getInternalState(executor, "httpCodec");
         verify(httpCodec).writeHttpResponse(any(HttpServletResponse.class), any());
     }
 
     @Test
     public void testInvokeRpcThrowsDirectly() throws Exception {
-        HttpServletResponse response = mock(HttpServletResponse.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
         DefRequest defRequest = mockDefRequest(request, response);
 
         ProviderConfig config = mockProviderConfig(0);
@@ -268,11 +252,11 @@ public class AbstractHttpExecutorTest {
         AtomicBoolean responded = new AtomicBoolean(false);
         CompletableFuture<Void> completionFuture = new CompletableFuture<>();
         Whitebox.invokeMethod(executor, "invokeRpcRequest", invoker, defRequest, completionFuture, responded);
-
-        HttpCodec httpCodec = Whitebox.getInternalState(executor, "httpCodec");
+        
         assertTrue(responded.get());
         assertTrue(completionFuture.isCompletedExceptionally());
         verify(response).setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);
+        HttpCodec httpCodec = Whitebox.getInternalState(executor, "httpCodec");
         verify(httpCodec).writeHttpResponse(any(HttpServletResponse.class), any());
     }
 }
