@@ -159,7 +159,7 @@ public class AbstractHttpExecutorTest {
         doReturn(invoker).when(methodInfoAndInvoker, "getInvoker");
         HttpServletRequest request = mockRequest();
         HttpServletResponse response = mock(HttpServletResponse.class);
-        DefRequest defRequest = new DefRequest();
+        DefRequest defRequest = mockDefRequest(request, response);
         AbstractHttpExecutor executor = mockExecutorWithCodec();
         doReturn(null).when(executor, "parseRpcParams", any(), any());
         doReturn(defRequest).when(executor, "buildDefRequest", any(), any(), any());
@@ -178,9 +178,8 @@ public class AbstractHttpExecutorTest {
         when(request.getMethod()).thenReturn("POST");
         when(request.getRequestURI()).thenReturn("/api/test");
         when(request.getQueryString()).thenReturn("param=value");
-        DefRequest defRequest = new DefRequest();
-        defRequest.getAttachments().put(HttpConstants.TRPC_ATTACH_SERVLET_REQUEST, request);
         HttpServletResponse response = mock(HttpServletResponse.class);
+        DefRequest defRequest = mockDefRequest(request, response);
         AbstractHttpExecutor executor = mockExecutorWithCodec();
         doCallRealMethod().when(executor, "handleError", any(Throwable.class), any(DefRequest.class),
                 any(HttpServletResponse.class), any(AtomicBoolean.class), any(CompletableFuture.class));
@@ -200,9 +199,7 @@ public class AbstractHttpExecutorTest {
 
     @Test
     public void testInvokeRpcWithException() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        DefRequest defRequest = mockDefRequest(request, response);
+
 
         ProviderConfig config = mockProviderConfig(0);
         ProviderInvoker<?> invoker = mock(ProviderInvoker.class);
@@ -212,6 +209,8 @@ public class AbstractHttpExecutorTest {
         when(invoker.invoke(any())).thenReturn(failedFuture);
 
         AbstractHttpExecutor executor = mockExecutorWithCodec();
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
         doReturn(response).when(executor, "getOriginalResponse", any());
         doReturn(request).when(executor, "getOriginalRequest", any());
         doCallRealMethod().when(executor, "invokeRpcRequest", any(), any(), any(), any());
@@ -221,8 +220,9 @@ public class AbstractHttpExecutorTest {
 
         AtomicBoolean responded = new AtomicBoolean(false);
         CompletableFuture<Void> completionFuture = new CompletableFuture<>();
+
+        DefRequest defRequest = mockDefRequest(request, response);
         Whitebox.invokeMethod(executor, "invokeRpcRequest", invoker, defRequest, completionFuture, responded);
-        
         assertTrue(responded.get());
         assertTrue(completionFuture.isCompletedExceptionally());
         verify(response).setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);
