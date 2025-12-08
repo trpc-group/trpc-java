@@ -110,8 +110,9 @@ public abstract class AbstractRegistryCenter implements RegistryCenter, PluginCo
     @Override
     public void register(RegisterInfo registerInfo) {
         Objects.requireNonNull(registerInfo, "registerInfo can not be null");
-        logger.debug("[register] registerInfo: {}", registerInfo);
-
+        if (logger.isDebugEnabled()) {
+            logger.debug("[register] registerInfo: {}", registerInfo);
+        }
         registeredRegisterInfos.add(registerInfo);
     }
 
@@ -123,8 +124,9 @@ public abstract class AbstractRegistryCenter implements RegistryCenter, PluginCo
     @Override
     public void unregister(RegisterInfo registerInfo) {
         Objects.requireNonNull(registerInfo, "registerInfo can not be null");
-        logger.debug("[unregister] registerInfo: {}", registerInfo);
-
+        if (logger.isDebugEnabled()) {
+            logger.debug("[unregister] registerInfo: {}", registerInfo);
+        }
         registeredRegisterInfos.remove(registerInfo);
     }
 
@@ -139,7 +141,9 @@ public abstract class AbstractRegistryCenter implements RegistryCenter, PluginCo
     public void subscribe(RegisterInfo registerInfo, NotifyListener notifyListener) {
         Objects.requireNonNull(registerInfo, "registerInfo can not be null");
         Objects.requireNonNull(notifyListener, "notifyListener can not be null");
-        logger.debug("[subscribe] registerInfo: {}, notifyListener: {}", registerInfo, notifyListener);
+        if (logger.isDebugEnabled()) {
+            logger.debug("[subscribe] registerInfo: {}, notifyListener: {}", registerInfo, notifyListener);
+        }
 
         synchronized (this) {
             RegistryCenterListenerSet registryCenterListenerSet = subscribedRegisterInfos
@@ -160,7 +164,9 @@ public abstract class AbstractRegistryCenter implements RegistryCenter, PluginCo
     public void unsubscribe(RegisterInfo registerInfo, NotifyListener notifyListener) {
         Objects.requireNonNull(registerInfo, "registerInfo can not be null");
         Objects.requireNonNull(notifyListener, "notifyListener can not be null");
-        logger.debug("[unsubscribe] registerInfo: {}, notifyListener: {}", registerInfo, notifyListener);
+        if (logger.isDebugEnabled()) {
+            logger.debug("[unsubscribe] registerInfo: {}, notifyListener: {}", registerInfo, notifyListener);
+        }
 
         synchronized (this) {
             RegistryCenterListenerSet registryCenterListenerSet = subscribedRegisterInfos.get(registerInfo);
@@ -209,7 +215,9 @@ public abstract class AbstractRegistryCenter implements RegistryCenter, PluginCo
      */
     @Override
     public void destroy() {
-        logger.debug("[Destroy] registry center: {}", config);
+        if (logger.isDebugEnabled()) {
+            logger.debug("[Destroy] registry center: {}", config);
+        }
         destroyRegistered();
         destroySubscribed();
         AbstractRegistryFactory.removeDestroyedRegistry(this);
@@ -252,7 +260,9 @@ public abstract class AbstractRegistryCenter implements RegistryCenter, PluginCo
 
         recoverRegistered.forEach(registerInfo -> {
             try {
-                logger.debug("[Recover] Register registerInfo: {}", registerInfo);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("[Recover] Register registerInfo: {}", registerInfo);
+                }
                 register(registerInfo);
             } catch (Exception e) {
                 logger.warn("[Recover] Failed to register registerInfo: {}, cause: ", registerInfo, e);
@@ -272,8 +282,10 @@ public abstract class AbstractRegistryCenter implements RegistryCenter, PluginCo
         recoverSubscribed.forEach((registerInfo, registryCenterListenerSet) ->
                 registryCenterListenerSet.getNotifyListeners().forEach(notifyListener -> {
                     try {
-                        logger.debug("[Recover] Subscribe registerInfo: {}, listener: {}",
-                                registerInfo, notifyListener);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("[Recover] Subscribe registerInfo: {}, listener: {}",
+                                    registerInfo, notifyListener);
+                        }
                         subscribe(registerInfo, notifyListener);
                     } catch (Exception e) {
                         logger.warn("[Recover] Failed to subscribe registerInfo: {}, cause: ", registerInfo, e);
@@ -306,7 +318,9 @@ public abstract class AbstractRegistryCenter implements RegistryCenter, PluginCo
         }
         destroyRegistered.forEach(registerInfo -> {
             try {
-                logger.debug("[Destroy] Unregister registerInfo: {}", registerInfo);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("[Destroy] Unregister registerInfo: {}", registerInfo);
+                }
                 unregister(registerInfo);
             } catch (Exception e) {
                 logger.warn("[Destroy] Failed to unregister registerInfo: {}, cause: ", registerInfo, e);
@@ -325,8 +339,10 @@ public abstract class AbstractRegistryCenter implements RegistryCenter, PluginCo
         destroySubscribed.forEach((registerInfo, registryCenterListenerSet) ->
                 registryCenterListenerSet.getNotifyListeners().forEach(notifyListener -> {
                     try {
-                        logger.debug("[Destroy] Unsubscribe registerInfo: {}, listener: {}",
-                                registerInfo, notifyListener);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("[Destroy] Unsubscribe registerInfo: {}, listener: {}",
+                                    registerInfo, notifyListener);
+                        }
                         unsubscribe(registerInfo, notifyListener);
                     } catch (Exception e) {
                         logger.warn("[Destroy] Failed to unsubscribe registerInfo: {}, cause: ", registerInfo, e);

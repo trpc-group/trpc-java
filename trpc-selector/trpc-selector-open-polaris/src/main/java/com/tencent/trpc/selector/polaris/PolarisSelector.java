@@ -145,8 +145,10 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
             PolarisFutureUtil.toCompletableFuture(polarisAPI.asyncGetInstances(req),
                             selectorConfig.getWorkerPool().toExecutor())
                     .thenApply(res -> {
-                        logger.debug("[selector] warmup polaris asyncSelectAll return success:{}",
-                                res);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("[selector] warmup polaris asyncSelectAll return success:{}",
+                                    res);
+                        }
                         if (res == null || res.getInstances() == null
                                 || res.getInstances().length == 0) {
                             return Collections.emptyList();
@@ -181,7 +183,9 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
             ConfigurationLoader loader = ConfigurationManager.getConfigurationLoader(configCenter);
             return Optional.ofNullable(loader.getValue(key, ConfigManager.getInstance().getServerConfig().getApp()));
         });
-        logger.debug("[asyncSelectOne] GetOneInstanceRequest:{}", req);
+        if (logger.isDebugEnabled()) {
+            logger.debug("[asyncSelectOne] GetOneInstanceRequest:{}", req);
+        }
 
         try {
             MetadataContext metadataContext = buildCalleeMetadataManager(request);
@@ -193,8 +197,10 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
                     () -> polarisAPI.getOneInstance(req), executor);
             return future.thenCompose(res -> {
                 if (res != null && res.getInstances() != null && res.getInstances().length > 0) {
-                    logger.debug("[selector] selector asyncSelectOne ServiceId:{} return success:{}",
-                            serviceId, res.getInstances()[0]);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("[selector] selector asyncSelectOne ServiceId:{} return success:{}",
+                                serviceId, res.getInstances()[0]);
+                    }
                     return CompletableFuture.completedFuture(
                             PolarisTrans.toServiceInstance(res, res.getInstances()[0]));
                 }
@@ -214,12 +220,16 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
     public CompletionStage<List<ServiceInstance>> asyncSelectAll(ServiceId serviceId,
             Request request) {
         GetInstancesRequest req = createSelectAllReq(serviceId, request, false);
-        logger.debug("[asyncSelectAll] GetInstancesRequest:{}", req);
+        if (logger.isDebugEnabled()) {
+            logger.debug("[asyncSelectAll] GetInstancesRequest:{}", req);
+        }
         try {
             return PolarisFutureUtil.toCompletableFuture(polarisAPI.asyncGetInstances(req),
                             selectorConfig.getWorkerPool().toExecutor())
                     .thenApply(res -> {
-                        logger.debug("[selector] polaris asyncSelectAll return success:{}", res);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("[selector] polaris asyncSelectAll return success:{}", res);
+                        }
                         if (res == null || res.getInstances() == null
                                 || res.getInstances().length == 0) {
                             return Collections.emptyList();
@@ -249,7 +259,9 @@ public class PolarisSelector implements Selector, PluginConfigAware, Initializin
      */
     private CompletableFuture<ServiceInstance> selectOneFallback(ServiceId serviceId,
             Request request) {
-        logger.debug("[selector] selectOneFallback call for ServiceId:{}", serviceId);
+        if (logger.isDebugEnabled()) {
+            logger.debug("[selector] selectOneFallback call for ServiceId:{}", serviceId);
+        }
         GetInstancesRequest req = createSelectAllReq(serviceId, request, true);
         try {
             return PolarisFutureUtil.toCompletableFuture(polarisAPI.asyncGetInstances(req),

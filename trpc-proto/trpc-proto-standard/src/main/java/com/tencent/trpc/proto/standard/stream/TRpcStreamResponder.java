@@ -59,7 +59,9 @@ public class TRpcStreamResponder extends BaseTRpcStreamRequesterResponder {
             DefMethodInfoRegister methodInfoRegister) {
         super(protocolConfig, connection);
         this.methodInfoRegister = Objects.requireNonNull(methodInfoRegister, "methodInfoRegister is null");
-        logger.debug("created new rpcResponder for {}", protocolConfig);
+        if (logger.isDebugEnabled()) {
+            logger.debug("created new rpcResponder for {}", protocolConfig);
+        }
     }
 
     @Override

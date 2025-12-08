@@ -71,7 +71,10 @@ public class RpcClusterClientManager {
                 .ifPresent(proxyMap -> proxyMap.forEach((k, v) -> {
                     try {
                         v.close();
-                        logger.debug("Shutdown client:{} backendConfig:{} success", k, backendConfig.toSimpleString());
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Shutdown client:{} backendConfig:{} success", k,
+                                    backendConfig.toSimpleString());
+                        }
                     } catch (Exception ex) {
                         logger.error("Shutdown client:{} backendConfig:{},exception", k, backendConfig.toSimpleString(),
                                 ex);
@@ -107,8 +110,10 @@ public class RpcClusterClientManager {
     public static void scanUnusedClient() {
         Map<BackendConfig, List<RpcClient>> unusedClientMap = Maps.newHashMap();
         CLUSTER_MAP.forEach((bConfig, clusterMap) -> {
-            logger.debug("RpcClusterClient scheduler report clusterName={}, naming={}, num of client is {}",
-                    bConfig.getName(), bConfig.getNamingOptions().getServiceNaming(), clusterMap.keySet().size());
+            if (logger.isDebugEnabled()) {
+                logger.debug("RpcClusterClient scheduler report clusterName={}, naming={}, num of client is {}",
+                        bConfig.getName(), bConfig.getNamingOptions().getServiceNaming(), clusterMap.keySet().size());
+            }
             clusterMap.forEach((clientKey, clientValue) -> {
                 try {
                     if (isIdleTimeout(bConfig, clientValue)) {

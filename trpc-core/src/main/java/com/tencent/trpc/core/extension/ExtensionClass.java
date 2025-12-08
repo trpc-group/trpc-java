@@ -90,8 +90,10 @@ public class ExtensionClass<T> {
             T t = clazz.newInstance();
             injectExtension(t, pluginConfig);
             initExtension(t);
-            logger.debug("Create plugin instance (name={}, type={}), config={}) success", name,
-                    extensionType, ExtensionLoader.getPluginConfigMap(extensionType));
+            if (logger.isDebugEnabled()) {
+                logger.debug("Create plugin instance (name={}, type={}), config={}) success", name,
+                        extensionType, ExtensionLoader.getPluginConfigMap(extensionType));
+            }
             return t;
         } catch (Exception e) {
             throw new TRpcExtensionException(

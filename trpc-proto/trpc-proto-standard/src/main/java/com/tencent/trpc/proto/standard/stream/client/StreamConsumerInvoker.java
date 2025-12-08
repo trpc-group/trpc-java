@@ -144,7 +144,9 @@ public class StreamConsumerInvoker<T> implements ConsumerInvoker<T> {
         AtomicInteger unFinished = new AtomicInteger(STREAM_CLOSE_COUNT_BOTH_DIRECTION);
         Consumer<SignalType> onFinally = s -> {
             if (unFinished.decrementAndGet() == 0) {
-                logger.debug("close stream invoker connection: {}", connection);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("close stream invoker connection: {}", connection);
+                }
                 connection.dispose();
             }
         };

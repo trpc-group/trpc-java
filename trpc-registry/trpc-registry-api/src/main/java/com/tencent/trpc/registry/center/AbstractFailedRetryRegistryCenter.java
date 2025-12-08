@@ -387,7 +387,9 @@ public abstract class AbstractFailedRetryRegistryCenter extends AbstractRegistry
             return;
         }
         recoverRegistered.forEach(registerInfo -> {
-            logger.debug("[Recover] Register registerInfo: {}", registerInfo);
+            if (logger.isDebugEnabled()) {
+                logger.debug("[Recover] Register registerInfo: {}", registerInfo);
+            }
             addFailedRegisteredTask(registerInfo);
         });
     }
@@ -403,8 +405,10 @@ public abstract class AbstractFailedRetryRegistryCenter extends AbstractRegistry
         }
         recoverSubscribed.forEach((registerInfo, registryCenterListenerSet) ->
                 registryCenterListenerSet.getNotifyListeners().forEach(notifyListener -> {
-                    logger.debug("[Recover] Subscribe registerInfo: {}, listener: {}",
-                            registerInfo, notifyListener);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("[Recover] Subscribe registerInfo: {}, listener: {}",
+                                registerInfo, notifyListener);
+                    }
                     addFailedSubscribedTask(registerInfo, notifyListener);
                 })
         );

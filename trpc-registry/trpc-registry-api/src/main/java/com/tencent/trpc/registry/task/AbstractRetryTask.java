@@ -107,7 +107,9 @@ public abstract class AbstractRetryTask implements TimerTask {
      */
     @Override
     public void run(Timeout timeout) throws Exception {
-        logger.debug("taskName: {}, registerInfo: {}", taskName, registerInfo);
+        if (logger.isDebugEnabled()) {
+            logger.debug("taskName: {}, registerInfo: {}", taskName, registerInfo);
+        }
         if (timeout.isCancelled() || isCancelled()) {
             return;
         }
