@@ -71,7 +71,8 @@ public class PolarisConfig {
                 "Polaris plugin config, wrong value type of element in [polaris.configs], expected: Map");
         Map<String, Object> configMap = (Map<String, Object>) config;
         String group = (String) configMap.get(POLARIS_GROUP_KEY);
-        List<String> names = (List<String>) configMap.get(POLARIS_FILENAMES_KEY);
+        List<String> names = ((Map<String, String>) configMap.get(POLARIS_FILENAMES_KEY)).values()
+            .stream().distinct().collect(Collectors.toList());
         return new Config(group, names);
     }
 
