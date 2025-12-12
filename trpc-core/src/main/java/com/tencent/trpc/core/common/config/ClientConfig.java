@@ -75,7 +75,7 @@ public class ClientConfig extends BaseProtocolConfig {
     /**
      * BackendConfig mapping.
      */
-    protected Map<String, BackendConfig> backendConfigMap = Maps.newHashMap();
+    protected Map<String, BackendConfig> backendConfigMap = Maps.newConcurrentMap();
 
     /**
      * Whether the service is registered.
