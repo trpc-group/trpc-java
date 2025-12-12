@@ -49,7 +49,6 @@ public class ProviderFilterInvoker<T> implements ProviderInvoker<T> {
                 : Stream.of(new ProviderInvokerHeadFilter(), new ProviderInvokerTailFilter());
         List<Filter> filters = Stream.concat(filterNames.stream().map(FilterManager::get), defaultFilters)
                 .sorted(Comparator.comparing(Filter::getOrder)).collect(Collectors.toList());
-        logger.debug("===Build invoke provider filter size: {}", filters.size());
 
         for (int i = filters.size() - 1; i >= 0; i--) {
             final Filter filter = filters.get(i);
@@ -68,12 +67,16 @@ public class ProviderFilterInvoker<T> implements ProviderInvoker<T> {
                 @Override
                 public CompletionStage<Response> invoke(Request request) {
                     RpcInvocation inv = request.getInvocation();
-                    logger.debug(">>>Before Invoke provider filter(service={}, rpcServiceName={}, rpcMehthodName={})",
-                            filter.getClass(), inv.getRpcServiceName(), inv.getRpcMethodName());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(">>>Before Invoke provider filter(service={}, rpcServiceName={}, rpcMehthodName={})",
+                                filter.getClass(), inv.getRpcServiceName(), inv.getRpcMethodName());
+                    }
 
                     CompletionStage<Response> f = filter.filter(before, request);
-                    logger.debug("<<<After Invoke provider filter(service={}, rpcServiceName={},rpcMehthodName={})",
-                            filter.getClass(), inv.getRpcServiceName(), inv.getRpcMethodName());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("<<<After Invoke provider filter(service={}, rpcServiceName={},rpcMehthodName={})",
+                                filter.getClass(), inv.getRpcServiceName(), inv.getRpcMethodName());
+                    }
 
                     PreconditionUtils.checkArgument(f != null,
                             "Invoke provider filter(service=%s, rpcServiceName=%s,rpcMehthodName=%s) return Null",

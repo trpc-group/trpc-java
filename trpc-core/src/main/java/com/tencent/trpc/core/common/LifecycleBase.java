@@ -306,7 +306,9 @@ public abstract class LifecycleBase implements Lifecycle {
     }
 
     private synchronized void setStateInternal(LifecycleState state, Throwable ex) {
-        logger.debug(">>>Lifecycle state transfer,{obj={}, state({} -> {})}", this, getState(), state);
+        if (logger.isDebugEnabled()) {
+            logger.debug(">>>Lifecycle state transfer,{obj={}, state({} -> {})}", this, getState(), state);
+        }
         this.state = state;
         fireLifecycleEvent(state, ex);
     }

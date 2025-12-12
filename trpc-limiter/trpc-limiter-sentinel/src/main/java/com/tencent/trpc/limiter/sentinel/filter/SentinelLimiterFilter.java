@@ -44,7 +44,9 @@ public class SentinelLimiterFilter implements Filter, InitializingExtension {
     @Override
     public void init() throws TRpcExtensionException {
         sentinelLimiter = (SentinelLimiter) ExtensionLoader.getExtensionLoader(Limiter.class).getExtension(NAME);
-        logger.debug("init sentinel limiter success, sentinelLimiter:{}", sentinelLimiter);
+        if (logger.isDebugEnabled()) {
+            logger.debug("init sentinel limiter success, sentinelLimiter:{}", sentinelLimiter);
+        }
     }
 
     @Override

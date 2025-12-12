@@ -210,8 +210,6 @@ public class DefClusterInvoker<T> extends AbstractClusterInvoker<T> {
                         Constants.CONTAINER_NAME));
                 request.getMeta().getCallInfo().setCalleeSetName(serviceInstance.getParameter(
                         Constants.SET_DIVISION));
-                logger.debug("[invoke] container:{},set:{}", serviceInstance.getParameter(
-                        Constants.CONTAINER_NAME), serviceInstance.getParameter(Constants.SET_DIVISION));
             }
         }
 

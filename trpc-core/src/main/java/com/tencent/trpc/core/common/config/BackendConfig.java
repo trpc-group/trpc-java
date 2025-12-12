@@ -334,7 +334,9 @@ public class BackendConfig extends BaseProtocolConfig {
             validateInterceptor();
             namingServiceId = toNamingServiceId();
             simpleString = "BackendConfig[name=" + name + ", naming=" + namingOptions.getServiceNaming() + "]";
-            logger.debug("ConsumerConfig initialized:{}", toString());
+            if (logger.isDebugEnabled()) {
+                logger.debug("ConsumerConfig initialized:{}", toString());
+            }
             SelectorManager.getManager().validate(namingOptions.getSelectorId());
             initRpcClusterClient();
             inited = true;

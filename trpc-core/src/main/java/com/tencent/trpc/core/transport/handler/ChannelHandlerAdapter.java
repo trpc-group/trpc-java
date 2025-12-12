@@ -30,7 +30,9 @@ public class ChannelHandlerAdapter implements ChannelHandler {
 
     @Override
     public void disconnected(com.tencent.trpc.core.transport.Channel channel) {
-        logger.debug("disconnected channel|{}", channel);
+        if (logger.isDebugEnabled()) {
+            logger.debug("disconnected channel|{}", channel);
+        }
         disconnectedCnt.incrementAndGet();
     }
 

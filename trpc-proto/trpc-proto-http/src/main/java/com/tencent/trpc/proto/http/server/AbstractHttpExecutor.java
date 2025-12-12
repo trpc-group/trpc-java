@@ -423,7 +423,6 @@ public abstract class AbstractHttpExecutor {
             // to maintain consistency.
             rpcRequest.getAttachments().put(header, value.getBytes(StandardCharsets.UTF_8));
         }
-        logger.debug("request attachment: {}", JsonUtils.toJson(rpcRequest.getAttachments()));
     }
 
     /**
