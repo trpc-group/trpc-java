@@ -6,7 +6,7 @@
 
     <groupId>com.tencent.trpc</groupId>
     <artifactId>trpc-parent</artifactId>
-    <version>2.0.3</version>
+    <version>2.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>Trpc Parent Project ${project.version}</description>
     <name>trpc</name>
