@@ -13,14 +13,17 @@ package org.slf4j;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import com.tencent.trpc.core.utils.StringUtils;
+import org.slf4j.spi.MDCAdapter;
+
 import java.util.Deque;
-import java.lang.reflect.Field;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import org.slf4j.spi.MDCAdapter;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * TrpcMDCAdapter
@@ -42,6 +45,9 @@ public class TrpcMDCAdapter implements MDCAdapter {
 
     private final ThreadLocal<Map<String, String>> copyOnInheritThreadLocal = new TransmittableThreadLocal<>();
 
+    private final ThreadLocal<ConcurrentMap<String, ConcurrentLinkedDeque<String>>> threadLocalDequeMap =
+            ThreadLocal.withInitial(ConcurrentHashMap::new);
+
     /**
      * Keeps track of the last operation performed
      */
@@ -49,15 +55,7 @@ public class TrpcMDCAdapter implements MDCAdapter {
 
     static {
         mtcMDCAdapter = new TrpcMDCAdapter();
-        try {
-            // In SLF4J 2.0, MDC.mdcAdapter is no longer directly accessible
-            // We need to use reflection to set it
-            Field field = MDC.class.getDeclaredField("mdcAdapter");
-            field.setAccessible(true);
-            field.set(null, mtcMDCAdapter);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize TrpcMDCAdapter", e);
-        }
+        MDC.setMDCAdapter(mtcMDCAdapter);
     }
 
     public static MDCAdapter init() {
@@ -188,77 +186,49 @@ public class TrpcMDCAdapter implements MDCAdapter {
         return newMap;
     }
 
-    /**
-     * Push a context value as identified with the key parameter into the current thread's context map.
-     * This is a SLF4J 2.0 new method for supporting MDC stack operations.
-     *
-     * @param key   the key
-     * @param value the value to push
-     * @throws NullPointerException in case the "key" parameter is null
-     */
     @Override
     public void pushByKey(String key, String value) {
         Objects.requireNonNull(key, "key cannot be null");
-        Map<String, String> oldMap = copyOnInheritThreadLocal.get();
-        Integer lastOp = getAndSetLastOperation();
-        if (wasLastOpReadOrNull(lastOp) || oldMap == null) {
-            Map<String, String> newMap = duplicateAndInsertNewMap(oldMap);
-            newMap.put(key, value);
-        } else {
-            oldMap.put(key, value);
-        }
+        ConcurrentMap<String, ConcurrentLinkedDeque<String>> dequeMap = threadLocalDequeMap.get();
+        ConcurrentLinkedDeque<String> deque = dequeMap.computeIfAbsent(key, k -> new ConcurrentLinkedDeque<>());
+        deque.push(value);
     }
 
-    /**
-     * Pop the context identified by key parameter from the current thread's context map.
-     * This is a SLF4J 2.0 new method for supporting MDC stack operations.
-     *
-     * @param key the key
-     * @return the value removed, or null if there was no value for the key
-     * @throws NullPointerException in case the "key" parameter is null
-     */
     @Override
     public String popByKey(String key) {
         Objects.requireNonNull(key, "key cannot be null");
-        Map<String, String> oldMap = copyOnInheritThreadLocal.get();
-        if (oldMap == null) {
+        ConcurrentMap<String, ConcurrentLinkedDeque<String>> dequeMap = threadLocalDequeMap.get();
+        ConcurrentLinkedDeque<String> deque = dequeMap.get(key);
+        if (deque == null || deque.isEmpty()) {
             return null;
         }
-        Integer lastOp = getAndSetLastOperation();
-        if (wasLastOpReadOrNull(lastOp)) {
-            Map<String, String> newMap = duplicateAndInsertNewMap(oldMap);
-            return newMap.remove(key);
-        } else {
-            return oldMap.remove(key);
+        String value = deque.pollFirst();
+        if (deque.isEmpty()) {
+            dequeMap.remove(key);
         }
+        return value;
     }
 
-    /**
-     * Clear all the entries in the deque identified by the key parameter.
-     * This is a SLF4J 2.0.7+ new method for clearing MDC stacks.
-     *
-     * @param key the key
-     * @throws NullPointerException in case the "key" parameter is null
-     */
-    @Override
-    public void clearDequeByKey(String key) {
-        Objects.requireNonNull(key, "key cannot be null");
-        remove(key);
-    }
-
-    /**
-     * Get a copy of the deque identified by the key parameter.
-     * This is a SLF4J 2.0 new method for supporting MDC stack operations.
-     * Since our implementation uses a simple Map, we return null to indicate no deque.
-     *
-     * @param key the key
-     * @return null (this implementation does not support deques)
-     */
     @Override
     public Deque<String> getCopyOfDequeByKey(String key) {
-        // This implementation uses a simple Map structure, not Deque
-        // Return null to indicate no deque exists for the key
-        return null;
+        if (key == null) {
+            return null;
+        }
+        ConcurrentMap<String, ConcurrentLinkedDeque<String>> dequeMap = threadLocalDequeMap.get();
+        ConcurrentLinkedDeque<String> deque = dequeMap.get(key);
+        if (deque == null) {
+            return null;
+        }
+        return new ArrayDeque<>(deque);
+    }
+
+    @Override
+    public void clearDequeByKey(String key) {
+        if (key == null) {
+            return;
+        }
+        ConcurrentMap<String, ConcurrentLinkedDeque<String>> dequeMap = threadLocalDequeMap.get();
+        dequeMap.remove(key);
     }
 
 }
