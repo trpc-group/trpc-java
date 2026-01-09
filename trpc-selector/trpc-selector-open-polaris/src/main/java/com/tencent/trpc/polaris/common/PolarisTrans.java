@@ -63,7 +63,9 @@ public class PolarisTrans {
             Instance polarisInstance) {
         String containerName = getContainerName(polarisInstance);
         String setName = getSetName(polarisInstance);
-        LOGGER.debug("[PolarisTrans] containerName:{},setName:{}", containerName, setName);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("[PolarisTrans] containerName:{},setName:{}", containerName, setName);
+        }
 
         ServiceInstance serviceInstance = new ServiceInstance(polarisInstance.getHost(),
                 polarisInstance.getPort(), polarisInstance.isHealthy());
@@ -161,7 +163,6 @@ public class PolarisTrans {
     public static Map<String, String> trans2PolarisMetadata(Map<String, Object> originMap) {
         Object metadataObj = originMap.get(Constants.METADATA);
         if (metadataObj == null || !(metadataObj instanceof Map)) {
-            LOGGER.debug("metadata is empty or param error metadata:{}", metadataObj);
             return Maps.newHashMap();
         }
         Map<String, Object> metadata = (Map) metadataObj;

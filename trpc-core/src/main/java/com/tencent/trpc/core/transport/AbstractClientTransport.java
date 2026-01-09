@@ -229,8 +229,10 @@ public abstract class AbstractClientTransport implements ClientTransport {
             if (t != null) {
                 logger.error("Client transport({}) create connection exception", this.toString(), t);
             } else {
-                logger.debug("Client transport(remote addr={}, network={}) create connection success",
-                        rAddr, config.getNetwork());
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Client transport(remote addr={}, network={}) create connection success",
+                            rAddr, config.getNetwork());
+                }
 
             }
             // to prevent connection leakage, do one more check: when the connection is successfully established, if

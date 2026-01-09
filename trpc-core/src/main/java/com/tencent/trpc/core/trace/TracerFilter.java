@@ -91,7 +91,9 @@ public abstract class TracerFilter implements Filter {
      */
     public Tracer getTracer(RpcContext context, RequestMeta meta) throws TRpcException {
         try {
-            logger.debug("c context:{},meta:{}", context, meta);
+            if (logger.isDebugEnabled()) {
+                logger.debug("c context:{},meta:{}", context, meta);
+            }
             Tracer tracer = RpcContextUtils.getTracer(context);
             if (tracer != null) {
                 return tracer;
@@ -114,7 +116,9 @@ public abstract class TracerFilter implements Filter {
                     logger.error("tracer is null,this self server name is null");
                 }
             }
-            logger.debug("getTracer tracer:{}}", tracer);
+            if (logger.isDebugEnabled()) {
+                logger.debug("getTracer tracer:{}}", tracer);
+            }
             return tracer;
         } catch (Exception e) {
             logger.error("getTracer error", e);
@@ -133,8 +137,10 @@ public abstract class TracerFilter implements Filter {
     public SpanBuilder createSpanBuilder(Tracer tracer, SpanContext parentSpanContext,
             RequestMeta meta) {
         try {
-            logger.debug("createSpanBuilder tracer:{},parentSpanContext:{},meta:{}", tracer,
-                    parentSpanContext, meta);
+            if (logger.isDebugEnabled()) {
+                logger.debug("createSpanBuilder tracer:{},parentSpanContext:{},meta:{}", tracer,
+                        parentSpanContext, meta);
+            }
             if (tracer == null) {
                 return null;
             }
@@ -164,7 +170,9 @@ public abstract class TracerFilter implements Filter {
      */
     public void updateSpanErrorFlag(Response response, Throwable throwable, Span span) {
         try {
-            logger.debug("updateSpanErrorFlag response:{},throwable:{},span:{}", response, throwable, span);
+            if (logger.isDebugEnabled()) {
+                logger.debug("updateSpanErrorFlag response:{},throwable:{},span:{}", response, throwable, span);
+            }
             if (span == null) {
                 return;
             }
