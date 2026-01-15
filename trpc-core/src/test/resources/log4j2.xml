@@ -133,32 +133,32 @@
             <AppenderRef ref="Console"/>
             <AppenderRef ref="ErrorLog"/>
         </AsyncRoot>
-        <AsyncLogger name="ServerFlow" level="INFO">
+        <AsyncLogger name="ServerFlow" level="DEBUG">
             <AppenderRef ref="ServerFlow"/>
         </AsyncLogger>
-        <AsyncLogger name="ServerWriteFlow" level="INFO">
+        <AsyncLogger name="ServerWriteFlow" level="DEBUG">
             <AppenderRef ref="ServerWriteFlow"/>
         </AsyncLogger>
-        <AsyncLogger name="ServerRpcFlow" level="ERROR">
+        <AsyncLogger name="ServerRpcFlow" level="DEBUG">
             <AppenderRef ref="ServerRpcFlow"/>
         </AsyncLogger>
-        <AsyncLogger name="RedisOpFlow" level="INFO">
+        <AsyncLogger name="RedisOpFlow" level="DEBUG">
             <AppenderRef ref="RedisOpFlow"/>
         </AsyncLogger>
-        <AsyncLogger name="RedisOpErrorFlow" level="INFO">
+        <AsyncLogger name="RedisOpErrorFlow" level="DEBUG">
             <AppenderRef ref="RedisOpErrorFlow"/>
         </AsyncLogger>
-        <AsyncLogger name="RewardOpErrorFlow" level="INFO" includeLocation="true">
+        <AsyncLogger name="RewardOpErrorFlow" level="DEBUG" includeLocation="true">
             <AppenderRef ref="RewardOpErrorFlow"/>
         </AsyncLogger>
 
-        <AsyncLogger name="com.tencent.jungle.cache" level="INFO" additivity="false">
+        <AsyncLogger name="com.tencent.jungle.cache" level="DEBUG" additivity="false">
             <AppenderRef ref="CacheLog"/>
         </AsyncLogger>
-        <AsyncLogger name="com.tencent.jungle.redis" level="WARN" additivity="false">
+        <AsyncLogger name="com.tencent.jungle.redis" level="DEBUG" additivity="false">
             <AppenderRef ref="JungleRedisLog"/>
         </AsyncLogger>
-        <AsyncLogger name="ConfigFlow" level="INFO">
+        <AsyncLogger name="ConfigFlow" level="DEBUG">
             <AppenderRef ref="ConfigFlow"/>
         </AsyncLogger>
 
