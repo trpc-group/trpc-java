@@ -43,6 +43,10 @@ public class RpcClusterClientManagerTest {
         Thread.sleep(10);
         RpcClusterClientManager.scanUnusedClient();
         assertEquals(0, clusterMap.get(backendConfig).size());
+        BackendConfig backend = new BackendConfig();
+        backend.setNamingUrl("ip://127.0.0.1:8081");
+        RpcClusterClientManager.getOrCreateClient(backend, config);
+        RpcClusterClientManager.shutdownBackendConfig(backend);
     }
 
     private static class ProtocolConfigTest extends ProtocolConfig {

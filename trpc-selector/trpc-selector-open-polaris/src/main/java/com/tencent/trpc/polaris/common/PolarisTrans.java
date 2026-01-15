@@ -63,9 +63,6 @@ public class PolarisTrans {
             Instance polarisInstance) {
         String containerName = getContainerName(polarisInstance);
         String setName = getSetName(polarisInstance);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("[PolarisTrans] containerName:{},setName:{}", containerName, setName);
-        }
 
         ServiceInstance serviceInstance = new ServiceInstance(polarisInstance.getHost(),
                 polarisInstance.getPort(), polarisInstance.isHealthy());

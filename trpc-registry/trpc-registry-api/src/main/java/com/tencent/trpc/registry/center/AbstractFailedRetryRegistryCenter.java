@@ -387,9 +387,7 @@ public abstract class AbstractFailedRetryRegistryCenter extends AbstractRegistry
             return;
         }
         recoverRegistered.forEach(registerInfo -> {
-            if (logger.isDebugEnabled()) {
-                logger.debug("[Recover] Register registerInfo: {}", registerInfo);
-            }
+            logger.debug("[Recover] Register registerInfo: {}", registerInfo);
             addFailedRegisteredTask(registerInfo);
         });
     }

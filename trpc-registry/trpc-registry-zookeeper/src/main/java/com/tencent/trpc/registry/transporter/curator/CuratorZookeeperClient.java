@@ -409,10 +409,7 @@ public class CuratorZookeeperClient extends
          */
         @Override
         public void process(WatchedEvent event) throws Exception {
-            if (logger.isDebugEnabled()) {
-                logger.debug("curator watcher process. event: {}", event);
-            }
-
+            logger.debug("curator watcher process. event: {}", event);
             if (childListener == null) {
                 return;
             }
