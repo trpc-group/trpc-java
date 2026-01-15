@@ -111,6 +111,7 @@ public abstract class AbstractRegistryCenter implements RegistryCenter, PluginCo
     public void register(RegisterInfo registerInfo) {
         Objects.requireNonNull(registerInfo, "registerInfo can not be null");
         logger.debug("[register] registerInfo: {}", registerInfo);
+
         registeredRegisterInfos.add(registerInfo);
     }
 
