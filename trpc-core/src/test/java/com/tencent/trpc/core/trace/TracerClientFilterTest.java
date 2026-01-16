@@ -136,6 +136,248 @@ public class TracerClientFilterTest {
         filter.filter(invoker, request);
     }
 
+    @Test
+    public void testException() {
+        RpcClientContext context = new RpcClientContext();
+        RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACER, NoopTracerFactory.create());
+        Request request = new DefRequest();
+        request.setContext(context);
+        RpcInvocation invocation = new RpcInvocation();
+        invocation.setRpcServiceName("rpcServiceName");
+        invocation.setRpcMethodName("rpcMethodName");
+        request.getMeta().setRemoteAddress(InetSocketAddress.createUnresolved("127.0.0.1", 8888));
+        request.getMeta().setLocalAddress(InetSocketAddress.createUnresolved("127.0.0.1", 9999));
+        request.setInvocation(invocation);
+        CompletableFuture<Response> future = new CompletableFuture<Response>();
+        Response rsp = new DefResponse();
+        rsp.setException(new RuntimeException("test"));
+        future.complete(rsp);
+        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
+        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
+        filter.filter(invoker, request);
+    }
+
+    @Test
+    public void testWithParentSpan() {
+        RpcClientContext context = new RpcClientContext();
+        RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACE_SPAN, NoopSpan.INSTANCE);
+        RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACER, NoopTracerFactory.create());
+        Request request = new DefRequest();
+        request.setContext(context);
+        RpcInvocation invocation = new RpcInvocation();
+        invocation.setRpcServiceName("rpcServiceName");
+        invocation.setRpcMethodName("rpcMethodName");
+        request.getMeta().setRemoteAddress(InetSocketAddress.createUnresolved("127.0.0.1", 8888));
+        request.getMeta().setLocalAddress(InetSocketAddress.createUnresolved("127.0.0.1", 9999));
+        request.setInvocation(invocation);
+        CompletableFuture<Response> future = new CompletableFuture<Response>();
+        Response rsp = new DefResponse();
+        future.complete(rsp);
+        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
+        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
+        filter.filter(invoker, request);
+    }
+
+    @Test
+    public void testWithErrorFlag() {
+        TracerClientFilter errorFilter = new TracerClientFilter() {
+            @Override
+            public String getPluginName() {
+                return "tjg";
+            }
+
+            @Override
+            public Span start(SpanBuilder spanBuilder, RpcContext context, Invoker<?> invoker, Request request) {
+                if (spanBuilder == null) {
+                    return null;
+                }
+                Span span = spanBuilder.start();
+                span.setBaggageItem(TracerConstants.Keys.TRACE_ERROR_KEY, TracerConstants.Keys.TRACE_ERROR_VALUE);
+                return span;
+            }
+
+            @Override
+            public void finish(Span span, Request request, Response response, Throwable t) {
+                if (span != null) {
+                    span.finish();
+                }
+            }
+
+            @Override
+            public SpanContext extract(Tracer tracer, Map<String, Object> attachments) {
+                return NoopSpan.INSTANCE.context();
+            }
+
+            @Override
+            public Map<String, Object> inject(Tracer tracer, Span span) {
+                return new HashMap<>();
+            }
+        };
+
+        RpcClientContext context = new RpcClientContext();
+        Span parentSpan = NoopSpan.INSTANCE;
+        RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACE_SPAN, parentSpan);
+        RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACER, NoopTracerFactory.create());
+        Request request = new DefRequest();
+        request.setContext(context);
+        RpcInvocation invocation = new RpcInvocation();
+        invocation.setRpcServiceName("rpcServiceName");
+        invocation.setRpcMethodName("rpcMethodName");
+        request.getMeta().setRemoteAddress(InetSocketAddress.createUnresolved("127.0.0.1", 8888));
+        request.getMeta().setLocalAddress(InetSocketAddress.createUnresolved("127.0.0.1", 9999));
+        request.setInvocation(invocation);
+        CompletableFuture<Response> future = new CompletableFuture<Response>();
+        Response rsp = new DefResponse();
+        Map<String, Object> attachments = new HashMap<>();
+        attachments.put(TracerConstants.Keys.TRACE_ERROR_KEY, TracerConstants.Keys.TRACE_ERROR_VALUE);
+        rsp.setAttachments(attachments);
+        future.complete(rsp);
+        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
+        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
+        errorFilter.filter(invoker, request);
+    }
+
+    @Test
+    public void testNullTracer() {
+        TracerClientFilter nullTracerFilter = new TracerClientFilter() {
+            @Override
+            public String getPluginName() {
+                return "notexist";
+            }
+
+            @Override
+            public Span start(SpanBuilder spanBuilder, RpcContext context, Invoker<?> invoker, Request request) {
+                return null;
+            }
+
+            @Override
+            public void finish(Span span, Request request, Response response, Throwable t) {
+            }
+
+            @Override
+            public SpanContext extract(Tracer tracer, Map<String, Object> attachments) {
+                return null;
+            }
+
+            @Override
+            public Map<String, Object> inject(Tracer tracer, Span span) {
+                return new HashMap<>();
+            }
+        };
+
+        RpcClientContext context = new RpcClientContext();
+        Request request = new DefRequest();
+        request.setContext(context);
+        RpcInvocation invocation = new RpcInvocation();
+        invocation.setRpcServiceName("rpcServiceName");
+        invocation.setRpcMethodName("rpcMethodName");
+        request.getMeta().setRemoteAddress(InetSocketAddress.createUnresolved("127.0.0.1", 8888));
+        request.getMeta().setLocalAddress(InetSocketAddress.createUnresolved("127.0.0.1", 9999));
+        request.setInvocation(invocation);
+        CompletableFuture<Response> future = new CompletableFuture<Response>();
+        Response rsp = new DefResponse();
+        future.complete(rsp);
+        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
+        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
+        nullTracerFilter.filter(invoker, request);
+    }
+
+    @Test
+    public void testCreateSpanException() {
+        TracerClientFilter exceptionFilter = new TracerClientFilter() {
+            @Override
+            public String getPluginName() {
+                return "tjg";
+            }
+
+            @Override
+            public Span start(SpanBuilder spanBuilder, RpcContext context, Invoker<?> invoker, Request request) {
+                throw new RuntimeException("test exception");
+            }
+
+            @Override
+            public void finish(Span span, Request request, Response response, Throwable t) {
+            }
+
+            @Override
+            public SpanContext extract(Tracer tracer, Map<String, Object> attachments) {
+                return null;
+            }
+
+            @Override
+            public Map<String, Object> inject(Tracer tracer, Span span) {
+                return new HashMap<>();
+            }
+        };
+
+        RpcClientContext context = new RpcClientContext();
+        RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACER, NoopTracerFactory.create());
+        Request request = new DefRequest();
+        request.setContext(context);
+        RpcInvocation invocation = new RpcInvocation();
+        invocation.setRpcServiceName("rpcServiceName");
+        invocation.setRpcMethodName("rpcMethodName");
+        request.getMeta().setRemoteAddress(InetSocketAddress.createUnresolved("127.0.0.1", 8888));
+        request.getMeta().setLocalAddress(InetSocketAddress.createUnresolved("127.0.0.1", 9999));
+        request.setInvocation(invocation);
+        CompletableFuture<Response> future = new CompletableFuture<Response>();
+        Response rsp = new DefResponse();
+        future.complete(rsp);
+        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
+        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
+        exceptionFilter.filter(invoker, request);
+    }
+
+    @Test
+    public void testFinishException() {
+        TracerClientFilter finishExceptionFilter = new TracerClientFilter() {
+            @Override
+            public String getPluginName() {
+                return "tjg";
+            }
+
+            @Override
+            public Span start(SpanBuilder spanBuilder, RpcContext context, Invoker<?> invoker, Request request) {
+                if (spanBuilder == null) {
+                    return null;
+                }
+                return spanBuilder.start();
+            }
+
+            @Override
+            public void finish(Span span, Request request, Response response, Throwable t) {
+                throw new RuntimeException("finish exception");
+            }
+
+            @Override
+            public SpanContext extract(Tracer tracer, Map<String, Object> attachments) {
+                return null;
+            }
+
+            @Override
+            public Map<String, Object> inject(Tracer tracer, Span span) {
+                return new HashMap<>();
+            }
+        };
+
+        RpcClientContext context = new RpcClientContext();
+        RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACER, NoopTracerFactory.create());
+        Request request = new DefRequest();
+        request.setContext(context);
+        RpcInvocation invocation = new RpcInvocation();
+        invocation.setRpcServiceName("rpcServiceName");
+        invocation.setRpcMethodName("rpcMethodName");
+        request.getMeta().setRemoteAddress(InetSocketAddress.createUnresolved("127.0.0.1", 8888));
+        request.getMeta().setLocalAddress(InetSocketAddress.createUnresolved("127.0.0.1", 9999));
+        request.setInvocation(invocation);
+        CompletableFuture<Response> future = new CompletableFuture<Response>();
+        Response rsp = new DefResponse();
+        future.complete(rsp);
+        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
+        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
+        finishExceptionFilter.filter(invoker, request);
+    }
+
     private static class TestTraceFactory implements TracerFactory {
 
         @Override

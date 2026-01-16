@@ -334,4 +334,71 @@ public class AbstractRegistryCenterTest {
         serverRegistry.recoverSubscribed();
     }
 
+    @Test
+    public void testGetRegistryCenterConfig() {
+        Assert.assertNotNull(clientRegistry.getRegistryCenterConfig());
+    }
+
+    @Test
+    public void testGetRegisteredRegisterInfos() {
+        RegisterInfo registerInfo = buildRegisterInfo();
+        clientRegistry.register(registerInfo);
+        Assert.assertEquals(1, clientRegistry.getRegisteredRegisterInfos().size());
+    }
+
+    @Test
+    public void testGetSubscribedRegisterInfos() {
+        RegisterInfo registerInfo = buildRegisterInfo();
+        NotifyListener discovery = getNotifyListener(registerInfo);
+        clientRegistry.subscribe(registerInfo, discovery);
+        Assert.assertEquals(1, clientRegistry.getSubscribedRegisterInfos().size());
+    }
+
+    @Test
+    public void testGetNotifiedRegisterInfos() {
+        RegisterInfo registerInfo = buildRegisterInfo();
+        List<RegisterInfo> registerInfos = new ArrayList<>();
+        registerInfos.add(buildRegisterInfo(12000));
+        NotifyListener discovery = getNotifyListener(registerInfo);
+        clientRegistry.notify(registerInfo, discovery, registerInfos);
+        Assert.assertEquals(1, clientRegistry.getNotifiedRegisterInfos().size());
+    }
+
+    @Test
+    public void testUnsubscribeWithEmptyListeners() {
+        RegisterInfo registerInfo = buildRegisterInfo();
+        NotifyListener discovery = getNotifyListener(registerInfo);
+        clientRegistry.unsubscribe(registerInfo, discovery);
+    }
+
+    @Test
+    public void testUnsubscribeMultipleTimes() {
+        RegisterInfo registerInfo = buildRegisterInfo();
+        NotifyListener discovery1 = new NotifyListener() {
+            @Override
+            public void notify(List<RegisterInfo> registerInfos) {
+            }
+
+            @Override
+            public void destroy() throws TRpcExtensionException {
+            }
+        };
+        NotifyListener discovery2 = new NotifyListener() {
+            @Override
+            public void notify(List<RegisterInfo> registerInfos) {
+            }
+
+            @Override
+            public void destroy() throws TRpcExtensionException {
+            }
+        };
+        clientRegistry.subscribe(registerInfo, discovery1);
+        clientRegistry.subscribe(registerInfo, discovery2);
+        Assert.assertEquals(2, clientRegistry.getSubscribedRegisterInfos().get(registerInfo).getNotifyListeners().size());
+        clientRegistry.unsubscribe(registerInfo, discovery1);
+        Assert.assertEquals(1, clientRegistry.getSubscribedRegisterInfos().get(registerInfo).getNotifyListeners().size());
+        clientRegistry.unsubscribe(registerInfo, discovery2);
+        Assert.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
+    }
+
 }

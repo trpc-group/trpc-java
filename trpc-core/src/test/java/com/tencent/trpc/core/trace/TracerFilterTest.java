@@ -122,6 +122,73 @@ public class TracerFilterTest {
         }
     }
 
+    @Test
+    public void testGetTracerWithNullMeta() throws Exception {
+        RpcClientContext context = new RpcClientContext();
+        Tracer tracer = filter.getTracer(context, null);
+        Assert.assertNull(tracer);
+    }
+
+    @Test
+    public void testCreateSpanBuilderWithParent() {
+        Tracer tracer = NoopTracerFactory.create();
+        SpanContext parentContext = NoopSpan.INSTANCE.context();
+        DefRequest request = new DefRequest();
+        Tracer.SpanBuilder spanBuilder = filter.createSpanBuilder(tracer, parentContext, request.getMeta());
+        Assert.assertNotNull(spanBuilder);
+    }
+
+    @Test
+    public void testCreateSpanBuilderWithNullTracer() {
+        DefRequest request = new DefRequest();
+        Tracer.SpanBuilder spanBuilder = filter.createSpanBuilder(null, null, request.getMeta());
+        Assert.assertNull(spanBuilder);
+    }
+
+    @Test
+    public void testCreateSpanBuilderException() {
+        Tracer tracer = NoopTracerFactory.create();
+        Tracer.SpanBuilder spanBuilder = filter.createSpanBuilder(tracer, null, null);
+        Assert.assertNull(spanBuilder);
+    }
+
+    @Test
+    public void testUpdateSpanErrorFlagWithTRpcException() {
+        DefResponse response = new DefResponse();
+        response.setException(com.tencent.trpc.core.exception.TRpcException.newFrameException(100, "test"));
+        Span span = NoopSpan.INSTANCE;
+        filter.updateSpanErrorFlag(response, null, span);
+    }
+
+    @Test
+    public void testUpdateSpanErrorFlagWithThrowable() {
+        DefResponse response = new DefResponse();
+        Span span = NoopSpan.INSTANCE;
+        filter.updateSpanErrorFlag(response, new RuntimeException("test"), span);
+    }
+
+    @Test
+    public void testUpdateSpanErrorFlagWithNullSpan() {
+        DefResponse response = new DefResponse();
+        filter.updateSpanErrorFlag(response, new RuntimeException("test"), null);
+    }
+
+    @Test
+    public void testUpdateSpanErrorFlagException() {
+        DefResponse response = new DefResponse();
+        response.setException(new RuntimeException("test"));
+        Span span = NoopSpan.INSTANCE;
+        filter.updateSpanErrorFlag(response, null, span);
+    }
+
+    @Test
+    public void testUpdateSpanErrorFlagWithBothExceptions() {
+        DefResponse response = new DefResponse();
+        response.setException(com.tencent.trpc.core.exception.TRpcException.newFrameException(200, "response exception"));
+        Span span = NoopSpan.INSTANCE;
+        filter.updateSpanErrorFlag(response, new RuntimeException("throwable"), span);
+    }
+
     private static class TestTraceFactory implements TracerFactory {
 
         @Override
