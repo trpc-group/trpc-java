@@ -119,6 +119,7 @@ public class TracerFilterTest {
         try {
             filter.getTracer(context, request.getMeta());
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -184,7 +185,8 @@ public class TracerFilterTest {
     @Test
     public void testUpdateSpanErrorFlagWithBothExceptions() {
         DefResponse response = new DefResponse();
-        response.setException(com.tencent.trpc.core.exception.TRpcException.newFrameException(200, "response exception"));
+        response.setException(
+                com.tencent.trpc.core.exception.TRpcException.newFrameException(200, "response exception"));
         Span span = NoopSpan.INSTANCE;
         filter.updateSpanErrorFlag(response, new RuntimeException("throwable"), span);
     }

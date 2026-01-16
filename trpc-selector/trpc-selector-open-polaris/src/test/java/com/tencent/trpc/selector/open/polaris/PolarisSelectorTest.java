@@ -423,8 +423,8 @@ public class PolarisSelectorTest {
         try {
             clusterNaming.warmup(serviceId);
         } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("call polaris error") ||
-                    e.getCause() != null && e.getCause().getMessage().contains("test polaris exp"));
+            Assert.assertTrue(e.getMessage().contains("call polaris error")
+                    || e.getCause() != null && e.getCause().getMessage().contains("test polaris exp"));
         }
     }
 
@@ -440,8 +440,8 @@ public class PolarisSelectorTest {
             CompletionStage<List<ServiceInstance>> future = clusterNaming.asyncSelectAll(serviceId, DataTest.request);
             future.toCompletableFuture().join();
         } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("call polaris error") ||
-                    (e.getCause() != null && e.getCause().getMessage().contains("test polaris exp")));
+            Assert.assertTrue(e.getMessage().contains("call polaris error")
+                    || (e.getCause() != null && e.getCause().getMessage().contains("test polaris exp")));
         }
     }
 

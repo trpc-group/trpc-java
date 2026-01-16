@@ -244,6 +244,7 @@ public class DefClusterInvokerTest {
         try {
             defClusterInvoker.doInvoke(defRequest, completedInstance).toCompletableFuture().join();
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

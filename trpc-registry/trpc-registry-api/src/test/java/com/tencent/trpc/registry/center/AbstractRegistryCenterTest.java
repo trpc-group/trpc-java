@@ -315,7 +315,8 @@ public class AbstractRegistryCenterTest {
             IllegalAccessException {
         try {
             serverRegistry.setPluginConfig(
-                    initPluginConfig("0.0.0.0", 2181, false, false, "/xxxx/" + serverCacheFilePath,
+                    initPluginConfig("0.0.0.0", 2181,
+                            false, false, "/xxxx/" + serverCacheFilePath,
                             CACHE_EXPIRE_TIME));
         } catch (Exception e) {
             Assert.assertTrue(e instanceof IllegalArgumentException);
@@ -394,9 +395,11 @@ public class AbstractRegistryCenterTest {
         };
         clientRegistry.subscribe(registerInfo, discovery1);
         clientRegistry.subscribe(registerInfo, discovery2);
-        Assert.assertEquals(2, clientRegistry.getSubscribedRegisterInfos().get(registerInfo).getNotifyListeners().size());
+        Assert.assertEquals(2,
+                clientRegistry.getSubscribedRegisterInfos().get(registerInfo).getNotifyListeners().size());
         clientRegistry.unsubscribe(registerInfo, discovery1);
-        Assert.assertEquals(1, clientRegistry.getSubscribedRegisterInfos().get(registerInfo).getNotifyListeners().size());
+        Assert.assertEquals(1,
+                clientRegistry.getSubscribedRegisterInfos().get(registerInfo).getNotifyListeners().size());
         clientRegistry.unsubscribe(registerInfo, discovery2);
         Assert.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
     }

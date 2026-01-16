@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 Tencent. 
+ * Copyright (C) 2023 Tencent.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -68,7 +68,8 @@ public class ProviderFilterInvoker<T> implements ProviderInvoker<T> {
                 public CompletionStage<Response> invoke(Request request) {
                     RpcInvocation inv = request.getInvocation();
                     if (logger.isDebugEnabled()) {
-                        logger.debug(">>>Before Invoke provider filter(service={}, rpcServiceName={}, rpcMehthodName={})",
+                        logger.debug(">>>Before Invoke provider filter(service={}, rpcServiceName={}, "
+                                        + "rpcMehthodName={})",
                                 filter.getClass(), inv.getRpcServiceName(), inv.getRpcMethodName());
                     }
 

@@ -180,6 +180,26 @@ public class TracerClientFilterTest {
 
     @Test
     public void testWithErrorFlag() {
+        RpcClientContext context = new RpcClientContext();
+        Span parentSpan = NoopSpan.INSTANCE;
+        RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACE_SPAN, parentSpan);
+        RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACER, NoopTracerFactory.create());
+        Request request = new DefRequest();
+        request.setContext(context);
+        RpcInvocation invocation = new RpcInvocation();
+        invocation.setRpcServiceName("rpcServiceName");
+        invocation.setRpcMethodName("rpcMethodName");
+        request.getMeta().setRemoteAddress(InetSocketAddress.createUnresolved("127.0.0.1", 8888));
+        request.getMeta().setLocalAddress(InetSocketAddress.createUnresolved("127.0.0.1", 9999));
+        request.setInvocation(invocation);
+        CompletableFuture<Response> future = new CompletableFuture<Response>();
+        Response rsp = new DefResponse();
+        Map<String, Object> attachments = new HashMap<>();
+        attachments.put(TracerConstants.Keys.TRACE_ERROR_KEY, TracerConstants.Keys.TRACE_ERROR_VALUE);
+        rsp.setAttachments(attachments);
+        future.complete(rsp);
+        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
+        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
         TracerClientFilter errorFilter = new TracerClientFilter() {
             @Override
             public String getPluginName() {
@@ -213,11 +233,12 @@ public class TracerClientFilterTest {
                 return new HashMap<>();
             }
         };
+        errorFilter.filter(invoker, request);
+    }
 
+    @Test
+    public void testNullTracer() {
         RpcClientContext context = new RpcClientContext();
-        Span parentSpan = NoopSpan.INSTANCE;
-        RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACE_SPAN, parentSpan);
-        RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACER, NoopTracerFactory.create());
         Request request = new DefRequest();
         request.setContext(context);
         RpcInvocation invocation = new RpcInvocation();
@@ -228,17 +249,9 @@ public class TracerClientFilterTest {
         request.setInvocation(invocation);
         CompletableFuture<Response> future = new CompletableFuture<Response>();
         Response rsp = new DefResponse();
-        Map<String, Object> attachments = new HashMap<>();
-        attachments.put(TracerConstants.Keys.TRACE_ERROR_KEY, TracerConstants.Keys.TRACE_ERROR_VALUE);
-        rsp.setAttachments(attachments);
         future.complete(rsp);
         Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
         PowerMockito.when(invoker.invoke(request)).thenReturn(future);
-        errorFilter.filter(invoker, request);
-    }
-
-    @Test
-    public void testNullTracer() {
         TracerClientFilter nullTracerFilter = new TracerClientFilter() {
             @Override
             public String getPluginName() {
@@ -264,8 +277,13 @@ public class TracerClientFilterTest {
                 return new HashMap<>();
             }
         };
+        nullTracerFilter.filter(invoker, request);
+    }
 
+    @Test
+    public void testCreateSpanException() {
         RpcClientContext context = new RpcClientContext();
+        RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACER, NoopTracerFactory.create());
         Request request = new DefRequest();
         request.setContext(context);
         RpcInvocation invocation = new RpcInvocation();
@@ -279,11 +297,6 @@ public class TracerClientFilterTest {
         future.complete(rsp);
         Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
         PowerMockito.when(invoker.invoke(request)).thenReturn(future);
-        nullTracerFilter.filter(invoker, request);
-    }
-
-    @Test
-    public void testCreateSpanException() {
         TracerClientFilter exceptionFilter = new TracerClientFilter() {
             @Override
             public String getPluginName() {
@@ -309,7 +322,11 @@ public class TracerClientFilterTest {
                 return new HashMap<>();
             }
         };
+        exceptionFilter.filter(invoker, request);
+    }
 
+    @Test
+    public void testFinishException() {
         RpcClientContext context = new RpcClientContext();
         RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACER, NoopTracerFactory.create());
         Request request = new DefRequest();
@@ -325,11 +342,6 @@ public class TracerClientFilterTest {
         future.complete(rsp);
         Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
         PowerMockito.when(invoker.invoke(request)).thenReturn(future);
-        exceptionFilter.filter(invoker, request);
-    }
-
-    @Test
-    public void testFinishException() {
         TracerClientFilter finishExceptionFilter = new TracerClientFilter() {
             @Override
             public String getPluginName() {
@@ -359,22 +371,6 @@ public class TracerClientFilterTest {
                 return new HashMap<>();
             }
         };
-
-        RpcClientContext context = new RpcClientContext();
-        RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACER, NoopTracerFactory.create());
-        Request request = new DefRequest();
-        request.setContext(context);
-        RpcInvocation invocation = new RpcInvocation();
-        invocation.setRpcServiceName("rpcServiceName");
-        invocation.setRpcMethodName("rpcMethodName");
-        request.getMeta().setRemoteAddress(InetSocketAddress.createUnresolved("127.0.0.1", 8888));
-        request.getMeta().setLocalAddress(InetSocketAddress.createUnresolved("127.0.0.1", 9999));
-        request.setInvocation(invocation);
-        CompletableFuture<Response> future = new CompletableFuture<Response>();
-        Response rsp = new DefResponse();
-        future.complete(rsp);
-        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
-        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
         finishExceptionFilter.filter(invoker, request);
     }
 
