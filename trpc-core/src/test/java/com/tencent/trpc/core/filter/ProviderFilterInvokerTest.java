@@ -101,6 +101,19 @@ public class ProviderFilterInvokerTest {
         assertEquals("102,1,", r.getValue());
     }
 
+    @Test
+    public void testDebugLog() {
+        FilterManager.registerPlugin("ProviderInovkrMockFilter", ProviderInovkrMockFilter.class);
+        ProviderConfig<Object> config = createProviderConfig();
+        config.setFilters(Lists.newArrayList("ProviderInovkrMockFilter"));
+        ProtocolConfig protoConfig = createProtoConfig();
+        ProviderInvoker buildProviderChain = FilterChain.buildProviderChain(config,
+                new ProviderInvokerMock(config, protoConfig));
+        CompletionStage invoke = buildProviderChain.invoke(createRequest());
+        Response r = (Response) (invoke.toCompletableFuture().join());
+        Assert.assertNotNull(r);
+    }
+
     public RpcServerContext createServerContext() {
         RpcServerContext context = new RpcServerContext();
         return context;

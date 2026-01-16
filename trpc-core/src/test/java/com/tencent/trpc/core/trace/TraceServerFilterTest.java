@@ -235,6 +235,26 @@ public class TraceServerFilterTest {
         filter.filter(invoker, request);
     }
 
+    @Test
+    public void testDebugLog() {
+        RpcServerContext context = new RpcServerContext();
+        Request request = new DefRequest();
+        request.setContext(context);
+        RpcInvocation invocation = new RpcInvocation();
+        invocation.setRpcServiceName("rpcServiceName");
+        invocation.setRpcMethodName("rpcMethodName");
+        request.getMeta().setRemoteAddress(InetSocketAddress.createUnresolved("10.0.0.1", 8888));
+        request.getMeta().setLocalAddress(InetSocketAddress.createUnresolved("10.0.0.1", 9999));
+        request.setInvocation(invocation);
+        CompletableFuture<Response> future = new CompletableFuture<Response>();
+        Response rsp = new DefResponse();
+        rsp.setException(TRpcException.newBizException(10, ""));
+        future.complete(rsp);
+        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
+        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
+        filter.filter(invoker, request);
+    }
+
     private static class TestTraceFactory implements TracerFactory {
 
         @Override

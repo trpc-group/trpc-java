@@ -93,7 +93,6 @@ public class Environment implements ApplicationConfigParser, Configuration {
         this.localConfigMap = this.applicationConfigParser.parseMap(configPath);
         this.overrideConfig();
         if (override) {
-            logger.debug("use part of system config instead of local yaml config.");
             return this.propertySourceParser.parseFlattableMap(this.localFlattableConfigMap);
         }
         return this.localConfigMap;

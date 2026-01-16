@@ -33,6 +33,8 @@ import com.tencent.trpc.core.worker.WorkerPoolManager;
 import com.tencent.trpc.core.worker.handler.TrpcThreadExceptionHandler;
 import com.tencent.trpc.core.worker.spi.WorkerPool;
 import com.tencent.trpc.core.worker.support.thread.ThreadWorkerPool;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -202,6 +204,47 @@ public class DefClusterInvokerTest {
                     + ", naming=" + consumerConfig.getBackendConfig().getNamingOptions().getServiceNaming()
                     + "), Client router error [found no available instance]";
             Assert.assertEquals(expect, exception.getMessage());
+        }
+    }
+
+    @Test
+    public void testDebugLog() {
+        DefRequest defRequest = new DefRequest();
+        RpcInvocation invocation = new RpcInvocation();
+        invocation.setFunc("a");
+        defRequest.setInvocation(invocation);
+        consumerInvokerProxy.invoke(defRequest, new ServiceInstance());
+        invocation.setFunc("n");
+        consumerInvokerProxy.invoke(defRequest, new ServiceInstance());
+    }
+
+    @Test
+    public void testProxyIsAvailable() {
+        Assert.assertFalse(consumerInvokerProxy.isAvailable());
+    }
+
+    @Test
+    public void testProxyInvokeWithServiceInstance() {
+        DefRequest defRequest = new DefRequest();
+        RpcInvocation invocation = new RpcInvocation();
+        invocation.setFunc("a");
+        defRequest.setInvocation(invocation);
+        Map<String, Object> params = new HashMap<>();
+        params.put("container_name", "test-container");
+        params.put("set_division", "test-set");
+        ServiceInstance instance = new ServiceInstance("127.0.0.1", 12345, params);
+        consumerInvokerProxy.invoke(defRequest, instance);
+    }
+
+    @Test
+    public void testDoInvokeWithCompletedFuture() {
+        DefRequest defRequest = new DefRequest();
+        ServiceInstance instance = new ServiceInstance("127.0.0.1", 12345);
+        CompletionStage<ServiceInstance> completedInstance = CompletableFuture.completedFuture(instance);
+        try {
+            defClusterInvoker.doInvoke(defRequest, completedInstance).toCompletableFuture().join();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
