@@ -11,9 +11,9 @@
 
 package com.tencent.trpc.container.config.yaml;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.common.ConfigManager;
 import com.tencent.trpc.core.common.TRpcSystemProperties;
@@ -28,19 +28,19 @@ import com.tencent.trpc.core.selector.spi.Selector;
 import com.tencent.trpc.core.utils.YamlParser;
 import java.util.Map;
 import org.apache.commons.collections4.MapUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class YamlApplicationConfigParserTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         ConfigManager.stopTest();
     }
 
-    @After
+    @AfterEach
     public void after() {
         ConfigManager.stopTest();
     }
@@ -276,7 +276,7 @@ public class YamlApplicationConfigParserTest {
         ConfigManager.stopTest();
         String path = YamlParser.class.getClassLoader().getResource("trpc_java.yaml").getPath();
         Map<String, Object> map = new YamlApplicationConfigParser().parseMap(path);
-        Assert.assertNotEquals(map.size(), 0);
+        Assertions.assertNotEquals(map.size(), 0);
     }
 
     @Test
@@ -284,11 +284,11 @@ public class YamlApplicationConfigParserTest {
         ConfigManager.stopTest();
         TRpcSystemProperties.setProperties(TRpcSystemProperties.CONFIG_PATH, "");
         Map<String, Object> map1 = new YamlApplicationConfigParser().parseMap("");
-        Assert.assertNotNull(map1);
+        Assertions.assertNotNull(map1);
         String path = YamlParser.class.getClassLoader().getResource("trpc_java.yaml").getPath();
         TRpcSystemProperties.setProperties(TRpcSystemProperties.CONFIG_PATH, path);
         Map<String, Object> map = new YamlApplicationConfigParser().parseMap("");
-        Assert.assertNotEquals(map.size(), 0);
+        Assertions.assertNotEquals(map.size(), 0);
     }
 
     @Test
@@ -300,20 +300,20 @@ public class YamlApplicationConfigParserTest {
         applicationConfig.setDefault();
         ProviderConfig providerConfig1 = applicationConfig.getServerConfig().getServiceMap()
                 .get("trpc.TestApp.TestServer.Greeter").getProviderConfigs().get(0);
-        Assert.assertEquals(providerConfig1.getRequestTimeout(), 2000);
-        Assert.assertEquals(providerConfig1.getWorkerPool(), "trpc_provider_biz_def");
-        Assert.assertEquals(providerConfig1.getFilters().size(), 2);
-        Assert.assertEquals(providerConfig1.getFilters().get(0), "a");
-        Assert.assertEquals(providerConfig1.getFilters().get(1), "b");
-        Assert.assertFalse(providerConfig1.getEnableLinkTimeout());
+        Assertions.assertEquals(providerConfig1.getRequestTimeout(), 2000);
+        Assertions.assertEquals(providerConfig1.getWorkerPool(), "trpc_provider_biz_def");
+        Assertions.assertEquals(providerConfig1.getFilters().size(), 2);
+        Assertions.assertEquals(providerConfig1.getFilters().get(0), "a");
+        Assertions.assertEquals(providerConfig1.getFilters().get(1), "b");
+        Assertions.assertFalse(providerConfig1.getEnableLinkTimeout());
 
         ProviderConfig providerConfig2 = applicationConfig.getServerConfig().getServiceMap()
                 .get("trpc.TestApp.TestServer.Greeter").getProviderConfigs().get(1);
-        Assert.assertEquals(providerConfig2.getRequestTimeout(), Integer.MAX_VALUE);
-        Assert.assertEquals(providerConfig2.getWorkerPool(), "trpc_provider_biz_def");
-        Assert.assertEquals(providerConfig2.getFilters().size(), 1);
-        Assert.assertEquals(providerConfig2.getFilters().get(0), "c");
-        Assert.assertTrue(providerConfig2.getEnableLinkTimeout());
+        Assertions.assertEquals(providerConfig2.getRequestTimeout(), Integer.MAX_VALUE);
+        Assertions.assertEquals(providerConfig2.getWorkerPool(), "trpc_provider_biz_def");
+        Assertions.assertEquals(providerConfig2.getFilters().size(), 1);
+        Assertions.assertEquals(providerConfig2.getFilters().get(0), "c");
+        Assertions.assertTrue(providerConfig2.getEnableLinkTimeout());
     }
 
     @Test

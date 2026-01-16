@@ -16,10 +16,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -31,7 +31,7 @@ public class YamlUtilsTest {
 
     private YamlUtils yamlUtils;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.properties = new HashMap<>();
         properties.put("string", "string");
@@ -41,7 +41,7 @@ public class YamlUtilsTest {
         this.yamlUtils = new YamlUtils("");
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         properties.clear();
     }
@@ -49,64 +49,64 @@ public class YamlUtilsTest {
     @Test
     public void testGetString() {
         String string = yamlUtils.getString(properties, "string");
-        Assert.assertEquals("string", string);
+        Assertions.assertEquals("string", string);
 
         properties.put("string", null);
 
         try {
             yamlUtils.getString(properties, "string");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
     }
 
     @Test
     public void testGetInteger() {
         int integer = yamlUtils.getInteger(properties, "integer");
-        Assert.assertEquals(integer, 10);
+        Assertions.assertEquals(integer, 10);
 
         properties.put("integer", null);
 
         try {
             yamlUtils.getInteger(properties, "integer");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
     }
 
     @Test
     public void testGetBoolean() {
         boolean bool = yamlUtils.getBoolean(properties, "boolean");
-        Assert.assertTrue(bool);
+        Assertions.assertTrue(bool);
 
         properties.put("boolean", null);
         try {
             yamlUtils.getBoolean(properties, "boolean");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
     }
 
     @Test
     public void testGetCollection() {
         Collection collection = yamlUtils.getCollection(properties, "collection");
-        Assert.assertNotNull(collection);
+        Assertions.assertNotNull(collection);
         properties.put("collection", null);
         try {
             yamlUtils.getBoolean(properties, "collection");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
     }
 
     @Test
     public void testGetStringList() {
         List<String> collection = yamlUtils.getStringList(properties, "collection");
-        Assert.assertNotNull(collection);
+        Assertions.assertNotNull(collection);
         try {
             yamlUtils.requireMap(Arrays.asList(1, 2), "key");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
     }
 }

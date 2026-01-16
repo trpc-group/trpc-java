@@ -20,7 +20,7 @@ server:
       impls:
         - com.tencent.trpc.container.demo.GreeterServiceImp
       ip: 127.0.0.1
-      port: 12345
+      port: 13345
       network: tcp
       protocol: trpc
 
@@ -29,7 +29,7 @@ client:
   service:
     - name: trpc.TestApp.TestServer.Greeter
       interface: com.tencent.trpc.container.demo.GreeterClient
-      naming_url: ip://127.0.0.1:12345
+      naming_url: ip://127.0.0.1:13345
     - name: trpc.TestApp.TestServer.Notconnect
       interface: com.tencent.trpc.container.demo.GreeterClient
       naming_url: ip://127.0.0.1:9999

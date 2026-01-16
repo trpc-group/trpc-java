@@ -11,10 +11,10 @@
 
 package com.tencent.trpc.container.config.yaml;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.tencent.trpc.container.config.YamlUtils;
 import com.tencent.trpc.container.container.DefaultServerListener;
@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * ServerConfigParser test class
@@ -37,7 +37,7 @@ public class ServerConfigParserTest {
 
     private List<Map<String, Object>> serverListenerConfig;
 
-    @Before
+    @BeforeEach
     public void before() {
         this.yamlUtils = new YamlUtils("");
     }
@@ -45,14 +45,14 @@ public class ServerConfigParserTest {
     @Test
     public void testParseDefaultStartedListeners() {
         ServerConfigParser serverConfigParser = new ServerConfigParser();
-        Assert.assertNotNull(serverConfigParser);
+        Assertions.assertNotNull(serverConfigParser);
         List<ServerListener> serverListeners = ServerConfigParser.parseStartedListeners(yamlUtils,
                 serverListenerConfig);
         assertNotNull(serverListeners);
         assertEquals(serverListeners.size(), 0);
         try {
             ServerConfig serverConfig = ServerConfigParser.parseServerConfig(null, null);
-            Assert.assertNotNull(serverConfig);
+            Assertions.assertNotNull(serverConfig);
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }

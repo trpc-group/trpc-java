@@ -11,8 +11,9 @@
 
 package com.tencent.trpc.container.container;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Assertions;
 import com.google.protobuf.ByteString;
 import com.tencent.trpc.container.demo.HelloRequestProtocol.HelloRequest;
 import com.tencent.trpc.container.demo.HelloRequestProtocol.HelloResponse;
@@ -22,15 +23,15 @@ import com.tencent.trpc.core.container.spi.Container;
 import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.core.rpc.TRpcProxy;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ConsumerProxyTest {
 
     Container container;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         ConfigManager.startTest();
         container = new DefaultContainer();
@@ -38,7 +39,7 @@ public class ConsumerProxyTest {
         container.start();
     }
 
-    @After
+    @AfterEach
     public void after() {
         if (container != null) {
             container.stop();
@@ -60,13 +61,15 @@ public class ConsumerProxyTest {
         System.out.println("namingOptions:>>>>>>>>>>>>>" + backendConfig.getNamingOptions());
     }
 
-    @Test(expected = TRpcException.class)
+    @Test
     public void notConnect() {
-        String servcieId = "trpc.TestApp.TestServer.Notconnect";
-        com.tencent.trpc.container.demo.GreeterClient service = TRpcProxy.getProxy(servcieId);
-        service.sayHello(new RpcClientContext(), HelloRequest.newBuilder()
-                .setMessage(ByteString.copyFrom("abc".getBytes()))
-                .build());
+        Assertions.assertThrows(TRpcException.class, () -> {
+            String servcieId = "trpc.TestApp.TestServer.Notconnect";
+            com.tencent.trpc.container.demo.GreeterClient service = TRpcProxy.getProxy(servcieId);
+            service.sayHello(new RpcClientContext(), HelloRequest.newBuilder()
+                    .setMessage(ByteString.copyFrom("abc".getBytes()))
+                    .build());
+        });
     }
 
 }
