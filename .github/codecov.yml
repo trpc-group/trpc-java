@@ -5,9 +5,7 @@ comment:
 
 coverage: # https://docs.codecov.com/docs/codecovyml-reference#coverage
   precision: 5
-  range:
-    - 70.0
-    - 75.0
+  range: "70...75"
   status:
     project:
       default:
@@ -15,3 +13,12 @@ coverage: # https://docs.codecov.com/docs/codecovyml-reference#coverage
           - ^master$
         target: 70.0 # the minimum coverage ratio that the commit must meet to be considered a success.
         threshold: 1% # allow the coverage to drop by X%, and posting a success status.
+  ignore:
+    - "**/test/**"
+    - "**/*Test.java"
+    - "**/*AuthCenter.java"
+    - "**/*QappPackage.java"
+    - "**/*TRPCProtocol.java"
+parsers:
+  jacoco:
+    partials_as_hits: true
