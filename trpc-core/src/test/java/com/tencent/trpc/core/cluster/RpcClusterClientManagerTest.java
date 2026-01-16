@@ -49,6 +49,18 @@ public class RpcClusterClientManagerTest {
         RpcClusterClientManager.shutdownBackendConfig(backend);
     }
 
+    @Test
+    public void testDebugLog() throws Exception {
+        BackendConfig backendConfig = new BackendConfig();
+        backendConfig.setIdleTimeout(100000);
+        backendConfig.setNamingUrl("ip://127.0.0.1:8082");
+        ProtocolConfigTest config = new ProtocolConfigTest();
+        RpcClient rpcClient = RpcClusterClientManager.getOrCreateClient(backendConfig, config);
+        Assert.assertNotNull(rpcClient);
+        RpcClusterClientManager.scanUnusedClient();
+        RpcClusterClientManager.shutdownBackendConfig(backendConfig);
+    }
+
     private static class ProtocolConfigTest extends ProtocolConfig {
 
         @Override

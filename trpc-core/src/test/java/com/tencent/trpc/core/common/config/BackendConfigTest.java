@@ -410,6 +410,23 @@ public class BackendConfigTest {
         assertEquals("tcp", protocolConfig.getNetwork());
     }
 
+    @Test
+    public void testDebugLog() {
+        ExtensionLoader.registerPlugin(new PluginConfig("attalog", Filter.class, RemoteLoggerTest.class));
+        ExtensionLoader.registerPlugin(ThreadWorkerPool.newThreadWorkerPoolConfig("thread", 10, Boolean.FALSE));
+        BackendConfig config = new BackendConfig();
+        config.setNamingUrl("ip://127.0.0.1:9999");
+        config.setWorkerPool("thread");
+        config.setServiceInterface(GenericClient.class);
+        config.init();
+        try {
+            assertNotNull(config);
+            assertTrue(config.isInited());
+        } finally {
+            config.stop();
+        }
+    }
+
     public static final class RemoteLoggerTest extends RemoteLoggerFilter {
 
         @Override

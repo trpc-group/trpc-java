@@ -205,4 +205,15 @@ public class DefClusterInvokerTest {
         }
     }
 
+    @Test
+    public void testDebugLog() {
+        DefRequest defRequest = new DefRequest();
+        RpcInvocation invocation = new RpcInvocation();
+        invocation.setFunc("a");
+        defRequest.setInvocation(invocation);
+        consumerInvokerProxy.invoke(defRequest, new ServiceInstance());
+        invocation.setFunc("n");
+        consumerInvokerProxy.invoke(defRequest, new ServiceInstance());
+    }
+
 }
