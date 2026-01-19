@@ -11,17 +11,17 @@
 
 package com.tencent.trpc.core.exception;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ErrorCodeUtilsTest {
 
     @Test
     public void testNeedCircuitBreaker() {
-        Assert.assertTrue(ErrorCodeUtils.needCircuitBreaker(ErrorCode.TRPC_CLIENT_INVOKE_TIMEOUT_ERR));
-        Assert.assertTrue(ErrorCodeUtils.needCircuitBreaker(ErrorCode.TRPC_CLIENT_CONNECT_ERR));
-        Assert.assertTrue(ErrorCodeUtils.needCircuitBreaker(ErrorCode.TRPC_CLIENT_NETWORK_ERR));
-        Assert.assertTrue(ErrorCodeUtils.needCircuitBreaker(ErrorCode.TRPC_SERVER_OVERLOAD_ERR));
-        Assert.assertTrue(ErrorCodeUtils.needCircuitBreaker(ErrorCode.TRPC_SERVER_TIMEOUT_ERR));
+        Assertions.assertTrue(ErrorCodeUtils.needCircuitBreaker(ErrorCode.TRPC_CLIENT_INVOKE_TIMEOUT_ERR));
+        Assertions.assertTrue(ErrorCodeUtils.needCircuitBreaker(ErrorCode.TRPC_CLIENT_CONNECT_ERR));
+        Assertions.assertTrue(ErrorCodeUtils.needCircuitBreaker(ErrorCode.TRPC_CLIENT_NETWORK_ERR));
+        Assertions.assertTrue(ErrorCodeUtils.needCircuitBreaker(ErrorCode.TRPC_SERVER_OVERLOAD_ERR));
+        Assertions.assertTrue(ErrorCodeUtils.needCircuitBreaker(ErrorCode.TRPC_SERVER_TIMEOUT_ERR));
     }
 }

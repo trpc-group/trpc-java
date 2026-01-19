@@ -12,29 +12,29 @@
 package com.tencent.trpc.core.sign;
 
 import com.tencent.trpc.core.sign.spi.Sign;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class SignSupportTest {
 
     @Test
     public void testOfName() {
         Sign sign = SignSupport.ofName("test");
-        Assert.assertNotNull(sign);
-        Assert.assertNull(SignSupport.ofName("test1"));
+        Assertions.assertNotNull(sign);
+        Assertions.assertNull(SignSupport.ofName("test1"));
     }
 
     @Test
     public void testIsVerify() {
-        Assert.assertFalse(SignSupport.isVerify("test", null));
-        Assert.assertFalse(SignSupport.isVerify(null, new byte[0]));
-        Assert.assertTrue(SignSupport.isVerify("test", new byte[0]));
+        Assertions.assertFalse(SignSupport.isVerify("test", null));
+        Assertions.assertFalse(SignSupport.isVerify(null, new byte[0]));
+        Assertions.assertTrue(SignSupport.isVerify("test", new byte[0]));
     }
 
     @Test
     public void testIsNotVerify() {
-        Assert.assertTrue(SignSupport.isNotVerify("test", null));
-        Assert.assertTrue(SignSupport.isNotVerify("", new byte[0]));
-        Assert.assertFalse(SignSupport.isNotVerify("test", new byte[0]));
+        Assertions.assertTrue(SignSupport.isNotVerify("test", null));
+        Assertions.assertTrue(SignSupport.isNotVerify("", new byte[0]));
+        Assertions.assertFalse(SignSupport.isNotVerify("test", new byte[0]));
     }
 }

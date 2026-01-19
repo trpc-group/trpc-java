@@ -41,7 +41,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
-import org.mockito.MockedStatic;
 
 @ExtendWith(MockitoExtension.class)
 public class ProviderConfigTest {

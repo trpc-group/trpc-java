@@ -14,16 +14,16 @@ package com.tencent.trpc.core.logger.slf4j;
 import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.logger.LoggerAdapter;
 import com.tencent.trpc.core.logger.LoggerLevel;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class Slf4jLoggerAdapterTest {
 
     private Slf4jLoggerAdapter slf4jLoggerAdapter;
     private PluginConfig pluginConfig;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.slf4jLoggerAdapter = new Slf4jLoggerAdapter();
         this.pluginConfig = new PluginConfig("slf4j", LoggerAdapter.class, Slf4jLoggerAdapter.class);
@@ -37,25 +37,25 @@ public class Slf4jLoggerAdapterTest {
 
     @Test
     public void testGetLoggerWithName() {
-        Assert.assertNotNull(slf4jLoggerAdapter.getLogger("a"));
+        Assertions.assertNotNull(slf4jLoggerAdapter.getLogger("a"));
     }
 
     @Test
     public void testGetLoggerWithClass() {
-        Assert.assertNotNull(slf4jLoggerAdapter.getLogger(Slf4jLoggerAdapterTest.class));
+        Assertions.assertNotNull(slf4jLoggerAdapter.getLogger(Slf4jLoggerAdapterTest.class));
     }
 
     @Test
     public void testGetLoggerLevel() {
         LoggerLevel loggerLevel = slf4jLoggerAdapter.getLoggerLevel();
-        Assert.assertNull(loggerLevel);
+        Assertions.assertNull(loggerLevel);
     }
 
     @Test
     public void testSetLoggerLevel() {
         this.slf4jLoggerAdapter.setLoggerLevel(LoggerLevel.ALL);
         LoggerLevel loggerLevel = slf4jLoggerAdapter.getLoggerLevel();
-        Assert.assertNull(loggerLevel);
+        Assertions.assertNull(loggerLevel);
     }
 
 }

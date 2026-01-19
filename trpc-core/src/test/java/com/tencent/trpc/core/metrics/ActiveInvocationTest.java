@@ -11,9 +11,9 @@
 
 package com.tencent.trpc.core.metrics;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * ActiveInvocation test
@@ -22,7 +22,7 @@ public class ActiveInvocationTest {
 
     private ActiveInvocation activeInvocation;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         MetricsCallInfo passiveCallInfo = new MetricsCallInfo("passiveApp", "passiveServer",
                 "passiveService", "passiveInterface", "passiveIp",
@@ -33,51 +33,51 @@ public class ActiveInvocationTest {
 
     @Test
     public void testGetActiveService() {
-        Assert.assertEquals("activeService", activeInvocation.getActiveService());
+        Assertions.assertEquals("activeService", activeInvocation.getActiveService());
     }
 
     @Test
     public void testGetActiveInterface() {
-        Assert.assertEquals("activeInterface", activeInvocation.getActiveMethodName());
+        Assertions.assertEquals("activeInterface", activeInvocation.getActiveMethodName());
     }
 
     @Test
     public void testGetPassiveApp() {
-        Assert.assertEquals("passiveApp", activeInvocation.getPassiveCallInfo().getApp());
+        Assertions.assertEquals("passiveApp", activeInvocation.getPassiveCallInfo().getApp());
     }
 
     @Test
     public void testGetPassiveServer() {
-        Assert.assertEquals("passiveServer", activeInvocation.getPassiveCallInfo().getServer());
+        Assertions.assertEquals("passiveServer", activeInvocation.getPassiveCallInfo().getServer());
     }
 
     @Test
     public void testGetPassiveService() {
-        Assert.assertEquals("passiveService", activeInvocation.getPassiveCallInfo().getService());
+        Assertions.assertEquals("passiveService", activeInvocation.getPassiveCallInfo().getService());
     }
 
     @Test
     public void testGetPassiveInterface() {
-        Assert.assertEquals("passiveInterface", activeInvocation.getPassiveCallInfo().getMethodName());
+        Assertions.assertEquals("passiveInterface", activeInvocation.getPassiveCallInfo().getMethodName());
     }
 
     @Test
     public void testGetPassiveIp() {
-        Assert.assertEquals("passiveIp", activeInvocation.getPassiveCallInfo().getIp());
+        Assertions.assertEquals("passiveIp", activeInvocation.getPassiveCallInfo().getIp());
     }
 
     @Test
     public void testGetPassiveContainer() {
-        Assert.assertEquals("passiveContainer", activeInvocation.getPassiveCallInfo().getContainer());
+        Assertions.assertEquals("passiveContainer", activeInvocation.getPassiveCallInfo().getContainer());
     }
 
     @Test
     public void testGetPassiveConSetId() {
-        Assert.assertEquals("passiveConSetId", activeInvocation.getPassiveCallInfo().getContainerSetId());
+        Assertions.assertEquals("passiveConSetId", activeInvocation.getPassiveCallInfo().getContainerSetId());
     }
 
     @Test
     public void testTestToString() {
-        Assert.assertNotNull(activeInvocation.toString());
+        Assertions.assertNotNull(activeInvocation.toString());
     }
 }

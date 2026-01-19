@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.core.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class SeqUtilsTest {
 
@@ -20,6 +20,6 @@ public class SeqUtilsTest {
     public void testSeq() {
         int intSeq = SeqUtils.genIntegerSeq();
         int intSeq1 = SeqUtils.genIntegerSeq();
-        Assert.assertEquals(intSeq1, intSeq + 1);
+        Assertions.assertEquals(intSeq1, intSeq + 1);
     }
 }

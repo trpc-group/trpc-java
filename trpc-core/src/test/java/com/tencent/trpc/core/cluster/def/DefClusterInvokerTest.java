@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -40,18 +40,14 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({WorkerPoolManager.class})
-@PowerMockIgnore({"javax.management.*", "javax.security.*", "javax.ws.*"})
+@ExtendWith(MockitoExtension.class)
 public class DefClusterInvokerTest {
 
     private DefClusterInvoker<GenericClient> defClusterInvoker;
@@ -60,7 +56,7 @@ public class DefClusterInvokerTest {
     /**
      * Create ConsumerConfig & create DefClusterInvoker & create ConsumerInvokerProxy
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         ConsumerConfig<GenericClient> consumerConfig = getConsumerConfig();
         this.defClusterInvoker = new DefClusterInvoker<>(consumerConfig);
@@ -125,7 +121,7 @@ public class DefClusterInvokerTest {
     }
 
     private ConsumerConfig<GenericClient> getConsumerConfig() {
-        BackendConfig backendConfig = PowerMockito.mock(BackendConfig.class);
+        BackendConfig backendConfig = Mockito.mock(BackendConfig.class);
         backendConfig.setServiceInterface(GenericClient.class);
         backendConfig.setProxyType(ByteBuddyProxyFactory.NAME);
         backendConfig.setNamingUrl("ip://127.0.0.1:12345");
@@ -135,17 +131,17 @@ public class DefClusterInvokerTest {
         NamingOptions options = new NamingOptions();
         options.setSelectorId("ip");
         options.setServiceNaming("127.0.0.1:12345");
-        PowerMockito.when(backendConfig.getNamingOptions()).thenReturn(options);
+        Mockito.when(backendConfig.getNamingOptions()).thenReturn(options);
         // mock BackendConfig.getProxyType
-        PowerMockito.when(backendConfig.getProxyType()).thenReturn(ByteBuddyProxyFactory.NAME);
+        Mockito.when(backendConfig.getProxyType()).thenReturn(ByteBuddyProxyFactory.NAME);
         // mock workerPoolObj
-        WorkerPool workerPool = PowerMockito.mock(ThreadWorkerPool.class);
+        WorkerPool workerPool = Mockito.mock(ThreadWorkerPool.class);
         AtomicLong atomicLong = new AtomicLong();
-        PowerMockito.when(workerPool.getUncaughtExceptionHandler())
+        Mockito.when(workerPool.getUncaughtExceptionHandler())
                 .thenReturn(new TrpcThreadExceptionHandler(atomicLong, atomicLong, atomicLong));
-        PowerMockito.when(backendConfig.getWorkerPoolObj()).thenReturn(workerPool);
+        Mockito.when(backendConfig.getWorkerPoolObj()).thenReturn(workerPool);
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        PowerMockito.when(workerPool.toExecutor()).thenReturn(executor);
+        Mockito.when(workerPool.toExecutor()).thenReturn(executor);
         backendConfig.setWorkerPool(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME);
         ConsumerConfig<GenericClient> consumerConfig = new ConsumerConfig<>();
         consumerConfig.setBackendConfig(backendConfig);
@@ -155,25 +151,25 @@ public class DefClusterInvokerTest {
 
     @Test
     public void testTestToString() {
-        Assert.assertTrue(defClusterInvoker.toString().contains("NamingClusterInvoker"));
+        Assertions.assertTrue(defClusterInvoker.toString().contains("NamingClusterInvoker"));
     }
 
     @Test
     public void testGetConfig() {
         ConsumerConfig<GenericClient> config = defClusterInvoker.getConfig();
-        Assert.assertEquals(ByteBuddyProxyFactory.NAME, config.getBackendConfig().getProxyType());
+        Assertions.assertEquals(ByteBuddyProxyFactory.NAME, config.getBackendConfig().getProxyType());
     }
 
     @Test
     public void testGetInterface() {
         Class<GenericClient> anInterface = defClusterInvoker.getInterface();
-        Assert.assertNotNull(anInterface);
+        Assertions.assertNotNull(anInterface);
     }
 
     @Test
     public void testGetBackendConfig() {
         BackendConfig backendConfig = defClusterInvoker.getBackendConfig();
-        Assert.assertEquals(ByteBuddyProxyFactory.NAME, backendConfig.getProxyType());
+        Assertions.assertEquals(ByteBuddyProxyFactory.NAME, backendConfig.getProxyType());
     }
 
     @Test
@@ -185,7 +181,7 @@ public class DefClusterInvokerTest {
         consumerInvokerProxy.invoke(defRequest, new ServiceInstance());
         invocation.setFunc("n");
         consumerInvokerProxy.invoke(defRequest, new ServiceInstance());
-        Assert.assertNotNull(consumerInvokerProxy.getInvoker());
+        Assertions.assertNotNull(consumerInvokerProxy.getInvoker());
     }
 
     @Test
@@ -201,7 +197,7 @@ public class DefClusterInvokerTest {
                     + consumerConfig.getServiceInterface().getName()
                     + ", naming=" + consumerConfig.getBackendConfig().getNamingOptions().getServiceNaming()
                     + "), Client router error [found no available instance]";
-            Assert.assertEquals(expect, exception.getMessage());
+            Assertions.assertEquals(expect, exception.getMessage());
         }
     }
 

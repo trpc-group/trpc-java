@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class WorkerPoolManagerTest {
 
@@ -29,7 +29,7 @@ public class WorkerPoolManagerTest {
     @Test
     public void testGetShareScheduler() {
         ScheduledExecutorService shareScheduler = WorkerPoolManager.getShareScheduler();
-        Assert.assertNotNull(shareScheduler);
+        Assertions.assertNotNull(shareScheduler);
     }
 
     /**
@@ -38,7 +38,7 @@ public class WorkerPoolManagerTest {
     @Test
     public void testGetShutdownExecutor() {
         Executor shutdownExecutor = WorkerPoolManager.getShutdownExecutor();
-        Assert.assertNotNull(shutdownExecutor);
+        Assertions.assertNotNull(shutdownExecutor);
     }
 
     /**
@@ -48,11 +48,11 @@ public class WorkerPoolManagerTest {
     public void testRegistDefaultPluginConfig() {
         WorkerPoolManager.registDefaultPluginConfig();
         WorkerPool consumer = WorkerPoolManager.get(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME);
-        Assert.assertNotNull(consumer);
+        Assertions.assertNotNull(consumer);
         WorkerPool provider = WorkerPoolManager.get(WorkerPoolManager.DEF_PROVIDER_WORKER_POOL_NAME);
-        Assert.assertNotNull(provider);
+        Assertions.assertNotNull(provider);
         WorkerPool naming = WorkerPoolManager.get(WorkerPoolManager.DEF_NAMING_WORKER_POOL_NAME);
-        Assert.assertNotNull(naming);
+        Assertions.assertNotNull(naming);
     }
 
     /**
@@ -81,11 +81,11 @@ public class WorkerPoolManagerTest {
     public void testGetAllInitializedExtension() {
         this.testRegistDefaultPluginConfig();
         List<WorkerPool> allInitializedExtension = WorkerPoolManager.getAllInitializedExtension();
-        Assert.assertTrue(allInitializedExtension.contains(
+        Assertions.assertTrue(allInitializedExtension.contains(
                 WorkerPoolManager.get(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME)));
-        Assert.assertTrue(allInitializedExtension.contains(
+        Assertions.assertTrue(allInitializedExtension.contains(
                 WorkerPoolManager.get(WorkerPoolManager.DEF_PROVIDER_WORKER_POOL_NAME)));
-        Assert.assertTrue(allInitializedExtension.contains(
+        Assertions.assertTrue(allInitializedExtension.contains(
                 WorkerPoolManager.get(WorkerPoolManager.DEF_NAMING_WORKER_POOL_NAME)));
     }
 
@@ -99,7 +99,7 @@ public class WorkerPoolManagerTest {
                 .newThreadWorkerPoolConfig(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME, 20, Boolean.FALSE);
         WorkerPoolManager.refresh(WorkerPoolManager.DEF_NAMING_WORKER_POOL_NAME, pluginConfig);
         WorkerPool workerPool = WorkerPoolManager.get(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME);
-        Assert.assertNotNull(workerPool);
+        Assertions.assertNotNull(workerPool);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class WorkerPoolManagerTest {
                         20,20, Boolean.FALSE);
         WorkerPoolManager.refresh(WorkerPoolManager.DEF_NAMING_WORKER_POOL_NAME, pluginConfig);
         WorkerPool workerPool = WorkerPoolManager.get(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME);
-        Assert.assertNotNull(workerPool);
+        Assertions.assertNotNull(workerPool);
     }
 
     /**
@@ -120,22 +120,22 @@ public class WorkerPoolManagerTest {
     public void testNewThreadWorkerPoolConfig() {
         PluginConfig pluginConfig = WorkerPoolManager
                 .newThreadWorkerPoolConfig(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME, 20, Boolean.FALSE);
-        Assert.assertNotNull(pluginConfig);
-        Assert.assertEquals(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME, pluginConfig.getName());
-        Assert.assertEquals(WorkerPool.class, pluginConfig.getPluginInterface());
-        Assert.assertEquals(20, pluginConfig.getProperties().get("core_pool_size"));
-        Assert.assertFalse((Boolean) pluginConfig.getProperties().get("use_fiber"));
-        Assert.assertTrue((Boolean) pluginConfig.getProperties().get("share_schedule"));
+        Assertions.assertNotNull(pluginConfig);
+        Assertions.assertEquals(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME, pluginConfig.getName());
+        Assertions.assertEquals(WorkerPool.class, pluginConfig.getPluginInterface());
+        Assertions.assertEquals(20, pluginConfig.getProperties().get("core_pool_size"));
+        Assertions.assertFalse((Boolean) pluginConfig.getProperties().get("use_fiber"));
+        Assertions.assertTrue((Boolean) pluginConfig.getProperties().get("share_schedule"));
 
         pluginConfig = WorkerPoolManager.newThreadWorkerPoolConfig(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME,
                 2000, Boolean.TRUE);
-        Assert.assertNotNull(pluginConfig);
+        Assertions.assertNotNull(pluginConfig);
         ThreadPoolConfig.validate(pluginConfig);
-        Assert.assertEquals(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME, pluginConfig.getName());
-        Assert.assertEquals(WorkerPool.class, pluginConfig.getPluginInterface());
-        Assert.assertEquals(2000, pluginConfig.getProperties().get("core_pool_size"));
-        Assert.assertTrue((Boolean) pluginConfig.getProperties().get("use_fiber"));
-        Assert.assertTrue((Boolean) pluginConfig.getProperties().get("share_schedule"));
+        Assertions.assertEquals(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME, pluginConfig.getName());
+        Assertions.assertEquals(WorkerPool.class, pluginConfig.getPluginInterface());
+        Assertions.assertEquals(2000, pluginConfig.getProperties().get("core_pool_size"));
+        Assertions.assertTrue((Boolean) pluginConfig.getProperties().get("use_fiber"));
+        Assertions.assertTrue((Boolean) pluginConfig.getProperties().get("share_schedule"));
     }
 
     /**
@@ -152,7 +152,7 @@ public class WorkerPoolManagerTest {
     @Test
     public void testReset() {
         WorkerPoolManager.reset();
-        Assert.assertNotNull(WorkerPoolManager.getShareScheduler());
+        Assertions.assertNotNull(WorkerPoolManager.getShareScheduler());
     }
 
 }

@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -42,8 +42,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import org.junit.Test;
-import org.powermock.api.mockito.PowerMockito;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TraceClientFilterTest {
 
@@ -165,8 +165,8 @@ public class TraceClientFilterTest {
         CompletableFuture<Response> future = new CompletableFuture<Response>();
         Response rsp = new DefResponse();
         future.complete(rsp);
-        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
-        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
+        Invoker<?> invoker = (Invoker<?>) Mockito.mock(Invoker.class);
+        Mockito.when(invoker.invoke(request)).thenReturn(future);
         filter.filter(invoker, request);
     }
 
@@ -187,8 +187,8 @@ public class TraceClientFilterTest {
         Response rsp = new DefResponse();
         rsp.setException(new IllegalArgumentException(""));
         future.complete(rsp);
-        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
-        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
+        Invoker<?> invoker = (Invoker<?>) Mockito.mock(Invoker.class);
+        Mockito.when(invoker.invoke(request)).thenReturn(future);
         filter.filter(invoker, request);
     }
 
@@ -209,8 +209,8 @@ public class TraceClientFilterTest {
         Response rsp = new DefResponse();
         rsp.setException(TRpcException.newBizException(10, ""));
         future.complete(rsp);
-        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
-        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
+        Invoker<?> invoker = (Invoker<?>) Mockito.mock(Invoker.class);
+        Mockito.when(invoker.invoke(request)).thenReturn(future);
         filter.filter(invoker, request);
     }
 

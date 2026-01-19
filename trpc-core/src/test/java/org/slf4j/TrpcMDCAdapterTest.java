@@ -13,8 +13,8 @@ package org.slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.spi.MDCAdapter;
 
 public class TrpcMDCAdapterTest {
@@ -30,6 +30,6 @@ public class TrpcMDCAdapterTest {
         Map<String, String> contextMap = new HashMap<>();
         adapter.setContextMap(contextMap);
         adapter.getCopyOfContextMap();
-        Assert.assertNotNull(adapter);
+        Assertions.assertNotNull(adapter);
     }
 }

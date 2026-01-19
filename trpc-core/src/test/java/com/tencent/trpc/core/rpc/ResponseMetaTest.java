@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.core.rpc;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ResponseMetaTest {
 
@@ -24,9 +24,9 @@ public class ResponseMetaTest {
         meta.getMap().put("a", "b");
         meta.setSize(20);
         ResponseMeta copy = meta.clone();
-        Assert.assertEquals(101, copy.getMessageType());
-        Assert.assertEquals("b", copy.getMap().get("a"));
-        Assert.assertNotSame(copy.getMap(), meta.getMap());
-        Assert.assertEquals(20, meta.getSize());
+        Assertions.assertEquals(101, copy.getMessageType());
+        Assertions.assertEquals("b", copy.getMap().get("a"));
+        Assertions.assertNotSame(copy.getMap(), meta.getMap());
+        Assertions.assertEquals(20, meta.getSize());
     }
 }

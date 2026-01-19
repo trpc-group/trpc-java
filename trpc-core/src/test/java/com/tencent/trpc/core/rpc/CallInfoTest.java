@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.core.rpc;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CallInfoTest {
 
@@ -31,31 +31,31 @@ public class CallInfoTest {
         callInfo.setCallerService("callerservice");
         callInfo.setCalleeContainerName("calleeContainerName");
         callInfo.setCalleeSetName("calleeSetName");
-        Assert.assertEquals("callee", callInfo.getCallee());
-        Assert.assertEquals("calleeapp", callInfo.getCalleeApp());
-        Assert.assertEquals("calleeserver", callInfo.getCalleeServer());
-        Assert.assertEquals("calleemethod", callInfo.getCalleeMethod());
-        Assert.assertEquals("calleeservice", callInfo.getCalleeService());
-        Assert.assertEquals("caller", callInfo.getCaller());
-        Assert.assertEquals("callerapp", callInfo.getCallerApp());
-        Assert.assertEquals("callerserver", callInfo.getCallerServer());
-        Assert.assertEquals("callermethod", callInfo.getCallerMethod());
-        Assert.assertEquals("callerservice", callInfo.getCallerService());
-        Assert.assertEquals("calleeContainerName", callInfo.getCalleeContainerName());
-        Assert.assertEquals("calleeSetName", callInfo.getCalleeSetName());
+        Assertions.assertEquals("callee", callInfo.getCallee());
+        Assertions.assertEquals("calleeapp", callInfo.getCalleeApp());
+        Assertions.assertEquals("calleeserver", callInfo.getCalleeServer());
+        Assertions.assertEquals("calleemethod", callInfo.getCalleeMethod());
+        Assertions.assertEquals("calleeservice", callInfo.getCalleeService());
+        Assertions.assertEquals("caller", callInfo.getCaller());
+        Assertions.assertEquals("callerapp", callInfo.getCallerApp());
+        Assertions.assertEquals("callerserver", callInfo.getCallerServer());
+        Assertions.assertEquals("callermethod", callInfo.getCallerMethod());
+        Assertions.assertEquals("callerservice", callInfo.getCallerService());
+        Assertions.assertEquals("calleeContainerName", callInfo.getCalleeContainerName());
+        Assertions.assertEquals("calleeSetName", callInfo.getCalleeSetName());
 
         CallInfo newCallInfo = callInfo.clone();
-        Assert.assertEquals("callee", newCallInfo.getCallee());
-        Assert.assertEquals("calleeapp", newCallInfo.getCalleeApp());
-        Assert.assertEquals("calleeserver", newCallInfo.getCalleeServer());
-        Assert.assertEquals("calleemethod", newCallInfo.getCalleeMethod());
-        Assert.assertEquals("calleeservice", newCallInfo.getCalleeService());
-        Assert.assertEquals("caller", newCallInfo.getCaller());
-        Assert.assertEquals("callerapp", newCallInfo.getCallerApp());
-        Assert.assertEquals("callerserver", newCallInfo.getCallerServer());
-        Assert.assertEquals("callermethod", newCallInfo.getCallerMethod());
-        Assert.assertEquals("callerservice", newCallInfo.getCallerService());
-        Assert.assertEquals("calleeContainerName", callInfo.getCalleeContainerName());
-        Assert.assertEquals("calleeSetName", callInfo.getCalleeSetName());
+        Assertions.assertEquals("callee", newCallInfo.getCallee());
+        Assertions.assertEquals("calleeapp", newCallInfo.getCalleeApp());
+        Assertions.assertEquals("calleeserver", newCallInfo.getCalleeServer());
+        Assertions.assertEquals("calleemethod", newCallInfo.getCalleeMethod());
+        Assertions.assertEquals("calleeservice", newCallInfo.getCalleeService());
+        Assertions.assertEquals("caller", newCallInfo.getCaller());
+        Assertions.assertEquals("callerapp", newCallInfo.getCallerApp());
+        Assertions.assertEquals("callerserver", newCallInfo.getCallerServer());
+        Assertions.assertEquals("callermethod", newCallInfo.getCallerMethod());
+        Assertions.assertEquals("callerservice", newCallInfo.getCallerService());
+        Assertions.assertEquals("calleeContainerName", callInfo.getCalleeContainerName());
+        Assertions.assertEquals("calleeSetName", callInfo.getCalleeSetName());
     }
 }

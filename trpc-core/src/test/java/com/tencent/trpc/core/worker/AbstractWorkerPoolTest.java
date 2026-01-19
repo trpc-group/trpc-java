@@ -14,49 +14,44 @@ package com.tencent.trpc.core.worker;
 import com.tencent.trpc.core.management.ForkJoinPoolMXBeanImpl;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.RejectedExecutionException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class AbstractWorkerPoolTest {
 
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
-
     @Test
     public void testToExecutor() {
-        expectedEx.expect(UnsupportedOperationException.class);
-        expectedEx.expectMessage("not support toThreadPoolExecutor");
+        UnsupportedOperationException exception = Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+            AbstractWorkerPool pool = new AbstractWorkerPool() {
 
-        AbstractWorkerPool pool = new AbstractWorkerPool() {
+                @Override
+                public UncaughtExceptionHandler getUncaughtExceptionHandler() {
+                    return null;
+                }
 
-            @Override
-            public UncaughtExceptionHandler getUncaughtExceptionHandler() {
-                return null;
-            }
+                @Override
+                public String getName() {
+                    return null;
+                }
 
-            @Override
-            public String getName() {
-                return null;
-            }
+                @Override
+                public void execute(Task task) throws RejectedExecutionException {
 
-            @Override
-            public void execute(Task task) throws RejectedExecutionException {
+                }
 
-            }
+                @Override
+                public ForkJoinPoolMXBeanImpl report() {
+                    return null;
+                }
 
-            @Override
-            public ForkJoinPoolMXBeanImpl report() {
-                return null;
-            }
+                @Override
+                public void close(long timeoutMills) {
 
-            @Override
-            public void close(long timeoutMills) {
+                }
+            };
 
-            }
-        };
-
-        pool.toExecutor();
-
+            pool.toExecutor();
+        });
+        Assertions.assertTrue(exception.getMessage().contains("not support toThreadPoolExecutor"));
     }
 }

@@ -11,14 +11,14 @@
 
 package com.tencent.trpc.core.transport.handler;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class AbstractClientChannelHandlerTest {
 
     @Test
     public void testCreate() {
         AbstractClientChannelHandler clientChannelHandler = new AbstractClientChannelHandler(null, null);
-        Assert.assertNotNull(clientChannelHandler);
+        Assertions.assertNotNull(clientChannelHandler);
     }
 }

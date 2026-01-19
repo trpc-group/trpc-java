@@ -12,9 +12,9 @@
 package com.tencent.trpc.core.common.config;
 
 import java.util.HashMap;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class BaseProtocolConfigTest {
 
@@ -23,7 +23,7 @@ public class BaseProtocolConfigTest {
     /**
      * Init BaseProtocolConfig
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         this.bpc = new BaseProtocolConfig();
         bpc.setProtocol("trpc");
@@ -55,283 +55,283 @@ public class BaseProtocolConfigTest {
 
     @Test
     public void testGetProtocol() {
-        Assert.assertEquals("trpc", bpc.getProtocol());
+        Assertions.assertEquals("trpc", bpc.getProtocol());
     }
 
     @Test
     public void testSetProtocol() {
         bpc.setProtocol("http");
-        Assert.assertEquals("http", bpc.getProtocol());
+        Assertions.assertEquals("http", bpc.getProtocol());
     }
 
     @Test
     public void testGetSerialization() {
-        Assert.assertEquals("json", bpc.getSerialization());
+        Assertions.assertEquals("json", bpc.getSerialization());
     }
 
     @Test
     public void testSetSerialization() {
         bpc.setSerialization("pb");
-        Assert.assertEquals("pb", bpc.getSerialization());
+        Assertions.assertEquals("pb", bpc.getSerialization());
     }
 
     @Test
     public void testGetCompressor() {
-        Assert.assertEquals("gzip", bpc.getCompressor());
+        Assertions.assertEquals("gzip", bpc.getCompressor());
     }
 
     @Test
     public void testSetCompressor() {
         bpc.setCompressor("snappy");
-        Assert.assertEquals("snappy", bpc.getCompressor());
+        Assertions.assertEquals("snappy", bpc.getCompressor());
     }
 
     @Test
     public void testGetCompressMinBytes() {
-        Assert.assertEquals(10, bpc.getCompressMinBytes());
+        Assertions.assertEquals(10, bpc.getCompressMinBytes());
     }
 
     @Test
     public void testSetCompressMinBytes() {
         bpc.setCompressMinBytes(20);
-        Assert.assertEquals(20, bpc.getCompressMinBytes());
+        Assertions.assertEquals(20, bpc.getCompressMinBytes());
     }
 
     @Test
     public void testGetKeepAlive() {
-        Assert.assertTrue(bpc.getKeepAlive());
+        Assertions.assertTrue(bpc.getKeepAlive());
     }
 
     @Test
     public void testSetKeepAlive() {
         bpc.setKeepAlive(false);
-        Assert.assertFalse(bpc.getKeepAlive());
+        Assertions.assertFalse(bpc.getKeepAlive());
     }
 
     @Test
     public void testGetCharset() {
-        Assert.assertEquals("utf8", bpc.getCharset());
+        Assertions.assertEquals("utf8", bpc.getCharset());
     }
 
     @Test
     public void testSetCharset() {
         bpc.setCharset("gbk");
-        Assert.assertEquals("gbk", bpc.getCharset());
+        Assertions.assertEquals("gbk", bpc.getCharset());
     }
 
     @Test
     public void testGetTransporter() {
-        Assert.assertEquals("netty", bpc.getTransporter());
+        Assertions.assertEquals("netty", bpc.getTransporter());
     }
 
     @Test
     public void testSetTransporter() {
         bpc.setTransporter("jetty");
-        Assert.assertEquals("jetty", bpc.getTransporter());
+        Assertions.assertEquals("jetty", bpc.getTransporter());
     }
 
     @Test
     public void testGetMaxConns() {
-        Assert.assertEquals(10, bpc.getMaxConns());
+        Assertions.assertEquals(10, bpc.getMaxConns());
     }
 
     @Test
     public void testSetMaxConns() {
         bpc.setMaxConns(20);
-        Assert.assertEquals(20, bpc.getMaxConns());
+        Assertions.assertEquals(20, bpc.getMaxConns());
     }
 
     @Test
     public void testGetBacklog() {
-        Assert.assertEquals(10, bpc.getBacklog());
+        Assertions.assertEquals(10, bpc.getBacklog());
     }
 
     @Test
     public void testSetBacklog() {
         bpc.setBacklog(20);
-        Assert.assertEquals(20, bpc.getBacklog());
+        Assertions.assertEquals(20, bpc.getBacklog());
     }
 
     @Test
     public void testGetNetwork() {
-        Assert.assertEquals("tcp", bpc.getNetwork());
+        Assertions.assertEquals("tcp", bpc.getNetwork());
     }
 
     @Test
     public void testSetNetwork() {
         bpc.setNetwork("udp");
-        Assert.assertEquals("udp", bpc.getNetwork());
+        Assertions.assertEquals("udp", bpc.getNetwork());
     }
 
     @Test
     public void testGetReceiveBuffer() {
-        Assert.assertEquals(10, bpc.getReceiveBuffer());
+        Assertions.assertEquals(10, bpc.getReceiveBuffer());
     }
 
     @Test
     public void testSetReceiveBuffer() {
         bpc.setReceiveBuffer(20);
-        Assert.assertEquals(20, bpc.getReceiveBuffer());
+        Assertions.assertEquals(20, bpc.getReceiveBuffer());
     }
 
     @Test
     public void testGetSendBuffer() {
-        Assert.assertEquals(10, bpc.getSendBuffer());
+        Assertions.assertEquals(10, bpc.getSendBuffer());
     }
 
     @Test
     public void testSetSendBuffer() {
         bpc.setSendBuffer(20);
-        Assert.assertEquals(20, bpc.getSendBuffer());
+        Assertions.assertEquals(20, bpc.getSendBuffer());
     }
 
     @Test
     public void testGetPayload() {
-        Assert.assertEquals(10, bpc.getPayload());
+        Assertions.assertEquals(10, bpc.getPayload());
     }
 
     @Test
     public void testSetPayload() {
         bpc.setPayload(20);
-        Assert.assertEquals(20, bpc.getPayload());
+        Assertions.assertEquals(20, bpc.getPayload());
     }
 
     @Test
     public void testGetIdleTimeout() {
-        Assert.assertEquals(10, bpc.getIdleTimeout().intValue());
+        Assertions.assertEquals(10, bpc.getIdleTimeout().intValue());
     }
 
     @Test
     public void testSetIdleTimeout() {
         bpc.setIdleTimeout(20);
-        Assert.assertEquals(20, bpc.getIdleTimeout().intValue());
+        Assertions.assertEquals(20, bpc.getIdleTimeout().intValue());
     }
 
     @Test
     public void testGetLazyinit() {
-        Assert.assertTrue(bpc.getLazyinit());
+        Assertions.assertTrue(bpc.getLazyinit());
     }
 
     @Test
     public void testSetLazyinit() {
         bpc.setLazyinit(false);
-        Assert.assertFalse(bpc.getLazyinit());
+        Assertions.assertFalse(bpc.getLazyinit());
     }
 
     @Test
     public void testGetConnsPerAddr() {
-        Assert.assertEquals(10, bpc.getConnsPerAddr());
+        Assertions.assertEquals(10, bpc.getConnsPerAddr());
     }
 
     @Test
     public void testSetConnsPerAddr() {
         bpc.setConnsPerAddr(20);
-        Assert.assertEquals(20, bpc.getConnsPerAddr());
+        Assertions.assertEquals(20, bpc.getConnsPerAddr());
     }
 
     @Test
     public void testGetConnTimeout() {
-        Assert.assertEquals(10, bpc.getConnTimeout());
+        Assertions.assertEquals(10, bpc.getConnTimeout());
     }
 
     @Test
     public void testSetConnTimeout() {
         bpc.setConnTimeout(20);
-        Assert.assertEquals(20, bpc.getConnTimeout());
+        Assertions.assertEquals(20, bpc.getConnTimeout());
     }
 
     @Test
     public void testGetIoMode() {
-        Assert.assertEquals("epoll", bpc.getIoMode());
+        Assertions.assertEquals("epoll", bpc.getIoMode());
     }
 
     @Test
     public void testSetIoMode() {
         bpc.setIoMode("poll");
-        Assert.assertEquals("poll", bpc.getIoMode());
+        Assertions.assertEquals("poll", bpc.getIoMode());
     }
 
     @Test
     public void testGetIoThreadGroupShare() {
-        Assert.assertTrue(bpc.getIoThreadGroupShare());
+        Assertions.assertTrue(bpc.getIoThreadGroupShare());
     }
 
     @Test
     public void testSetIoThreadGroupShare() {
         bpc.setIoThreadGroupShare(false);
-        Assert.assertFalse(bpc.getIoThreadGroupShare());
+        Assertions.assertFalse(bpc.getIoThreadGroupShare());
     }
 
     @Test
     public void testGetIoThreads() {
-        Assert.assertEquals(10, bpc.getIoThreads());
+        Assertions.assertEquals(10, bpc.getIoThreads());
     }
 
     @Test
     public void testSetIoThreads() {
         bpc.setIoThreads(20);
-        Assert.assertEquals(20, bpc.getIoThreads());
+        Assertions.assertEquals(20, bpc.getIoThreads());
     }
 
     @Test
     public void testSetBossThreads() {
         bpc.setBossThreads(2);
-        Assert.assertEquals(2, bpc.getBossThreads());
+        Assertions.assertEquals(2, bpc.getBossThreads());
     }
 
     @Test
     public void testGetFlushConsolidation() {
-        Assert.assertTrue(bpc.getFlushConsolidation());
+        Assertions.assertTrue(bpc.getFlushConsolidation());
     }
 
     @Test
     public void testSetFlushConsolidation() {
         bpc.setFlushConsolidation(false);
-        Assert.assertFalse(bpc.getFlushConsolidation());
+        Assertions.assertFalse(bpc.getFlushConsolidation());
     }
 
     @Test
     public void testGetBatchDecoder() {
-        Assert.assertTrue(bpc.getBatchDecoder());
+        Assertions.assertTrue(bpc.getBatchDecoder());
     }
 
     @Test
     public void testSetBatchDecoder() {
         bpc.setBatchDecoder(false);
-        Assert.assertFalse(bpc.getBatchDecoder());
+        Assertions.assertFalse(bpc.getBatchDecoder());
     }
 
     @Test
     public void testGetExplicitFlushAfterFlushes() {
-        Assert.assertEquals(10, bpc.getExplicitFlushAfterFlushes());
+        Assertions.assertEquals(10, bpc.getExplicitFlushAfterFlushes());
     }
 
     @Test
     public void testSetExplicitFlushAfterFlushes() {
         bpc.setExplicitFlushAfterFlushes(20);
-        Assert.assertEquals(20, bpc.getExplicitFlushAfterFlushes());
+        Assertions.assertEquals(20, bpc.getExplicitFlushAfterFlushes());
     }
 
     @Test
     public void testGetReusePort() {
-        Assert.assertTrue(bpc.getReusePort());
+        Assertions.assertTrue(bpc.getReusePort());
     }
 
     @Test
     public void testSetReusePort() {
         bpc.setReusePort(false);
-        Assert.assertFalse(bpc.getReusePort());
+        Assertions.assertFalse(bpc.getReusePort());
     }
 
     @Test
     public void testGetExtMap() {
-        Assert.assertEquals(0, bpc.getExtMap().size());
+        Assertions.assertEquals(0, bpc.getExtMap().size());
     }
 
     @Test
     public void testSetExtMap() {
         bpc.setExtMap(null);
-        Assert.assertNull(bpc.getExtMap());
+        Assertions.assertNull(bpc.getExtMap());
     }
 
 }

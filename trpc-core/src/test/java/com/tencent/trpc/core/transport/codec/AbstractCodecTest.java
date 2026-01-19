@@ -18,15 +18,15 @@ import com.tencent.trpc.core.serialization.support.JSONSerialization;
 import com.tencent.trpc.core.sign.SignSupport;
 import com.tencent.trpc.core.transport.Channel;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class AbstractCodecTest {
 
     private AbstractCodec abstractCodec;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         SerializationSupport.preLoadSerialization();
         CompressorSupport.preLoadCompressors();
@@ -46,18 +46,18 @@ public class AbstractCodecTest {
 
     @Test
     public void testCheckAndGetSerialization() {
-        Assert.assertNotNull(abstractCodec.checkAndGetSerialization("json"));
-        Assert.assertNotNull(abstractCodec.checkAndGetSerialization(new JSONSerialization().type()));
+        Assertions.assertNotNull(abstractCodec.checkAndGetSerialization("json"));
+        Assertions.assertNotNull(abstractCodec.checkAndGetSerialization(new JSONSerialization().type()));
     }
 
     @Test
     public void testCheckAndGetCompressor() {
-        Assert.assertNotNull(abstractCodec.checkAndGetCompressor("gzip"));
+        Assertions.assertNotNull(abstractCodec.checkAndGetCompressor("gzip"));
     }
 
     @Test
     public void testGetEncodableValue() {
-        Assert.assertNotNull(abstractCodec.getEncodableValue(10, new JSONSerialization(),
+        Assertions.assertNotNull(abstractCodec.getEncodableValue(10, new JSONSerialization(),
                 new SnappyCompressor(), false, null));
     }
 

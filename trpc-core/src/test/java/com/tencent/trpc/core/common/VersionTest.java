@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.core.common;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class VersionTest {
 
@@ -20,10 +20,10 @@ public class VersionTest {
     public void testVersion() {
         // FORMAL VERSION
         if (Version.IS_FORMAL_VERSION) {
-            Assert.assertEquals(Version.VERSION, Version.version());
+            Assertions.assertEquals(Version.VERSION, Version.version());
             return;
         }
         // SNAPSHOT VERSION
-        Assert.assertEquals(Version.SNAPSHOT_VERSION, Version.version());
+        Assertions.assertEquals(Version.SNAPSHOT_VERSION, Version.version());
     }
 }

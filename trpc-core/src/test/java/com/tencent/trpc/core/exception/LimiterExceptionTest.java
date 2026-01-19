@@ -12,40 +12,40 @@
 package com.tencent.trpc.core.exception;
 
 import com.tencent.trpc.core.utils.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class LimiterExceptionTest {
 
     @Test
     public void test() {
         LimiterException limiterException = new LimiterException("limiter exception");
-        Assert.assertTrue(limiterException.getMessage().equals("limiter exception"));
+        Assertions.assertTrue(limiterException.getMessage().equals("limiter exception"));
     }
 
     @Test
     public void test2() {
         LimiterException limiterException = new LimiterException(new NullPointerException("msg"));
-        Assert.assertTrue(limiterException.getMessage().equals("java.lang.NullPointerException: msg"));
-        Assert.assertTrue(limiterException.getCause() instanceof NullPointerException);
+        Assertions.assertTrue(limiterException.getMessage().equals("java.lang.NullPointerException: msg"));
+        Assertions.assertTrue(limiterException.getCause() instanceof NullPointerException);
     }
 
     @Test
     public void test3() {
         LimiterException exception = new LimiterException("msg2", new NullPointerException("msg1"));
-        Assert.assertTrue(exception.getCause() instanceof NullPointerException);
-        Assert.assertTrue(exception.getMessage().equals("msg2"));
+        Assertions.assertTrue(exception.getCause() instanceof NullPointerException);
+        Assertions.assertTrue(exception.getMessage().equals("msg2"));
     }
 
     @Test
     public void test4() {
         LimiterException limiterException = new LimiterException();
-        Assert.assertTrue(StringUtils.isEmpty(limiterException.getMessage()));
+        Assertions.assertTrue(StringUtils.isEmpty(limiterException.getMessage()));
     }
 
     @Test
     public void test5() {
         LimiterException limiterException = new LimiterException("msg3", new NullPointerException(), false, false);
-        Assert.assertTrue(limiterException.getMessage().equals("msg3"));
+        Assertions.assertTrue(limiterException.getMessage().equals("msg3"));
     }
 }

@@ -12,8 +12,8 @@
 package com.tencent.trpc.core.utils;
 
 import com.tencent.trpc.core.common.ConfigManager;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ClassLoaderUtilsTest {
 
@@ -21,12 +21,12 @@ public class ClassLoaderUtilsTest {
     public void testGetClassLoader() throws ClassNotFoundException {
         String className = "com.tencent.trpc.core.utils.ClassLoaderUtilsTest";
         Class<?> clazz = ClassLoaderUtils.getClassLoader(this.getClass()).loadClass(className);
-        Assert.assertEquals(clazz.getName(), className);
+        Assertions.assertEquals(clazz.getName(), className);
         Thread.currentThread().setContextClassLoader(null);
         clazz = ClassLoaderUtils.getClassLoader(null).loadClass(className);
-        Assert.assertNotNull(clazz);
+        Assertions.assertNotNull(clazz);
         clazz = ClassLoaderUtils.getClassLoader(this.getClass()).loadClass(className);
-        Assert.assertEquals(clazz.getName(), className);
+        Assertions.assertEquals(clazz.getName(), className);
         ClassLoader pre = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(pre);
     }
@@ -37,6 +37,6 @@ public class ClassLoaderUtilsTest {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         ConfigManager.getInstance().start();
         ClassLoader cachedClassLoader = ClassLoaderUtils.getClassLoader(null);
-        Assert.assertEquals(cachedClassLoader, classLoader);
+        Assertions.assertEquals(cachedClassLoader, classLoader);
     }
 }

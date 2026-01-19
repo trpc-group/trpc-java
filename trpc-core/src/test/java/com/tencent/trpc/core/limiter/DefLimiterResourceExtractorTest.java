@@ -15,8 +15,8 @@ import com.tencent.trpc.core.extension.ExtensionLoader;
 import com.tencent.trpc.core.limiter.spi.LimiterResourceExtractor;
 import com.tencent.trpc.core.rpc.RpcInvocation;
 import com.tencent.trpc.core.rpc.def.DefRequest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DefLimiterResourceExtractorTest {
 
@@ -31,7 +31,7 @@ public class DefLimiterResourceExtractorTest {
         request.setInvocation(rpcInvocation);
 
         String resource = extractor.extract(null, request);
-        Assert.assertEquals("/test/func", resource);
+        Assertions.assertEquals("/test/func", resource);
     }
 
 }

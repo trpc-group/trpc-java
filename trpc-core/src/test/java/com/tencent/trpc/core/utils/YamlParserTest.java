@@ -13,8 +13,8 @@ package com.tencent.trpc.core.utils;
 
 import java.io.InputStream;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class YamlParserTest {
 
@@ -25,19 +25,19 @@ public class YamlParserTest {
         InputStream resourceAsStream = ClassLoaderUtils.
                 getClassLoader(YamlParser.class).getResourceAsStream(defaultFileName);
         Map map = YamlParser.parseAs(resourceAsStream, Map.class);
-        Assert.assertNotNull(map);
+        Assertions.assertNotNull(map);
     }
 
     @Test
     public void testParseAs() {
         String path = YamlParser.class.getClassLoader().getResource(defaultFileName).getPath();
         Object map = YamlParser.parseAs(path, Object.class);
-        Assert.assertNotNull(map);
+        Assertions.assertNotNull(map);
     }
 
     @Test
     public void testParseAsFromClassPath() {
         Map map = YamlParser.parseAsFromClassPath(defaultFileName, Map.class);
-        Assert.assertNotNull(map);
+        Assertions.assertNotNull(map);
     }
 }

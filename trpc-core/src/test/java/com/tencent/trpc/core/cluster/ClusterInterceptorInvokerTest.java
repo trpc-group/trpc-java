@@ -21,9 +21,9 @@ import com.tencent.trpc.core.rpc.def.DefRequest;
 import com.tencent.trpc.core.rpc.def.DefResponse;
 import com.tencent.trpc.core.utils.FutureUtils;
 import java.util.concurrent.CompletionStage;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ClusterInterceptorInvokerTest {
 
@@ -33,7 +33,7 @@ public class ClusterInterceptorInvokerTest {
     /**
      * Init clusterInvoker & clusterInvokerNoInterceptors
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         ConsumerConfig<BlankRpcServiceName> consumerConfig = new ConsumerConfig<>();
         consumerConfig.setMock(false);
@@ -80,20 +80,20 @@ public class ClusterInterceptorInvokerTest {
     public void testNew() {
         ClusterInterceptorInvoker<BlankRpcServiceName> invoker = new ClusterInterceptorInvoker<>(clusterInvoker);
         ConsumerConfig<BlankRpcServiceName> config = invoker.getConfig();
-        Assert.assertNotNull(config);
-        Assert.assertFalse(config.getMock());
-        Assert.assertTrue(invoker.getInterface().isAssignableFrom(BlankRpcServiceName.class));
-        Assert.assertNotNull(invoker.getBackendConfig());
-        Assert.assertEquals(invoker.getBackendConfig().getInterceptors().get(0), "log");
-        Assert.assertNotNull(invoker.invoke(new DefRequest()));
+        Assertions.assertNotNull(config);
+        Assertions.assertFalse(config.getMock());
+        Assertions.assertTrue(invoker.getInterface().isAssignableFrom(BlankRpcServiceName.class));
+        Assertions.assertNotNull(invoker.getBackendConfig());
+        Assertions.assertEquals(invoker.getBackendConfig().getInterceptors().get(0), "log");
+        Assertions.assertNotNull(invoker.invoke(new DefRequest()));
     }
 
     @Test
     public void testNewNoInterceptor() {
         ClusterInterceptorInvoker<BlankRpcServiceName> invokerWithoutInterceptor = new ClusterInterceptorInvoker<>(
                 clusterInvokerNoInterceptors);
-        Assert.assertNotNull(invokerWithoutInterceptor);
-        Assert.assertTrue(invokerWithoutInterceptor.getBackendConfig().getInterceptors().isEmpty());
+        Assertions.assertNotNull(invokerWithoutInterceptor);
+        Assertions.assertTrue(invokerWithoutInterceptor.getBackendConfig().getInterceptors().isEmpty());
     }
 
     @TRpcService

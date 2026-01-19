@@ -11,11 +11,11 @@
 
 package com.tencent.trpc.core.common.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.HashMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class NamingOptionsTest {
 

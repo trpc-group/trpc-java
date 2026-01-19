@@ -11,14 +11,14 @@
 
 package com.tencent.trpc.core.transport;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.exception.TransportException;
 import com.tencent.trpc.core.transport.codec.ClientCodec;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AbstractClientTransportTest {
 

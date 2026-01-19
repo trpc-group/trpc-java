@@ -12,23 +12,23 @@
 package com.tencent.trpc.core.management;
 
 import java.util.concurrent.ExecutorService;
-import org.junit.Assert;
-import org.junit.Test;
-import org.powermock.api.mockito.PowerMockito;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class ThreadPerTaskExecutorMXBeanTest {
 
     @Test
     public void testThreadPerTaskExecutorMXBean() {
-        ExecutorService executorService = PowerMockito.mock(ExecutorService.class);
+        ExecutorService executorService = Mockito.mock(ExecutorService.class);
         ThreadPerTaskExecutorWrapper wrapper = ThreadPerTaskExecutorWrapper.wrap(executorService);
         ThreadPoolMXBean mxBean = new ThreadPerTaskExecutorMXBeanImpl(wrapper);
-        Assert.assertEquals(0, mxBean.getPoolSize());
-        Assert.assertEquals(0, mxBean.getActiveThreadCount());
-        Assert.assertEquals(0, mxBean.getTaskCount());
-        Assert.assertEquals(0, mxBean.getCompletedTaskCount());
-        Assert.assertEquals(0, mxBean.getCorePoolSize());
-        Assert.assertEquals(Integer.MAX_VALUE, mxBean.getMaximumPoolSize());
+        Assertions.assertEquals(0, mxBean.getPoolSize());
+        Assertions.assertEquals(0, mxBean.getActiveThreadCount());
+        Assertions.assertEquals(0, mxBean.getTaskCount());
+        Assertions.assertEquals(0, mxBean.getCompletedTaskCount());
+        Assertions.assertEquals(0, mxBean.getCorePoolSize());
+        Assertions.assertEquals(Integer.MAX_VALUE, mxBean.getMaximumPoolSize());
     }
 
 }

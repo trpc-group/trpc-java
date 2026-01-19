@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -13,10 +13,10 @@ package com.tencent.trpc.core.stream;
 
 import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.core.rpc.RpcContext;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.powermock.api.mockito.PowerMockito;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.reactivestreams.Publisher;
 import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Flux;
@@ -31,9 +31,9 @@ public class StreamCallTest {
     /**
      * Init streamCall & receiverFlux
      */
-    @Before
+    @BeforeEach
     public void setUp() {
-        streamCall = PowerMockito.spy(new StreamCall() {
+        streamCall = Mockito.spy(new StreamCall() {
 
             @Override
             public <ReqT, RspT> Flux<RspT> serverStream(RpcContext ctx, ReqT request) {
@@ -78,27 +78,27 @@ public class StreamCallTest {
     public void testServerStream() {
         RpcContext ctx = new RpcClientContext();
         Publisher<?> resp = streamCall.serverStream(ctx, receiverFlux);
-        Assert.assertNotNull(resp);
+        Assertions.assertNotNull(resp);
     }
 
     @Test
     public void testClientStream() {
         RpcContext ctx = new RpcClientContext();
         Publisher<?> resp = streamCall.clientStream(ctx, receiverFlux);
-        Assert.assertNotNull(resp);
+        Assertions.assertNotNull(resp);
     }
 
     @Test
     public void testDuplexStream() {
         RpcContext ctx = new RpcClientContext();
         Publisher<?> resp = streamCall.duplexStream(ctx, receiverFlux);
-        Assert.assertNotNull(resp);
+        Assertions.assertNotNull(resp);
     }
 
     @Test
     public void testOnClose() {
         Mono<Void> resp = streamCall.onClose();
-        Assert.assertNotNull(resp);
+        Assertions.assertNotNull(resp);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class StreamCallTest {
 
     @Test
     public void testIsDisposed() {
-        Assert.assertFalse(streamCall.isDisposed());
+        Assertions.assertFalse(streamCall.isDisposed());
     }
 
 }

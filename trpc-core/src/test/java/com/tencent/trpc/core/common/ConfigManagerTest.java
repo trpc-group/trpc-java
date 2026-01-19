@@ -22,10 +22,10 @@ import com.tencent.trpc.core.worker.support.thread.ThreadPoolConfig;
 import com.tencent.trpc.core.worker.support.thread.ThreadWorkerPool;
 import java.util.HashMap;
 import org.assertj.core.util.Lists;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ConfigManagerTest {
 
@@ -35,7 +35,7 @@ public class ConfigManagerTest {
     /**
      * ConfigManager start
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         ConfigManager.stopTest();
         GlobalConfig globalConfig = new GlobalConfig();
@@ -66,7 +66,7 @@ public class ConfigManagerTest {
         ConfigManager.startTest();
     }
 
-    @After
+    @AfterEach
     public void teardown() {
         ConfigManager.stopTest();
     }
@@ -80,7 +80,7 @@ public class ConfigManagerTest {
     @Test
     public void testGetInstance() {
         ConfigManager instance = ConfigManager.getInstance();
-        Assert.assertNotNull(instance);
+        Assertions.assertNotNull(instance);
     }
 
     @Test
@@ -100,17 +100,17 @@ public class ConfigManagerTest {
     @Test
     public void testGetGlobalConfig() {
         GlobalConfig globalConfig = ConfigManager.getInstance().getGlobalConfig();
-        Assert.assertNotNull(globalConfig);
-        Assert.assertEquals("cn", globalConfig.getContainerName());
-        Assert.assertEquals("en", globalConfig.getEnvName());
-        Assert.assertEquals("prod", globalConfig.getNamespace());
-        Assert.assertEquals("fsn", globalConfig.getFullSetName());
-        Assert.assertTrue(globalConfig.isEnableSet());
+        Assertions.assertNotNull(globalConfig);
+        Assertions.assertEquals("cn", globalConfig.getContainerName());
+        Assertions.assertEquals("en", globalConfig.getEnvName());
+        Assertions.assertEquals("prod", globalConfig.getNamespace());
+        Assertions.assertEquals("fsn", globalConfig.getFullSetName());
+        Assertions.assertTrue(globalConfig.isEnableSet());
     }
 
     @Test
     public void testGetServerConfig() {
-        Assert.assertNotNull(ConfigManager.getInstance().getServerConfig());
+        Assertions.assertNotNull(ConfigManager.getInstance().getServerConfig());
     }
 
     @Test
@@ -118,12 +118,12 @@ public class ConfigManagerTest {
         ServerConfig serverConfig = new ServerConfig();
         serverConfig.setServer("aaa");
         ConfigManager.getInstance().setServerConfig(serverConfig);
-        Assert.assertEquals("aaa", ConfigManager.getInstance().getServerConfig().getServer());
+        Assertions.assertEquals("aaa", ConfigManager.getInstance().getServerConfig().getServer());
     }
 
     @Test
     public void testGetClientConfig() {
-        Assert.assertNotNull(ConfigManager.getInstance().getClientConfig());
+        Assertions.assertNotNull(ConfigManager.getInstance().getClientConfig());
     }
 
     @Test
@@ -131,23 +131,23 @@ public class ConfigManagerTest {
         ClientConfig clientConfig = new ClientConfig();
         clientConfig.setCharset("aaa");
         ConfigManager.getInstance().setClientConfig(clientConfig);
-        Assert.assertEquals("aaa", ConfigManager.getInstance().getClientConfig().getCharset());
+        Assertions.assertEquals("aaa", ConfigManager.getInstance().getClientConfig().getCharset());
     }
 
     @Test
     public void testGetPluginConfigMap() {
-        Assert.assertNotNull(ConfigManager.getInstance().getPluginConfigMap());
+        Assertions.assertNotNull(ConfigManager.getInstance().getPluginConfigMap());
     }
 
     @Test
     public void testSetPluginConfigMap() {
         ConfigManager.getInstance().setPluginConfigMap(new HashMap<>());
-        Assert.assertNotNull(ConfigManager.getInstance().getPluginConfigMap());
+        Assertions.assertNotNull(ConfigManager.getInstance().getPluginConfigMap());
     }
 
     @Test
     public void testGetAppInitializer() {
-        Assert.assertNull(ConfigManager.getInstance().getAppInitializer());
+        Assertions.assertNull(ConfigManager.getInstance().getAppInitializer());
     }
 
     @Test

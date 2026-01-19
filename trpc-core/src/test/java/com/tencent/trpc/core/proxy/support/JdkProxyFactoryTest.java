@@ -11,10 +11,10 @@
 
 package com.tencent.trpc.core.proxy.support;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.tencent.trpc.core.cluster.ClusterInvoker;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class JdkProxyFactoryTest {
 

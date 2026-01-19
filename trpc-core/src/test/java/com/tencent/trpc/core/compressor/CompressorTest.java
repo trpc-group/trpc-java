@@ -16,8 +16,8 @@ import com.tencent.trpc.core.compressor.support.GZipCompressor;
 import com.tencent.trpc.core.extension.ExtensionClass;
 import com.tencent.trpc.core.extension.ExtensionLoader;
 import java.io.IOException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CompressorTest {
 
@@ -28,17 +28,17 @@ public class CompressorTest {
                 .getAllExtensionClass()) {
             Compressor c = CompressorSupport.ofName(each.getName());
             Compressor c2 = CompressorSupport.ofType(c.type());
-            Assert.assertEquals(c.type(), c2.type());
-            Assert.assertEquals(c.name(), each.getName());
+            Assertions.assertEquals(c.type(), c2.type());
+            Assertions.assertEquals(c.name(), each.getName());
             String s = "中英文压测数据ABC123";
             try {
                 byte[] data = c.compress(s.getBytes());
                 byte[] result = c.decompress(data);
-                Assert.assertEquals(new String(result), s);
-                Assert.assertNull(c.compress(null));
-                Assert.assertNull(c.decompress(null));
+                Assertions.assertEquals(new String(result), s);
+                Assertions.assertNull(c.compress(null));
+                Assertions.assertNull(c.decompress(null));
             } catch (IOException e) {
-                Assert.fail(e.getMessage());
+                Assertions.fail(e.getMessage());
             }
         }
     }
@@ -50,9 +50,9 @@ public class CompressorTest {
         try {
             byte[] data = c.compress(s.getBytes());
             byte[] result = c.decompress(data);
-            Assert.assertEquals(new String(result), s);
+            Assertions.assertEquals(new String(result), s);
         } catch (IOException e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
     }
 }

@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.core.selector;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.google.common.collect.Lists;
 import com.tencent.trpc.core.exception.TRpcException;
@@ -21,7 +21,7 @@ import com.tencent.trpc.core.rpc.def.DefRequest;
 import com.tencent.trpc.core.selector.loadbalance.AbstractLoadBalance;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AbstractLoadBalanceTest {
 

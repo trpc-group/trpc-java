@@ -27,20 +27,20 @@ import com.tencent.trpc.core.rpc.def.DefResponse;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RemoteLoggerFilterTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
     }
 
-    @After
+    @AfterEach
     public void after() {
         ConfigManager.stopTest();
     }
@@ -52,8 +52,8 @@ public class RemoteLoggerFilterTest {
         ExtensionLoader<?> extensionLoader = ExtensionLoader.getExtensionLoader(Filter.class);
         TestRemoteLoggerFilter filter = (TestRemoteLoggerFilter) extensionLoader.getExtension("test");
 
-        Assert.assertNotNull(filter);
-        Assert.assertEquals("test", filter.getPluginName());
+        Assertions.assertNotNull(filter);
+        Assertions.assertEquals("test", filter.getPluginName());
         RpcInvocation rpcInvocation = new RpcInvocation();
         rpcInvocation.setRpcServiceName("a");
         rpcInvocation.setRpcMethodName("b");

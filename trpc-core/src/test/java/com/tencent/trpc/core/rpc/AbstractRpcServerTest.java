@@ -11,16 +11,16 @@
 
 package com.tencent.trpc.core.rpc;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.common.config.ProviderConfig;
 import com.tencent.trpc.core.rpc.def.DefProviderInvoker;
 import java.util.concurrent.CompletionStage;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class AbstractRpcServerTest {
 
@@ -28,7 +28,7 @@ public class AbstractRpcServerTest {
 
     private ProtocolConfig protocolConfig;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         abstractRpcServer = new AbstractRpcServer() {
             @Override

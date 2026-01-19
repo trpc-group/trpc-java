@@ -16,19 +16,19 @@ import com.tencent.trpc.core.common.config.AdminConfig;
 import com.tencent.trpc.core.exception.TRpcException;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicLong;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TrpcThreadExceptionHandlerTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
     }
 
-    @After
+    @AfterEach
     public void after() {
         ConfigManager.stopTest();
     }

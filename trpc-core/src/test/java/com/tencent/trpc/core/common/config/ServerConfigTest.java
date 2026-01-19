@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.core.common.config;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ServerConfigTest {
 
