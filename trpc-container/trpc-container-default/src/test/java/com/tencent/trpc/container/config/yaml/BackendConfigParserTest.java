@@ -13,8 +13,8 @@ package com.tencent.trpc.container.config.yaml;
 
 import com.tencent.trpc.core.common.config.BackendConfig;
 import com.tencent.trpc.core.utils.YamlParser;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -27,18 +27,18 @@ public class BackendConfigParserTest {
     @Test
     public void testParseConfigMap() {
         BackendConfigParser backendConfigParser = new BackendConfigParser();
-        Assert.assertNotNull(backendConfigParser);
+        Assertions.assertNotNull(backendConfigParser);
         Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("trpc_java_config.yaml", Map.class);
         List<Map<String, Object>> maps = Arrays.asList(yamlConfigMap);
         Map<String, BackendConfig> stringBackendConfigMap = BackendConfigParser.parseConfigMap(maps);
-        Assert.assertNotNull(stringBackendConfigMap);
+        Assertions.assertNotNull(stringBackendConfigMap);
     }
 
     @Test
     public void testParseConfig() {
         Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("trpc_java_config.yaml", Map.class);
         BackendConfig backendConfig = BackendConfigParser.parseConfig(yamlConfigMap);
-        Assert.assertNotNull(backendConfig);
+        Assertions.assertNotNull(backendConfig);
     }
 
 }

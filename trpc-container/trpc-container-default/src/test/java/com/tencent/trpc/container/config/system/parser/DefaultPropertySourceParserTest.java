@@ -3,18 +3,17 @@ package com.tencent.trpc.container.config.system.parser;
 import com.tencent.trpc.container.config.system.Configuration;
 import com.tencent.trpc.core.utils.YamlParser;
 import java.util.Map;
-import junit.framework.TestCase;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 
-public class DefaultPropertySourceParserTest extends TestCase {
+public class DefaultPropertySourceParserTest {
 
     @Test
     public void testGetFlattableMap() {
         Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("listener_default.yaml", Map.class);
         DefaultPropertySourceParser propertySourceParser = new DefaultPropertySourceParser();
         Map<String, Object> flattableMap = propertySourceParser.getFlattableMap(yamlConfigMap);
-        Assert.assertEquals(147, flattableMap.size());
+        Assertions.assertEquals(147, flattableMap.size());
     }
 
     @Test
@@ -22,8 +21,8 @@ public class DefaultPropertySourceParserTest extends TestCase {
         Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("listener_default.yaml", Map.class);
         DefaultPropertySourceParser propertySourceParser = new DefaultPropertySourceParser();
         Map<String, Object> stringObjectMap = propertySourceParser.parseFlattableMap(yamlConfigMap);
-        Assert.assertEquals(4, stringObjectMap.size());
+        Assertions.assertEquals(4, stringObjectMap.size());
         Boolean aBoolean = Configuration.toBooleanObject(true);
-        Assert.assertTrue(aBoolean);
+        Assertions.assertTrue(aBoolean);
     }
 }

@@ -2,16 +2,16 @@ package com.tencent.trpc.container.config.system;
 
 import com.tencent.trpc.container.config.ApplicationConfigParser;
 import com.tencent.trpc.core.extension.ExtensionLoader;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EnvironmentConfigurationTest {
 
     private Environment environment;
 
-    @Before
+    @BeforeEach
     public void init() {
         System.setProperty("global.namespace", "${env_type_enhancer}");
         System.setProperty("server.app", "wechat");
@@ -34,7 +34,7 @@ public class EnvironmentConfigurationTest {
         environment = new Environment(parser);
     }
 
-    @After
+    @AfterEach
     public void teardown() {
         System.clearProperty("global.namespace");
         System.clearProperty("server.app");
@@ -57,6 +57,6 @@ public class EnvironmentConfigurationTest {
     @Test
     public void testGetInternalProperty() {
         Object internalProperty = environment.getInternalProperty("server.app");
-        Assert.assertEquals(internalProperty, "wechat");
+        Assertions.assertEquals(internalProperty, "wechat");
     }
 }

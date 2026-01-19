@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -11,23 +11,23 @@
 
 package com.tencent.trpc.container.container;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.google.protobuf.ByteString;
 import com.tencent.trpc.container.demo.HelloRequestProtocol;
 import com.tencent.trpc.core.container.spi.Container;
 import com.tencent.trpc.core.extension.ExtensionLoader;
 import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.core.rpc.TRpcProxy;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DefaultContainerTest {
 
     Container container;
 
-    @Before
+    @BeforeEach
     public void start() {
         container =
                 ExtensionLoader.getExtensionLoader(Container.class).getExtension("default");
@@ -45,7 +45,7 @@ public class DefaultContainerTest {
         assertEquals(sayHello.getMessage().toStringUtf8(), "abc-");
     }
 
-    @After
+    @AfterEach
     public void testStop() throws InterruptedException {
         Thread.sleep(1000);
         container.stop();

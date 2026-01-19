@@ -11,19 +11,19 @@
 
 package com.tencent.trpc.container.config.system;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.container.config.ApplicationConfigParser;
 import com.tencent.trpc.core.common.ConfigManager;
 import com.tencent.trpc.core.extension.ExtensionLoader;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Environment test class
@@ -34,7 +34,7 @@ public class EnvironmentTest {
     private ConfigManager configManager;
     private ConfigManager otherConfigManager;
 
-    @Before
+    @BeforeEach
     public void init() {
         System.setProperty("global.namespace", "${env_type_enhancer}");
         System.setProperty("server.app", "wechat");
@@ -59,7 +59,7 @@ public class EnvironmentTest {
         otherConfigManager = environment.parse();
     }
 
-    @After
+    @AfterEach
     public void teardown() {
         System.clearProperty("global.namespace");
         System.clearProperty("server.app");
@@ -123,9 +123,11 @@ public class EnvironmentTest {
         assertEquals(protocol, configManager.getClientConfig().getProtocol());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testInteger() {
-        environment.getInteger("global.namespace", 2);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            environment.getInteger("global.namespace", 2);
+        });
     }
 
     @Test
@@ -133,54 +135,74 @@ public class EnvironmentTest {
         environment.getBoolean("global.namespace", true);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testShort() {
-        environment.getShort("global.namespace", (short) 2);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            environment.getShort("global.namespace", (short) 2);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testByte() {
-        environment.getByte("global.namespace", (byte) 2);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            environment.getByte("global.namespace", (byte) 2);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testFloat() {
-        environment.getFloat("global.namespace", 2f);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            environment.getFloat("global.namespace", 2f);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testDouble() {
-        environment.getDouble("global.namespace", 2d);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            environment.getDouble("global.namespace", 2d);
+        });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testIntNoElement() {
-        environment.getInt("global.namespace.not.exist");
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            environment.getInt("global.namespace.not.exist");
+        });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testBooleanNoElement() {
-        environment.getBoolean("global.namespace.not.exist");
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            environment.getBoolean("global.namespace.not.exist");
+        });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testShortNoElement() {
-        environment.getShort("global.namespace.not.exist");
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            environment.getShort("global.namespace.not.exist");
+        });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testByteNoElement() {
-        environment.getByte("global.namespace.not.exist");
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            environment.getByte("global.namespace.not.exist");
+        });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testFloatNoElement() {
-        environment.getFloat("global.namespace.not.exist");
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            environment.getFloat("global.namespace.not.exist");
+        });
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testDoubleNoElement() {
-        environment.getDouble("global.namespace.not.exist");
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            environment.getDouble("global.namespace.not.exist");
+        });
     }
 
     @Test

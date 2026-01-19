@@ -4,23 +4,22 @@ import com.tencent.trpc.container.config.YamlUtils;
 import com.tencent.trpc.core.common.config.GlobalConfig;
 import com.tencent.trpc.core.common.config.constant.ConfigConstants;
 import com.tencent.trpc.core.utils.YamlParser;
-import junit.framework.TestCase;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 import java.util.Map;
 
-public class GlobalConfigParserTest extends TestCase {
+public class GlobalConfigParserTest {
 
     @Test
     public void testParseGlobalConfig() {
         GlobalConfigParser globalConfigParser = new GlobalConfigParser();
-        Assert.assertNotNull(globalConfigParser);
+        Assertions.assertNotNull(globalConfigParser);
         Map<String, Object> yamlConfigMap = YamlParser.parseAsFromClassPath("listener_default.yaml", Map.class);
         YamlUtils yamlUtils = new YamlUtils("Label[]");
         Map<String, Object> map = yamlUtils.getMap(yamlConfigMap, ConfigConstants.GLOBAL);
         GlobalConfig globalConfig = GlobalConfigParser.parseGlobalConfig(map);
-        Assert.assertNotNull(globalConfig.getNamespace());
-        Assert.assertNotNull(globalConfig.getEnvName());
+        Assertions.assertNotNull(globalConfig.getNamespace());
+        Assertions.assertNotNull(globalConfig.getEnvName());
         GlobalConfigParser.parseGlobalConfig(null);
     }
 }

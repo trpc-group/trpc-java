@@ -22,20 +22,16 @@ import com.tencent.trpc.core.selector.SelectorManager;
 import com.tencent.trpc.core.selector.spi.Selector;
 import com.tencent.trpc.core.worker.WorkerPoolManager;
 import java.util.concurrent.CompletionException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(SelectorManager.class)
-@PowerMockIgnore({"javax.management.*", "javax.security.*", "javax.ws.*"})
+@ExtendWith(MockitoExtension.class)
 public class AbstractClusterInvokerTest {
 
     private static final String INVALID_SELECTOR = "invalid";
@@ -45,10 +41,7 @@ public class AbstractClusterInvokerTest {
     @Mock
     private ExtensionManager<Selector> mockManager;
 
-    /**
-     * Init defClusterInvoker & mockManager
-     */
-    @Before
+    @BeforeEach
     public void setUp() {
         BackendConfig backendConfig = new BackendConfig();
         backendConfig.setServiceInterface(GenericClient.class);
@@ -64,23 +57,28 @@ public class AbstractClusterInvokerTest {
         ConsumerConfig<GenericClient> consumerConfig = new ConsumerConfig<>();
         consumerConfig.setBackendConfig(backendConfig);
         consumerConfig.setServiceInterface(GenericClient.class);
-        // mock SelectorManager and ExtensionManager<Selector>
-        MockitoAnnotations.initMocks(this);
-        PowerMockito.mockStatic(SelectorManager.class);
-        PowerMockito.when(SelectorManager.getManager()).thenReturn(mockManager);
-        PowerMockito.when(mockManager.get(INVALID_SELECTOR)).thenReturn(null);
-        this.defClusterInvoker = new DefClusterInvoker<>(consumerConfig);
+        
+        try (MockedStatic<SelectorManager> mockedStatic = Mockito.mockStatic(SelectorManager.class)) {
+            mockedStatic.when(SelectorManager::getManager).thenReturn(mockManager);
+            Mockito.when(mockManager.get(INVALID_SELECTOR)).thenReturn(null);
+            this.defClusterInvoker = new DefClusterInvoker<>(consumerConfig);
+        }
     }
 
     @Test
     public void testInvoke() {
-        try {
-            defClusterInvoker.invoke(new DefRequest()).toCompletableFuture().join();
-        } catch (CompletionException exception) {
-            NamingOptions namingOptions = defClusterInvoker.getConfig().getBackendConfig().getNamingOptions();
-            String expect = "com.tencent.trpc.core.exception.TRpcException: "
-                    + "the selector name:" + namingOptions.getSelectorId() + " not found selector";
-            Assert.assertEquals(expect, exception.getMessage());
+        try (MockedStatic<SelectorManager> mockedStatic = Mockito.mockStatic(SelectorManager.class)) {
+            mockedStatic.when(SelectorManager::getManager).thenReturn(mockManager);
+            Mockito.when(mockManager.get(INVALID_SELECTOR)).thenReturn(null);
+            
+            try {
+                defClusterInvoker.invoke(new DefRequest()).toCompletableFuture().join();
+            } catch (CompletionException exception) {
+                NamingOptions namingOptions = defClusterInvoker.getConfig().getBackendConfig().getNamingOptions();
+                String expect = "com.tencent.trpc.core.exception.TRpcException: "
+                        + "the selector name:" + namingOptions.getSelectorId() + " not found selector";
+                Assertions.assertEquals(expect, exception.getMessage());
+            }
         }
     }
 
