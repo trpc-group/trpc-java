@@ -11,9 +11,9 @@
 
 package com.tencent.trpc.admin.dto;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * CommonDto test class
@@ -32,36 +32,36 @@ public class CommonDtoTest {
 
     private CommonDto commonDto;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.commonDto = new CommonDto();
     }
 
     @Test
     public void testGetErrorcode() {
-        Assert.assertEquals(this.commonDto.getErrorcode(), CommonDto.SUCCESS);
+        Assertions.assertEquals(this.commonDto.getErrorcode(), CommonDto.SUCCESS);
     }
 
     @Test
     public void testSetErrorcode() {
         this.commonDto.setErrorcode(ERROR_CODE);
-        Assert.assertEquals(this.commonDto.getErrorcode(), ERROR_CODE);
+        Assertions.assertEquals(this.commonDto.getErrorcode(), ERROR_CODE);
     }
 
     @Test
     public void testGetMessage() {
-        Assert.assertEquals(this.commonDto.getMessage(), "");
+        Assertions.assertEquals(this.commonDto.getMessage(), "");
 
     }
 
     @Test
     public void testSetMessage() {
         this.commonDto.setMessage(MESSAGE);
-        Assert.assertEquals(this.commonDto.getMessage(), MESSAGE);
+        Assertions.assertEquals(this.commonDto.getMessage(), MESSAGE);
     }
 
     @Test
     public void testToString() {
-        Assert.assertEquals(this.commonDto.toString(), "CommonDto{errorcode='0', message=''}");
+        Assertions.assertEquals(this.commonDto.toString(), "CommonDto{errorcode='0', message=''}");
     }
 }

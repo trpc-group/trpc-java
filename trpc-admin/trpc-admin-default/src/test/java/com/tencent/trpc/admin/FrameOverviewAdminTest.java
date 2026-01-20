@@ -15,8 +15,8 @@ import com.tencent.trpc.admin.dto.CommonDto;
 import com.tencent.trpc.admin.dto.VersionDto;
 import com.tencent.trpc.admin.impl.FrameOverviewAdmin;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FrameOverviewAdminTest {
 
@@ -26,8 +26,8 @@ public class FrameOverviewAdminTest {
         VersionDto versionDto = frameOverviewAdmin.getFrameOverview();
         versionDto.toString();
         versionDto.setVersion(versionDto.getVersion());
-        Assert.assertTrue(CommonDto.SUCCESS.equals(versionDto.getErrorcode()));
-        Assert.assertTrue(StringUtils.isNotEmpty(versionDto.getVersion()));
+        Assertions.assertTrue(CommonDto.SUCCESS.equals(versionDto.getErrorcode()));
+        Assertions.assertTrue(StringUtils.isNotEmpty(versionDto.getVersion()));
     }
 
 }

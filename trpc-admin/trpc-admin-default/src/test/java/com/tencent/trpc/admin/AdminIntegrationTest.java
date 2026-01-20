@@ -25,26 +25,27 @@ import com.tencent.trpc.core.common.Version;
 import com.tencent.trpc.core.common.config.AdminConfig;
 import com.tencent.trpc.core.utils.JsonUtils;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("admin")
 @SpringBootTest(classes = TrpcServerApplication.class)
 public class AdminIntegrationTest {
 
     private String adminAddress;
 
-    @Before
+    @BeforeEach
     public void before() {
         final AdminConfig adminConfig = ConfigManager.getInstance().getServerConfig().getAdminConfig();
         adminAddress = new StringBuffer(adminConfig.getAdminIp()).append(":").append(adminConfig.getAdminPort())
                 .toString();
+        System.out.println("adminAddress:" + adminAddress);
     }
 
     @Test
@@ -52,7 +53,7 @@ public class AdminIntegrationTest {
         String[] cmd = {"curl", "http://" + adminAddress + "/version"};
         String versionInfo = ShellUtils.execute(cmd);
         VersionDto versionDto = JsonUtils.fromJson(versionInfo, VersionDto.class);
-        Assert.assertEquals(Version.version(), versionDto.getVersion());
+        Assertions.assertEquals(Version.version(), versionDto.getVersion());
     }
 
     @Test
@@ -61,19 +62,19 @@ public class AdminIntegrationTest {
         String[] set2DebugCmd = {"curl", "-XPUT", "http://" + adminAddress + "/cmds/loglevel/ROOT", "-d",
                 "value=DEBUG"};
         String set2DebugResult = ShellUtils.execute(set2DebugCmd);
-        System.out.println(set2DebugResult);
+        System.out.println("set2DebugResult: " + set2DebugResult);
         final LoggerLevelRevisedDto levelDebugRevisedDto = JsonUtils.fromJson(set2DebugResult,
                 LoggerLevelRevisedDto.class);
 
-        Assert.assertEquals(CommonDto.SUCCESS, levelDebugRevisedDto.getErrorcode());
-        Assert.assertEquals("DEBUG", (levelDebugRevisedDto.getLevel()));
+        Assertions.assertEquals(CommonDto.SUCCESS, levelDebugRevisedDto.getErrorcode());
+        Assertions.assertEquals("DEBUG", (levelDebugRevisedDto.getLevel()));
 
         //查看修改后的结果
         String[] logLevelCmd = {"curl", "http://" + adminAddress + "/cmds/loglevel"};
         String logLevelInfo = ShellUtils.execute(logLevelCmd);
         LoggerLevelDto dto = JsonUtils.fromJson(logLevelInfo, LoggerLevelDto.class);
-        Assert.assertEquals(CommonDto.SUCCESS, dto.getErrorcode());
-        Assert.assertTrue(dto.getLogger().stream()
+        Assertions.assertEquals(CommonDto.SUCCESS, dto.getErrorcode());
+        Assertions.assertTrue(dto.getLogger().stream()
                 .anyMatch(log -> "ROOT".equals(log.getLoggerName()) && "DEBUG".equals(log.getLevel())));
 
         //修改
@@ -82,17 +83,18 @@ public class AdminIntegrationTest {
         LoggerLevelRevisedDto levelInfoRevisedDto = JsonUtils.fromJson(set2InfoResult,
                 LoggerLevelRevisedDto.class);
 
-        Assert.assertEquals(CommonDto.SUCCESS, levelInfoRevisedDto.getErrorcode());
-        Assert.assertEquals("INFO", levelInfoRevisedDto.getLevel());
+        Assertions.assertEquals(CommonDto.SUCCESS, levelInfoRevisedDto.getErrorcode());
+        Assertions.assertEquals("INFO", levelInfoRevisedDto.getLevel());
     }
 
     @Test
     public void testLogLevel() {
         String[] cmd = {"curl", "http://" + adminAddress + "/cmds/loglevel"};
         String logLevelInfo = ShellUtils.execute(cmd);
+        System.out.println(logLevelInfo);
         LoggerLevelDto dto = JsonUtils.fromJson(logLevelInfo, LoggerLevelDto.class);
-        Assert.assertEquals(CommonDto.SUCCESS, dto.getErrorcode());
-        Assert.assertTrue(dto.getLogger().stream()
+        Assertions.assertEquals(CommonDto.SUCCESS, dto.getErrorcode());
+        Assertions.assertTrue(dto.getLogger().stream()
                 .anyMatch(log -> "ROOT".equals(log.getLoggerName()) && "INFO".equals(log.getLevel())));
     }
 
@@ -100,7 +102,7 @@ public class AdminIntegrationTest {
     public void testWorkerPool() {
         String[] cmd = {"curl", "http://" + adminAddress + "/cmds/workerpool/info"};
         String workPoolInfo = ShellUtils.execute(cmd);
-        Assert.assertTrue("{\"errorcode\":\"0\",\"message\":\"\",\"workerPoolInfo\":{}}".equals(workPoolInfo));
+        Assertions.assertTrue("{\"errorcode\":\"0\",\"message\":\"\",\"workerPoolInfo\":{}}".equals(workPoolInfo));
     }
 
     @Test
@@ -108,8 +110,8 @@ public class AdminIntegrationTest {
         String[] cmd = {"curl", "http://" + adminAddress + "/cmds/config"};
         String configInfo = ShellUtils.execute(cmd);
         ConfigOverviewDto configOverviewDto = JsonUtils.fromJson(configInfo, ConfigOverviewDto.class);
-        Assert.assertEquals(CommonDto.SUCCESS, configOverviewDto.getErrorcode());
-        Assert.assertEquals("integration-test-admin", configOverviewDto.getContent().getServer().getApp());
+        Assertions.assertEquals(CommonDto.SUCCESS, configOverviewDto.getErrorcode());
+        Assertions.assertEquals("integration-test-admin", configOverviewDto.getContent().getServer().getApp());
     }
 
     @Test
@@ -117,9 +119,9 @@ public class AdminIntegrationTest {
         String[] cmd = {"curl", "http://" + adminAddress + "/cmds/stats/rpc"};
         String rpcStats = ShellUtils.execute(cmd);
         RpcStatsDto rpcStatsDto = JsonUtils.fromJson(rpcStats, RpcStatsDto.class);
-        Assert.assertEquals(CommonDto.SUCCESS, rpcStatsDto.getErrorcode());
-        Assert.assertEquals(Version.version(), rpcStatsDto.getRpcVersion());
-        Assert.assertEquals(0, rpcStatsDto.getRpcServiceCount().intValue());
+        Assertions.assertEquals(CommonDto.SUCCESS, rpcStatsDto.getErrorcode());
+        Assertions.assertEquals(Version.version(), rpcStatsDto.getRpcVersion());
+        Assertions.assertEquals(0, rpcStatsDto.getRpcServiceCount().intValue());
     }
 
     @Test
@@ -127,8 +129,8 @@ public class AdminIntegrationTest {
         String[] cmd = {"curl", "http://" + adminAddress + "/cmds/test"};
         String testInfo = ShellUtils.execute(cmd);
         TestDto rpcStatsDto = JsonUtils.fromJson(testInfo, TestDto.class);
-        Assert.assertEquals(CommonDto.SUCCESS, rpcStatsDto.getErrorcode());
-        Assert.assertEquals("hello world!", rpcStatsDto.getTestResult());
+        Assertions.assertEquals(CommonDto.SUCCESS, rpcStatsDto.getErrorcode());
+        Assertions.assertEquals("hello world!", rpcStatsDto.getTestResult());
     }
 
     @Test
@@ -136,9 +138,9 @@ public class AdminIntegrationTest {
         String[] cmd = {"curl", "http://" + adminAddress + "/cmds"};
         String cmdResult = ShellUtils.execute(cmd);
         CommandDto commandDto = JsonUtils.fromJson(cmdResult, CommandDto.class);
-        Assert.assertEquals(CommonDto.SUCCESS, commandDto.getErrorcode());
+        Assertions.assertEquals(CommonDto.SUCCESS, commandDto.getErrorcode());
         List<String> commands = commandDto.getCmds();
-        Assert.assertTrue(commands.contains("/cmds/loglevel") && commands.contains("/cmds/loglevel/{logname}")
+        Assertions.assertTrue(commands.contains("/cmds/loglevel") && commands.contains("/cmds/loglevel/{logname}")
                 && commands.contains("/version") && commands.contains("/cmds") && commands.contains("/cmds/config")
                 && commands.contains("/cmds/stats/rpc") && commands.contains("/cmds/workerpool/info")
                 && commands.contains("/cmds/test"));

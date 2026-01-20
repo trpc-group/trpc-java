@@ -13,9 +13,9 @@ package com.tencent.trpc.admin.dto;
 
 import com.tencent.trpc.logger.admin.LoggerLevelInfo;
 import java.util.ArrayList;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Log level view test class
@@ -24,7 +24,7 @@ public class LoggerLevelDtoTest {
 
     private LoggerLevelDto loggerLevelDto;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.loggerLevelDto = new LoggerLevelDto();
     }
@@ -32,27 +32,27 @@ public class LoggerLevelDtoTest {
     @Test
     public void testBuildFail() {
         LoggerLevelDto fail = LoggerLevelDto.buildFail("FAIL");
-        Assert.assertEquals(fail.getMessage(), "FAIL");
-        Assert.assertEquals(fail.getErrorcode(), CommonDto.FAIL);
+        Assertions.assertEquals(fail.getMessage(), "FAIL");
+        Assertions.assertEquals(fail.getErrorcode(), CommonDto.FAIL);
     }
 
     @Test
     public void testGetLogger() {
-        Assert.assertNull(loggerLevelDto.getLogger());
+        Assertions.assertNull(loggerLevelDto.getLogger());
     }
 
     @Test
     public void testSetLogger() {
         loggerLevelDto.setLogger(new ArrayList<>());
-        Assert.assertEquals(loggerLevelDto.getLogger().size(), 0);
+        Assertions.assertEquals(loggerLevelDto.getLogger().size(), 0);
         loggerLevelDto.getLogger().add(new LoggerLevelInfo());
-        Assert.assertEquals(loggerLevelDto.getLogger().size(), 1);
+        Assertions.assertEquals(loggerLevelDto.getLogger().size(), 1);
 
     }
 
     @Test
     public void testToString() {
-        Assert.assertEquals(loggerLevelDto.toString(),
+        Assertions.assertEquals(loggerLevelDto.toString(),
                 "LoggerLevelDto{logger=null} CommonDto{errorcode='0', message=''}");
     }
 }

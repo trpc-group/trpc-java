@@ -12,9 +12,9 @@
 package com.tencent.trpc.admin.dto;
 
 import com.google.common.collect.Lists;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Command dto test
@@ -24,26 +24,26 @@ public class CommandDtoTest {
 
     private CommandDto commandDto;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.commandDto = new CommandDto(Lists.newArrayList());
     }
 
     @Test
     public void testGetCmds() {
-        Assert.assertTrue(commandDto.getCmds().isEmpty());
+        Assertions.assertTrue(commandDto.getCmds().isEmpty());
     }
 
     @Test
     public void testSetCmds() {
         commandDto.setCmds(Lists.newArrayList("1", "2"));
-        Assert.assertEquals(2, commandDto.getCmds().size());
-        Assert.assertEquals(commandDto.getCmds().get(0), "1");
-        Assert.assertEquals(commandDto.getCmds().get(1), "2");
+        Assertions.assertEquals(2, commandDto.getCmds().size());
+        Assertions.assertEquals(commandDto.getCmds().get(0), "1");
+        Assertions.assertEquals(commandDto.getCmds().get(1), "2");
     }
 
     @Test
     public void testToString() {
-        Assert.assertEquals(commandDto.toString(), "CommandDto{cmds=[]} CommonDto{errorcode='0', message=''}");
+        Assertions.assertEquals(commandDto.toString(), "CommandDto{cmds=[]} CommonDto{errorcode='0', message=''}");
     }
 }
