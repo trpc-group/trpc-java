@@ -16,8 +16,8 @@ import com.tencent.trpc.admin.dto.CommonDto;
 import com.tencent.trpc.admin.impl.CommandAdmin;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CommandAdminTest {
 
@@ -27,9 +27,9 @@ public class CommandAdminTest {
         CommandDto commandDto = commandAdmin.getCommands();
         commandDto.toString();
         commandDto.setCmds(commandDto.getCmds());
-        Assert.assertTrue(CommonDto.SUCCESS.equals(commandDto.getErrorcode()));
-        Assert.assertTrue(StringUtils.isEmpty(commandDto.getMessage()));
-        Assert.assertTrue(CollectionUtils.isNotEmpty(commandDto.getCmds()));
+        Assertions.assertTrue(CommonDto.SUCCESS.equals(commandDto.getErrorcode()));
+        Assertions.assertTrue(StringUtils.isEmpty(commandDto.getMessage()));
+        Assertions.assertTrue(CollectionUtils.isNotEmpty(commandDto.getCmds()));
     }
 
 }

@@ -12,9 +12,9 @@
 package com.tencent.trpc.admin.dto;
 
 import com.tencent.trpc.admin.ApplicationConfigOverview;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Configuration view test class
@@ -23,25 +23,25 @@ public class ConfigOverviewDtoTest {
 
     private ConfigOverviewDto configOverviewDto;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.configOverviewDto = new ConfigOverviewDto();
     }
 
     @Test
     public void getContent() {
-        Assert.assertNull(configOverviewDto.getContent());
+        Assertions.assertNull(configOverviewDto.getContent());
     }
 
     @Test
     public void setContent() {
         configOverviewDto.setContent(ApplicationConfigOverview.getInstance());
-        Assert.assertEquals(ApplicationConfigOverview.getInstance(), configOverviewDto.getContent());
+        Assertions.assertEquals(ApplicationConfigOverview.getInstance(), configOverviewDto.getContent());
     }
 
     @Test
     public void testToString() {
-        Assert.assertEquals(configOverviewDto.toString(),
+        Assertions.assertEquals(configOverviewDto.toString(),
                 "ConfigOverviewDto{content=null} CommonDto{errorcode='0', message=''}");
     }
 }

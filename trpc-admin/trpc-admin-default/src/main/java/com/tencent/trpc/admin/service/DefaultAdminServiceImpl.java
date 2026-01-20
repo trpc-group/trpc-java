@@ -24,9 +24,10 @@ import com.tencent.trpc.core.logger.LoggerFactory;
 import com.tencent.trpc.core.stat.MetricStatFactory;
 import java.util.Collection;
 import java.util.List;
-import javax.ws.rs.Path;
+import io.undertow.Undertow;
+import jakarta.ws.rs.Path;
 import org.jboss.resteasy.core.ResteasyDeploymentImpl;
-import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
+import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.spi.Registry;
 
 /**
@@ -36,9 +37,9 @@ public class DefaultAdminServiceImpl implements AdminService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultAdminServiceImpl.class);
     /**
-     * netty jar server
+     * undertow jaxrs server
      */
-    private NettyJaxrsServer adminRestServer;
+    private UndertowJaxrsServer adminRestServer;
     private ServerConfig serverConfig;
     /**
      * Lifecycle class
@@ -70,19 +71,23 @@ public class DefaultAdminServiceImpl implements AdminService {
         @Override
         protected void initInternal() throws Exception {
             super.initInternal();
-            adminRestServer = new NettyJaxrsServer();
-            AdminConfig adminConfig = serverConfig.getAdminConfig();
-            adminRestServer.setHostname(adminConfig.getAdminIp());
-            adminRestServer.setPort(adminConfig.getAdminPort());
-            adminRestServer.setDeployment(new ResteasyDeploymentImpl());
+            adminRestServer = new UndertowJaxrsServer();
         }
 
         @Override
         protected void startInternal() {
             try {
                 super.startInternal();
-                adminRestServer.start();
-                Registry registry = adminRestServer.getDeployment().getRegistry();
+                AdminConfig adminConfig = serverConfig.getAdminConfig();
+                adminRestServer.start(Undertow.builder()
+                        .addHttpListener(adminConfig.getAdminPort(), adminConfig.getAdminIp()));
+                ResteasyDeploymentImpl deployment = new ResteasyDeploymentImpl();
+                deployment.start();
+                adminRestServer.deploy(adminRestServer.undertowDeployment(deployment)
+                        .setContextPath("/")
+                        .setDeploymentName("AdminService")
+                        .setClassLoader(DefaultAdminServiceImpl.class.getClassLoader()));
+                Registry registry = deployment.getRegistry();
                 ExtensionLoader<Admin> extensionLoader = ExtensionLoader.getExtensionLoader(Admin.class);
                 Collection<ExtensionClass<Admin>> extensionClasses = extensionLoader.getAllExtensionClass();
                 for (ExtensionClass<Admin> extensionClass : extensionClasses) {

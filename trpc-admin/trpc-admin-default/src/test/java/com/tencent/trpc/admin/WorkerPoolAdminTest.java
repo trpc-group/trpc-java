@@ -19,20 +19,20 @@ import com.tencent.trpc.core.worker.WorkerPoolManager;
 import com.tencent.trpc.core.worker.spi.WorkerPool;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class WorkerPoolAdminTest {
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         ConfigManager.stopTest();
     }
@@ -41,15 +41,15 @@ public class WorkerPoolAdminTest {
     public void testGetWorkerPoolInfo() {
         WorkerPoolAdmin workerPoolAdmin = new WorkerPoolAdmin();
         WorkerPoolInfoDto workerPoolInfoDto = workerPoolAdmin.report();
-        Assert.assertTrue(workerPoolInfoDto.toString().contains("WorkerPoolInfoDto{"));
-        Assert.assertEquals(CommonDto.SUCCESS, workerPoolInfoDto.getErrorcode());
-        Assert.assertTrue(StringUtils.isEmpty(workerPoolInfoDto.getMessage()));
-        Assert.assertTrue(MapUtils.isEmpty(workerPoolInfoDto.getWorkerPoolInfo()));
+        Assertions.assertTrue(workerPoolInfoDto.toString().contains("WorkerPoolInfoDto{"));
+        Assertions.assertEquals(CommonDto.SUCCESS, workerPoolInfoDto.getErrorcode());
+        Assertions.assertTrue(StringUtils.isEmpty(workerPoolInfoDto.getMessage()));
+        Assertions.assertTrue(MapUtils.isEmpty(workerPoolInfoDto.getWorkerPoolInfo()));
 
         WorkerPool workerPool = WorkerPoolManager.get(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME);
-        Assert.assertNotNull(workerPool);
+        Assertions.assertNotNull(workerPool);
         workerPoolInfoDto = workerPoolAdmin.report();
-        Assert.assertTrue(MapUtils.isNotEmpty(workerPoolInfoDto.getWorkerPoolInfo()));
+        Assertions.assertTrue(MapUtils.isNotEmpty(workerPoolInfoDto.getWorkerPoolInfo()));
     }
 
 }

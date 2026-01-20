@@ -35,81 +35,82 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicLong;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 /**
  * RpcStatsAdminTest
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(WorkerPoolManager.class)
-@PowerMockIgnore({"javax.management.*", "javax.security.*", "javax.ws.*"})
 public class RpcStatsAdminTest {
+    private MockedStatic<WorkerPoolManager> mockedWorkerPoolManager;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        PowerMockito.mockStatic(WorkerPoolManager.class);
+        mockedWorkerPoolManager = Mockito.mockStatic(WorkerPoolManager.class);
 
+    }
+    @AfterEach
+    void tearDown() {
+        if (mockedWorkerPoolManager != null) {
+            mockedWorkerPoolManager.close();
+        }
     }
 
     @Test
     public void testRpcStatsAdminEmptyList() {
         List<WorkerPool> workerPoolList = new ArrayList<>();
-        WorkerPool workerPool = PowerMockito.mock(ThreadWorkerPool.class);
+        WorkerPool workerPool = Mockito.mock(ThreadWorkerPool.class);
 
-        ThreadPoolMXBeanImpl threadPoolMXBean = PowerMockito.mock(ThreadPoolMXBeanImpl.class);
-        PowerMockito.when(workerPool.report()).thenReturn(threadPoolMXBean);
+        ThreadPoolMXBeanImpl threadPoolMXBean = Mockito.mock(ThreadPoolMXBeanImpl.class);
+        Mockito.when(workerPool.report()).thenReturn(threadPoolMXBean);
         workerPoolList.add(workerPool);
 
         ForkJoinPool forkJoinPool = new ForkJoinPool(1,
                 ForkJoinPool.defaultForkJoinWorkerThreadFactory,
                 null, false);
-        WorkerPool forkJoinWorkerPool = PowerMockito.mock(ForkJoinWorkerPool.class);
+        WorkerPool forkJoinWorkerPool = Mockito.mock(ForkJoinWorkerPool.class);
         ForkJoinPoolMXBean forkJoinPoolMXBean = new ForkJoinPoolMXBeanImpl(forkJoinPool);
-        PowerMockito.when(forkJoinWorkerPool.report()).thenReturn(forkJoinPoolMXBean);
+        Mockito.when(forkJoinWorkerPool.report()).thenReturn(forkJoinPoolMXBean);
         workerPoolList.add(forkJoinWorkerPool);
-        PowerMockito.when(WorkerPoolManager.getAllInitializedExtension()).thenReturn(workerPoolList);
+        mockedWorkerPoolManager.when(() -> WorkerPoolManager.getAllInitializedExtension()).thenReturn(workerPoolList);
 
         AtomicLong atomicLong = new AtomicLong();
-        PowerMockito.when(workerPool.getUncaughtExceptionHandler())
+        Mockito.when(workerPool.getUncaughtExceptionHandler())
                 .thenReturn(new TrpcThreadExceptionHandler(atomicLong, atomicLong, atomicLong));
-        ServiceConfig serviceConfig = PowerMockito.mock(ServiceConfig.class);
-        PowerMockito.when(serviceConfig.getWorkerPoolObj()).thenReturn(workerPool);
+        ServiceConfig serviceConfig = Mockito.mock(ServiceConfig.class);
+        Mockito.when(serviceConfig.getWorkerPoolObj()).thenReturn(workerPool);
         ConfigManager.getInstance().getServerConfig().getServiceMap().put("trpc_test", serviceConfig);
 
-        ClientConfig clientConfig = PowerMockito.mock(ClientConfig.class);
+        ClientConfig clientConfig = Mockito.mock(ClientConfig.class);
         Map<String, BackendConfig> backendConfigMap = new HashMap<>();
-        BackendConfig backendConfig = PowerMockito.mock(BackendConfig.class);
-        PowerMockito.when(backendConfig.getWorkerPoolObj()).thenReturn(workerPool);
+        BackendConfig backendConfig = Mockito.mock(BackendConfig.class);
+        Mockito.when(backendConfig.getWorkerPoolObj()).thenReturn(workerPool);
         backendConfigMap.put("aaa", backendConfig);
-        PowerMockito.when(clientConfig.getBackendConfigMap()).thenReturn(backendConfigMap);
+        Mockito.when(clientConfig.getBackendConfigMap()).thenReturn(backendConfigMap);
         ConfigManager.getInstance().setClientConfig(clientConfig);
         RpcStatsAdmin rpcStatsAdmin = new RpcStatsAdmin();
         RpcStatsDto rpcStats = rpcStatsAdmin.rpc();
     }
 
-
     @Test
     public void testRpcStatsAdmin() {
-        WorkerPool workerPool = PowerMockito.mock(ThreadWorkerPool.class);
+        WorkerPool workerPool = Mockito.mock(ThreadWorkerPool.class);
         AtomicLong atomicLong = new AtomicLong();
-        PowerMockito.when(workerPool.getUncaughtExceptionHandler())
+        Mockito.when(workerPool.getUncaughtExceptionHandler())
                 .thenReturn(new TrpcThreadExceptionHandler(atomicLong, atomicLong, atomicLong));
-        ServiceConfig serviceConfig = PowerMockito.mock(ServiceConfig.class);
-        PowerMockito.when(serviceConfig.getWorkerPoolObj()).thenReturn(workerPool);
+        ServiceConfig serviceConfig = Mockito.mock(ServiceConfig.class);
+        Mockito.when(serviceConfig.getWorkerPoolObj()).thenReturn(workerPool);
         ConfigManager.getInstance().getServerConfig().getServiceMap().put("trpc_test", serviceConfig);
 
-        ClientConfig clientConfig = PowerMockito.mock(ClientConfig.class);
+        ClientConfig clientConfig = Mockito.mock(ClientConfig.class);
         Map<String, BackendConfig> backendConfigMap = new HashMap<>();
-        BackendConfig backendConfig = PowerMockito.mock(BackendConfig.class);
-        PowerMockito.when(backendConfig.getWorkerPoolObj()).thenReturn(workerPool);
+        BackendConfig backendConfig = Mockito.mock(BackendConfig.class);
+        Mockito.when(backendConfig.getWorkerPoolObj()).thenReturn(workerPool);
         backendConfigMap.put("aaa", backendConfig);
-        PowerMockito.when(clientConfig.getBackendConfigMap()).thenReturn(backendConfigMap);
+        Mockito.when(clientConfig.getBackendConfigMap()).thenReturn(backendConfigMap);
         ConfigManager.getInstance().setClientConfig(clientConfig);
         RpcStatsAdmin rpcStatsAdmin = new RpcStatsAdmin();
         RpcStatsDto rpcStats = rpcStatsAdmin.rpc();
@@ -132,12 +133,11 @@ public class RpcStatsAdminTest {
         rpcStatsDto.getErrorcode();
     }
 
-
     @Test
     public void testRpcStatsClientDto() {
-        WorkerPool workerPool = PowerMockito.mock(ThreadWorkerPool.class);
+        WorkerPool workerPool = Mockito.mock(ThreadWorkerPool.class);
         AtomicLong atomicLong = new AtomicLong();
-        PowerMockito.when(workerPool.getUncaughtExceptionHandler())
+        Mockito.when(workerPool.getUncaughtExceptionHandler())
                 .thenReturn(new TrpcThreadExceptionHandler(atomicLong, atomicLong, atomicLong));
         RpcStatsClientDto rpcStatsClientDto = new RpcStatsClientDto(workerPool);
         rpcStatsClientDto.setErrorTotal(1L);
@@ -166,9 +166,9 @@ public class RpcStatsAdminTest {
 
     @Test
     public void testRpcStatsServiceDto() {
-        WorkerPool workerPool = PowerMockito.mock(ThreadWorkerPool.class);
+        WorkerPool workerPool = Mockito.mock(ThreadWorkerPool.class);
         AtomicLong atomicLong = new AtomicLong();
-        PowerMockito.when(workerPool.getUncaughtExceptionHandler())
+        Mockito.when(workerPool.getUncaughtExceptionHandler())
                 .thenReturn(new TrpcThreadExceptionHandler(atomicLong, atomicLong, atomicLong));
         RpcStatsServiceDto rpcStatsServiceDto = new RpcStatsServiceDto(
                 workerPool);
@@ -206,8 +206,8 @@ public class RpcStatsAdminTest {
         rpcStatsServiceDto.getRspTotal();
         rpcStatsServiceDto.getRspAvgLen();
 
-        WorkerPool forkJoinPool = PowerMockito.mock(ForkJoinWorkerPool.class);
-        PowerMockito.when(forkJoinPool.getUncaughtExceptionHandler())
+        WorkerPool forkJoinPool = Mockito.mock(ForkJoinWorkerPool.class);
+        Mockito.when(forkJoinPool.getUncaughtExceptionHandler())
                 .thenReturn(new TrpcThreadExceptionHandler(atomicLong, atomicLong, atomicLong));
         RpcStatsServiceDto serviceDto = new RpcStatsServiceDto(
                 forkJoinPool);

@@ -11,9 +11,9 @@
 
 package com.tencent.trpc.admin.dto;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * VersionDtoTest
@@ -22,25 +22,25 @@ public class VersionDtoTest {
 
     private VersionDto versionDto;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.versionDto = new VersionDto();
     }
 
     @Test
     public void testGetVersion() {
-        Assert.assertNull(versionDto.getVersion());
+        Assertions.assertNull(versionDto.getVersion());
     }
 
     @Test
     public void testSetVersion() {
         versionDto.setVersion("a");
-        Assert.assertEquals(versionDto.getVersion(), "a");
+        Assertions.assertEquals(versionDto.getVersion(), "a");
     }
 
     @Test
     public void testToString() {
-        Assert.assertEquals(versionDto.toString(), "VersionDto{version='null'} CommonDto{errorcode='0', message=''}");
+        Assertions.assertEquals(versionDto.toString(), "VersionDto{version='null'} CommonDto{errorcode='0', message=''}");
 
     }
 }

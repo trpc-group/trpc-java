@@ -11,9 +11,9 @@
 
 package com.tencent.trpc.admin.dto;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Log level modification view class
@@ -22,7 +22,7 @@ public class LoggerLevelRevisedDtoTest {
 
     private LoggerLevelRevisedDto loggerLevelRevisedDto;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.loggerLevelRevisedDto = new LoggerLevelRevisedDto();
     }
@@ -30,35 +30,35 @@ public class LoggerLevelRevisedDtoTest {
     @Test
     public void testBuildFail() {
         LoggerLevelDto fail = LoggerLevelDto.buildFail("FAIL");
-        Assert.assertEquals(fail.getMessage(), "FAIL");
-        Assert.assertEquals(fail.getErrorcode(), CommonDto.FAIL);
+        Assertions.assertEquals(fail.getMessage(), "FAIL");
+        Assertions.assertEquals(fail.getErrorcode(), CommonDto.FAIL);
     }
 
     @Test
     public void testGetLevel() {
-        Assert.assertNull(loggerLevelRevisedDto.getLevel());
+        Assertions.assertNull(loggerLevelRevisedDto.getLevel());
     }
 
     @Test
     public void testSetLevel() {
         loggerLevelRevisedDto.setLevel("1");
-        Assert.assertEquals(loggerLevelRevisedDto.getLevel(), "1");
+        Assertions.assertEquals(loggerLevelRevisedDto.getLevel(), "1");
     }
 
     @Test
     public void testGetPrelevel() {
-        Assert.assertNull(loggerLevelRevisedDto.getPrelevel());
+        Assertions.assertNull(loggerLevelRevisedDto.getPrelevel());
     }
 
     @Test
     public void testSetPrelevel() {
         loggerLevelRevisedDto.setPrelevel("2");
-        Assert.assertEquals(loggerLevelRevisedDto.getPrelevel(), "2");
+        Assertions.assertEquals(loggerLevelRevisedDto.getPrelevel(), "2");
     }
 
     @Test
     public void testToString() {
-        Assert.assertEquals(loggerLevelRevisedDto.toString(),
+        Assertions.assertEquals(loggerLevelRevisedDto.toString(),
                 "LoggerLevelRevisedDto{level='null', prelevel='null'} CommonDto{errorcode='0', message=''}");
 
     }
