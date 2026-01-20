@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -107,7 +107,7 @@ public class WorkerPoolManagerTest {
         this.testRegistDefaultPluginConfig();
         PluginConfig pluginConfig = WorkerPoolManager
                 .newThreadWorkerPoolConfig(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME,
-                        20,20, Boolean.FALSE);
+                        20, 20, Boolean.FALSE);
         WorkerPoolManager.refresh(WorkerPoolManager.DEF_NAMING_WORKER_POOL_NAME, pluginConfig);
         WorkerPool workerPool = WorkerPoolManager.get(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_NAME);
         Assertions.assertNotNull(workerPool);
