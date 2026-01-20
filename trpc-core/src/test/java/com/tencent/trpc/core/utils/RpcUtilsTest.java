@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -35,8 +35,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class RpcUtilsTest {
 
@@ -71,50 +71,50 @@ public class RpcUtilsTest {
     public void testIsReturnFutureType() throws Exception {
         boolean flag = InvokeMode.isAsync(RpcUtils.parseInvokeMode(
                 RpcUtilsTest.class.getMethod("reMethod", String.class)));
-        Assert.assertFalse(flag);
+        Assertions.assertFalse(flag);
 
         boolean flagFuture = InvokeMode.isAsync(RpcUtils.parseInvokeMode(RpcUtilsTest.class.getMethod("futureMethod")));
-        Assert.assertTrue(flagFuture);
+        Assertions.assertTrue(flagFuture);
 
         String methodName1 = RpcUtils.parseRpcMethodName(RpcUtilsTest.class.getMethod("method1", String.class), "100");
-        Assert.assertEquals("9527", methodName1);
+        Assertions.assertEquals("9527", methodName1);
 
         String methodName2 = RpcUtils.parseRpcMethodName(RpcUtilsTest.class.getMethod("method2", String.class), "100");
-        Assert.assertEquals("100", methodName2);
+        Assertions.assertEquals("100", methodName2);
 
         String serviceName = RpcUtils.parseRpcServiceName(RpcUtilsTest.class, "helloService");
-        Assert.assertEquals("helloService", serviceName);
+        Assertions.assertEquals("helloService", serviceName);
     }
 
     @Test
     public void testIsGenericClient() {
-        Assert.assertFalse(RpcUtils.isGenericClient(Object.class));
-        Assert.assertTrue(RpcUtils.isGenericClient(GenericClient.class));
-        Assert.assertTrue(RpcUtils.isGenericClient(SimpleGenericClient.class));
+        Assertions.assertFalse(RpcUtils.isGenericClient(Object.class));
+        Assertions.assertTrue(RpcUtils.isGenericClient(GenericClient.class));
+        Assertions.assertTrue(RpcUtils.isGenericClient(SimpleGenericClient.class));
     }
 
     @Test
     public void testIsGenericMethod() throws NoSuchMethodException {
         Method method = RpcUtilsTest.class.getMethod("method1", String.class);
-        Assert.assertFalse(RpcUtils.isGenericMethod(method));
+        Assertions.assertFalse(RpcUtils.isGenericMethod(method));
 
         method = RpcUtilsTest.class.getMethod("genericMethod");
-        Assert.assertTrue(RpcUtils.isGenericMethod(method));
+        Assertions.assertTrue(RpcUtils.isGenericMethod(method));
     }
 
     @Test
     public void testIsDefaultMethod() throws NoSuchMethodException {
         Method method = RpcUtilsTest.class.getMethod("method1", String.class);
-        Assert.assertFalse(RpcUtils.isDefaultRpcMethod(method));
+        Assertions.assertFalse(RpcUtils.isDefaultRpcMethod(method));
 
         method = RpcUtilsTest.class.getMethod("defaultMethod");
-        Assert.assertTrue(RpcUtils.isDefaultRpcMethod(method));
+        Assertions.assertTrue(RpcUtils.isDefaultRpcMethod(method));
     }
 
     @Test
     public void testNewResponse() {
         Request request = new DefRequest();
-        Assert.assertNotNull(RpcUtils.newResponse(request, new Object(), null));
+        Assertions.assertNotNull(RpcUtils.newResponse(request, new Object(), null));
     }
 
     @Test
@@ -125,12 +125,12 @@ public class RpcUtilsTest {
         CompletableFuture<Object> future = RpcUtils.parseAsyncInvokeResult(response, clientContext, null);
         response.complete(new DefResponse());
         CompletableFuture.allOf(future).join();
-        Assert.assertNull(future.get());
+        Assertions.assertNull(future.get());
 
         future = RpcUtils.parseAsyncInvokeResult(response, clientContext, null);
         response.complete(null);
         CompletableFuture.allOf(future).join();
-        Assert.assertNull(future.get());
+        Assertions.assertNull(future.get());
     }
 
     @Test
@@ -145,53 +145,59 @@ public class RpcUtilsTest {
         response.complete(new DefResponse());
         CompletableFuture.allOf(future).join();
         Object o = future.get();
-        Assert.assertNotNull(o);
-        Assert.assertTrue(o instanceof RpcResult);
+        Assertions.assertNotNull(o);
+        Assertions.assertTrue(o instanceof RpcResult);
         response = FutureUtils.newFuture();
         future = RpcUtils.parseAsyncInvokeResult(response, clientContext, methodInfo);
         response.complete(null);
-        Assert.assertNotNull(future.get());
-        Assert.assertTrue(o instanceof RpcResult);
+        Assertions.assertNotNull(future.get());
+        Assertions.assertTrue(o instanceof RpcResult);
     }
 
-    @Test(expected = CompletionException.class)
+    @Test
     public void testParseAsyncInvokeResult1() {
-        CompletableFuture<Response> response = FutureUtils.newFuture();
-        RpcClientContext clientContext = new RpcClientContext();
-        clientContext.setOneWay(Boolean.FALSE);
-        CompletableFuture<Object> future = RpcUtils.parseAsyncInvokeResult(response, clientContext, null);
-        response.completeExceptionally(TRpcException.newBizException(1, "aaa"));
-        CompletableFuture.allOf(future).join();
+        Assertions.assertThrows(CompletionException.class, () -> {
+            CompletableFuture<Response> response = FutureUtils.newFuture();
+            RpcClientContext clientContext = new RpcClientContext();
+            clientContext.setOneWay(Boolean.FALSE);
+            CompletableFuture<Object> future = RpcUtils.parseAsyncInvokeResult(response, clientContext, null);
+            response.completeExceptionally(TRpcException.newBizException(1, "aaa"));
+            CompletableFuture.allOf(future).join();
+        });
     }
 
-    @Test(expected = CompletionException.class)
+    @Test
     public void testParseAsyncInvokeResult2() {
-        CompletableFuture<Response> response = FutureUtils.newFuture();
-        RpcClientContext clientContext = new RpcClientContext();
-        clientContext.setOneWay(Boolean.FALSE);
-        RpcContextUtils.putValueMapValue(clientContext, RpcContextValueKeys.CTX_LINK_INVOKE_TIMEOUT,
-                LinkInvokeTimeout.builder()
-                        .serviceEnableLinkTimeout(true)
-                        .build());
-        CompletableFuture<Object> future = RpcUtils.parseAsyncInvokeResult(response, clientContext, null);
-        response.completeExceptionally(TRpcException.newFrameException(ErrorCode.TRPC_CLIENT_INVOKE_TIMEOUT_ERR,
-                "aaa"));
-        CompletableFuture.allOf(future).join();
+        Assertions.assertThrows(CompletionException.class, () -> {
+            CompletableFuture<Response> response = FutureUtils.newFuture();
+            RpcClientContext clientContext = new RpcClientContext();
+            clientContext.setOneWay(Boolean.FALSE);
+            RpcContextUtils.putValueMapValue(clientContext, RpcContextValueKeys.CTX_LINK_INVOKE_TIMEOUT,
+                    LinkInvokeTimeout.builder()
+                            .serviceEnableLinkTimeout(true)
+                            .build());
+            CompletableFuture<Object> future = RpcUtils.parseAsyncInvokeResult(response, clientContext, null);
+            response.completeExceptionally(TRpcException.newFrameException(ErrorCode.TRPC_CLIENT_INVOKE_TIMEOUT_ERR,
+                    "aaa"));
+            CompletableFuture.allOf(future).join();
+        });
     }
 
-    @Test(expected = CompletionException.class)
+    @Test
     public void testParseAsyncInvokeResult3() {
-        CompletableFuture<Response> response = FutureUtils.newFuture();
-        RpcClientContext clientContext = new RpcClientContext();
-        clientContext.setOneWay(Boolean.FALSE);
-        RpcContextUtils.putValueMapValue(clientContext, RpcContextValueKeys.CTX_LINK_INVOKE_TIMEOUT,
-                LinkInvokeTimeout.builder()
-                        .serviceEnableLinkTimeout(true)
-                        .build());
-        CompletableFuture<Object> future = RpcUtils.parseAsyncInvokeResult(response, clientContext, null);
-        response.completeExceptionally(TRpcException.newBizException(ErrorCode.TRPC_CLIENT_INVOKE_TIMEOUT_ERR,
-                "aaa"));
-        CompletableFuture.allOf(future).join();
+        Assertions.assertThrows(CompletionException.class, () -> {
+            CompletableFuture<Response> response = FutureUtils.newFuture();
+            RpcClientContext clientContext = new RpcClientContext();
+            clientContext.setOneWay(Boolean.FALSE);
+            RpcContextUtils.putValueMapValue(clientContext, RpcContextValueKeys.CTX_LINK_INVOKE_TIMEOUT,
+                    LinkInvokeTimeout.builder()
+                            .serviceEnableLinkTimeout(true)
+                            .build());
+            CompletableFuture<Object> future = RpcUtils.parseAsyncInvokeResult(response, clientContext, null);
+            response.completeExceptionally(TRpcException.newBizException(ErrorCode.TRPC_CLIENT_INVOKE_TIMEOUT_ERR,
+                    "aaa"));
+            CompletableFuture.allOf(future).join();
+        });
     }
 
     @Test
@@ -207,7 +213,7 @@ public class RpcUtilsTest {
         response.completeExceptionally(TRpcException.newBizException(1, "aaa"));
         CompletableFuture.allOf(future).join();
         Object result = future.get();
-        Assert.assertTrue(result instanceof RpcResult);
+        Assertions.assertTrue(result instanceof RpcResult);
     }
 
     @Test
@@ -226,7 +232,7 @@ public class RpcUtilsTest {
         }).start();
 
         Object result = RpcUtils.parseSyncInvokeResult(future, new RpcClientContext(), 2000, 3000, null);
-        Assert.assertEquals(value, result);
+        Assertions.assertEquals(value, result);
     }
 
     @Test
@@ -248,28 +254,32 @@ public class RpcUtilsTest {
         RpcMethodInfo methodInfo = new RpcMethodInfo(CommonResultClient.class, method);
         RpcResult<Object> result = (RpcResult<Object>) RpcUtils.parseSyncInvokeResult(future,
                 new RpcClientContext(), 2000, 3000, methodInfo);
-        Assert.assertEquals(value, result.getData());
+        Assertions.assertEquals(value, result.getData());
     }
 
-    @Test(expected = TRpcException.class)
+    @Test
     public void testParseSyncInvoke1() {
-        RpcUtils.parseSyncInvokeResult(FutureUtils.newFuture(), new RpcClientContext(),
-                1, 20, null);
+        Assertions.assertThrows(TRpcException.class, () -> {
+            RpcUtils.parseSyncInvokeResult(FutureUtils.newFuture(), new RpcClientContext(),
+                    1, 20, null);
+        });
     }
 
-    @Test(expected = TRpcException.class)
+    @Test
     public void testParseSyncInvoke2() {
-        CompletableFuture<Response> future = FutureUtils.newFuture();
-        new Thread(() -> {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            future.completeExceptionally(TRpcException.newBizException(1, "aaa"));
-        }).start();
+        Assertions.assertThrows(TRpcException.class, () -> {
+            CompletableFuture<Response> future = FutureUtils.newFuture();
+            new Thread(() -> {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                future.completeExceptionally(TRpcException.newBizException(1, "aaa"));
+            }).start();
 
-        RpcUtils.parseSyncInvokeResult(future, new RpcClientContext(), 2000, 3000, null);
+            RpcUtils.parseSyncInvokeResult(future, new RpcClientContext(), 2000, 3000, null);
+        });
     }
 
     @Test
@@ -279,7 +289,7 @@ public class RpcUtilsTest {
         RpcMethodInfo methodInfo = new RpcMethodInfo(CommonResultClient.class, method);
         RpcResult<Object> result = (RpcResult<Object>) RpcUtils.parseSyncInvokeResult(FutureUtils.newFuture(),
                 new RpcClientContext(), 1, 20, methodInfo);
-        Assert.assertEquals(result.getCode(), ErrorCode.TRPC_CLIENT_INVOKE_TIMEOUT_ERR);
+        Assertions.assertEquals(result.getCode(), ErrorCode.TRPC_CLIENT_INVOKE_TIMEOUT_ERR);
     }
 
     @Test
@@ -312,7 +322,7 @@ public class RpcUtilsTest {
             CompletionStage<Response> response2 = invoker.invoke(new DefRequest());
             String defResponse = (String) RpcUtils.parseSyncInvokeBackupResult(response2.toCompletableFuture(), 1,
                     new LeftTimeout(3000, 2000), invoker, new DefRequest());
-            Assert.assertEquals(value, defResponse);
+            Assertions.assertEquals(value, defResponse);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -355,7 +365,7 @@ public class RpcUtilsTest {
             CompletionStage<Response> response2 = invoker.invoke(new DefRequest());
             String defResponse = (String) RpcUtils.parseSyncInvokeBackupResult(response2.toCompletableFuture(), 1,
                     new LeftTimeout(3000, 2000), invoker, new DefRequest());
-            Assert.assertEquals(value, defResponse);
+            Assertions.assertEquals(value, defResponse);
         } catch (Exception e) {
             e.printStackTrace();
         }

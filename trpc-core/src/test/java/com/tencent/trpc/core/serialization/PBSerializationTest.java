@@ -20,8 +20,8 @@ import com.tencent.trpc.core.serialization.support.PBSerialization;
 import com.tencent.trpc.core.utils.HelloRequestProtocol;
 import com.tencent.trpc.core.utils.HelloRequestProtocol.HelloRequest;
 import java.io.IOException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class PBSerializationTest {
 
@@ -42,14 +42,14 @@ public class PBSerializationTest {
                 .build();
         byte[] serialBytes = serial.serialize(request);
         HelloRequest deserialize = serial.deserialize(serialBytes, HelloRequest.class);
-        Assert.assertEquals(request.getIntField(), deserialize.getIntField());
-        Assert.assertEquals(request.getStringField(), deserialize.getStringField());
-        Assert.assertEquals(request.getBooleanField(), deserialize.getBooleanField());
-        Assert.assertEquals(request.getLongField(), deserialize.getLongField());
-        Assert.assertEquals(request.getByteStringField(), deserialize.getByteStringField());
-        Assert.assertEquals(request.getOther().getIntField(), deserialize.getOther().getIntField());
-        Assert.assertEquals(serial.name(), PBSerialization.NAME);
-        Assert.assertEquals(serial.type(), SerializationType.PB);
+        Assertions.assertEquals(request.getIntField(), deserialize.getIntField());
+        Assertions.assertEquals(request.getStringField(), deserialize.getStringField());
+        Assertions.assertEquals(request.getBooleanField(), deserialize.getBooleanField());
+        Assertions.assertEquals(request.getLongField(), deserialize.getLongField());
+        Assertions.assertEquals(request.getByteStringField(), deserialize.getByteStringField());
+        Assertions.assertEquals(request.getOther().getIntField(), deserialize.getOther().getIntField());
+        Assertions.assertEquals(serial.name(), PBSerialization.NAME);
+        Assertions.assertEquals(serial.type(), SerializationType.PB);
         PBSerializationTest.TestObj testObj = new PBSerializationTest.TestObj();
         testObj.setIntField(10);
         testObj.setStringField("string");
@@ -71,11 +71,11 @@ public class PBSerializationTest {
         JavaPBSerialization javaPBSerialization = new JavaPBSerialization();
         byte[] serialize = javaPBSerialization.serialize(testObj);
         HelloRequest helloRequest = HelloRequest.parseFrom(serialize);
-        Assert.assertEquals(10, helloRequest.getIntField());
-        Assert.assertEquals("string", helloRequest.getStringField());
-        Assert.assertFalse(helloRequest.getBooleanField());
-        Assert.assertEquals(200L, helloRequest.getLongField());
-        Assert.assertEquals(1, helloRequest.getOther().getIntField());
+        Assertions.assertEquals(10, helloRequest.getIntField());
+        Assertions.assertEquals("string", helloRequest.getStringField());
+        Assertions.assertFalse(helloRequest.getBooleanField());
+        Assertions.assertEquals(200L, helloRequest.getLongField());
+        Assertions.assertEquals(1, helloRequest.getOther().getIntField());
     }
 
     public static class TestObj {

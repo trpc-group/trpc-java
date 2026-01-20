@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.core.rpc;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.tencent.trpc.core.rpc.def.DefRequest;
 import com.tencent.trpc.core.rpc.def.DefResponse;
@@ -19,7 +19,7 @@ import com.tencent.trpc.core.telemetry.SpanContext;
 import com.tencent.trpc.core.utils.Charsets;
 import com.tencent.trpc.core.utils.RpcContextUtils;
 import io.opentracing.noop.NoopSpan;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RpcContextUtilsTest {
 

@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.core.metrics;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * MetricNameTest
@@ -22,26 +22,26 @@ public class MetricNameTest {
     @Test
     public void testTestEquals() {
         MetricName labelName = MetricName.build("test", null);
-        Assert.assertNotNull(labelName.getLabels());
+        Assertions.assertNotNull(labelName.getLabels());
 
         MetricName name = MetricName.build("test");
         MetricName name1 = MetricName.build("test");
-        Assert.assertEquals(name, name1);
+        Assertions.assertEquals(name, name1);
 
         name = MetricName.build("test", "1", "2");
         name1 = MetricName.build("test", "1", "2");
-        Assert.assertEquals(name, name1);
+        Assertions.assertEquals(name, name1);
 
         name = MetricName.build("test", "1");
         name1 = MetricName.build("test", "1", "2");
-        Assert.assertNotEquals(name, name1);
+        Assertions.assertNotEquals(name, name1);
 
-        Assert.assertEquals(name.getName(), name1.getName());
-        Assert.assertNotEquals(name.getLabels().length, name1.getLabels().length);
-        Assert.assertNotSame(name.hashCode(),name.hashCode());
+        Assertions.assertEquals(name.getName(), name1.getName());
+        Assertions.assertNotEquals(name.getLabels().length, name1.getLabels().length);
+        Assertions.assertNotSame(name.hashCode(), name.hashCode());
 
-        Assert.assertNotSame("", name.toString());
-        Assert.assertNotSame(MetricName.build("test", "1").hashCode(),
+        Assertions.assertNotSame("", name.toString());
+        Assertions.assertNotSame(MetricName.build("test", "1").hashCode(),
                 MetricName.build("test", "1").hashCode());
     }
 }

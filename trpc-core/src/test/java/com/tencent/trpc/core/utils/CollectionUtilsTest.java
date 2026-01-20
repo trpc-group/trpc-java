@@ -15,8 +15,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Set;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CollectionUtilsTest {
 
@@ -27,10 +27,10 @@ public class CollectionUtilsTest {
         List<Integer> l3 = Lists.newArrayList(6);
         List<Integer> expected = Lists.newArrayList(1, 2, 3, 4, 5, 6);
         List<Integer> merged = CollectionUtils.mergeList(l1, l2, l3);
-        Assert.assertEquals(expected, merged);
+        Assertions.assertEquals(expected, merged);
         List<Integer> mergedLinkedList = CollectionUtils.mergeList(Lists::newLinkedList, l1, l2, l3);
-        Assert.assertEquals(Lists.newLinkedList(expected), mergedLinkedList);
-        Assert.assertEquals(0, CollectionUtils.mergeList(null).size());
+        Assertions.assertEquals(Lists.newLinkedList(expected), mergedLinkedList);
+        Assertions.assertEquals(0, CollectionUtils.mergeList(null).size());
     }
 
     @Test
@@ -40,16 +40,16 @@ public class CollectionUtilsTest {
         Set<Integer> s3 = Sets.newHashSet(6);
         Set<Integer> expected = Sets.newHashSet(1, 2, 3, 4, 5, 6);
         Set<Integer> merged = CollectionUtils.mergeSet(s1, s2, s3);
-        Assert.assertEquals(expected.size(), merged.size());
+        Assertions.assertEquals(expected.size(), merged.size());
         merged.removeAll(expected);
-        Assert.assertTrue(merged.isEmpty());
+        Assertions.assertTrue(merged.isEmpty());
         Set<Integer> mergedLinkedSet = CollectionUtils.mergeSet(Sets::newLinkedHashSet, s1, s2, s3);
-        Assert.assertEquals(Sets.newLinkedHashSet(Sets.newTreeSet(expected)), mergedLinkedSet);
+        Assertions.assertEquals(Sets.newLinkedHashSet(Sets.newTreeSet(expected)), mergedLinkedSet);
     }
 
     @Test
     public void testSize() {
-        Assert.assertEquals(0, CollectionUtils.size(null));
-        Assert.assertEquals(1, CollectionUtils.size(Sets.newHashSet(1, 1, 1)));
+        Assertions.assertEquals(0, CollectionUtils.size(null));
+        Assertions.assertEquals(1, CollectionUtils.size(Sets.newHashSet(1, 1, 1)));
     }
 }

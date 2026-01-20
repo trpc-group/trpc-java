@@ -12,20 +12,20 @@
 package com.tencent.trpc.core.logger;
 
 import com.tencent.trpc.core.common.ConfigManager;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class LoggerFactoryTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
     }
 
-    @After
+    @AfterEach
     public void after() {
         ConfigManager.stopTest();
     }
@@ -56,12 +56,12 @@ public class LoggerFactoryTest {
         logger.error("hello world %s", e);
         logger.error("hello world", e);
 
-        Assert.assertTrue(logger.isDebugEnabled());
-        Assert.assertTrue(logger.isTraceEnabled());
-        Assert.assertTrue(logger.isInfoEnabled());
-        Assert.assertTrue(logger.isWarnEnabled());
-        Assert.assertTrue(logger.isErrorEnabled());
-        Assert.assertNotNull(logger.getName());
+        Assertions.assertTrue(logger.isDebugEnabled());
+        Assertions.assertTrue(logger.isTraceEnabled());
+        Assertions.assertTrue(logger.isInfoEnabled());
+        Assertions.assertTrue(logger.isWarnEnabled());
+        Assertions.assertTrue(logger.isErrorEnabled());
+        Assertions.assertNotNull(logger.getName());
         LoggerFactory.getLoggerLevel();
 
         LoggerFactory.setLoggerLevel(LoggerLevel.DEBUG);
@@ -70,13 +70,13 @@ public class LoggerFactoryTest {
     @Test
     public void testGetLogger() {
         Logger logger = LoggerFactory.getLogger("logger");
-        Assert.assertNotNull(logger);
+        Assertions.assertNotNull(logger);
     }
 
     @Test
     public void testGetRemoteLogger() {
         RemoteLogger test = LoggerFactory.getRemoteLogger("test");
-        Assert.assertNotNull(test);
-        Assert.assertTrue(test instanceof TestRemoteLogger);
+        Assertions.assertNotNull(test);
+        Assertions.assertTrue(test instanceof TestRemoteLogger);
     }
 }

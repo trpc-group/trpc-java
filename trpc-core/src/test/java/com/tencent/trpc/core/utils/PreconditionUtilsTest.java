@@ -13,20 +13,16 @@ package com.tencent.trpc.core.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class PreconditionUtilsTest {
 
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
-
     @Test
     public void testCheckArgument() {
-        expectedEx.expect(IllegalArgumentException.class);
-        List<String> list = new ArrayList();
-        PreconditionUtils
-                .checkArgument(list == null, "list is null %s", "list");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            List<String> list = new ArrayList();
+            PreconditionUtils.checkArgument(list == null, "list is null %s", "list");
+        });
     }
 }

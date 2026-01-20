@@ -11,53 +11,51 @@
 
 package com.tencent.trpc.core.exception;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TRpcExceptionTest {
 
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
-
     @Test
     public void testCheckArgument() {
-        expectedEx.expect(TRpcException.class);
-        expectedEx.expectMessage("error");
-        TRpcException.checkArgument(Boolean.FALSE, 1, 1, "%s", "error");
+        TRpcException exception = Assertions.assertThrows(TRpcException.class, () -> {
+            TRpcException.checkArgument(Boolean.FALSE, 1, 1, "%s", "error");
+        });
+        Assertions.assertTrue(exception.getMessage().contains("error"));
     }
 
     @Test
-    public void testCheckBizArgument() {
-        expectedEx.expect(TRpcException.class);
-        expectedEx.expectMessage("error");
-        TRpcException.checkBizArgument(Boolean.FALSE, 1, "%s", "error");
+    public void testCheckBizArg() {
+        TRpcException exception = Assertions.assertThrows(TRpcException.class, () -> {
+            TRpcException.checkBizArgument(Boolean.FALSE, 1, "%s", "error");
+        });
+        Assertions.assertTrue(exception.getMessage().contains("error"));
     }
 
     @Test
-    public void testCheckFrameArgument() {
-        expectedEx.expect(TRpcException.class);
-        expectedEx.expectMessage("error");
-        TRpcException.checkFrameArgument(Boolean.FALSE, 1, 1, "%s", "error");
+    public void testCheckFrameArg() {
+        TRpcException exception = Assertions.assertThrows(TRpcException.class, () -> {
+            TRpcException.checkFrameArgument(Boolean.FALSE, 1, 1, "%s", "error");
+        });
+        Assertions.assertTrue(exception.getMessage().contains("error"));
     }
 
     @Test
     public void testTrans() {
-        Assert.assertTrue(TRpcException.trans(new TRpcException()) instanceof TRpcException);
-        Assert.assertTrue(TRpcException.trans(new TransportException("a")) instanceof TRpcException);
+        Assertions.assertTrue(TRpcException.trans(new TRpcException()) instanceof TRpcException);
+        Assertions.assertTrue(TRpcException.trans(new TransportException("a")) instanceof TRpcException);
     }
 
     @Test
     public void testIsFrameException() {
         TRpcException frameEx = TRpcException.newFrameException(1, "frameex");
-        Assert.assertTrue(frameEx.isFrameException());
-        Assert.assertFalse(frameEx.isBizException());
-        Assert.assertEquals(1, frameEx.getCode());
-        Assert.assertEquals(0, frameEx.getBizCode());
+        Assertions.assertTrue(frameEx.isFrameException());
+        Assertions.assertFalse(frameEx.isBizException());
+        Assertions.assertEquals(1, frameEx.getCode());
+        Assertions.assertEquals(0, frameEx.getBizCode());
         frameEx.setCode(2);
         frameEx.setBizCode(2);
-        Assert.assertEquals(2, frameEx.getCode());
-        Assert.assertEquals(2, frameEx.getBizCode());
+        Assertions.assertEquals(2, frameEx.getCode());
+        Assertions.assertEquals(2, frameEx.getBizCode());
     }
 }

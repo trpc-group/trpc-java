@@ -11,16 +11,16 @@
 
 package com.tencent.trpc.core.rpc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.google.common.collect.Maps;
 import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import com.tencent.trpc.core.rpc.def.DefRequest;
 import java.util.concurrent.ConcurrentMap;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DefRequestTest {
 
@@ -41,9 +41,9 @@ public class DefRequestTest {
         assertNull(request.getAttachment("aa"));
         assertNull(request.getAttachReqHead());
         DefRequest defRequest = (DefRequest) request.clone();
-        Assert.assertEquals(request.getAttachments().get("a"),
+        Assertions.assertEquals(request.getAttachments().get("a"),
                 defRequest.getAttachments().get("a"));
-        Assert.assertEquals(request.getRequestId(), defRequest.getRequestId());
+        Assertions.assertEquals(request.getRequestId(), defRequest.getRequestId());
         RpcInvocation rpcInvocation = new RpcInvocation();
         rpcInvocation.setRpcServiceName("/trpc.a");
         rpcInvocation.setRpcMethodName("/b");

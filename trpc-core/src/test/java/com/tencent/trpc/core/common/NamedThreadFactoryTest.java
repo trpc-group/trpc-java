@@ -11,15 +11,15 @@
 
 package com.tencent.trpc.core.common;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class NamedThreadFactoryTest {
 
     private NamedThreadFactory namedThreadFactory;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         namedThreadFactory = new NamedThreadFactory();
     }
@@ -32,6 +32,6 @@ public class NamedThreadFactoryTest {
 
     @Test
     public void testGetThreadGroup() {
-        Assert.assertNotNull(namedThreadFactory.getThreadGroup());
+        Assertions.assertNotNull(namedThreadFactory.getThreadGroup());
     }
 }

@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.core.selector;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.collect.Lists;
 import com.tencent.trpc.core.selector.spi.Discovery;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AbstractDiscoveryFactoryTest {
 

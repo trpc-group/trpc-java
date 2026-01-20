@@ -11,15 +11,15 @@
 
 package com.tencent.trpc.core.registry;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class RegisterInfoTest {
 
@@ -80,14 +80,14 @@ public class RegisterInfoTest {
         assertEquals("proto://host:80/servicename", registerInfo.toIdentityString());
         RegisterInfo registerInfoClone =
                 new RegisterInfo("proto", "host", 80, "servicename", "group", "v1", map);
-        Assert.assertTrue(registerInfo.hashCode() > 0);
+        Assertions.assertTrue(registerInfo.hashCode() > 0);
         String[] strings = new String[]{"20"};
         assertEquals(strings[0], registerInfo.getParameter("20", strings)[0]);
         assertEquals(registerInfo, registerInfoClone);
         registerInfo.compareTo(registerInfoClone);
         registerInfo.toString();
         registerInfo.getIdentity();
-        Assert.assertNotNull(registerInfo.clone());
+        Assertions.assertNotNull(registerInfo.clone());
         registerInfo.buildString(true, true, true, "a", "b");
         assertEquals(80, registerInfo.getPort(10));
         assertEquals(80, registerInfo.getPort(10));
@@ -110,7 +110,7 @@ public class RegisterInfoTest {
                 "test.server1", "group", "v1", map);
 
         String url = RegisterInfo.encode(registerInfo);
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 "trpc%3A%2F%2F127.0.0.1%3A80%2Ftest.server1%3Fboolean%3Dfalse%26byte"
                         + "%3D1%26double%3D1.0%26float%3D2.0%26int%3D1%26long%3D10%26short%3D1%26"
                         + "string%3Dstring",

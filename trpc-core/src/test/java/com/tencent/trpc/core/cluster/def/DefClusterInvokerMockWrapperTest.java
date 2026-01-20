@@ -25,9 +25,9 @@ import com.tencent.trpc.core.rpc.def.DefResponse;
 import com.tencent.trpc.core.utils.FutureUtils;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DefClusterInvokerMockWrapperTest {
 
@@ -38,7 +38,7 @@ public class DefClusterInvokerMockWrapperTest {
     /**
      * Init test ConsumerConfig & BackendConfig & invokerNotMock & invokerMock
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         ConsumerConfig<BlankRpcServiceName> consumerConfig = new ConsumerConfig<>();
         consumerConfig.setMock(false);
@@ -104,7 +104,7 @@ public class DefClusterInvokerMockWrapperTest {
 
     @Test
     public void testGetInterface() {
-        Assert.assertEquals(BlankRpcServiceName.class, invokerNotMock.getInterface());
+        Assertions.assertEquals(BlankRpcServiceName.class, invokerNotMock.getInterface());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class DefClusterInvokerMockWrapperTest {
         Request request = new DefRequest();
         request.setInvocation(invocation);
         CompletionStage<Response> invoke = invokerMock.invoke(request);
-        Assert.assertEquals("blank", invoke.toCompletableFuture().join().getValue());
+        Assertions.assertEquals("blank", invoke.toCompletableFuture().join().getValue());
         invokerNotMock.invoke(request);
     }
 
@@ -134,23 +134,23 @@ public class DefClusterInvokerMockWrapperTest {
         request.setInvocation(invocation);
         try {
             invokerMock.invoke(request).toCompletableFuture().join().getValue();
-            Assert.fail();
+            Assertions.fail();
         } catch (CompletionException e) {
-            Assert.assertTrue(IllegalStateException.class.isAssignableFrom(e.getCause().getClass()));
-            Assert.assertEquals("boom", e.getCause().getMessage());
+            Assertions.assertTrue(IllegalStateException.class.isAssignableFrom(e.getCause().getClass()));
+            Assertions.assertEquals("boom", e.getCause().getMessage());
         }
     }
 
     @Test
     public void testGetConfig() {
-        Assert.assertFalse(invokerNotMock.getConfig().getMock());
-        Assert.assertTrue(invokerMock.getConfig().getMock());
+        Assertions.assertFalse(invokerNotMock.getConfig().getMock());
+        Assertions.assertTrue(invokerMock.getConfig().getMock());
     }
 
     @Test
     public void testGetBackendConfig() {
-        Assert.assertNotNull(invokerMock.getBackendConfig());
-        Assert.assertNotNull(invokerNotMock.getBackendConfig());
+        Assertions.assertNotNull(invokerMock.getBackendConfig());
+        Assertions.assertNotNull(invokerNotMock.getBackendConfig());
     }
 
 }

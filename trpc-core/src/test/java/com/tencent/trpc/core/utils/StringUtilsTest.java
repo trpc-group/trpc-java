@@ -11,22 +11,22 @@
 
 package com.tencent.trpc.core.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class StringUtilsTest {
 
     @Test
     public void testSplitToWords() {
-        Assert.assertArrayEquals(new String[]{"a", "b", "c"}, StringUtils.splitToWords("a, b, c"));
-        Assert.assertArrayEquals(new String[]{"a. b. c"}, StringUtils.splitToWords("a. b. c"));
-        Assert.assertArrayEquals(new String[]{"a", "b", "c"}, StringUtils.splitToWords("a,b,c"));
-        Assert.assertArrayEquals(new String[]{"a", "b", "c"}, StringUtils.splitToWords("   a,   b,  c     "));
-        Assert.assertArrayEquals(new String[]{"hello"}, StringUtils.splitToWords("hello"));
-        Assert.assertArrayEquals(new String[]{"hello"}, StringUtils.splitToWords("    hello     "));
-        Assert.assertArrayEquals(new String[]{"hello world"}, StringUtils.splitToWords("hello world"));
-        Assert.assertArrayEquals(new String[]{"hello   world"}, StringUtils.splitToWords("   hello   world   "));
-        Assert.assertArrayEquals(new String[]{}, StringUtils.splitToWords(null));
-        Assert.assertArrayEquals(new String[]{}, StringUtils.splitToWords(""));
+        Assertions.assertArrayEquals(new String[]{"a", "b", "c"}, StringUtils.splitToWords("a, b, c"));
+        Assertions.assertArrayEquals(new String[]{"a. b. c"}, StringUtils.splitToWords("a. b. c"));
+        Assertions.assertArrayEquals(new String[]{"a", "b", "c"}, StringUtils.splitToWords("a,b,c"));
+        Assertions.assertArrayEquals(new String[]{"a", "b", "c"}, StringUtils.splitToWords("   a,   b,  c     "));
+        Assertions.assertArrayEquals(new String[]{"hello"}, StringUtils.splitToWords("hello"));
+        Assertions.assertArrayEquals(new String[]{"hello"}, StringUtils.splitToWords("    hello     "));
+        Assertions.assertArrayEquals(new String[]{"hello world"}, StringUtils.splitToWords("hello world"));
+        Assertions.assertArrayEquals(new String[]{"hello   world"}, StringUtils.splitToWords("   hello   world   "));
+        Assertions.assertArrayEquals(new String[]{}, StringUtils.splitToWords(null));
+        Assertions.assertArrayEquals(new String[]{}, StringUtils.splitToWords(""));
     }
 }

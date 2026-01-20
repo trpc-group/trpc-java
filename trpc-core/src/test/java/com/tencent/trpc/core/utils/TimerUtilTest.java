@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.core.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TimerUtilTest {
 
@@ -23,16 +23,16 @@ public class TimerUtilTest {
         Thread.sleep(50);
         timerUtil.end();
         long cost = timerUtil.getCost();
-        Assert.assertTrue(cost >= 25);
+        Assertions.assertTrue(cost >= 25);
         timerUtil.reset();
-        Assert.assertTrue(timerUtil.getCost() == 0);
+        Assertions.assertTrue(timerUtil.getCost() == 0);
         timerUtil.nstart();
         Thread.sleep(10);
         timerUtil.nend();
-        Assert.assertTrue(timerUtil.ngetCost() > 1);
+        Assertions.assertTrue(timerUtil.ngetCost() > 1);
         timerUtil.getMinCost();
         timerUtil.getTotalCost();
-        Assert.assertTrue(timerUtil.getMaxCost() > 1);
-        Assert.assertTrue(timerUtil.getTotalCost() > 1);
+        Assertions.assertTrue(timerUtil.getMaxCost() > 1);
+        Assertions.assertTrue(timerUtil.getTotalCost() > 1);
     }
 }

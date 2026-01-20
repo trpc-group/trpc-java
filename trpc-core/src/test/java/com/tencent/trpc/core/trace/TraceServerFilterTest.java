@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -44,16 +44,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.management.*"})
+@ExtendWith(MockitoExtension.class)
 public class TraceServerFilterTest {
 
     private TracerServerFilter filter = new TracerServerFilter() {
@@ -159,12 +157,12 @@ public class TraceServerFilterTest {
         }
     };
 
-    @Before
+    @BeforeEach
     public void before() {
         TracerFactoryManager.getManager().registPlugin("mtest", TestTraceFactory.class);
     }
 
-    @After
+    @AfterEach
     public void after() {
         ExtensionLoader.destroyAllPlugin();
     }
@@ -186,8 +184,8 @@ public class TraceServerFilterTest {
         CompletableFuture<Response> future = new CompletableFuture<Response>();
         Response rsp = new DefResponse();
         future.complete(rsp);
-        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
-        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
+        Invoker<?> invoker = (Invoker<?>) Mockito.mock(Invoker.class);
+        Mockito.when(invoker.invoke(request)).thenReturn(future);
         filter.filter(invoker, request);
     }
 
@@ -208,8 +206,8 @@ public class TraceServerFilterTest {
         Response rsp = new DefResponse();
         rsp.setException(new IllegalArgumentException(""));
         future.complete(rsp);
-        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
-        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
+        Invoker<?> invoker = (Invoker<?>) Mockito.mock(Invoker.class);
+        Mockito.when(invoker.invoke(request)).thenReturn(future);
         filter.filter(invoker, request);
     }
 
@@ -230,8 +228,8 @@ public class TraceServerFilterTest {
         Response rsp = new DefResponse();
         rsp.setException(TRpcException.newBizException(10, ""));
         future.complete(rsp);
-        Invoker<?> invoker = (Invoker<?>) PowerMockito.mock(Invoker.class);
-        PowerMockito.when(invoker.invoke(request)).thenReturn(future);
+        Invoker<?> invoker = (Invoker<?>) Mockito.mock(Invoker.class);
+        Mockito.when(invoker.invoke(request)).thenReturn(future);
         filter.filter(invoker, request);
     }
 

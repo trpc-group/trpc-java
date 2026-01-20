@@ -18,8 +18,8 @@ import com.tencent.trpc.core.transport.common.TestServerCodec;
 import com.tencent.trpc.core.transport.impl.TestServerTransport;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletionStage;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class AcceptLimitHandlerTest {
 
@@ -30,7 +30,7 @@ public class AcceptLimitHandlerTest {
     /**
      * Init AcceptLimitHandler & channel
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         ProtocolConfig config = new ProtocolConfig();
         config.setIp("localhost");

@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TRpcProxyTest {
 
@@ -35,7 +35,7 @@ public class TRpcProxyTest {
     private static final String POLARIS_CLIENT_NAME = "polarisClient";
     private static final String SET_NAME = "aa.bb.cc";
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         ConfigManager.stopTest();
         ConfigManager.startTest();
@@ -47,45 +47,45 @@ public class TRpcProxyTest {
                 .put("client", backendConfig);
     }
 
-    @After
+    @AfterEach
     public void after() {
         ConfigManager.stopTest();
     }
 
     @Test
     public void testGetProxy() {
-        Assert.assertNotNull(TRpcProxy.getProxy("client"));
-        Assert.assertNull(TRpcProxy.getProxy("client1"));
+        Assertions.assertNotNull(TRpcProxy.getProxy("client"));
+        Assertions.assertNull(TRpcProxy.getProxy("client1"));
     }
 
     @Test
     public void testGetProxyWithClass() {
-        Assert.assertNotNull(TRpcProxy.getProxy("client", GenericClient.class));
-        Assert.assertNull(TRpcProxy.getProxy("client1", GenericClient.class));
+        Assertions.assertNotNull(TRpcProxy.getProxy("client", GenericClient.class));
+        Assertions.assertNull(TRpcProxy.getProxy("client1", GenericClient.class));
     }
 
     @Test
     public void testGetProxyWithSourceSet() {
-        Assert.assertNotNull(TRpcProxy.getProxyWithSourceSet("client", SET_NAME));
-        Assert.assertNull(TRpcProxy.getProxyWithSourceSet("client1", SET_NAME));
+        Assertions.assertNotNull(TRpcProxy.getProxyWithSourceSet("client", SET_NAME));
+        Assertions.assertNull(TRpcProxy.getProxyWithSourceSet("client1", SET_NAME));
     }
 
     @Test
     public void testGetProxyWithSourceSetWithClass() {
-        Assert.assertNotNull(TRpcProxy.getProxyWithSourceSet("client", GenericClient.class, SET_NAME));
-        Assert.assertNull(TRpcProxy.getProxyWithSourceSet("client1", GenericClient.class, SET_NAME));
+        Assertions.assertNotNull(TRpcProxy.getProxyWithSourceSet("client", GenericClient.class, SET_NAME));
+        Assertions.assertNull(TRpcProxy.getProxyWithSourceSet("client1", GenericClient.class, SET_NAME));
     }
 
     @Test
     public void testGetProxyWithDestinationSet() {
-        Assert.assertNotNull(TRpcProxy.getProxyWithDestinationSet("client", SET_NAME));
-        Assert.assertNull(TRpcProxy.getProxyWithDestinationSet("client1", SET_NAME));
+        Assertions.assertNotNull(TRpcProxy.getProxyWithDestinationSet("client", SET_NAME));
+        Assertions.assertNull(TRpcProxy.getProxyWithDestinationSet("client1", SET_NAME));
     }
 
     @Test
     public void testGetProxyWithDestSet() {
-        Assert.assertNotNull(TRpcProxy.getProxyWithDestinationSet("client", GenericClient.class, SET_NAME));
-        Assert.assertNull(TRpcProxy.getProxyWithDestinationSet("client1", GenericClient.class, SET_NAME));
+        Assertions.assertNotNull(TRpcProxy.getProxyWithDestinationSet("client", GenericClient.class, SET_NAME));
+        Assertions.assertNull(TRpcProxy.getProxyWithDestinationSet("client1", GenericClient.class, SET_NAME));
     }
 
     @Test
@@ -96,9 +96,9 @@ public class TRpcProxyTest {
         backendConfig.setNamingUrl("assemble://test");
         ConfigManager.getInstance().getClientConfig().getBackendConfigMap()
                 .put(ASSEMBLE_CLIENT_NAME, backendConfig);
-        Assert.assertNotNull(
+        Assertions.assertNotNull(
                 TRpcProxy.getProxyWithDestinationSet(ASSEMBLE_CLIENT_NAME, GenericClient.class, SET_NAME));
-        Assert.assertEquals(SET_NAME, backendConfig.getExtMap().get(NamingOptions.DESTINATION_SET));
+        Assertions.assertEquals(SET_NAME, backendConfig.getExtMap().get(NamingOptions.DESTINATION_SET));
     }
 
     @Test
@@ -127,14 +127,15 @@ public class TRpcProxyTest {
             }
         };
         ExtensionLoader.getExtensionLoader(Selector.class).addExtension("polaris", simpleSelector.getClass());
-        Assert.assertNotNull(
+        Assertions.assertNotNull(
                 TRpcProxy.getProxyWithDestinationSet(POLARIS_CLIENT_NAME, GenericClient.class, SET_NAME));
         Object metadataObj = Optional.ofNullable(backendConfig.getNamingMap())
                 .map(namingMap -> namingMap.get(Constants.METADATA))
                 .orElse(null);
-        Assert.assertTrue(metadataObj instanceof Map);
+        Assertions.assertTrue(metadataObj instanceof Map);
         Map<String, String> metadata = (Map<String, String>) metadataObj;
-        Assert.assertEquals(SET_NAME, metadata.get(Constants.POLARIS_PLUGIN_SET_NAME_KEY));
-        Assert.assertEquals(Constants.POLARIS_PLUGIN_ENABLE_SET, metadata.get(Constants.POLARIS_PLUGIN_ENABLE_SET_KEY));
+        Assertions.assertEquals(SET_NAME, metadata.get(Constants.POLARIS_PLUGIN_SET_NAME_KEY));
+        Assertions.assertEquals(Constants.POLARIS_PLUGIN_ENABLE_SET,
+                metadata.get(Constants.POLARIS_PLUGIN_ENABLE_SET_KEY));
     }
 }

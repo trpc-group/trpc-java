@@ -20,8 +20,8 @@ import com.tencent.trpc.core.rpc.RpcInvocation;
 import com.tencent.trpc.core.rpc.def.DefRequest;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DefLimiterBlockHandlerTest {
 
@@ -43,8 +43,8 @@ public class DefLimiterBlockHandlerTest {
             exception.printStackTrace();
         } catch (ExecutionException executionException) {
             Throwable cause = executionException.getCause();
-            Assert.assertTrue(cause instanceof LimiterBlockException);
-            Assert.assertTrue("test call block handler".equals(cause.getMessage()));
+            Assertions.assertTrue(cause instanceof LimiterBlockException);
+            Assertions.assertTrue("test call block handler".equals(cause.getMessage()));
         }
     }
 

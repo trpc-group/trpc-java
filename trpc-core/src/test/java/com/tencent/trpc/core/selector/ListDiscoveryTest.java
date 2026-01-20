@@ -11,10 +11,10 @@
 
 package com.tencent.trpc.core.selector;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.tencent.trpc.core.selector.discovery.ListDiscovery;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ListDiscoveryTest {
 

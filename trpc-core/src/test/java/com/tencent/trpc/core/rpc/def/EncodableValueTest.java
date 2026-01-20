@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.core.rpc.def;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.tencent.trpc.core.compressor.spi.Compressor;
 import com.tencent.trpc.core.compressor.support.NoneCompressor;
@@ -20,15 +20,15 @@ import com.tencent.trpc.core.compressor.support.SnappyCompressor;
 import com.tencent.trpc.core.serialization.User;
 import com.tencent.trpc.core.serialization.support.JSONSerialization;
 import com.tencent.trpc.core.utils.JsonUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EncodableValueTest {
 
     private EncodableValue encodableValue;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         encodableValue = new EncodableValue(new NoneCompressor(), 20,
                 new JSONSerialization(), false, null);
@@ -50,12 +50,12 @@ public class EncodableValueTest {
 
     @Test
     public void testGetRawValue() {
-        Assert.assertNull(encodableValue.getRawValue());
+        Assertions.assertNull(encodableValue.getRawValue());
     }
 
     @Test
     public void testGetCompressed() {
-        Assert.assertFalse(encodableValue.getCompressed());
+        Assertions.assertFalse(encodableValue.getCompressed());
     }
 
     @Test

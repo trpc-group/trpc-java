@@ -11,27 +11,27 @@
 
 package com.tencent.trpc.core.common.timer;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.common.NamedThreadFactory;
 import java.util.concurrent.TimeUnit;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class HashWheelTimerTest {
 
     HashedWheelTimer timer;
 
-    @Before
+    @BeforeEach
     public void before() {
         NamedThreadFactory threadFactory = new NamedThreadFactory("Test-Scheduler", true);
         timer = new HashedWheelTimer(threadFactory, 10, TimeUnit.MILLISECONDS);
         timer.start();
     }
 
-    @After
+    @AfterEach
     public void after() {
         if (timer != null) {
             timer.stop();
@@ -41,16 +41,16 @@ public class HashWheelTimerTest {
     @Test
     public void testInit() {
         HashedWheelTimer hashedWheelTimer = new HashedWheelTimer();
-        Assert.assertNotNull(hashedWheelTimer);
+        Assertions.assertNotNull(hashedWheelTimer);
         hashedWheelTimer.stop();
         hashedWheelTimer = new HashedWheelTimer(1L, TimeUnit.MINUTES);
-        Assert.assertNotNull(hashedWheelTimer);
+        Assertions.assertNotNull(hashedWheelTimer);
         hashedWheelTimer.stop();
         hashedWheelTimer = new HashedWheelTimer(1L, TimeUnit.MINUTES, 1);
-        Assert.assertNotNull(hashedWheelTimer);
+        Assertions.assertNotNull(hashedWheelTimer);
         hashedWheelTimer.stop();
         hashedWheelTimer = new HashedWheelTimer(new NamedThreadFactory());
-        Assert.assertNotNull(hashedWheelTimer);
+        Assertions.assertNotNull(hashedWheelTimer);
         hashedWheelTimer.stop();
     }
 

@@ -20,8 +20,8 @@ import com.tencent.trpc.core.rpc.RpcInvocation;
 import com.tencent.trpc.core.rpc.def.DefRequest;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DefLimiterFallbackTest {
 
@@ -43,9 +43,9 @@ public class DefLimiterFallbackTest {
             exception.printStackTrace();
         } catch (ExecutionException executionException) {
             Throwable cause = executionException.getCause();
-            Assert.assertTrue(cause instanceof LimiterFallbackException);
-            Assert.assertTrue(cause.getCause() instanceof NullPointerException);
-            Assert.assertTrue("test call fallback as null pointer".equals(cause.getCause().getMessage()));
+            Assertions.assertTrue(cause instanceof LimiterFallbackException);
+            Assertions.assertTrue(cause.getCause() instanceof NullPointerException);
+            Assertions.assertTrue("test call fallback as null pointer".equals(cause.getCause().getMessage()));
         }
     }
 

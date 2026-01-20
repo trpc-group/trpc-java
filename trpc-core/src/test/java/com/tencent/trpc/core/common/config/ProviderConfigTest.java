@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -11,17 +11,16 @@
 
 package com.tencent.trpc.core.common.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.tencent.trpc.core.common.ConfigManager;
 import com.tencent.trpc.core.extension.ExtensionLoader;
-import com.tencent.trpc.core.filter.FilterManager;
 import com.tencent.trpc.core.filter.spi.Filter;
 import com.tencent.trpc.core.registry.MockRegistry;
 import com.tencent.trpc.core.registry.spi.Registry;
@@ -34,29 +33,28 @@ import com.tencent.trpc.core.worker.spi.WorkerPool;
 import com.tencent.trpc.core.worker.support.thread.ThreadWorkerPool;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ExtensionLoader.class, RpcServerManager.class, FilterManager.class})
-@PowerMockIgnore({"javax.management.*"})
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class ProviderConfigTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
     }
 
-    @After
+    @AfterEach
     public void after() {
         ConfigManager.stopTest();
     }
@@ -82,50 +80,62 @@ public class ProviderConfigTest {
 
     @Test
     public void testInit() {
-        PowerMockito.mockStatic(ExtensionLoader.class);
-        PowerMockito.mockStatic(RpcServerManager.class);
-        ExtensionLoader mock = PowerMockito.mock(ExtensionLoader.class);
-        PowerMockito.when(ExtensionLoader.getExtensionLoader(Filter.class)).thenReturn(mock);
-        PowerMockito.when(mock.hasExtension(Mockito.anyString())).thenReturn(true);
-        PowerMockito.when(ExtensionLoader.getPluginConfigMap()).then(v -> v.callRealMethod());
-        ThreadWorkerPool threadWorkerPool = new ThreadWorkerPool();
-        threadWorkerPool.setPluginConfig(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_CONFIG);
-        threadWorkerPool.init();
-        PowerMockito.when(ExtensionLoader.getExtensionLoader(WorkerPool.class)).thenReturn(mock);
-        PowerMockito.when(mock.getExtension(Mockito.anyString())).thenReturn(threadWorkerPool);
-        Filter mockFilter = PowerMockito.mock(Filter.class);
-        PowerMockito.when(mock.getExtension(Mockito.eq("filterId"))).thenReturn(mockFilter);
-        ExtensionLoader.getExtensionLoader(Filter.class);
-        ServiceConfig serviceConfig = new ServiceConfig();
-        serviceConfig.setName("protoid");
-        serviceConfig.setIp("127.0.0.1");
-        serviceConfig.setFilters(Lists.newArrayList("filterId"));
-        ProviderConfig<Object> config = ProviderConfig.newInstance();
-        serviceConfig.addProviderConfig(config);
-        config.setServiceInterface(Object.class);
-        config.setServiceConfig(serviceConfig);
-        config.setRef(new Object());
-        Map<String, PluginConfig> configMap = new HashMap<>();
-        Map<String, Object> extMap = new HashMap<>();
-        extMap.put("address_list", "10.0.0.1");
-        configMap.put("registyId", new PluginConfig("registyId", MockRegistry.class, extMap));
-        ConfigManager.getInstance().getPluginConfigMap().put(Registry.class, configMap);
-        config.init();
-        RpcServer rpcServerMock = PowerMockito.mock(RpcServer.class);
-        PowerMockito.when(RpcServerManager.getOrCreateRpcServer(Mockito.argThat(new IsValid())))
-                .thenReturn(rpcServerMock);
-        PowerMockito.when(rpcServerMock.getProtocolConfig()).thenReturn(new ProtocolConfig());
-        serviceConfig.export();
-        Mockito.verify(rpcServerMock, Mockito.times(1)).export(Mockito.any(ProviderInvoker.class));
-        Mockito.verify(rpcServerMock, Mockito.times(1)).open();
-        assertTrue(serviceConfig.isExported());
-        serviceConfig.unExport();
-        assertFalse(serviceConfig.isExported());
-        ExtensionLoader mockRegistryLoader = PowerMockito.mock(ExtensionLoader.class);
-        PowerMockito.when(ExtensionLoader.getExtensionLoader(Registry.class))
-                .thenReturn(mockRegistryLoader);
-        Registry registry = PowerMockito.mock(Registry.class);
-        PowerMockito.when(mockRegistryLoader.getExtension("registyId")).thenReturn(registry);
+        try (MockedStatic<ExtensionLoader> loaderMockedStatic = Mockito.mockStatic(ExtensionLoader.class);
+                MockedStatic<RpcServerManager> managerMockedStatic = Mockito.mockStatic(RpcServerManager.class)) {
+
+            ExtensionLoader mock = Mockito.mock(ExtensionLoader.class);
+            loaderMockedStatic.when(() -> ExtensionLoader.getExtensionLoader(Filter.class)).thenReturn(mock);
+            Mockito.when(mock.hasExtension(Mockito.anyString())).thenReturn(true);
+            loaderMockedStatic.when(ExtensionLoader::getPluginConfigMap).thenCallRealMethod();
+
+            ThreadWorkerPool threadWorkerPool = new ThreadWorkerPool();
+            threadWorkerPool.setPluginConfig(WorkerPoolManager.DEF_CONSUMER_WORKER_POOL_CONFIG);
+            threadWorkerPool.init();
+            loaderMockedStatic.when(() -> ExtensionLoader.getExtensionLoader(WorkerPool.class)).thenReturn(mock);
+            Mockito.when(mock.getExtension(Mockito.anyString())).thenReturn(threadWorkerPool);
+
+            Filter mockFilter = Mockito.mock(Filter.class);
+            Mockito.when(mock.getExtension(Mockito.eq("filterId"))).thenReturn(mockFilter);
+
+            ServiceConfig serviceConfig = new ServiceConfig();
+            serviceConfig.setName("protoid");
+            serviceConfig.setIp("127.0.0.1");
+            serviceConfig.setFilters(Lists.newArrayList("filterId"));
+
+            ProviderConfig<Object> config = ProviderConfig.newInstance();
+            serviceConfig.addProviderConfig(config);
+            config.setServiceInterface(Object.class);
+            config.setServiceConfig(serviceConfig);
+            config.setRef(new Object());
+
+            Map<String, PluginConfig> configMap = new HashMap<>();
+            Map<String, Object> extMap = new HashMap<>();
+            extMap.put("address_list", "10.0.0.1");
+            configMap.put("registyId", new PluginConfig("registyId", MockRegistry.class, extMap));
+            ConfigManager.getInstance().getPluginConfigMap().put(Registry.class, configMap);
+            config.init();
+
+            RpcServer rpcServerMock = Mockito.mock(RpcServer.class);
+            managerMockedStatic.when(() -> RpcServerManager.getOrCreateRpcServer(Mockito.argThat(new IsValid())))
+                    .thenReturn(rpcServerMock);
+            Mockito.when(rpcServerMock.getProtocolConfig()).thenReturn(new ProtocolConfig());
+            Mockito.doNothing().when(rpcServerMock).export(Mockito.any(ProviderInvoker.class));
+            Mockito.doNothing().when(rpcServerMock).open();
+
+            serviceConfig.export();
+            Mockito.verify(rpcServerMock, Mockito.times(1)).export(Mockito.any(ProviderInvoker.class));
+            Mockito.verify(rpcServerMock, Mockito.times(1)).open();
+            assertTrue(serviceConfig.isExported());
+
+            serviceConfig.unExport();
+            assertFalse(serviceConfig.isExported());
+
+            ExtensionLoader mockRegistryLoader = Mockito.mock(ExtensionLoader.class);
+            loaderMockedStatic.when(() -> ExtensionLoader.getExtensionLoader(Registry.class))
+                    .thenReturn(mockRegistryLoader);
+            Registry registry = Mockito.mock(Registry.class);
+            Mockito.when(mockRegistryLoader.getExtension("registyId")).thenReturn(registry);
+        }
     }
 
     @Test
@@ -226,12 +236,16 @@ public class ProviderConfigTest {
 
     }
 
-    private class IsValid extends ArgumentMatcher<ProtocolConfig> {
+    private class IsValid implements ArgumentMatcher<ProtocolConfig> {
 
         @Override
-        public boolean matches(Object o) {
-            ProtocolConfig ox = (ProtocolConfig) o;
-            return ox.getIp().contentEquals("127.0.0.1");
+        public boolean matches(ProtocolConfig protocolConfig) {
+            return protocolConfig.getIp().contentEquals("127.0.0.1");
+        }
+
+        @Override
+        public Class<?> type() {
+            return ProtocolConfig.class;
         }
     }
 }

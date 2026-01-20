@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.core.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.protobuf.ByteString;
 import com.tencent.trpc.core.utils.HelloRequestProtocol.HelloRequest;
@@ -22,8 +22,8 @@ import com.tencent.trpc.core.utils.HelloRequestProtocol.Week;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * pb to json test class
@@ -50,7 +50,7 @@ public class ProtoJsonConverterTest {
     @Test
     public void testToString() {
         String toString = ProtoJsonConverter.toString(REQUEST);
-        Assert.assertEquals(toString, "{\n"
+        Assertions.assertEquals(toString, "{\n"
                 + "  \"intField\": 1,\n"
                 + "  \"stringField\": \"string$中文\",\n"
                 + "  \"booleanField\": true,\n"
@@ -75,7 +75,7 @@ public class ProtoJsonConverterTest {
                 + "  \"weeks\": [0]\n"
                 + "}");
         String nullString = ProtoJsonConverter.toString(null);
-        Assert.assertNull(nullString);
+        Assertions.assertNull(nullString);
     }
 
     @Test
@@ -215,7 +215,7 @@ public class ProtoJsonConverterTest {
     @Test
     public void testJsonToMessage() {
         String json = ProtoJsonConverter.messageToJson(REQUEST, false, false);
-        Assert.assertEquals("{\"intField\":1,\"stringField\":\"string$中文\",\"booleanField\":true,"
+        Assertions.assertEquals("{\"intField\":1,\"stringField\":\"string$中文\",\"booleanField\":true,"
                 + "\"doubleField\":1.0,\"floatField\":2.0,\"longField\":\"100\",\"byteStringField\":\"YQ==\","
                 + "\"other\":{\"intField\":2},\"intFields\":[1],\"stringFields\":[\"string$\"],"
                 + "\"booleanFields\":[true],\"doubleFields\":[1.0],\"floatFields\":[2.0],"

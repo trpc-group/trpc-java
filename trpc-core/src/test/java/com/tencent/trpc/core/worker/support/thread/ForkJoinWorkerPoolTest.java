@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ForkJoinWorkerPoolTest {
 
@@ -45,32 +45,32 @@ public class ForkJoinWorkerPoolTest {
                 properties);
         ForkJoinWorkerPool forkJoinWorkerPool = new ForkJoinWorkerPool();
         forkJoinWorkerPool.setPluginConfig(poolPluginConfig);
-        Assert.assertEquals(ForkJoinWorkerPool.NAME, forkJoinWorkerPool.getName());
+        Assertions.assertEquals(ForkJoinWorkerPool.NAME, forkJoinWorkerPool.getName());
         forkJoinWorkerPool.init();
         try {
             forkJoinWorkerPool.refresh(poolPluginConfig);
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof UnsupportedOperationException);
+            Assertions.assertTrue(e instanceof UnsupportedOperationException);
         }
         PoolMXBean report = forkJoinWorkerPool.report();
         ForkJoinPoolMXBean forkJoinPoolMXBean = (ForkJoinPoolMXBean) report;
-        Assert.assertEquals(0, forkJoinPoolMXBean.getPoolSize());
-        Assert.assertEquals(0, forkJoinPoolMXBean.getQueuedTaskCount());
-        Assert.assertEquals(0, forkJoinPoolMXBean.getQueuedSubmissionCount());
-        Assert.assertTrue(forkJoinPoolMXBean.getCommonPoolParallelism() >= 0);
-        Assert.assertTrue(forkJoinPoolMXBean.getParallelism() >= 0);
-        Assert.assertEquals(WorkerPoolType.FORK_JOIN.getName(), forkJoinPoolMXBean.getType());
-        Assert.assertNotNull(forkJoinPoolMXBean.getObjectName());
-        Assert.assertEquals(0, forkJoinPoolMXBean.getRunningThreadCount());
-        Assert.assertEquals(0, forkJoinPoolMXBean.getActiveThreadCount());
-        Assert.assertEquals(0, forkJoinPoolMXBean.getStealCount());
+        Assertions.assertEquals(0, forkJoinPoolMXBean.getPoolSize());
+        Assertions.assertEquals(0, forkJoinPoolMXBean.getQueuedTaskCount());
+        Assertions.assertEquals(0, forkJoinPoolMXBean.getQueuedSubmissionCount());
+        Assertions.assertTrue(forkJoinPoolMXBean.getCommonPoolParallelism() >= 0);
+        Assertions.assertTrue(forkJoinPoolMXBean.getParallelism() >= 0);
+        Assertions.assertEquals(WorkerPoolType.FORK_JOIN.getName(), forkJoinPoolMXBean.getType());
+        Assertions.assertNotNull(forkJoinPoolMXBean.getObjectName());
+        Assertions.assertEquals(0, forkJoinPoolMXBean.getRunningThreadCount());
+        Assertions.assertEquals(0, forkJoinPoolMXBean.getActiveThreadCount());
+        Assertions.assertEquals(0, forkJoinPoolMXBean.getStealCount());
         forkJoinWorkerPool.execute(() -> System.out.println("hello"));
         Executor executor = forkJoinWorkerPool.toExecutor();
-        Assert.assertTrue(executor instanceof ForkJoinPool);
+        Assertions.assertTrue(executor instanceof ForkJoinPool);
         forkJoinWorkerPool.destroy();
         executor = forkJoinWorkerPool.toExecutor();
         ForkJoinPool forkJoinPool = (ForkJoinPool) executor;
-        Assert.assertTrue(forkJoinPool.isShutdown());
+        Assertions.assertTrue(forkJoinPool.isShutdown());
         forkJoinWorkerPool.close(0);
     }
 }

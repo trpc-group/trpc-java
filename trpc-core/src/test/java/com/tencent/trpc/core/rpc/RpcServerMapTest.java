@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -11,45 +11,39 @@
 
 package com.tencent.trpc.core.rpc;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.extension.ExtensionLoader;
 import com.tencent.trpc.core.rpc.spi.RpcServerFactory;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ExtensionLoader.class})
+@ExtendWith(MockitoExtension.class)
 public class RpcServerMapTest {
-
-    @Before
-    public void init() {
-        PowerMockito.mockStatic(ExtensionLoader.class);// 3
-    }
 
     @Test
     public void test() {
-        ProtocolConfig config = new ProtocolConfig();
-        config.setProtocol("trpc");
-        ExtensionLoader<RpcServerFactory> extensionLoader = PowerMockito
-                .mock(ExtensionLoader.class);
-        PowerMockito.when(ExtensionLoader.getExtensionLoader(RpcServerFactory.class))
-                .thenReturn(extensionLoader);
-        RpcServerFactory rpcServerFactory = PowerMockito.mock(RpcServerFactory.class);
-        PowerMockito.when(extensionLoader.getExtension("trpc")).thenReturn(rpcServerFactory);
-        RpcServer rpcServer = PowerMockito.mock(RpcServer.class);
-        PowerMockito.when(rpcServer.getProtocolConfig()).thenReturn(new ProtocolConfig());
-        PowerMockito.when(rpcServerFactory.createRpcServer(config)).thenReturn(rpcServer);
-        assertEquals(RpcServerManager.getOrCreateRpcServer(config), rpcServer);
-        RpcServerManager.remove(config);
-        RpcServerManager.shutdown();
-        RpcServerManager.reset();
-        assertEquals(RpcServerManager.getOrCreateRpcServer(config), rpcServer);
-        RpcServerManager.shutdown();
+        try (MockedStatic<ExtensionLoader> mockedStatic = Mockito.mockStatic(ExtensionLoader.class)) {
+            ProtocolConfig config = new ProtocolConfig();
+            config.setProtocol("trpc");
+            ExtensionLoader<RpcServerFactory> extensionLoader = Mockito.mock(ExtensionLoader.class);
+            mockedStatic.when(() -> ExtensionLoader.getExtensionLoader(RpcServerFactory.class))
+                    .thenReturn(extensionLoader);
+            RpcServerFactory rpcServerFactory = Mockito.mock(RpcServerFactory.class);
+            Mockito.when(extensionLoader.getExtension("trpc")).thenReturn(rpcServerFactory);
+            RpcServer rpcServer = Mockito.mock(RpcServer.class);
+            Mockito.when(rpcServer.getProtocolConfig()).thenReturn(new ProtocolConfig());
+            Mockito.when(rpcServerFactory.createRpcServer(config)).thenReturn(rpcServer);
+            assertEquals(RpcServerManager.getOrCreateRpcServer(config), rpcServer);
+            RpcServerManager.remove(config);
+            RpcServerManager.shutdown();
+            RpcServerManager.reset();
+            assertEquals(RpcServerManager.getOrCreateRpcServer(config), rpcServer);
+            RpcServerManager.shutdown();
+        }
     }
 }

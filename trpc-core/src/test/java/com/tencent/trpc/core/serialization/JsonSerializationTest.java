@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -11,19 +11,18 @@
 
 package com.tencent.trpc.core.serialization;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.tencent.trpc.core.serialization.support.JSONSerialization;
 import com.tencent.trpc.core.utils.HelloRequestProtocol.HelloRequest;
 import com.tencent.trpc.core.utils.JsonUtils;
-import com.tencent.trpc.core.utils.JsonUtilsTest;
 import java.io.IOException;
 import java.util.List;
 import org.assertj.core.util.Lists;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class JsonSerializationTest {
 
@@ -33,7 +32,7 @@ public class JsonSerializationTest {
 
     private Obj obj;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         serial = new JSONSerialization();
         genericsObj = new GenericsObj<>();
@@ -64,17 +63,17 @@ public class JsonSerializationTest {
         try {
             byte[] bytes = serial.serialize(obj);
             GenericsObj deserialize = serial.deserialize(bytes, GenericsObj.class);
-            Assert.assertNull(deserialize.getData());
+            Assertions.assertNull(deserialize.getData());
         } catch (IOException ioe) {
-            Assert.assertTrue(ioe.getMessage().contains("json deserialize exception:"));
+            Assertions.assertTrue(ioe.getMessage().contains("json deserialize exception:"));
         }
         try {
             byte[] bytes = serial.serialize(obj);
             TestObj1 deserialize = serial.deserialize(bytes, new TypeReference<TestObj1>() {
             }.getType());
-            Assert.assertEquals(0, deserialize.test);
+            Assertions.assertEquals(0, deserialize.test);
         } catch (IOException ioe) {
-            Assert.assertTrue(ioe.getMessage().contains("json deserialize exception:"));
+            Assertions.assertTrue(ioe.getMessage().contains("json deserialize exception:"));
         }
     }
 
@@ -120,7 +119,8 @@ public class JsonSerializationTest {
         testObjList.setData(objs);
         byte[] serializeList = serial.serialize(testObjList);
         GenericsObj<List<Obj>> deserializeList =
-                serial.deserialize(serializeList, new TypeReference<GenericsObj<List<Obj>>>() {}.getType());
+                serial.deserialize(serializeList, new TypeReference<GenericsObj<List<Obj>>>() {
+                }.getType());
         assertEquals(20, deserializeList.getIntField());
         assertEquals("a", deserializeList.getData().get(0).getName());
         byte[] bytes = serial.serialize(obj);

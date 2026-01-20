@@ -21,9 +21,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.junit.Assert;
-import org.junit.Test;
-import org.powermock.api.mockito.PowerMockito;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class ThreadPerTaskExecutorWrapperTest {
 
@@ -34,26 +34,26 @@ public class ThreadPerTaskExecutorWrapperTest {
         Callable<String> callable = () -> "mock";
         Future<String> submit = wrapper.submit(callable);
         submit.get();
-        Assert.assertEquals(1, wrapper.getSubmittedTaskCount());
-        Assert.assertEquals(1, wrapper.getCompletedTaskCount());
+        Assertions.assertEquals(1, wrapper.getSubmittedTaskCount());
+        Assertions.assertEquals(1, wrapper.getCompletedTaskCount());
         List<Callable<String>> callables = Arrays.asList(callable, callable, callable);
         List<Future<String>> futures = wrapper.invokeAll(callables);
         for (Future<String> future : futures) {
             future.get();
         }
-        Assert.assertEquals(4, wrapper.getSubmittedTaskCount());
-        Assert.assertEquals(4, wrapper.getCompletedTaskCount());
+        Assertions.assertEquals(4, wrapper.getSubmittedTaskCount());
+        Assertions.assertEquals(4, wrapper.getCompletedTaskCount());
         Runnable runnable = () -> {
         };
         Future<?> future = wrapper.submit(runnable);
         future.get();
-        Assert.assertEquals(5, wrapper.getSubmittedTaskCount());
-        Assert.assertEquals(5, wrapper.getCompletedTaskCount());
+        Assertions.assertEquals(5, wrapper.getSubmittedTaskCount());
+        Assertions.assertEquals(5, wrapper.getCompletedTaskCount());
     }
 
     @Test
     public void testThreadPerTaskExecutorWrapper2() throws ExecutionException, InterruptedException, TimeoutException {
-        ExecutorService executorService = PowerMockito.mock(ExecutorService.class);
+        ExecutorService executorService = Mockito.mock(ExecutorService.class);
         ThreadPerTaskExecutorWrapper wrapper = ThreadPerTaskExecutorWrapper.wrap(executorService);
         Runnable runnable = () -> {
         };
@@ -72,8 +72,8 @@ public class ThreadPerTaskExecutorWrapperTest {
         wrapper.isShutdown();
         wrapper.isTerminated();
         wrapper.awaitTermination(1, TimeUnit.SECONDS);
-        Assert.assertEquals(0, wrapper.getSubmittedTaskCount());
-        Assert.assertEquals(0, wrapper.getCompletedTaskCount());
+        Assertions.assertEquals(0, wrapper.getSubmittedTaskCount());
+        Assertions.assertEquals(0, wrapper.getCompletedTaskCount());
     }
 
 }

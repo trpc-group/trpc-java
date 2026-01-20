@@ -13,19 +13,21 @@ package com.tencent.trpc.core.cluster;
 
 import com.tencent.trpc.core.cluster.spi.ClusterInterceptor;
 import com.tencent.trpc.core.cluster.spi.LogClusterInterceptor;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ClusterInterceptorManagerTest {
 
     @Test
     public void testGet() {
         ClusterInterceptor log = ClusterInterceptorManager.get("log");
-        Assert.assertTrue(log instanceof LogClusterInterceptor);
+        Assertions.assertTrue(log instanceof LogClusterInterceptor);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testValidate() {
-        ClusterInterceptorManager.validate("log1");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            ClusterInterceptorManager.validate("log1");
+        });
     }
 }

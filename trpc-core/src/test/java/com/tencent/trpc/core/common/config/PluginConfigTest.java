@@ -11,13 +11,13 @@
 
 package com.tencent.trpc.core.common.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.common.collect.ImmutableMap;
 import com.tencent.trpc.core.worker.spi.WorkerPool;
 import com.tencent.trpc.core.worker.support.thread.ThreadWorkerPool;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PluginConfigTest {
 

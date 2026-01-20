@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.core.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class IPUtilsTest {
 
@@ -22,28 +22,28 @@ public class IPUtilsTest {
         int ipInt = IPUtils.ip2int(host);
         byte[] ipBytes = IPUtils.ip2bytes(host);
         String newIp = IPUtils.bytes2ip(ipBytes);
-        Assert.assertEquals(newIp, host);
+        Assertions.assertEquals(newIp, host);
         String newIp2 = IPUtils.int2ip(ipInt);
-        Assert.assertEquals(newIp2, host);
+        Assertions.assertEquals(newIp2, host);
         NetUtils.resolveNicAddr("eth1");
-        Assert.assertEquals(0, IPUtils.ip2int(null));
+        Assertions.assertEquals(0, IPUtils.ip2int(null));
     }
 
     @Test
     public void testIsIPStrValid() {
-        Assert.assertFalse(IPUtils.isIPStrValid(null));
-        Assert.assertFalse(IPUtils.isIPStrValid(""));
-        Assert.assertFalse(IPUtils.isIPStrValid("0.0.0.0"));
-        Assert.assertFalse(IPUtils.isIPStrValid("::"));
-        Assert.assertFalse(IPUtils.isIPStrValid("127.0.0.1"));
-        Assert.assertFalse(IPUtils.isIPStrValid("::1"));
-        Assert.assertFalse(IPUtils.isIPStrValid("169.254.1.1"));
-        Assert.assertFalse(IPUtils.isIPStrValid("fe80::42:c0ff:fea8:a02"));
-        Assert.assertFalse(IPUtils.isIPStrValid("172.16.0.1"));
-        Assert.assertFalse(IPUtils.isIPStrValid("192.168.10.6"));
-        Assert.assertFalse(IPUtils.isIPStrValid("FEC0::1:2:3:4"));
-        Assert.assertFalse(IPUtils.isIPStrValid("fd12:3456:789a:1::1"));
-        Assert.assertTrue(IPUtils.isIPStrValid("1.2.3.4"));
-        Assert.assertTrue(IPUtils.isIPStrValid("2402:4e00::"));
+        Assertions.assertFalse(IPUtils.isIPStrValid(null));
+        Assertions.assertFalse(IPUtils.isIPStrValid(""));
+        Assertions.assertFalse(IPUtils.isIPStrValid("0.0.0.0"));
+        Assertions.assertFalse(IPUtils.isIPStrValid("::"));
+        Assertions.assertFalse(IPUtils.isIPStrValid("127.0.0.1"));
+        Assertions.assertFalse(IPUtils.isIPStrValid("::1"));
+        Assertions.assertFalse(IPUtils.isIPStrValid("169.254.1.1"));
+        Assertions.assertFalse(IPUtils.isIPStrValid("fe80::42:c0ff:fea8:a02"));
+        Assertions.assertFalse(IPUtils.isIPStrValid("172.16.0.1"));
+        Assertions.assertFalse(IPUtils.isIPStrValid("192.168.10.6"));
+        Assertions.assertFalse(IPUtils.isIPStrValid("FEC0::1:2:3:4"));
+        Assertions.assertFalse(IPUtils.isIPStrValid("fd12:3456:789a:1::1"));
+        Assertions.assertTrue(IPUtils.isIPStrValid("1.2.3.4"));
+        Assertions.assertTrue(IPUtils.isIPStrValid("2402:4e00::"));
     }
 }

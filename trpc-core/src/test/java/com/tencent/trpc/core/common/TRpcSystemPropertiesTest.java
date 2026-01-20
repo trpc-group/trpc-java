@@ -11,13 +11,13 @@
 
 package com.tencent.trpc.core.common;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TRpcSystemPropertiesTest {
 
-    @Before
+    @BeforeEach
     public void setUp() {
         TRpcSystemProperties.setProperties("key", "value");
     }
@@ -25,34 +25,34 @@ public class TRpcSystemPropertiesTest {
     @Test
     public void testGetProperties() {
         String value = TRpcSystemProperties.getProperties("key");
-        Assert.assertEquals("value", value);
+        Assertions.assertEquals("value", value);
         String value1 = TRpcSystemProperties.getProperties("key1");
-        Assert.assertNull(value1);
+        Assertions.assertNull(value1);
     }
 
     @Test
     public void testGetPropertiesWithDef() {
         String value = TRpcSystemProperties.getProperties("key", "value1");
-        Assert.assertEquals("value", value);
+        Assertions.assertEquals("value", value);
         String value1 = TRpcSystemProperties.getProperties("key1", "value1");
-        Assert.assertEquals("value1", value1);
+        Assertions.assertEquals("value1", value1);
     }
 
     @Test
     public void testSetProperties() {
         TRpcSystemProperties.setProperties("key", "value2");
         String value = TRpcSystemProperties.getProperties("key");
-        Assert.assertEquals("value2", value);
+        Assertions.assertEquals("value2", value);
     }
 
     @Test
     public void testIsIgnoreSamePluginName() {
-        Assert.assertFalse(TRpcSystemProperties.isIgnoreSamePluginName());
+        Assertions.assertFalse(TRpcSystemProperties.isIgnoreSamePluginName());
     }
 
     @Test
     public void testSetIgnoreSamePluginName() {
         TRpcSystemProperties.setIgnoreSamePluginName(true);
-        Assert.assertTrue(TRpcSystemProperties.isIgnoreSamePluginName());
+        Assertions.assertTrue(TRpcSystemProperties.isIgnoreSamePluginName());
     }
 }

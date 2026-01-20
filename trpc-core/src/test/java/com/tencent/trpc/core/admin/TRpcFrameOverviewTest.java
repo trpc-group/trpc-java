@@ -11,10 +11,10 @@
 
 package com.tencent.trpc.core.admin;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TRpcFrameOverviewTest {
 
@@ -22,7 +22,7 @@ public class TRpcFrameOverviewTest {
     public void test() {
         String trpcName = TRpcFrameOverview.getName();
         assertEquals(trpcName, "trpc-java");
-        Assert.assertNotNull(TRpcFrameOverview.getVersion());
+        Assertions.assertNotNull(TRpcFrameOverview.getVersion());
     }
 
 }
