@@ -12,7 +12,7 @@
 package com.tencent.trpc.core.selector;
 
 import com.tencent.trpc.core.selector.circuitbreaker.AbstractCircuitBreaker;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AbstractCircuitBreakerTest {
 

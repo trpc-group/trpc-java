@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.core.filter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.collect.Lists;
 import com.tencent.trpc.core.common.ConfigManager;
@@ -30,19 +30,19 @@ import com.tencent.trpc.core.rpc.def.DefResponse;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ProviderFilterInvokerTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         ConfigManager.getInstance().stopTest();
     }
 
-    @After
+    @AfterEach
     public void after() {
         ConfigManager.getInstance().stopTest();
     }
@@ -58,10 +58,10 @@ public class ProviderFilterInvokerTest {
         ProtocolConfig protoConfig = createProtoConfig();
         ProviderInvoker buildProviderChain = FilterChain.buildProviderChain(config,
                 new ProviderInvokerMock(config, protoConfig));
-        Assert.assertEquals(config, buildProviderChain.getConfig());
-        Assert.assertEquals(protoConfig, buildProviderChain.getProtocolConfig());
-        Assert.assertNull(buildProviderChain.getImpl());
-        Assert.assertNull(buildProviderChain.getInterface());
+        Assertions.assertEquals(config, buildProviderChain.getConfig());
+        Assertions.assertEquals(protoConfig, buildProviderChain.getProtocolConfig());
+        Assertions.assertNull(buildProviderChain.getImpl());
+        Assertions.assertNull(buildProviderChain.getInterface());
         CompletionStage invoke = buildProviderChain.invoke(createRequest());
         Response r = (Response) (invoke.toCompletableFuture().join());
         assertEquals(r.getValue(), 20);

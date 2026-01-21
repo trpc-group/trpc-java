@@ -11,10 +11,12 @@
 
 package com.tencent.trpc.core.telemetry;
 
-import junit.framework.TestCase;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class SpanContextTest extends TestCase {
+import org.junit.jupiter.api.Test;
+
+public class SpanContextTest {
 
     @Test
     public void testInvalidContext() {

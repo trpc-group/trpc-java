@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -16,33 +16,38 @@ import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import com.tencent.trpc.core.logger.LoggerFactoryTest;
 import com.tencent.trpc.core.logger.LoggerLevel;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
 import org.slf4j.helpers.NOPLogger;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({LoggerFactory.class})
+@ExtendWith(MockitoExtension.class)
 public class Slf4jLoggerTest {
 
-    @Before
+    private MockedStatic<LoggerFactory> mockedStatic;
+
+    @BeforeEach
     public void before() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
-        PowerMockito.mockStatic(LoggerFactory.class);
-        PowerMockito.when(LoggerFactory.getLogger(LoggerFactoryTest.class))
+        mockedStatic = Mockito.mockStatic(LoggerFactory.class);
+        mockedStatic.when(() -> LoggerFactory.getLogger(LoggerFactoryTest.class))
                 .thenReturn(new Slf4jLogger(NOPLogger.NOP_LOGGER));
-        PowerMockito.when(LoggerFactory.getLogger("logger"))
+        mockedStatic.when(() -> LoggerFactory.getLogger("logger"))
                 .thenReturn(new Slf4jLogger(NOPLogger.NOP_LOGGER));
     }
 
-    @After
+    @AfterEach
     public void after() {
+        if (mockedStatic != null) {
+            mockedStatic.close();
+        }
         ConfigManager.stopTest();
     }
 
@@ -72,12 +77,12 @@ public class Slf4jLoggerTest {
         logger.error("hello world %s", e);
         logger.error("hello world", e);
 
-        Assert.assertFalse(logger.isDebugEnabled());
-        Assert.assertFalse(logger.isTraceEnabled());
-        Assert.assertFalse(logger.isInfoEnabled());
-        Assert.assertFalse(logger.isWarnEnabled());
-        Assert.assertFalse(logger.isErrorEnabled());
-        Assert.assertNotNull(logger.getName());
+        Assertions.assertFalse(logger.isDebugEnabled());
+        Assertions.assertFalse(logger.isTraceEnabled());
+        Assertions.assertFalse(logger.isInfoEnabled());
+        Assertions.assertFalse(logger.isWarnEnabled());
+        Assertions.assertFalse(logger.isErrorEnabled());
+        Assertions.assertNotNull(logger.getName());
         LoggerFactory.getLoggerLevel();
 
         LoggerFactory.setLoggerLevel(LoggerLevel.DEBUG);
@@ -86,7 +91,7 @@ public class Slf4jLoggerTest {
     @Test
     public void testGetLogger() {
         Logger logger = LoggerFactory.getLogger("logger");
-        Assert.assertNotNull(logger);
+        Assertions.assertNotNull(logger);
     }
 
 }

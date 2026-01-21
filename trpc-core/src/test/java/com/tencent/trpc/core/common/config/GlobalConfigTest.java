@@ -13,15 +13,15 @@ package com.tencent.trpc.core.common.config;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class GlobalConfigTest {
 
     private GlobalConfig globalConfig;
 
-    @Before
+    @BeforeEach
     public void testSetUp() {
         this.globalConfig = new GlobalConfig();
         globalConfig.setEnableSet(true);
@@ -34,7 +34,7 @@ public class GlobalConfigTest {
     @Test
     public void testSetDefault() {
         globalConfig.setDefault();
-        Assert.assertTrue(globalConfig.isSetDefault());
+        Assertions.assertTrue(globalConfig.isSetDefault());
     }
 
     @Test
@@ -44,68 +44,68 @@ public class GlobalConfigTest {
 
     @Test
     public void getNamespace() {
-        Assert.assertEquals(globalConfig.getNamespace(), "prod");
+        Assertions.assertEquals(globalConfig.getNamespace(), "prod");
     }
 
     @Test
     public void setNamespace() {
         globalConfig.setNamespace("dev");
-        Assert.assertEquals(globalConfig.getNamespace(), "dev");
+        Assertions.assertEquals(globalConfig.getNamespace(), "dev");
     }
 
     @Test
     public void isSetDefault() {
-        Assert.assertFalse(globalConfig.isSetDefault());
+        Assertions.assertFalse(globalConfig.isSetDefault());
     }
 
     @Test
     public void getEnvName() {
-        Assert.assertEquals(globalConfig.getEnvName(), "env");
+        Assertions.assertEquals(globalConfig.getEnvName(), "env");
     }
 
     @Test
     public void setEnvName() {
         globalConfig.setEnvName("env-dev");
-        Assert.assertEquals(globalConfig.getEnvName(), "env-dev");
+        Assertions.assertEquals(globalConfig.getEnvName(), "env-dev");
     }
 
     @Test
     public void isEnableSet() {
-        Assert.assertTrue(globalConfig.isEnableSet());
+        Assertions.assertTrue(globalConfig.isEnableSet());
     }
 
     @Test
     public void setEnableSet() {
         globalConfig.setEnableSet(false);
-        Assert.assertFalse(globalConfig.isEnableSet());
+        Assertions.assertFalse(globalConfig.isEnableSet());
     }
 
     @Test
     public void getSetDivision() {
-        Assert.assertEquals(globalConfig.getFullSetName(), "div");
+        Assertions.assertEquals(globalConfig.getFullSetName(), "div");
     }
 
     @Test
     public void setSetDivision() {
         globalConfig.setFullSetName("set-div");
-        Assert.assertEquals(globalConfig.getFullSetName(), "set-div");
+        Assertions.assertEquals(globalConfig.getFullSetName(), "set-div");
 
     }
 
     @Test
     public void getContainerName() {
-        Assert.assertEquals(globalConfig.getContainerName(), "container");
+        Assertions.assertEquals(globalConfig.getContainerName(), "container");
     }
 
     @Test
     public void setContainerName() {
         globalConfig.setContainerName("c");
-        Assert.assertEquals(globalConfig.getContainerName(), "c");
+        Assertions.assertEquals(globalConfig.getContainerName(), "c");
     }
 
     @Test
     public void testGetExt() {
-        Assert.assertTrue(globalConfig.getExt().isEmpty());
+        Assertions.assertTrue(globalConfig.getExt().isEmpty());
     }
 
     @Test
@@ -113,6 +113,6 @@ public class GlobalConfigTest {
         Map<String, Object> extMap = new HashMap<>();
         extMap.put("ext", "ext");
         globalConfig.setExt(extMap);
-        Assert.assertEquals(globalConfig.getExt().get("ext"), "ext");
+        Assertions.assertEquals(globalConfig.getExt().get("ext"), "ext");
     }
 }

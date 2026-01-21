@@ -18,8 +18,8 @@ import com.tencent.trpc.core.serialization.spi.Serialization;
 import com.tencent.trpc.core.serialization.support.PBSerialization;
 import java.lang.reflect.Method;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ClassUtilsTest {
 
@@ -34,14 +34,14 @@ public class ClassUtilsTest {
     @Test
     public void testIsByteArray() {
         byte[] data = new byte[]{1, 2};
-        Assert.assertTrue(ClassUtils.isByteArray(data));
+        Assertions.assertTrue(ClassUtils.isByteArray(data));
         Byte[] dataB = new Byte[]{3, 4};
-        Assert.assertTrue(ClassUtils.isByteArray(dataB));
-        Assert.assertTrue(ClassUtils.isByteArray(byte[].class));
-        Assert.assertTrue(ClassUtils.isByteArray(Byte[].class));
-        Assert.assertEquals(1, ClassUtils.cast2ByteArray(new Byte[]{1})[0]);
+        Assertions.assertTrue(ClassUtils.isByteArray(dataB));
+        Assertions.assertTrue(ClassUtils.isByteArray(byte[].class));
+        Assertions.assertTrue(ClassUtils.isByteArray(Byte[].class));
+        Assertions.assertEquals(1, ClassUtils.cast2ByteArray(new Byte[]{1})[0]);
         Object obj = ClassUtils.newInstance(Object.class);
-        Assert.assertNotNull(obj);
+        Assertions.assertNotNull(obj);
         try {
             ClassUtils.newInstance(LifecycleObj.class);
         } catch (RuntimeException e) {
@@ -53,50 +53,50 @@ public class ClassUtilsTest {
     public void testCast2ByteArray() {
         byte[] data = new byte[]{1, 2};
         byte[] newData = ClassUtils.cast2ByteArray(data);
-        Assert.assertNotNull(newData);
+        Assertions.assertNotNull(newData);
     }
 
     @Test
     public void testGetAllInterfaces() {
         List<Class> classes = ClassUtils.getAllInterfaces(Object.class);
-        Assert.assertEquals(classes.size(), 0);
+        Assertions.assertEquals(classes.size(), 0);
         List<Class> pbInterfaces = ClassUtils.getAllInterfaces(PBSerialization.class);
-        Assert.assertEquals(pbInterfaces.size(), 1);
-        Assert.assertEquals(pbInterfaces.get(0), Serialization.class);
+        Assertions.assertEquals(pbInterfaces.size(), 1);
+        Assertions.assertEquals(pbInterfaces.get(0), Serialization.class);
         List<Class> classNull = ClassUtils.getAllInterfaces(null);
-        Assert.assertTrue(classNull.isEmpty());
+        Assertions.assertTrue(classNull.isEmpty());
     }
 
 
     @Test
     public void testGetDeclaredMethod() throws NoSuchMethodException {
         Method method = ClassUtils.getDeclaredMethod(ClassUtilsTest.class, "getTestField");
-        Assert.assertEquals(method, ClassUtilsTest.class.getMethod("getTestField"));
+        Assertions.assertEquals(method, ClassUtilsTest.class.getMethod("getTestField"));
         Method methodNull = ClassUtils.getDeclaredMethod(null, "getTestField");
-        Assert.assertNull(methodNull);
+        Assertions.assertNull(methodNull);
         methodNull = ClassUtils.getDeclaredMethod(ClassUtilsTest.class, "getTestField1");
-        Assert.assertNull(methodNull);
+        Assertions.assertNull(methodNull);
     }
 
     @Test
     public void testGetValue() throws NoSuchFieldException {
-        Assert.assertEquals("common_string",
+        Assertions.assertEquals("common_string",
                 ClassUtils.getValue(new TestInstance(),
                         TestInstance.class.getDeclaredField("commonString")).get());
     }
 
     @Test
     public void testGetStaticValue() throws NoSuchFieldException {
-        Assert.assertEquals("static_value",
+        Assertions.assertEquals("static_value",
                 ClassUtils.getStaticValue(TestInstance.class.getDeclaredField("staticValue")).get());
 
     }
 
     @Test
     public void testGetConstantValues() {
-        Assert.assertTrue(ClassUtils.getConstantValues(TestInstance.class).contains("public_constant"));
-        Assert.assertFalse(ClassUtils.getConstantValues(TestInstance.class).contains("private_constant"));
-        Assert.assertFalse(ClassUtils.getConstantValues(TestInstance.class).contains("final_value"));
+        Assertions.assertTrue(ClassUtils.getConstantValues(TestInstance.class).contains("public_constant"));
+        Assertions.assertFalse(ClassUtils.getConstantValues(TestInstance.class).contains("private_constant"));
+        Assertions.assertFalse(ClassUtils.getConstantValues(TestInstance.class).contains("final_value"));
     }
 
     private static class TestInstance {

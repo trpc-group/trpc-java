@@ -11,11 +11,11 @@
 
 package com.tencent.trpc.core.metrics;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.tencent.trpc.core.metrics.MetricsCustom.StatPolicy;
 import com.tencent.trpc.core.metrics.MetricsCustom.StatValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MetricsCustomTest {
 

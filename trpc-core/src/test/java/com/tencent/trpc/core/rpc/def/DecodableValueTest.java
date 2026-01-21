@@ -11,22 +11,22 @@
 
 package com.tencent.trpc.core.rpc.def;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.tencent.trpc.core.compressor.CompressType;
 import com.tencent.trpc.core.serialization.SerializationType;
 import com.tencent.trpc.core.serialization.User;
 import com.tencent.trpc.core.utils.JsonUtils;
 import java.lang.reflect.Type;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DecodableValueTest {
 
     private DecodableValue decodableValue;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.decodableValue = new DecodableValue(CompressType.NONE, SerializationType.JSON, null);
     }

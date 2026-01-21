@@ -13,8 +13,8 @@ package com.tencent.trpc.core.cluster;
 
 import com.tencent.trpc.core.cluster.def.DefRpcClusterClient;
 import com.tencent.trpc.core.common.config.BackendConfig;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class StandardRpcClusterClientFactoryTest {
 
@@ -23,6 +23,6 @@ public class StandardRpcClusterClientFactoryTest {
         StandardRpcClusterClientFactory factory = new StandardRpcClusterClientFactory();
         BackendConfig config = new BackendConfig();
         RpcClusterClient standard = factory.create(config);
-        Assert.assertTrue(standard instanceof DefRpcClusterClient);
+        Assertions.assertTrue(standard instanceof DefRpcClusterClient);
     }
 }

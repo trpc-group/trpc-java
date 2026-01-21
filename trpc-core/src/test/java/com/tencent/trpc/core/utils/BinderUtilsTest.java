@@ -19,9 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class BinderUtilsTest {
 
@@ -30,7 +30,7 @@ public class BinderUtilsTest {
     private Map<String, Object> valueMap;
     private BinderObj obj = new BinderObj();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         valueMap = new HashMap<>();
         valueMap.put("firstName", "young");
@@ -40,18 +40,18 @@ public class BinderUtilsTest {
 
     @Test
     public void testUnderscoresToUpperCase() {
-        Assert.assertEquals(BinderUtils.underscoresToUpperCase("a_bi_cd"), "aBiCd");
+        Assertions.assertEquals(BinderUtils.underscoresToUpperCase("a_bi_cd"), "aBiCd");
     }
 
     @Test
     public void testUpperCaseToUnderscores() {
-        Assert.assertEquals("a_bi_cd", BinderUtils.upperCaseToUnderscores("aBiCd"));
+        Assertions.assertEquals("a_bi_cd", BinderUtils.upperCaseToUnderscores("aBiCd"));
 
     }
 
     @Test
     public void testNewFunction() {
-        Assert.assertEquals(BinderUtils.newFunction("a").apply("b"), "a");
+        Assertions.assertEquals(BinderUtils.newFunction("a").apply("b"), "a");
     }
 
     @Test
@@ -59,9 +59,9 @@ public class BinderUtilsTest {
         BinderUtils.bind(Function.identity(), obj, valueMap, "firstName", Function.identity());
         BinderUtils.bind(Function.identity(), obj, valueMap, "age", Function.identity());
         BinderUtils.bind(Function.identity(), obj, valueMap, "money", Function.identity());
-        Assert.assertEquals("young", obj.getFirstName());
-        Assert.assertEquals(12, obj.getAge());
-        Assert.assertEquals(15, obj.getMoney().intValue());
+        Assertions.assertEquals("young", obj.getFirstName());
+        Assertions.assertEquals(12, obj.getAge());
+        Assertions.assertEquals(15, obj.getMoney().intValue());
     }
 
     @Test
@@ -69,8 +69,8 @@ public class BinderUtilsTest {
         valueMap.put("first_name", "hello");
         BinderUtils.bind("age", obj, valueMap, "age", Function.identity());
         BinderUtils.bind("firstName", obj, valueMap, "first_name", Function.identity());
-        Assert.assertEquals("hello", obj.getFirstName());
-        Assert.assertEquals(12, obj.getAge());
+        Assertions.assertEquals("hello", obj.getFirstName());
+        Assertions.assertEquals(12, obj.getAge());
 
     }
 
@@ -78,39 +78,39 @@ public class BinderUtilsTest {
     public void testTestBind3() {
         valueMap.put("age2", 14);
         BinderUtils.bind("age", obj, valueMap, "age2");
-        Assert.assertEquals(14, obj.getAge());
+        Assertions.assertEquals(14, obj.getAge());
     }
 
     @Test
     public void testTestBind4() {
         valueMap.put("age", 16);
         BinderUtils.bind(obj, valueMap);
-        Assert.assertEquals(16, obj.getAge());
+        Assertions.assertEquals(16, obj.getAge());
     }
 
     @Test
     public void testTestBind6() {
         BinderUtils.bind(obj, "age", 20, Function.identity());
         BinderUtils.bind(obj, "first_name", "hello1", BinderUtils.UNDERSCORES_TO_UPPERCASE);
-        Assert.assertEquals(20, obj.getAge());
-        Assert.assertEquals("hello1", obj.getFirstName());
+        Assertions.assertEquals(20, obj.getAge());
+        Assertions.assertEquals("hello1", obj.getFirstName());
     }
 
     @Test
     public void testBind7() {
         BinderUtils.bind(obj, "age", 20);
         BinderUtils.bind(obj, "first_name", "a");
-        Assert.assertEquals(20, obj.getAge());
-        Assert.assertEquals("a", obj.getFirstName());
+        Assertions.assertEquals(20, obj.getAge());
+        Assertions.assertEquals("a", obj.getFirstName());
     }
 
     @Test
     public void testBind8() {
         BinderObj binderObj = new BinderObj();
         BinderUtils.bind(binderObj);
-        Assert.assertEquals(20, binderObj.getAge());
-        Assert.assertEquals(15, binderObj.getMoney().intValue());
-        Assert.assertNull(binderObj.getFirstName());
+        Assertions.assertEquals(20, binderObj.getAge());
+        Assertions.assertEquals(15, binderObj.getMoney().intValue());
+        Assertions.assertNull(binderObj.getFirstName());
     }
 
     @Test
@@ -118,31 +118,31 @@ public class BinderUtilsTest {
         BinderObj targetObj = new BinderObj();
         BinderObj sourceObj = new BinderObj();
         BinderUtils.merge(targetObj, sourceObj);
-        Assert.assertNull(targetObj.getFriends());
-        Assert.assertNull(sourceObj.getFriends());
+        Assertions.assertNull(targetObj.getFriends());
+        Assertions.assertNull(sourceObj.getFriends());
         List<String> targetFriends = Lists.newArrayList("obama");
         List<String> sourceFriends = Lists.newArrayList("harry");
-        Assert.assertEquals(1, targetFriends.size());
-        Assert.assertEquals(1, sourceFriends.size());
+        Assertions.assertEquals(1, targetFriends.size());
+        Assertions.assertEquals(1, sourceFriends.size());
         targetObj.setFriends(targetFriends);
         sourceObj.setFriends(null);
         BinderUtils.merge(targetObj, sourceObj);
-        Assert.assertEquals(targetObj.getFriends().size(), 1);
-        Assert.assertNull(sourceObj.getFriends());
-        Assert.assertEquals(targetObj.getFriends().get(0), "obama");
+        Assertions.assertEquals(targetObj.getFriends().size(), 1);
+        Assertions.assertNull(sourceObj.getFriends());
+        Assertions.assertEquals(targetObj.getFriends().get(0), "obama");
         targetObj.setFriends(null);
         sourceObj.setFriends(sourceFriends);
         BinderUtils.merge(targetObj, sourceObj);
-        Assert.assertEquals(targetObj.getFriends().size(), 1);
-        Assert.assertEquals(sourceObj.getFriends().size(), 1);
-        Assert.assertEquals(targetObj.getFriends().get(0), "harry");
+        Assertions.assertEquals(targetObj.getFriends().size(), 1);
+        Assertions.assertEquals(sourceObj.getFriends().size(), 1);
+        Assertions.assertEquals(targetObj.getFriends().get(0), "harry");
         targetObj.setFriends(targetFriends);
         sourceObj.setFriends(sourceFriends);
         BinderUtils.merge(targetObj, sourceObj);
-        Assert.assertEquals(targetObj.getFriends().size(), 2);
-        Assert.assertEquals(sourceObj.getFriends().size(), 1);
-        Assert.assertEquals(targetObj.getFriends().get(0), "harry");
-        Assert.assertEquals(targetObj.getFriends().get(1), "obama");
+        Assertions.assertEquals(targetObj.getFriends().size(), 2);
+        Assertions.assertEquals(sourceObj.getFriends().size(), 1);
+        Assertions.assertEquals(targetObj.getFriends().get(0), "harry");
+        Assertions.assertEquals(targetObj.getFriends().get(1), "obama");
     }
 
     @Test
@@ -150,8 +150,8 @@ public class BinderUtilsTest {
         BinderObj targetObj = new BinderObj();
         BinderObj sourceObj = new BinderObj();
         BinderUtils.merge(targetObj, sourceObj);
-        Assert.assertNull(targetObj.getHouses());
-        Assert.assertNull(sourceObj.getHouses());
+        Assertions.assertNull(targetObj.getHouses());
+        Assertions.assertNull(sourceObj.getHouses());
         String tgKey = "tg";
         Object tgValue = new Object();
         Map<String, Object> targetHouses = new HashMap<>();
@@ -163,42 +163,42 @@ public class BinderUtilsTest {
         targetObj.setHouses(targetHouses);
         sourceObj.setHouses(null);
         BinderUtils.merge(targetObj, sourceObj);
-        Assert.assertEquals(targetObj.getHouses().size(), 1);
-        Assert.assertNull(sourceObj.getHouses());
-        Assert.assertTrue(targetObj.getHouses().containsKey(tgKey));
-        Assert.assertEquals(targetObj.getHouses().get(tgKey), tgValue);
+        Assertions.assertEquals(targetObj.getHouses().size(), 1);
+        Assertions.assertNull(sourceObj.getHouses());
+        Assertions.assertTrue(targetObj.getHouses().containsKey(tgKey));
+        Assertions.assertEquals(targetObj.getHouses().get(tgKey), tgValue);
         targetObj.setHouses(null);
         sourceObj.setHouses(sourceHouses);
         BinderUtils.merge(targetObj, sourceObj);
-        Assert.assertEquals(targetObj.getHouses().size(), 1);
-        Assert.assertEquals(sourceObj.getHouses().size(), 1);
-        Assert.assertTrue(targetObj.getHouses().containsKey(srcKey));
-        Assert.assertEquals(targetObj.getHouses().get(srcKey), srcValue);
+        Assertions.assertEquals(targetObj.getHouses().size(), 1);
+        Assertions.assertEquals(sourceObj.getHouses().size(), 1);
+        Assertions.assertTrue(targetObj.getHouses().containsKey(srcKey));
+        Assertions.assertEquals(targetObj.getHouses().get(srcKey), srcValue);
         targetObj.setHouses(targetHouses);
         sourceObj.setHouses(sourceHouses);
         BinderUtils.merge(targetObj, sourceObj);
-        Assert.assertEquals(targetObj.getHouses().size(), 2);
-        Assert.assertEquals(sourceObj.getHouses().size(), 1);
-        Assert.assertTrue(targetObj.getHouses().containsKey(tgKey));
-        Assert.assertEquals(targetObj.getHouses().get(tgKey), tgValue);
-        Assert.assertTrue(targetObj.getHouses().containsKey(srcKey));
-        Assert.assertEquals(targetObj.getHouses().get(srcKey), srcValue);
+        Assertions.assertEquals(targetObj.getHouses().size(), 2);
+        Assertions.assertEquals(sourceObj.getHouses().size(), 1);
+        Assertions.assertTrue(targetObj.getHouses().containsKey(tgKey));
+        Assertions.assertEquals(targetObj.getHouses().get(tgKey), tgValue);
+        Assertions.assertTrue(targetObj.getHouses().containsKey(srcKey));
+        Assertions.assertEquals(targetObj.getHouses().get(srcKey), srcValue);
     }
 
     @Test
     public void testLazyBind() {
         BinderObj binderObj = new BinderObj();
         BinderUtils.bind(binderObj);
-        Assert.assertEquals(20, binderObj.getAge());
-        Assert.assertEquals(15, binderObj.getMoney().intValue());
-        Assert.assertNull(binderObj.getFirstName());
+        Assertions.assertEquals(20, binderObj.getAge());
+        Assertions.assertEquals(15, binderObj.getMoney().intValue());
+        Assertions.assertNull(binderObj.getFirstName());
         BinderUtils.lazyBind(binderObj, "first_name", "harry", obj -> ((String) obj).toUpperCase());
-        Assert.assertEquals("HARRY", binderObj.getFirstName());
+        Assertions.assertEquals("HARRY", binderObj.getFirstName());
         BinderObj binderObj2 = new BinderObj();
         BinderUtils.bind(binderObj2);
         String nics = null;
         BinderUtils.lazyBind(binderObj2, "first_name", nics, obj -> NetUtils.resolveMultiNicAddr((String) obj));
-        Assert.assertEquals(null, binderObj2.getFirstName());
+        Assertions.assertEquals(null, binderObj2.getFirstName());
     }
 
     @Test
@@ -221,7 +221,7 @@ public class BinderUtilsTest {
         timerUtil.end();
         final long lazyBindCost = timerUtil.getCost();
         logger.debug("lazyBindCost: {}ms, bindCost: {}ms", lazyBindCost, bindCost);
-        Assert.assertTrue(lazyBindCost <= bindCost);
+        Assertions.assertTrue(lazyBindCost <= bindCost);
     }
 
     private static class BinderObj {

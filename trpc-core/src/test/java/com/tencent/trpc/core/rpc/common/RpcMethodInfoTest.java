@@ -11,14 +11,14 @@
 
 package com.tencent.trpc.core.rpc.common;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.tencent.trpc.core.common.RpcResult;
 import com.tencent.trpc.core.rpc.GenericClient;
 import com.tencent.trpc.core.rpc.InvokeMode;
 import com.tencent.trpc.core.rpc.RpcClientContext;
 import java.lang.reflect.Method;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RpcMethodInfoTest {
 

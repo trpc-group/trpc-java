@@ -11,12 +11,12 @@
 
 package com.tencent.trpc.core.selector;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.selector.circuitbreaker.support.NoneCircuitBreaker;
 import com.tencent.trpc.core.selector.spi.CircuitBreaker;
 import java.util.HashMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class NoneCircuitBreakerTest {
 

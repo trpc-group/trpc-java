@@ -13,21 +13,16 @@ package com.tencent.trpc.core.selector.support.ip;
 
 import com.tencent.trpc.core.rpc.def.DefRequest;
 import com.tencent.trpc.core.selector.ServiceId;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class IpSelectorTest {
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     private IpSelector ipSelector;
 
     private ServiceId serviceId;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.ipSelector = new IpSelector();
         ipSelector.init();

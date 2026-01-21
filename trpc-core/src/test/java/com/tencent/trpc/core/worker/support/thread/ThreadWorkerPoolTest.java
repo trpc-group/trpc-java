@@ -20,8 +20,8 @@ import com.tencent.trpc.core.management.ThreadPerTaskExecutorMXBeanImpl;
 import com.tencent.trpc.core.management.ThreadPoolMXBean;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ThreadWorkerPoolTest {
 
@@ -35,7 +35,7 @@ public class ThreadWorkerPoolTest {
         ThreadWorkerPool threadWorkerPool = new ThreadWorkerPool();
         threadWorkerPool.setPluginConfig(poolPluginConfig);
         threadWorkerPool.init();
-        Assert.assertEquals("work_pool", threadWorkerPool.getName());
+        Assertions.assertEquals("work_pool", threadWorkerPool.getName());
         threadWorkerPool.execute(() -> {
             throw new TRpcException();
         });
@@ -46,14 +46,14 @@ public class ThreadWorkerPoolTest {
         threadWorkerPool.init();
         PoolMXBean report = threadWorkerPool.report();
         ThreadPoolMXBean threadPoolMXBean = (ThreadPoolMXBean) report;
-        Assert.assertEquals(0, threadPoolMXBean.getPoolSize());
-        Assert.assertEquals(0, threadPoolMXBean.getTaskCount());
-        Assert.assertEquals(0, threadPoolMXBean.getCompletedTaskCount());
-        Assert.assertEquals(0, threadPoolMXBean.getActiveThreadCount());
-        Assert.assertEquals(WorkerPoolType.THREAD.getName(), threadPoolMXBean.getType());
-        Assert.assertEquals(2, threadPoolMXBean.getCorePoolSize());
-        Assert.assertEquals(2, threadPoolMXBean.getMaximumPoolSize());
-        Assert.assertNotNull(report.toString());
+        Assertions.assertEquals(0, threadPoolMXBean.getPoolSize());
+        Assertions.assertEquals(0, threadPoolMXBean.getTaskCount());
+        Assertions.assertEquals(0, threadPoolMXBean.getCompletedTaskCount());
+        Assertions.assertEquals(0, threadPoolMXBean.getActiveThreadCount());
+        Assertions.assertEquals(WorkerPoolType.THREAD.getName(), threadPoolMXBean.getType());
+        Assertions.assertEquals(2, threadPoolMXBean.getCorePoolSize());
+        Assertions.assertEquals(2, threadPoolMXBean.getMaximumPoolSize());
+        Assertions.assertNotNull(report.toString());
     }
 
     private Map<String, Object> getProperties() {
@@ -98,19 +98,19 @@ public class ThreadWorkerPoolTest {
         }
         PoolMXBean report = threadWorkerPool.report();
         ThreadPoolMXBean threadPoolMXBean = (ThreadPoolMXBean) report;
-        Assert.assertEquals(0, threadPoolMXBean.getPoolSize());
-        Assert.assertEquals(0, threadPoolMXBean.getTaskCount());
-        Assert.assertEquals(0, threadPoolMXBean.getCompletedTaskCount());
-        Assert.assertEquals(0, threadPoolMXBean.getActiveThreadCount());
-        Assert.assertEquals(WorkerPoolType.THREAD.getName(), threadPoolMXBean.getType());
+        Assertions.assertEquals(0, threadPoolMXBean.getPoolSize());
+        Assertions.assertEquals(0, threadPoolMXBean.getTaskCount());
+        Assertions.assertEquals(0, threadPoolMXBean.getCompletedTaskCount());
+        Assertions.assertEquals(0, threadPoolMXBean.getActiveThreadCount());
+        Assertions.assertEquals(WorkerPoolType.THREAD.getName(), threadPoolMXBean.getType());
         if (threadPoolMXBean instanceof ThreadPerTaskExecutorMXBeanImpl) {
-            Assert.assertEquals(0, threadPoolMXBean.getCorePoolSize());
-            Assert.assertEquals(Integer.MAX_VALUE, threadPoolMXBean.getMaximumPoolSize());
+            Assertions.assertEquals(0, threadPoolMXBean.getCorePoolSize());
+            Assertions.assertEquals(Integer.MAX_VALUE, threadPoolMXBean.getMaximumPoolSize());
         } else {
-            Assert.assertEquals(DEFALUT_POOL_SIZE, threadPoolMXBean.getCorePoolSize());
-            Assert.assertEquals(DEFALUT_POOL_SIZE, threadPoolMXBean.getMaximumPoolSize());
+            Assertions.assertEquals(DEFALUT_POOL_SIZE, threadPoolMXBean.getCorePoolSize());
+            Assertions.assertEquals(DEFALUT_POOL_SIZE, threadPoolMXBean.getMaximumPoolSize());
         }
-        Assert.assertNotNull(report.toString());
+        Assertions.assertNotNull(report.toString());
     }
 
 }

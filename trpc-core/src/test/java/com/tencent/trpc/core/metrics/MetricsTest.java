@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class MetricsTest {
 
@@ -61,18 +61,18 @@ public class MetricsTest {
 
         COUNTER.set(0);
         Metrics.counter("a").incr();
-        Assert.assertEquals(1, COUNTER.get());
+        Assertions.assertEquals(1, COUNTER.get());
 
         Metrics.gauge("b").set(100);
-        Assert.assertEquals(100, GAUGE.get());
+        Assertions.assertEquals(100, GAUGE.get());
 
         COUNTER.set(0);
         Metrics.histogram("c").record(100);
-        Assert.assertEquals(1, COUNTER.get());
+        Assertions.assertEquals(1, COUNTER.get());
 
         COUNTER.set(0);
         Metrics.histogram("c", new double[]{0}, "1").record(100, "1");
-        Assert.assertEquals(1, COUNTER.get());
+        Assertions.assertEquals(1, COUNTER.get());
     }
 
     @Test
@@ -104,8 +104,8 @@ public class MetricsTest {
             metricsFactory.counter("counter").incr(value);
             metricsFactory.gauge("gauge").set(value);
         }
-        Assert.assertEquals(5050, count.get());
-        Assert.assertEquals(count1, gauge.get());
+        Assertions.assertEquals(5050, count.get());
+        Assertions.assertEquals(count1, gauge.get());
 
         // test histogram
         count.set(0);
@@ -113,34 +113,34 @@ public class MetricsTest {
             int value = i + 1;
             metricsFactory.histogram("counter").record(value);
         }
-        Assert.assertEquals(count1, count.get());
+        Assertions.assertEquals(count1, count.get());
 
         // test normal counter
         count.set(0);
         for (int i = 0; i < count1; i++) {
             metricsFactory.counter("counter").incr();
         }
-        Assert.assertEquals(count1, count.get());
+        Assertions.assertEquals(count1, count.get());
 
         try {
             metricsFactory.getActiveStat(null);
-            Assert.fail("not supported by default");
+            Assertions.fail("not supported by default");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof UnsupportedOperationException);
+            Assertions.assertTrue(e instanceof UnsupportedOperationException);
         }
 
         try {
             metricsFactory.getCustomData(null, null);
-            Assert.fail("not supported by default");
+            Assertions.fail("not supported by default");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof UnsupportedOperationException);
+            Assertions.assertTrue(e instanceof UnsupportedOperationException);
         }
 
         try {
             metricsFactory.getPassiveStat(null);
-            Assert.fail("not supported by default");
+            Assertions.fail("not supported by default");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof UnsupportedOperationException);
+            Assertions.assertTrue(e instanceof UnsupportedOperationException);
         }
     }
 }

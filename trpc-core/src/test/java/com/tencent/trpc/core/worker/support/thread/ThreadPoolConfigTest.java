@@ -11,16 +11,16 @@
 
 package com.tencent.trpc.core.worker.support.thread;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.worker.WorkerPoolManager;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ThreadPoolConfigTest {
 
@@ -89,13 +89,13 @@ public class ThreadPoolConfigTest {
     public void testValidate() {
         ThreadPoolConfig config = new ThreadPoolConfig();
         config.setCorePoolSize(-1);
-        Assert.assertThrows(IllegalArgumentException.class, config::validate);
+        Assertions.assertThrows(IllegalArgumentException.class, config::validate);
         config.setCorePoolSize(0);
         config.setQueueSize(-1);
-        Assert.assertThrows(IllegalArgumentException.class, config::validate);
+        Assertions.assertThrows(IllegalArgumentException.class, config::validate);
         config.setQueueSize(0);
         config.setCloseTimeout(-1);
-        Assert.assertThrows(IllegalArgumentException.class, config::validate);
+        Assertions.assertThrows(IllegalArgumentException.class, config::validate);
         config.setCloseTimeout(0);
         config.validate();
     }

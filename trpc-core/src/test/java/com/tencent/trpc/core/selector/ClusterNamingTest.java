@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -18,10 +18,8 @@ import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.core.extension.ExtensionLoader;
 import com.tencent.trpc.core.rpc.Request;
 import com.tencent.trpc.core.rpc.RpcClientContext;
-import com.tencent.trpc.core.selector.circuitbreaker.CircuitBreakerManager;
 import com.tencent.trpc.core.selector.discovery.DiscoveryManager;
 import com.tencent.trpc.core.selector.loadbalance.AbstractLoadBalance;
-import com.tencent.trpc.core.selector.loadbalance.LoadBalanceManager;
 import com.tencent.trpc.core.selector.mock.MockDiscovery;
 import com.tencent.trpc.core.selector.spi.CircuitBreaker;
 import com.tencent.trpc.core.selector.spi.Discovery;
@@ -36,22 +34,18 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * assemble selector Polaris Service Discovery Test
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({DiscoveryManager.class, LoadBalanceManager.class, CircuitBreakerManager.class})
-@PowerMockIgnore({"javax.management.*"})
+@ExtendWith(MockitoExtension.class)
 public class ClusterNamingTest {
 
     private static final String HOST_PREFIX = "127.0.0.";
@@ -66,7 +60,7 @@ public class ClusterNamingTest {
     /**
      * 运行测试函数之前执行初始化
      */
-    @Before
+    @BeforeEach
     public void init() {
         ConfigManager.stopTest();
 
@@ -88,7 +82,7 @@ public class ClusterNamingTest {
         ConfigManager.startTest();
     }
 
-    @After
+    @AfterEach
     public void after() {
         ConfigManager.stopTest();
     }
@@ -125,7 +119,7 @@ public class ClusterNamingTest {
         if (clusterNaming instanceof Lifecycle) {
             ((Lifecycle) clusterNaming).stop();
         }
-        Assert.assertNull(errorRef.get());
+        Assertions.assertNull(errorRef.get());
     }
 
 
@@ -147,7 +141,7 @@ public class ClusterNamingTest {
         });
         CompletableFuture.allOf(stage.toCompletableFuture()).join();
 
-        Assert.assertNull(errorRef.get());
+        Assertions.assertNull(errorRef.get());
     }
 
     private void sleep(long milliMs) {

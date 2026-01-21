@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.core.filter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.collect.Lists;
 import com.tencent.trpc.core.common.ConfigManager;
@@ -32,14 +32,14 @@ import com.tencent.trpc.core.rpc.def.DefRequest;
 import com.tencent.trpc.core.rpc.def.DefResponse;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ConsumerFilterInvokerTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         ServerConfig serverConfig = new ServerConfig();
         serverConfig.setLocalIp("127.0.1.1");
@@ -52,7 +52,7 @@ public class ConsumerFilterInvokerTest {
         ConfigManager.getInstance().setGlobalConfig(globalConfig);
     }
 
-    @After
+    @AfterEach
     public void after() {
         ConfigManager.getInstance().stopTest();
     }
@@ -68,9 +68,9 @@ public class ConsumerFilterInvokerTest {
         ProtocolConfig protoConfig = createProtoConfig();
         ConsumerInvoker<Object> buildConsumerChain = FilterChain
                 .buildConsumerChain(config, new ConsumerInvokerMock<>(config, protoConfig));
-        Assert.assertEquals(config, buildConsumerChain.getConfig());
-        Assert.assertEquals(protoConfig, buildConsumerChain.getProtocolConfig());
-        Assert.assertNull(buildConsumerChain.getInterface());
+        Assertions.assertEquals(config, buildConsumerChain.getConfig());
+        Assertions.assertEquals(protoConfig, buildConsumerChain.getProtocolConfig());
+        Assertions.assertNull(buildConsumerChain.getInterface());
         CompletionStage<Response> invoke = buildConsumerChain.invoke(createRequest());
         Response r = invoke.toCompletableFuture().join();
         assertEquals(r.getValue(), 20);

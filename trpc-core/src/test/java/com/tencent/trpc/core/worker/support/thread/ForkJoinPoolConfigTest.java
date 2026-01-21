@@ -13,8 +13,8 @@ package com.tencent.trpc.core.worker.support.thread;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ForkJoinPoolConfigTest {
 
@@ -31,13 +31,13 @@ public class ForkJoinPoolConfigTest {
     @Test
     public void testParse() {
         ForkJoinPoolConfig forkJoinPoolConfig = ForkJoinPoolConfig.parse(FORK_JOIN_POOL_PLUGIN_NAME, PLUGIN_CONFIG);
-        Assert.assertNotNull(forkJoinPoolConfig);
-        Assert.assertEquals(2, forkJoinPoolConfig.getParallelism());
-        Assert.assertEquals(10000, forkJoinPoolConfig.getTimeoutMills());
+        Assertions.assertNotNull(forkJoinPoolConfig);
+        Assertions.assertEquals(2, forkJoinPoolConfig.getParallelism());
+        Assertions.assertEquals(10000, forkJoinPoolConfig.getTimeoutMills());
         PLUGIN_CONFIG.put(ForkJoinPoolConfig.TIMEOUT_MS, 20);
         forkJoinPoolConfig = ForkJoinPoolConfig.parse(FORK_JOIN_POOL_PLUGIN_NAME, PLUGIN_CONFIG);
-        Assert.assertEquals(2, forkJoinPoolConfig.getParallelism());
-        Assert.assertEquals(20, forkJoinPoolConfig.getTimeoutMills());
+        Assertions.assertEquals(2, forkJoinPoolConfig.getParallelism());
+        Assertions.assertEquals(20, forkJoinPoolConfig.getTimeoutMills());
     }
 
 }

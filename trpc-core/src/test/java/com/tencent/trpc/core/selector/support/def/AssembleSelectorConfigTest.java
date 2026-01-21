@@ -11,15 +11,15 @@
 
 package com.tencent.trpc.core.selector.support.def;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.extension.MockSelector;
 import com.tencent.trpc.core.selector.spi.Selector;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class AssembleSelectorConfigTest {
 
@@ -27,7 +27,7 @@ public class AssembleSelectorConfigTest {
 
     private PluginConfig pluginConfig;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Map<String, Object> config = new HashMap<>();
         config.put("discovery", "discovery");

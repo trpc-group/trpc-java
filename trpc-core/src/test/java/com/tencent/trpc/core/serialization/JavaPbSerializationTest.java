@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.core.serialization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import com.baidu.bjf.remoting.protobuf.Codec;
 import com.tencent.trpc.core.serialization.support.JavaPBSerialization;
@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.collections4.MapUtils;
 import org.assertj.core.util.Lists;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class JavaPbSerializationTest {
 
@@ -42,13 +42,13 @@ public class JavaPbSerializationTest {
         byte[] javaPBBytes = javaPBSerialization.serialize(user);
         System.out.println("javapb bytes:" + Arrays.toString(javaPBBytes));
         User user1 = javaPBSerialization.deserialize(javaPBBytes, User.class);
-        Assert.assertEquals(user.toString(), user1.toString());
+        Assertions.assertEquals(user.toString(), user1.toString());
         PBSerialization pbSerialization = new PBSerialization();
         try {
             User user2 = pbSerialization.deserialize(javaPBBytes, User.class);
-            Assert.assertEquals(user.toString(), user2.toString());
+            Assertions.assertEquals(user.toString(), user2.toString());
         } catch (IOException ioException) {
-            Assert.fail();
+            Assertions.fail();
         }
     }
 
@@ -75,32 +75,36 @@ public class JavaPbSerializationTest {
         try {
             byte[] b = javaPBSerialization.serialize(userExtend);
             UserExtend userExtend1 = javaPBSerialization.deserialize(b, UserExtend.class);
-            Assert.assertEquals(Arrays.toString(userExtend.getArr()), Arrays.toString(userExtend1.getArr()));
-            Assert.assertEquals(userExtend.getId(), userExtend1.getId());
-            Assert.assertNull(userExtend1.getDesc());
-            Assert.assertNull(userExtend1.getName());
-            Assert.assertTrue(MapUtils.isEmpty(userExtend1.getMembers()));
+            Assertions.assertEquals(Arrays.toString(userExtend.getArr()), Arrays.toString(userExtend1.getArr()));
+            Assertions.assertEquals(userExtend.getId(), userExtend1.getId());
+            Assertions.assertNull(userExtend1.getDesc());
+            Assertions.assertNull(userExtend1.getName());
+            Assertions.assertTrue(MapUtils.isEmpty(userExtend1.getMembers()));
             UserExtend userExtend2 = pbSerialization.deserialize(b, UserExtend.class);
-            Assert.assertEquals(Arrays.toString(userExtend.getArr()), Arrays.toString(userExtend2.getArr()));
-            Assert.assertEquals(userExtend.getId(), userExtend2.getId());
-            Assert.assertNull(userExtend2.getDesc());
-            Assert.assertNull(userExtend2.getName());
-            Assert.assertTrue(MapUtils.isEmpty(userExtend2.getMembers()));
+            Assertions.assertEquals(Arrays.toString(userExtend.getArr()), Arrays.toString(userExtend2.getArr()));
+            Assertions.assertEquals(userExtend.getId(), userExtend2.getId());
+            Assertions.assertNull(userExtend2.getDesc());
+            Assertions.assertNull(userExtend2.getName());
+            Assertions.assertTrue(MapUtils.isEmpty(userExtend2.getMembers()));
         } catch (Exception e) {
-            Assert.fail();
+            Assertions.fail();
         }
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testException1() {
-        JavaPBSerialization javaPBSerialization = new JavaPBSerialization();
-        javaPBSerialization.serialize(Object.class);
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            JavaPBSerialization javaPBSerialization = new JavaPBSerialization();
+            javaPBSerialization.serialize(Object.class);
+        });
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testException2() {
-        JavaPBSerialization javaPBSerialization = new JavaPBSerialization();
-        javaPBSerialization.deserialize(new byte[0], Object.class);
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            JavaPBSerialization javaPBSerialization = new JavaPBSerialization();
+            javaPBSerialization.deserialize(new byte[0], Object.class);
+        });
     }
 
     @Test

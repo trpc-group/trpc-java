@@ -18,9 +18,9 @@ import com.tencent.trpc.core.common.config.ProviderConfig;
 import com.tencent.trpc.core.common.config.ServiceConfig;
 import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.core.rpc.RpcInvocation;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DefProviderInvokerTest {
 
@@ -28,7 +28,7 @@ public class DefProviderInvokerTest {
 
     private BlankRpcServiceName impl;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ProtocolConfig protocolConfig = new ProtocolConfig();
         protocolConfig.setIp("127.0.0.1");
@@ -57,22 +57,22 @@ public class DefProviderInvokerTest {
 
     @Test
     public void testGetInterface() {
-        Assert.assertEquals(BlankRpcServiceName.class, providerInvoker.getInterface());
+        Assertions.assertEquals(BlankRpcServiceName.class, providerInvoker.getInterface());
     }
 
     @Test
     public void testGetProtocolConfig() {
-        Assert.assertEquals("127.0.0.1", providerInvoker.getProtocolConfig().getIp());
-        Assert.assertEquals(12345, providerInvoker.getProtocolConfig().getPort());
+        Assertions.assertEquals("127.0.0.1", providerInvoker.getProtocolConfig().getIp());
+        Assertions.assertEquals(12345, providerInvoker.getProtocolConfig().getPort());
     }
 
     @Test
     public void testGetImpl() {
-        Assert.assertEquals(impl, providerInvoker.getImpl());
+        Assertions.assertEquals(impl, providerInvoker.getImpl());
     }
 
     @Test
     public void testGetConfig() {
-        Assert.assertEquals(impl, providerInvoker.getConfig().getRef());
+        Assertions.assertEquals(impl, providerInvoker.getConfig().getRef());
     }
 }

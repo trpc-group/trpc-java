@@ -13,8 +13,8 @@ package com.tencent.trpc.core.rpc;
 
 import com.tencent.trpc.core.rpc.common.RpcMethodInfo;
 import com.tencent.trpc.core.utils.RpcUtilsTest.SimpleGenericClient;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by youngwwang on 2020/6/2.
@@ -27,21 +27,21 @@ public class RpcInvocationTest {
         RpcInvocation invocation = new RpcInvocation();
         invocation.setFirstArgument(new Object());
         invocation.setFunc("/a/b");
-        Assert.assertNotNull(invocation.getFirstArgument());
-        Assert.assertNull(invocation.getInvokeMode());
-        Assert.assertEquals("/a/b", invocation.getFunc());
-        Assert.assertFalse(invocation.isGeneric());
+        Assertions.assertNotNull(invocation.getFirstArgument());
+        Assertions.assertNull(invocation.getInvokeMode());
+        Assertions.assertEquals("/a/b", invocation.getFunc());
+        Assertions.assertFalse(invocation.isGeneric());
 
         invocation.setRpcMethodInfo(
                 new RpcMethodInfo(Request.class, Request.class.getMethod("getRequestId")));
 
-        Assert.assertFalse(invocation.isGeneric());
+        Assertions.assertFalse(invocation.isGeneric());
 
         invocation.setRpcMethodInfo(new RpcMethodInfo(SimpleGenericClient.class,
                 SimpleGenericClient.class
                         .getMethod("asyncInvoke", RpcClientContext.class, byte[].class)));
 
-        Assert.assertTrue(invocation.isGeneric());
+        Assertions.assertTrue(invocation.isGeneric());
 
     }
 }

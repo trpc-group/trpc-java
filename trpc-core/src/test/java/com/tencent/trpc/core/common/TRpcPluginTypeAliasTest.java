@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.core.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.configcenter.spi.ConfigurationLoader;
 import com.tencent.trpc.core.filter.spi.Filter;
@@ -26,7 +26,7 @@ import com.tencent.trpc.core.selector.spi.Router;
 import com.tencent.trpc.core.selector.spi.Selector;
 import com.tencent.trpc.core.trace.spi.TracerFactory;
 import com.tencent.trpc.core.worker.spi.WorkerPool;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TRpcPluginTypeAliasTest {
 

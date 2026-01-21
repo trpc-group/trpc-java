@@ -11,10 +11,10 @@
 
 package com.tencent.trpc.core.transport;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.transport.common.TestClientCodec;
@@ -23,8 +23,8 @@ import com.tencent.trpc.core.transport.impl.TestClientTransport;
 import java.net.InetSocketAddress;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ClientTransportTest {
 
@@ -38,7 +38,7 @@ public class ClientTransportTest {
 
     private ClientTransport clientNotPool;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         clientTransport = newClientTransport(HOST, PORT, Boolean.TRUE);
         clientNotPool = newClientTransport(HOST, PORT, Boolean.FALSE);

@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.core.common.config.builder;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.rpc.GenericClient;
@@ -19,8 +19,8 @@ import com.tencent.trpc.core.worker.spi.WorkerPool;
 import com.tencent.trpc.core.worker.support.thread.ForkJoinWorkerPool;
 import com.tencent.trpc.core.worker.support.thread.ThreadWorkerPool;
 import java.util.HashMap;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class PluginConfigBuilderTest {
 
@@ -41,8 +41,8 @@ public class PluginConfigBuilderTest {
         builder.setPluginClass(ForkJoinWorkerPool.class);
         assertEquals(ForkJoinWorkerPool.class, builder.getPluginClass());
         builder.addPropertie("a", "a");
-        Assert.assertEquals("a", builder.getProperties().get("a"));
+        Assertions.assertEquals("a", builder.getProperties().get("a"));
         builder.setProperties(new HashMap<>());
-        Assert.assertEquals(0, builder.getProperties().size());
+        Assertions.assertEquals(0, builder.getProperties().size());
     }
 }

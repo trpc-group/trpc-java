@@ -39,16 +39,14 @@ import com.tencent.trpc.core.utils.RpcContextUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletionStage;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ClusterInvoker.class})
+@ExtendWith(MockitoExtension.class)
 public class DefClusterInvocationHandlerTest {
 
     private ClusterInvoker<BlankRpcServiceName> invoker;
@@ -56,7 +54,7 @@ public class DefClusterInvocationHandlerTest {
     /**
      * Init invoker
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         ConsumerConfig<BlankRpcServiceName> consumerConfig = new ConsumerConfig<>();
         consumerConfig.setMock(false);
@@ -106,13 +104,13 @@ public class DefClusterInvocationHandlerTest {
         method.setAccessible(true);
         LeftTimeout timeout = (LeftTimeout) method
                 .invoke(defClusterInvocationHandler, rpcClientContext, "test");
-        Assert.assertEquals(1000, timeout.getLeftTimeout());
-        Assert.assertEquals(1000, timeout.getOriginTimeout());
+        Assertions.assertEquals(1000, timeout.getLeftTimeout());
+        Assertions.assertEquals(1000, timeout.getOriginTimeout());
         rpcClientContext.setTimeoutMills(2000);
         timeout = (LeftTimeout) method
                 .invoke(defClusterInvocationHandler, rpcClientContext, "test");
-        Assert.assertEquals(2000, timeout.getLeftTimeout());
-        Assert.assertEquals(2000, timeout.getOriginTimeout());
+        Assertions.assertEquals(2000, timeout.getLeftTimeout());
+        Assertions.assertEquals(2000, timeout.getOriginTimeout());
         ConfigManager.getInstance().setDefault();
         RpcContextUtils.putValueMapValue(rpcClientContext, RpcContextValueKeys.CTX_LINK_INVOKE_TIMEOUT,
                 LinkInvokeTimeout.builder().startTime(System.currentTimeMillis() - 1)
@@ -121,8 +119,8 @@ public class DefClusterInvocationHandlerTest {
                         .serviceEnableLinkTimeout(false).build());
         timeout = (LeftTimeout) method
                 .invoke(defClusterInvocationHandler, rpcClientContext, "test");
-        Assert.assertEquals(2000, timeout.getLeftTimeout());
-        Assert.assertEquals(2000, timeout.getOriginTimeout());
+        Assertions.assertEquals(2000, timeout.getLeftTimeout());
+        Assertions.assertEquals(2000, timeout.getOriginTimeout());
         // If the full-link timeout is enabled and the service itself has already taken 9500ms,
         // the remaining time will be based on the remaining time when it is less than the calling setting time.
         RpcContextUtils.putValueMapValue(rpcClientContext, RpcContextValueKeys.CTX_LINK_INVOKE_TIMEOUT,
@@ -134,10 +132,10 @@ public class DefClusterInvocationHandlerTest {
         timeout = (LeftTimeout) method
                 .invoke(defClusterInvocationHandler, rpcClientContext, "test");
         // left time ms <= 10000 - 9500
-        Assert.assertTrue(timeout.getLeftTimeout() > 0);
-        Assert.assertTrue(timeout.getLeftTimeout() <= 500);
+        Assertions.assertTrue(timeout.getLeftTimeout() > 0);
+        Assertions.assertTrue(timeout.getLeftTimeout() <= 500);
         // init time Math.min(10000,2000)
-        Assert.assertEquals(2000, timeout.getOriginTimeout());
+        Assertions.assertEquals(2000, timeout.getOriginTimeout());
         // If the full-link timeout is enabled and the service itself has taken 100ms,
         // the remaining time will be based on the calling setting time when it is greater than the remaining time.
         RpcContextUtils.putValueMapValue(rpcClientContext, RpcContextValueKeys.CTX_LINK_INVOKE_TIMEOUT,
@@ -149,9 +147,9 @@ public class DefClusterInvocationHandlerTest {
         timeout = (LeftTimeout) method
                 .invoke(defClusterInvocationHandler, rpcClientContext, "test");
         //left time Math.min(3000-100,2000)
-        Assert.assertEquals(2000, timeout.getLeftTimeout());
+        Assertions.assertEquals(2000, timeout.getLeftTimeout());
         //init time Math.min(10000,2000)
-        Assert.assertEquals(2000, timeout.getOriginTimeout());
+        Assertions.assertEquals(2000, timeout.getOriginTimeout());
 
         // If the time in the context is null and the client has not configured a timeout,
         // the full-link timeout will be used as the standard.
@@ -169,8 +167,8 @@ public class DefClusterInvocationHandlerTest {
                         .serviceEnableLinkTimeout(true).build());
         timeout = (LeftTimeout) method
                 .invoke(defClusterInvocationHandler, rpcClientContext, "test");
-        Assert.assertEquals(3000, timeout.getOriginTimeout());
-        Assert.assertTrue(timeout.getLeftTimeout() <= 2999);
+        Assertions.assertEquals(3000, timeout.getOriginTimeout());
+        Assertions.assertTrue(timeout.getLeftTimeout() <= 2999);
     }
 
     @Test
@@ -183,7 +181,7 @@ public class DefClusterInvocationHandlerTest {
         RpcClientContext rpcClientContext = new RpcClientContext();
         String rpcServiceName = (String) method
                 .invoke(defClusterInvocationHandler, BlankRpcServiceName.class, rpcClientContext);
-        Assert.assertEquals(rpcServiceName, "blank");
+        Assertions.assertEquals(rpcServiceName, "blank");
     }
 
     @Test
@@ -195,21 +193,21 @@ public class DefClusterInvocationHandlerTest {
         method.setAccessible(true);
         String toString = (String) method.invoke(defClusterInvocationHandler,
                 defClusterInvocationHandler.getClass().getMethod("toString"), null);
-        Assert.assertTrue(toString.contains("com.tencent.trpc.core.cluster.def.DefClusterInvocationHandler"));
+        Assertions.assertTrue(toString.contains("com.tencent.trpc.core.cluster.def.DefClusterInvocationHandler"));
         Integer hashCode = (Integer) method.invoke(defClusterInvocationHandler,
                 defClusterInvocationHandler.getClass().getMethod("hashCode"), null);
-        Assert.assertNotNull(hashCode);
+        Assertions.assertNotNull(hashCode);
         boolean equal = (Boolean) method.invoke(defClusterInvocationHandler,
                 defClusterInvocationHandler.getClass().getMethod("equals", Object.class), new String[]{"a"});
-        Assert.assertFalse(equal);
+        Assertions.assertFalse(equal);
         try {
             method.invoke(defClusterInvocationHandler, AbstractClusterInvocationHandler.class.getDeclaredMethod(
                     "isLocalMethod", Method.class), null);
         } catch (InvocationTargetException ex) {
             Throwable targetException = ex.getTargetException();
-            Assert.assertTrue(targetException instanceof TRpcException);
+            Assertions.assertTrue(targetException instanceof TRpcException);
             TRpcException e = (TRpcException) targetException;
-            Assert.assertTrue(e.getMessage().contains("not allow invoke local method:isLocalMethod"));
+            Assertions.assertTrue(e.getMessage().contains("not allow invoke local method:isLocalMethod"));
         }
     }
 

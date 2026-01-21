@@ -11,29 +11,29 @@
 
 package com.tencent.trpc.core.common.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.common.ConfigManager;
 import com.tencent.trpc.core.common.config.BackendConfigTest.RemoteLoggerTest;
 import com.tencent.trpc.core.extension.ExtensionLoader;
 import com.tencent.trpc.core.filter.spi.Filter;
 import com.tencent.trpc.core.rpc.GenericClient;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ConsumerConfigTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
     }
 
-    @After
+    @AfterEach
     public void after() {
         ConfigManager.stopTest();
     }

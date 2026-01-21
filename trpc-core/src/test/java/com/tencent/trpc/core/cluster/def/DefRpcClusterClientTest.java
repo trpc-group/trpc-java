@@ -14,9 +14,9 @@ package com.tencent.trpc.core.cluster.def;
 import com.tencent.trpc.core.common.config.BackendConfig;
 import com.tencent.trpc.core.common.config.ConsumerConfig;
 import com.tencent.trpc.core.rpc.GenericClient;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DefRpcClusterClientTest {
 
@@ -24,7 +24,7 @@ public class DefRpcClusterClientTest {
 
     private ConsumerConfig<GenericClient> consumerConfig;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         BackendConfig backendConfig = new BackendConfig();
         backendConfig.setServiceInterface(GenericClient.class);
@@ -39,20 +39,20 @@ public class DefRpcClusterClientTest {
     @Test
     public void testGetProxy() {
         GenericClient proxy = defRpcClusterClient.getProxy(consumerConfig);
-        Assert.assertNotNull(proxy);
+        Assertions.assertNotNull(proxy);
     }
 
     @Test
     public void testGetConfig() {
         BackendConfig config = defRpcClusterClient.getConfig();
-        Assert.assertEquals("bytebuddy", config.getProxyType());
+        Assertions.assertEquals("bytebuddy", config.getProxyType());
     }
 
     @Test
     public void testStop() {
-        Assert.assertTrue(defRpcClusterClient.isAvailable());
-        Assert.assertFalse(defRpcClusterClient.isClosed());
+        Assertions.assertTrue(defRpcClusterClient.isAvailable());
+        Assertions.assertFalse(defRpcClusterClient.isClosed());
         defRpcClusterClient.stop();
-        Assert.assertTrue(defRpcClusterClient.isClosed());
+        Assertions.assertTrue(defRpcClusterClient.isClosed());
     }
 }

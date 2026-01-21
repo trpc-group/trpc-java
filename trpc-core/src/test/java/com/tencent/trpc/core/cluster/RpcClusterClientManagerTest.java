@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.core.cluster;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.tencent.trpc.core.common.config.BackendConfig;
 import com.tencent.trpc.core.common.config.ConsumerConfig;
@@ -22,8 +22,8 @@ import com.tencent.trpc.core.rpc.ConsumerInvoker;
 import com.tencent.trpc.core.rpc.RpcClient;
 import java.lang.reflect.Field;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class RpcClusterClientManagerTest {
 
@@ -35,7 +35,7 @@ public class RpcClusterClientManagerTest {
         backendConfig.setNamingUrl("ip://127.0.0.1");
         ProtocolConfigTest config = new ProtocolConfigTest();
         RpcClient rpcClient = RpcClusterClientManager.getOrCreateClient(backendConfig, config);
-        Assert.assertNotNull(rpcClient);
+        Assertions.assertNotNull(rpcClient);
         Field field = RpcClusterClientManager.class.getDeclaredField("CLUSTER_MAP");
         field.setAccessible(true);
         Map<BackendConfig, Map> clusterMap = (Map<BackendConfig, Map>) field.get(null);

@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.core.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.tencent.trpc.core.rpc.RpcContext;
 import com.tencent.trpc.core.rpc.Request;
@@ -26,8 +26,8 @@ import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.tag.Tag;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class RpcContextUtilsTest {
 
@@ -106,7 +106,7 @@ public class RpcContextUtilsTest {
             }
         };
         RpcContextUtils.putValueMapValue(ctx, RpcContextValueKeys.CTX_TRACE_SPAN, span);
-        Assert.assertEquals(span, RpcContextUtils.getSpan(ctx));
+        Assertions.assertEquals(span, RpcContextUtils.getSpan(ctx));
     }
 
     @Test
@@ -225,17 +225,17 @@ public class RpcContextUtilsTest {
         String extDimension = "test";
         RpcContextUtils.setExtensionDimension(context, extDimension);
         String extDimensionFromContext = RpcContextUtils.getExtensionDimension(context);
-        Assert.assertEquals(extDimension, extDimensionFromContext);
+        Assertions.assertEquals(extDimension, extDimensionFromContext);
     }
 
     @Test
     public void testGetExtensionDimension() {
         RpcContext context = new RpcClientContext();
         String extDimensionFromContext = RpcContextUtils.getExtensionDimension(context);
-        Assert.assertEquals("", extDimensionFromContext);
+        Assertions.assertEquals("", extDimensionFromContext);
         String extDimension = "test";
         RpcContextUtils.putRequestAttachValue(context, RpcContextValueKeys.CTX_M007_EXT3, extDimension);
         extDimensionFromContext = RpcContextUtils.getExtensionDimension(context);
-        Assert.assertEquals(extDimension, extDimensionFromContext);
+        Assertions.assertEquals(extDimension, extDimensionFromContext);
     }
 }

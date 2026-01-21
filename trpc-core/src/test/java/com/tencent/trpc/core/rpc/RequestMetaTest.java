@@ -11,14 +11,14 @@
 
 package com.tencent.trpc.core.rpc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.common.config.ConsumerConfig;
 import com.tencent.trpc.core.common.config.ProviderConfig;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class RequestMetaTest {
 
@@ -64,27 +64,27 @@ public class RequestMetaTest {
         meta.addMessageType(1);
         assertTrue(meta.hasMessageType(100));
         RequestMeta copy = meta.clone();
-        Assert.assertEquals(100, copy.getMessageType());
+        Assertions.assertEquals(100, copy.getMessageType());
         assertNotSame(copy, meta);
         assertEquals(copy.getDyeingKey(), "dyeingkey");
         assertEquals(copy.getHashVal(), "hashval");
-        Assert.assertEquals(cconfig, copy.getConsumerConfig());
-        Assert.assertEquals(pconfig, copy.getProviderConfig());
-        Assert.assertTrue(copy.getCreateTime() != 0 && copy.getCreateTime() > meta.getCreateTime());
+        Assertions.assertEquals(cconfig, copy.getConsumerConfig());
+        Assertions.assertEquals(pconfig, copy.getProviderConfig());
+        Assertions.assertTrue(copy.getCreateTime() != 0 && copy.getCreateTime() > meta.getCreateTime());
         assertNotSame(copy.getCallInfo(), meta.getCallInfo());
-        Assert.assertEquals("callee", copy.getCallInfo().getCallee());
-        Assert.assertEquals("calleeapp", copy.getCallInfo().getCalleeApp());
-        Assert.assertEquals("calleeserver", copy.getCallInfo().getCalleeServer());
-        Assert.assertEquals("calleemethod", copy.getCallInfo().getCalleeMethod());
-        Assert.assertEquals("calleeservice", copy.getCallInfo().getCalleeService());
-        Assert.assertEquals("caller", copy.getCallInfo().getCaller());
-        Assert.assertEquals("callerapp", copy.getCallInfo().getCallerApp());
-        Assert.assertEquals("callerserver", copy.getCallInfo().getCallerServer());
-        Assert.assertEquals("callermethod", copy.getCallInfo().getCallerMethod());
-        Assert.assertEquals("callerservice", copy.getCallInfo().getCallerService());
-        Assert.assertEquals(pconfig, copy.getProviderConfig());
-        Assert.assertEquals(cconfig, copy.getConsumerConfig());
-        Assert.assertEquals("b", copy.getMap().get("a"));
-        Assert.assertTrue(copy.getMap() != meta.getMap());
+        Assertions.assertEquals("callee", copy.getCallInfo().getCallee());
+        Assertions.assertEquals("calleeapp", copy.getCallInfo().getCalleeApp());
+        Assertions.assertEquals("calleeserver", copy.getCallInfo().getCalleeServer());
+        Assertions.assertEquals("calleemethod", copy.getCallInfo().getCalleeMethod());
+        Assertions.assertEquals("calleeservice", copy.getCallInfo().getCalleeService());
+        Assertions.assertEquals("caller", copy.getCallInfo().getCaller());
+        Assertions.assertEquals("callerapp", copy.getCallInfo().getCallerApp());
+        Assertions.assertEquals("callerserver", copy.getCallInfo().getCallerServer());
+        Assertions.assertEquals("callermethod", copy.getCallInfo().getCallerMethod());
+        Assertions.assertEquals("callerservice", copy.getCallInfo().getCallerService());
+        Assertions.assertEquals(pconfig, copy.getProviderConfig());
+        Assertions.assertEquals(cconfig, copy.getConsumerConfig());
+        Assertions.assertEquals("b", copy.getMap().get("a"));
+        Assertions.assertTrue(copy.getMap() != meta.getMap());
     }
 }

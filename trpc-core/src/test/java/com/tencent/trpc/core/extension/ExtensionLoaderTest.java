@@ -40,31 +40,23 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-/**
- * NOTE: Due to the fact that ExtensionLoader is cached through static variables,
- * it is important to be careful not to interfere with each other during testing.
- */
 public class ExtensionLoaderTest {
 
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
-
     @Test
-    public void testGetExtensionLoaderNoExtensibleAnnotation() {
-        expectedEx.expect(TRpcExtensionException.class);
-        expectedEx.expectMessage("does not annotated with");
-        ExtensionLoader.getExtensionLoader(NoAnnotationExt.class);
+    public void testGetExtNoAnnot() {
+        TRpcExtensionException exception = Assertions.assertThrows(TRpcExtensionException.class, () -> {
+            ExtensionLoader.getExtensionLoader(NoAnnotationExt.class);
+        });
+        Assertions.assertTrue(exception.getMessage().contains("does not annotated with"));
     }
 
     @Test
     public void testGetAllExtension() {
         List<Ext1> allExtensions = ExtensionLoader.getExtensionLoader(Ext1.class).getAllExtensions();
-        Assert.assertNotNull(allExtensions);
+        Assertions.assertNotNull(allExtensions);
     }
 
     @Test
@@ -74,22 +66,23 @@ public class ExtensionLoaderTest {
         extensionLoader1.addExtension("impl2", Ext1Impl2.class);
         Ext1 impl1 = extensionLoader1.getExtension("impl1");
         Ext1 impl2 = extensionLoader1.getExtension("impl2");
-        Assert.assertTrue(impl1 instanceof Ext1Impl1);
-        Assert.assertTrue(impl2 instanceof Ext1Impl2);
+        Assertions.assertTrue(impl1 instanceof Ext1Impl1);
+        Assertions.assertTrue(impl2 instanceof Ext1Impl2);
         ExtensionLoader extensionLoader2 = ExtensionLoader.getExtensionLoader(Ext1.class);
-        Assert.assertSame(extensionLoader1, extensionLoader2);
-        Assert.assertSame(impl1, extensionLoader2.getExtension("impl1"));
-        Assert.assertSame(impl2, extensionLoader2.getExtension("impl2"));
+        Assertions.assertSame(extensionLoader1, extensionLoader2);
+        Assertions.assertSame(impl1, extensionLoader2.getExtension("impl1"));
+        Assertions.assertSame(impl2, extensionLoader2.getExtension("impl2"));
     }
 
     @Test
-    public void testAddExtensionExist() {
-        expectedEx.expect(TRpcExtensionException.class);
-        expectedEx.expectMessage("duplicate extension name");
-        TRpcSystemProperties.setIgnoreSamePluginName(Boolean.FALSE);
-        ExtensionLoader<Ext1> extensionLoader = ExtensionLoader.getExtensionLoader(Ext1.class);
-        extensionLoader.addExtension("implExist", Ext1Impl1.class);
-        extensionLoader.addExtension("implExist", Ext1Impl2.class);
+    public void testAddExtExist() {
+        TRpcExtensionException exception = Assertions.assertThrows(TRpcExtensionException.class, () -> {
+            TRpcSystemProperties.setIgnoreSamePluginName(Boolean.FALSE);
+            ExtensionLoader<Ext1> extensionLoader = ExtensionLoader.getExtensionLoader(Ext1.class);
+            extensionLoader.addExtension("implExist", Ext1Impl1.class);
+            extensionLoader.addExtension("implExist", Ext1Impl2.class);
+        });
+        Assertions.assertTrue(exception.getMessage().contains("duplicate extension name"));
     }
 
     @Test
@@ -97,30 +90,31 @@ public class ExtensionLoaderTest {
         ExtensionLoader<Ext1> extensionLoader = ExtensionLoader.getExtensionLoader(Ext1.class);
         extensionLoader.addExtension("implExist", Ext1Impl1.class);
         ExtensionManager<Ext1> ext1ExtensionManager = new ExtensionManager<>(Ext1.class);
-        Assert.assertNull(ext1ExtensionManager.getDefaultExtension());
-        Assert.assertNull(ext1ExtensionManager.getConfig("implExist"));
+        Assertions.assertNull(ext1ExtensionManager.getDefaultExtension());
+        Assertions.assertNull(ext1ExtensionManager.getConfig("implExist"));
     }
 
     @Test
-    public void testAddExtensionSpecify2Names() {
+    public void testAddExt2Names() {
         Extension annotation = Ext1Impl3.class.getAnnotation(Extension.class);
-        Assert.assertNotNull(annotation);
+        Assertions.assertNotNull(annotation);
         String name = "implDuplicate";
         String nameOnClass = annotation.value();
-        Assert.assertNotEquals(name, nameOnClass);
+        Assertions.assertNotEquals(name, nameOnClass);
         ExtensionLoader<Ext1> extensionLoader = ExtensionLoader.getExtensionLoader(Ext1.class);
         extensionLoader.addExtension(name, Ext1Impl3.class);
-        Assert.assertNotNull(extensionLoader.getExtension(name));
-        expectedEx.expect(TRpcExtensionException.class);
-        expectedEx.expectMessage("Cannot get extension");
-        extensionLoader.getExtension(nameOnClass);
+        Assertions.assertNotNull(extensionLoader.getExtension(name));
+        TRpcExtensionException exception = Assertions.assertThrows(TRpcExtensionException.class, () -> {
+            extensionLoader.getExtension(nameOnClass);
+        });
+        Assertions.assertTrue(exception.getMessage().contains("Cannot get extension"));
     }
 
     @Test
     public void testRemoveExtension() {
         ExtensionLoader<Ext1> extensionLoader1 = ExtensionLoader.getExtensionLoader(Ext1.class);
         extensionLoader1.addExtension("impl1", Ext1Impl1.class);
-        Assert.assertNotNull(extensionLoader1.getExtension("impl1"));
+        Assertions.assertNotNull(extensionLoader1.getExtension("impl1"));
         extensionLoader1.removeExtension("impl1");
         try {
             extensionLoader1.getExtension("impl1");
@@ -141,11 +135,11 @@ public class ExtensionLoaderTest {
             loaders.remove(Selector.class);
         } catch (Exception e) {
             e.printStackTrace();
-            Assert.fail("clean extensions cache failed");
+            Assertions.fail("clean extensions cache failed");
         }
-        Assert.assertFalse(ExtensionLoader.hasExtensionLoader(Selector.class));
+        Assertions.assertFalse(ExtensionLoader.hasExtensionLoader(Selector.class));
         ExtensionLoader.getExtensionLoader(Selector.class);
-        Assert.assertTrue(ExtensionLoader.hasExtensionLoader(Selector.class));
+        Assertions.assertTrue(ExtensionLoader.hasExtensionLoader(Selector.class));
     }
 
     @Test
@@ -153,9 +147,9 @@ public class ExtensionLoaderTest {
         ExtensionLoader<Selector> extensionLoader = ExtensionLoader
                 .getExtensionLoader(Selector.class);
         extensionLoader.addExtension("selector", IpSelector.class);
-        Assert.assertTrue(extensionLoader.getExtension("selector") instanceof IpSelector);
+        Assertions.assertTrue(extensionLoader.getExtension("selector") instanceof IpSelector);
         extensionLoader.replaceExtension("selector", MockSelector.class);
-        Assert.assertTrue(extensionLoader.getExtension("selector") instanceof MockSelector);
+        Assertions.assertTrue(extensionLoader.getExtension("selector") instanceof MockSelector);
     }
 
     @Test
@@ -163,12 +157,12 @@ public class ExtensionLoaderTest {
         ExtensionLoader<Selector> extensionLoader = ExtensionLoader
                 .getExtensionLoader(Selector.class);
         extensionLoader.addExtension("selector1", IpSelector.class);
-        Assert.assertTrue(extensionLoader.getExtension("selector1") instanceof IpSelector);
+        Assertions.assertTrue(extensionLoader.getExtension("selector1") instanceof IpSelector);
         PluginConfig pluginConfig = new PluginConfig("selector1", MockSelector.class);
         try {
             extensionLoader.refresh("selector1", pluginConfig);
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof TRpcExtensionException);
+            Assertions.assertTrue(e instanceof TRpcExtensionException);
         }
         ExtensionClass<Selector> selector = extensionLoader.getExtensionClass("selector1");
         selector.refresh(pluginConfig);
@@ -177,48 +171,48 @@ public class ExtensionLoaderTest {
     @Test
     public void testGetDefaultExtension() {
         ExtensionLoader<Ext2> extensionLoader = ExtensionLoader.getExtensionLoader(Ext2.class);
-        Assert.assertNotNull(extensionLoader.getDefaultExtension());
+        Assertions.assertNotNull(extensionLoader.getDefaultExtension());
     }
 
     @Test
     public void testGetDefaultExtensionNotExist() {
         // default plugins have been not configured.
         ExtensionLoader<Ext1> extensionLoader1 = ExtensionLoader.getExtensionLoader(Ext1.class);
-        Assert.assertNull(extensionLoader1.getDefaultExtension());
+        Assertions.assertNull(extensionLoader1.getDefaultExtension());
         // The default plugin configured does not exist.
         ExtensionLoader<DefaultNotExistExt> extensionLoader2 =
                 ExtensionLoader.getExtensionLoader(DefaultNotExistExt.class);
-        Assert.assertNull(extensionLoader2.getDefaultExtension());
+        Assertions.assertNull(extensionLoader2.getDefaultExtension());
     }
 
     @Test
     public void testGetExtensionWithConfigFile() {
         ExtensionLoader<Ext3> extensionLoader = ExtensionLoader.getExtensionLoader(Ext3.class);
-        Assert.assertNotNull(extensionLoader.getExtension("impl1"));
-        Assert.assertNotNull(extensionLoader.getExtension("impl2"));
-        Assert.assertNotNull(extensionLoader.getExtension("impl3"));
-        Assert.assertNotNull(extensionLoader.getExtension("impl4"));
-        Assert.assertNotNull(extensionLoader.getExtension("impl5"));
-        Assert.assertNotNull(extensionLoader.getExtension("impl6"));
-        Assert.assertNotNull(extensionLoader.getExtension("impl7"));
-        Assert.assertNotNull(extensionLoader.getExtension("impl8"));
-        Assert.assertNotNull(extensionLoader.getExtension("impl9"));
+        Assertions.assertNotNull(extensionLoader.getExtension("impl1"));
+        Assertions.assertNotNull(extensionLoader.getExtension("impl2"));
+        Assertions.assertNotNull(extensionLoader.getExtension("impl3"));
+        Assertions.assertNotNull(extensionLoader.getExtension("impl4"));
+        Assertions.assertNotNull(extensionLoader.getExtension("impl5"));
+        Assertions.assertNotNull(extensionLoader.getExtension("impl6"));
+        Assertions.assertNotNull(extensionLoader.getExtension("impl7"));
+        Assertions.assertNotNull(extensionLoader.getExtension("impl8"));
+        Assertions.assertNotNull(extensionLoader.getExtension("impl9"));
         try {
             extensionLoader.getExtension("impl10");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof TRpcExtensionException);
+            Assertions.assertTrue(e instanceof TRpcExtensionException);
         }
-        Assert.assertSame(extensionLoader.getExtension("impl1"),
+        Assertions.assertSame(extensionLoader.getExtension("impl1"),
                 extensionLoader.getExtension("impl1"));
-        Assert.assertSame(extensionLoader.getExtension("impl3"),
+        Assertions.assertSame(extensionLoader.getExtension("impl3"),
                 extensionLoader.getExtension("impl3"));
-        Assert.assertSame(extensionLoader.getExtension("impl5"),
+        Assertions.assertSame(extensionLoader.getExtension("impl5"),
                 extensionLoader.getExtension("impl5"));
-        Assert.assertSame(extensionLoader.getExtension("impl6"),
+        Assertions.assertSame(extensionLoader.getExtension("impl6"),
                 extensionLoader.getExtension("impl6"));
-        Assert.assertSame(extensionLoader.getExtension("impl7"),
+        Assertions.assertSame(extensionLoader.getExtension("impl7"),
                 extensionLoader.getExtension("impl7"));
-        Assert.assertSame(extensionLoader.getExtension("impl9"),
+        Assertions.assertSame(extensionLoader.getExtension("impl9"),
                 extensionLoader.getExtension("impl9"));
     }
 
@@ -228,7 +222,7 @@ public class ExtensionLoaderTest {
         try {
             extensionLoader.getExtension("impl10");
         } catch (Exception ex) {
-            Assert.assertEquals(ex.getCause().getClass(), IllegalArgumentException.class);
+            Assertions.assertEquals(ex.getCause().getClass(), IllegalArgumentException.class);
         }
     }
 
@@ -249,30 +243,30 @@ public class ExtensionLoaderTest {
 
     private <T> void assertExtensionClassesEqual(List<T> extensions,
             List<Class<? extends T>> extensionClasses) {
-        Assert.assertNotNull(extensions);
-        Assert.assertNotNull(extensionClasses);
+        Assertions.assertNotNull(extensions);
+        Assertions.assertNotNull(extensionClasses);
         Iterator<T> extIter = extensions.iterator();
         Iterator<Class<? extends T>> extClassIter = extensionClasses.iterator();
         while (extIter.hasNext() && extClassIter.hasNext()) {
             T ext = extIter.next();
             Class<? extends T> extClass = extClassIter.next();
-            Assert.assertNotNull(ext);
-            Assert.assertNotNull(extClass);
-            Assert.assertSame(ext.getClass(), extClass);
+            Assertions.assertNotNull(ext);
+            Assertions.assertNotNull(extClass);
+            Assertions.assertSame(ext.getClass(), extClass);
         }
-        Assert.assertFalse(extIter.hasNext());
-        Assert.assertFalse(extClassIter.hasNext());
+        Assertions.assertFalse(extIter.hasNext());
+        Assertions.assertFalse(extClassIter.hasNext());
     }
 
     @Test
     public void testGetActivateExtensionsNotExist() {
         ExtensionLoader<DefaultNotExistExt> extensionLoader1 =
                 ExtensionLoader.getExtensionLoader(DefaultNotExistExt.class);
-        Assert.assertTrue(extensionLoader1.getActivateExtensions(ActivationGroup.PROVIDER).isEmpty());
-        Assert.assertTrue(extensionLoader1.getActivateExtensions(ActivationGroup.CONSUMER).isEmpty());
+        Assertions.assertTrue(extensionLoader1.getActivateExtensions(ActivationGroup.PROVIDER).isEmpty());
+        Assertions.assertTrue(extensionLoader1.getActivateExtensions(ActivationGroup.CONSUMER).isEmpty());
         ExtensionLoader<Ext2> extensionLoader2 = ExtensionLoader.getExtensionLoader(Ext2.class);
-        Assert.assertTrue(extensionLoader2.getActivateExtensions(ActivationGroup.PROVIDER).isEmpty());
-        Assert.assertTrue(extensionLoader2.getActivateExtensions(ActivationGroup.CONSUMER).isEmpty());
+        Assertions.assertTrue(extensionLoader2.getActivateExtensions(ActivationGroup.PROVIDER).isEmpty());
+        Assertions.assertTrue(extensionLoader2.getActivateExtensions(ActivationGroup.CONSUMER).isEmpty());
     }
 
     @Test
@@ -281,9 +275,9 @@ public class ExtensionLoaderTest {
         Set<String> extNames = new HashSet<>(Arrays.asList("impl8", "impl7", "impl1"));
         ExtensionLoader<Ext3> extensionLoader = ExtensionLoader.getExtensionLoader(Ext3.class);
         List<Ext3> exts = extensionLoader.getExtensions(extClass -> extNames.contains(extClass.getName()));
-        Assert.assertTrue(exts.get(0) instanceof Ext3Impl1);
-        Assert.assertTrue(exts.get(1) instanceof Ext3Impl7);
-        Assert.assertTrue(exts.get(2) instanceof Ext3Impl8);
+        Assertions.assertTrue(exts.get(0) instanceof Ext3Impl1);
+        Assertions.assertTrue(exts.get(1) instanceof Ext3Impl7);
+        Assertions.assertTrue(exts.get(2) instanceof Ext3Impl8);
         List<Class<? extends Ext3>> extClasses =
                 Arrays.asList(Ext3Impl1.class, Ext3Impl7.class, Ext3Impl8.class);
         assertExtensionClassesEqual(exts, extClasses);
@@ -325,8 +319,8 @@ public class ExtensionLoaderTest {
         ext.echo();
         for (int i = 0; i < workerNum; i++) {
             ExtensionLoader loader = loaders[i];
-            Assert.assertSame(extensionLoader, loader);
-            Assert.assertSame(ext, exts[i]);
+            Assertions.assertSame(extensionLoader, loader);
+            Assertions.assertSame(ext, exts[i]);
         }
     }
 }

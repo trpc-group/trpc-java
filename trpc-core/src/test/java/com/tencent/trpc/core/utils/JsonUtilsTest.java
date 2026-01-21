@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -24,8 +24,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.util.Strings;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class JsonUtilsTest {
 
@@ -37,75 +37,77 @@ public class JsonUtilsTest {
     @Test
     public void testCopy() {
         ObjectMapper objectMapper = JsonUtils.copy();
-        Assert.assertNotNull(objectMapper);
+        Assertions.assertNotNull(objectMapper);
     }
 
-    @Test(expected = TRpcException.class)
+    @Test
     public void testFromInputStream() {
-        JsonUtils.fromInputStream(new InputStream() {
-            @Override
-            public int read() throws IOException {
-                return 0;
-            }
-        }, Object.class);
+        Assertions.assertThrows(TRpcException.class, () -> {
+            JsonUtils.fromInputStream(new InputStream() {
+                @Override
+                public int read() throws IOException {
+                    return 0;
+                }
+            }, Object.class);
+        });
     }
 
     @Test
     public void testFromJson() {
         TestObj obj = JsonUtils.fromJson(JSON, TestObj.class);
-        Assert.assertEquals(obj.getTest(), 123);
+        Assertions.assertEquals(obj.getTest(), 123);
         TestObj objRef = JsonUtils.fromJson(JSON, new TypeReference<TestObj>() {
         });
-        Assert.assertEquals(objRef.getTest(), 123);
+        Assertions.assertEquals(objRef.getTest(), 123);
         List<TestObj> testObjs = JsonUtils.fromJson(JSON_LIST, JsonUtils.copy().getTypeFactory()
                 .constructCollectionType(Collection.class, TestObj.class));
-        Assert.assertEquals(testObjs.get(0).getTest(), 123);
+        Assertions.assertEquals(testObjs.get(0).getTest(), 123);
         try {
             JsonUtils.fromJson(ERROR_JSON, TestObj.class);
         } catch (TRpcException e) {
-            Assert.assertEquals(e.getCode(), 2001);
+            Assertions.assertEquals(e.getCode(), 2001);
         }
         try {
             JsonUtils.fromJson(ERROR_JSON, JsonUtils.copy().getTypeFactory().constructCollectionType(
-                            Collection.class, TestObj.class));
+                    Collection.class, TestObj.class));
         } catch (TRpcException e) {
-            Assert.assertEquals(e.getCode(), 2001);
+            Assertions.assertEquals(e.getCode(), 2001);
         }
         try {
             JsonUtils.fromJson(ERROR_JSON, new TypeReference<TestObj>() {
             });
         } catch (TRpcException e) {
-            Assert.assertEquals(e.getCode(), 2001);
+            Assertions.assertEquals(e.getCode(), 2001);
         }
     }
 
     @Test
     public void testFromBytes() {
         TestObj obj = JsonUtils.fromBytes(JSON.getBytes(Charsets.UTF_8), TestObj.class);
-        Assert.assertEquals(obj.getTest(), 123);
+        Assertions.assertEquals(obj.getTest(), 123);
         TestObj objRef = JsonUtils.fromBytes(JSON.getBytes(Charsets.UTF_8), new TypeReference<TestObj>() {
         });
-        Assert.assertEquals(objRef.getTest(), 123);
+        Assertions.assertEquals(objRef.getTest(), 123);
         objRef = JsonUtils.fromBytes(JSON, new TypeReference<TestObj>() {
         });
-        Assert.assertEquals(objRef.getTest(), 123);
+        Assertions.assertEquals(objRef.getTest(), 123);
 
         try {
             JsonUtils.fromBytes(ERROR_JSON.getBytes(Charsets.UTF_8), TestObj.class);
         } catch (TRpcException e) {
-            Assert.assertEquals(e.getCode(), 2001);
+            Assertions.assertEquals(e.getCode(), 2001);
         }
         try {
             JsonUtils.fromBytes(ERROR_JSON.getBytes(Charsets.UTF_8), new TypeReference<TestObj>() {
             });
         } catch (TRpcException e) {
-            Assert.assertEquals(e.getCode(), 2001);
+            Assertions.assertEquals(e.getCode(), 2001);
         }
         try {
             JsonUtils.fromBytes(ERROR_JSON, new TypeReference<TestObj>() {
             });
         } catch (TRpcException e) {
-            Assert.assertEquals(e.getCode(), 2001);
+            Assertions.assertEquals(e.getCode(), 2001);
         }
     }
 
@@ -114,15 +116,15 @@ public class JsonUtilsTest {
         TestObj obj = new TestObj();
         obj.setTest(123);
         String json = JsonUtils.toJson(obj);
-        Assert.assertEquals(json, JSON);
+        Assertions.assertEquals(json, JSON);
         TestObj1 obj1 = new TestObj1();
         obj1.setTest(123);
         try {
             JsonUtils.toJson(obj1);
         } catch (TRpcException e) {
-            Assert.assertEquals(e.getCode(), 2001);
+            Assertions.assertEquals(e.getCode(), 2001);
         }
-        Assert.assertFalse(Strings.isNullOrEmpty(
+        Assertions.assertFalse(Strings.isNullOrEmpty(
                 JsonUtils.toJson(ProtoJsonConverter.messageToMap(HelloRequest.getDefaultInstance()))));
     }
 
@@ -131,11 +133,11 @@ public class JsonUtilsTest {
         TestObj obj = new TestObj();
         obj.setTest(123);
         String json = JsonUtils.toJson(obj, "aaa");
-        Assert.assertEquals(json, JSON);
+        Assertions.assertEquals(json, JSON);
         TestObj1 obj1 = new TestObj1();
         obj1.setTest(123);
         String aaa = JsonUtils.toJson(obj1, "aaa");
-        Assert.assertEquals(EMPTY_JSON, aaa);
+        Assertions.assertEquals(EMPTY_JSON, aaa);
     }
 
     @Test
@@ -143,13 +145,13 @@ public class JsonUtilsTest {
         TestObj obj = new TestObj();
         obj.setTest(123);
         byte[] bytes = JsonUtils.toBytes(obj);
-        Assert.assertEquals(new String(bytes), JSON);
+        Assertions.assertEquals(new String(bytes), JSON);
         TestObj1 obj1 = new TestObj1();
         obj1.setTest(123);
         try {
             JsonUtils.toBytes(obj1);
         } catch (TRpcException e) {
-            Assert.assertEquals(e.getCode(), 2001);
+            Assertions.assertEquals(e.getCode(), 2001);
         }
     }
 
@@ -160,10 +162,10 @@ public class JsonUtilsTest {
         testObj.setTest(11);
         obj.setData(testObj);
         String json = JsonUtils.toJson(obj);
-        Assert.assertEquals(json, "{\"data\":{\"test\":11}}");
+        Assertions.assertEquals(json, "{\"data\":{\"test\":11}}");
         TestObj2<TestObj> obj2 = JsonUtils.fromJson(json, new TypeReference<TestObj2<TestObj>>() {
         });
-        Assert.assertEquals(obj2.getData().getTest(), 11);
+        Assertions.assertEquals(obj2.getData().getTest(), 11);
     }
 
 
@@ -174,14 +176,14 @@ public class JsonUtilsTest {
         mapValue.put("unknown", 111);
         mapValue.put("12", 12);
         TestConfigObject testConfigObject = JsonUtils.convertValue(mapValue, TestConfigObject.class);
-        Assert.assertEquals("123", testConfigObject.getData());
+        Assertions.assertEquals("123", testConfigObject.getData());
         try {
             JsonUtils.convertValue(mapValue, Discovery.class);
         } catch (Exception e) {
-            Assert.assertNotNull(e);
+            Assertions.assertNotNull(e);
             return;
         }
-        Assert.fail();
+        Assertions.fail();
     }
 
 

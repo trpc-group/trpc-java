@@ -11,16 +11,16 @@
 
 package com.tencent.trpc.core.rpc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.google.common.collect.Maps;
 import com.tencent.trpc.core.rpc.def.DefRequest;
 import com.tencent.trpc.core.rpc.def.DefResponse;
 import java.util.concurrent.ConcurrentMap;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DefResponseTest {
 
@@ -51,7 +51,7 @@ public class DefResponseTest {
         assertNotNull(rsp.getMeta());
 
         DefResponse defResponse = (DefResponse) rsp.clone();
-        Assert.assertEquals(rsp.getAttachments().get("a"), defResponse.getAttachments().get("a"));
-        Assert.assertEquals(rsp.getException(), defResponse.getException());
+        Assertions.assertEquals(rsp.getAttachments().get("a"), defResponse.getAttachments().get("a"));
+        Assertions.assertEquals(rsp.getException(), defResponse.getException());
     }
 }
