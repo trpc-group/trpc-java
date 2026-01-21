@@ -15,8 +15,8 @@ import com.tencent.trpc.limiter.sentinel.config.datasource.DatasourceConfig;
 import com.tencent.trpc.limiter.sentinel.config.datasource.ZookeeperDatasourceConfig;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * ZookeeperDatasourceConfigFactory test class
@@ -29,7 +29,7 @@ public class ZookeeperDatasourceConfigFactoryTest {
         configs.put("remote_address", "127.0.0.1:2181");
         configs.put("path", "/");
         DatasourceConfig datasourceConfig = new ZookeeperDatasourceConfigFactory().create(configs);
-        Assert.assertTrue(datasourceConfig instanceof ZookeeperDatasourceConfig);
+        Assertions.assertTrue(datasourceConfig instanceof ZookeeperDatasourceConfig);
     }
 
 }

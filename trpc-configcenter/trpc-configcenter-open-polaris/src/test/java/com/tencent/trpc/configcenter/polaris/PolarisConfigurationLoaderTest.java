@@ -32,8 +32,8 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class PolarisConfigurationLoaderTest {
@@ -91,10 +91,10 @@ public class PolarisConfigurationLoaderTest {
         Mockito.when(fetcher.getConfigPropertiesFile("default", MOCK_GROUP, MOCK_FILE)).thenReturn(mockKv);
 
         String ret = loader.getValue(USER_NAME, MOCK_GROUP);
-        Assert.assertEquals("polaris", ret);
+        Assertions.assertEquals("polaris", ret);
 
         ret = loader.getValue(USER_NAME, MOCK_GROUP + "123");
-        Assert.assertEquals(null, ret);
+        Assertions.assertEquals(null, ret);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class PolarisConfigurationLoaderTest {
         Mockito.when(fetcher.getConfigPropertiesFile("default", MOCK_GROUP, MOCK_FILE)).thenReturn(mockKv);
 
         Map<String, String> values = loader.getAllValue(MOCK_GROUP);
-        Assert.assertEquals("polaris", values.get("user.name"));
+        Assertions.assertEquals("polaris", values.get("user.name"));
     }
 
     @Test
@@ -136,11 +136,11 @@ public class PolarisConfigurationLoaderTest {
         loader.addListener(listener);
         latch.await(1, TimeUnit.SECONDS);
 
-        Assert.assertNotNull(ref.get());
+        Assertions.assertNotNull(ref.get());
         ConfigurationEvent event = ref.get();
-        Assert.assertEquals(event.getKey(), "user.name");
-        Assert.assertEquals(event.getValue(), "polaris");
-        Assert.assertEquals(event.getType(), ChangeType.ADDED.name());
+        Assertions.assertEquals(event.getKey(), "user.name");
+        Assertions.assertEquals(event.getValue(), "polaris");
+        Assertions.assertEquals(event.getType(), ChangeType.ADDED.name());
     }
 
     @Test

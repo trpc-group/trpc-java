@@ -16,8 +16,8 @@ import com.tencent.trpc.limiter.sentinel.config.datasource.factory.DatasourceCon
 import com.tencent.trpc.limiter.sentinel.config.datasource.factory.DatasourceType;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * LocalFileDatasourceConfig test class
@@ -43,7 +43,7 @@ public class LocalFileDatasourceConfigTest {
             localFileDatasourceConfig.register();
         } catch (Exception e) {
             e.printStackTrace();
-            Assert.assertTrue(e instanceof LimiterDataSourceException);
+            Assertions.assertTrue(e instanceof LimiterDataSourceException);
         }
     }
 
@@ -57,7 +57,7 @@ public class LocalFileDatasourceConfigTest {
             localFileDatasourceConfig.register();
         } catch (Exception e) {
             e.printStackTrace();
-            Assert.assertTrue(e instanceof LimiterDataSourceException);
+            Assertions.assertTrue(e instanceof LimiterDataSourceException);
         }
     }
 
@@ -69,7 +69,7 @@ public class LocalFileDatasourceConfigTest {
         try {
             localFileDatasourceConfig.validate();
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof LimiterDataSourceException);
+            Assertions.assertTrue(e instanceof LimiterDataSourceException);
         }
     }
 
