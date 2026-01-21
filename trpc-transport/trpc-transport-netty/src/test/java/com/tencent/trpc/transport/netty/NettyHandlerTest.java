@@ -15,7 +15,7 @@ import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import com.tencent.trpc.core.transport.handler.ChannelHandlerAdapter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class NettyHandlerTest {
 

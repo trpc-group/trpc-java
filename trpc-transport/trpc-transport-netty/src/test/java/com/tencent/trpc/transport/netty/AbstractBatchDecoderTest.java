@@ -18,8 +18,8 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.EmptyByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class AbstractBatchDecoderTest {
     public void setSingleDecode() {
         DecoderTest decoderTest = new DecoderTest();
         decoderTest.setSingleDecode(true);
-        Assert.assertTrue(decoderTest.isSingleDecode());
+        Assertions.assertTrue(decoderTest.isSingleDecode());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class AbstractBatchDecoderTest {
         DecoderTest decoderTest = new DecoderTest();
         decoderTest.setCumulator(AbstractBatchDecoder.COMPOSITE_CUMULATOR);
         ByteBuf byteBuf = decoderTest.internalBuffer();
-        Assert.assertEquals(Unpooled.EMPTY_BUFFER, byteBuf);
+        Assertions.assertEquals(Unpooled.EMPTY_BUFFER, byteBuf);
     }
 
     @Test

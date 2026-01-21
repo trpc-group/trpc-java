@@ -12,7 +12,7 @@
 package com.tencent.trpc.transport.http;
 
 import static com.tencent.trpc.transport.http.common.Constants.HTTP2_SCHEME;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.extension.ExtensionLoader;
@@ -34,10 +34,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.eclipse.jetty.http.HttpStatus;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class JettyHttp2cServerTest {
 
@@ -49,7 +49,7 @@ public class JettyHttp2cServerTest {
 
     private static CloseableHttpClient httpClient;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         ProtocolConfig protocolConfig = ProtocolConfig.newInstance();
         protocolConfig.setIp("localhost");
@@ -88,7 +88,7 @@ public class JettyHttp2cServerTest {
         httpClient = HttpClients.custom().build();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         if (httpServer != null) {
             httpServer.open();
@@ -125,14 +125,14 @@ public class JettyHttp2cServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals("", simpleHttpResponse.getBodyText());
+        Assertions.assertEquals("", simpleHttpResponse.getBodyText());
     }
 
     @Test
@@ -157,14 +157,14 @@ public class JettyHttp2cServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(404, simpleHttpResponse.getCode());
+        Assertions.assertEquals(404, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals("", simpleHttpResponse.getBodyText());
+        Assertions.assertEquals("", simpleHttpResponse.getBodyText());
     }
 
     @Test
@@ -175,10 +175,10 @@ public class JettyHttp2cServerTest {
 
         int responseCode = httpResponse.getStatusLine().getStatusCode();
         logger.info("response code is {}", responseCode);
-        Assert.assertEquals(responseCode, 200);
+        Assertions.assertEquals(responseCode, 200);
 
-        Assert.assertEquals(httpResponse.getProtocolVersion().getProtocol(), "HTTP");
-        Assert.assertEquals(httpResponse.getProtocolVersion().getMajor(), 1);
+        Assertions.assertEquals(httpResponse.getProtocolVersion().getProtocol(), "HTTP");
+        Assertions.assertEquals(httpResponse.getProtocolVersion().getMajor(), 1);
 
     }
 
@@ -190,10 +190,10 @@ public class JettyHttp2cServerTest {
 
         int responseCode = httpResponse.getStatusLine().getStatusCode();
         logger.info("response code is {}", responseCode);
-        Assert.assertEquals(responseCode, 404);
+        Assertions.assertEquals(responseCode, 404);
 
-        Assert.assertEquals(httpResponse.getProtocolVersion().getProtocol(), "HTTP");
-        Assert.assertEquals(httpResponse.getProtocolVersion().getMajor(), 1);
+        Assertions.assertEquals(httpResponse.getProtocolVersion().getProtocol(), "HTTP");
+        Assertions.assertEquals(httpResponse.getProtocolVersion().getMajor(), 1);
 
     }
 

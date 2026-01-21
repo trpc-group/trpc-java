@@ -11,13 +11,13 @@
 
 package com.tencent.trpc.transport.netty;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class NettyChannelManagerTest {
 
     @Test
     public void test() {
-        Assert.assertTrue(NettyChannelManager.getOrAddChannel(null, null) == null);
+        Assertions.assertTrue(NettyChannelManager.getOrAddChannel(null, null) == null);
     }
 }

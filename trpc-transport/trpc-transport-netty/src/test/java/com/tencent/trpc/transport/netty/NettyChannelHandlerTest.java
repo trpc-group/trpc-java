@@ -14,8 +14,8 @@ package com.tencent.trpc.transport.netty;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.transport.handler.ChannelHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class NettyChannelHandlerTest {
 
@@ -26,27 +26,27 @@ public class NettyChannelHandlerTest {
         new NettyClientHandler(new ChannelHandlerAdapter(), new ProtocolConfig(), true)
                 .exceptionCaught(new ChannelHandlerContextTest(channelTest1),
                         new RuntimeException(""));
-        Assert.assertTrue(channelTest1.getIsClose() != null && channelTest1.isClose);
+        Assertions.assertTrue(channelTest1.getIsClose() != null && channelTest1.isClose);
 
         ChannelTest channelTest2 = new ChannelTest();
         channelTest2.setActive(true);
         new NettyClientHandler(new ChannelHandlerAdapter(), new ProtocolConfig(), true)
                 .userEventTriggered(new ChannelHandlerContextTest(channelTest2),
                         IdleStateEvent.WRITER_IDLE_STATE_EVENT);
-        Assert.assertTrue(channelTest2.getIsClose() != null && channelTest2.isClose);
+        Assertions.assertTrue(channelTest2.getIsClose() != null && channelTest2.isClose);
 
         ChannelTest channelTest3 = new ChannelTest();
         channelTest3.setActive(true);
         new NettyServerHandler(new ChannelHandlerAdapter(), new ProtocolConfig(), true)
                 .exceptionCaught(new ChannelHandlerContextTest(channelTest3),
                         new RuntimeException(""));
-        Assert.assertTrue(channelTest3.getIsClose() != null && channelTest3.isClose);
+        Assertions.assertTrue(channelTest3.getIsClose() != null && channelTest3.isClose);
 
         ChannelTest channelTest4 = new ChannelTest();
         channelTest4.setActive(true);
         new NettyServerHandler(new ChannelHandlerAdapter(), new ProtocolConfig(), true)
                 .userEventTriggered(new ChannelHandlerContextTest(channelTest4),
                         IdleStateEvent.WRITER_IDLE_STATE_EVENT);
-        Assert.assertTrue(channelTest4.getIsClose() != null && channelTest4.isClose);
+        Assertions.assertTrue(channelTest4.getIsClose() != null && channelTest4.isClose);
     }
 }

@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.transport.http;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.extension.ExtensionLoader;
@@ -22,10 +22,10 @@ import com.tencent.trpc.transport.http.spi.HttpServerFactory;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import org.eclipse.jetty.http.HttpStatus;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class JettyServerTest {
 
@@ -33,7 +33,7 @@ public class JettyServerTest {
 
     private static HttpServer httpServer;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         ProtocolConfig protocolConfig = ProtocolConfig.newInstance();
         protocolConfig.setIp("localhost");
@@ -65,7 +65,7 @@ public class JettyServerTest {
         JettyServerTest.httpServer = httpServer;
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         if (httpServer != null) {
             httpServer.open();
@@ -90,7 +90,7 @@ public class JettyServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(responseCode, 200);
+            Assertions.assertEquals(responseCode, 200);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -114,7 +114,7 @@ public class JettyServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(responseCode, 404);
+            Assertions.assertEquals(responseCode, 404);
         } finally {
             if (connection != null) {
                 connection.disconnect();
