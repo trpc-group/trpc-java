@@ -21,14 +21,13 @@ import com.tencent.trpc.core.rpc.RpcInvocation;
 import com.tencent.trpc.core.rpc.def.DefRequest;
 import java.util.HashMap;
 import java.util.Map;
-import junit.framework.TestCase;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * SentinelLimiter test class
  */
-public class SentinelLimiterTest extends TestCase {
+public class SentinelLimiterTest  {
 
     @Test
     public void testBlock() {
@@ -56,7 +55,7 @@ public class SentinelLimiterTest extends TestCase {
                 limiter01.block(new TestSentinelInvoker(), requestQps).toCompletableFuture().get().getException();
             } catch (Exception exception) {
                 Throwable cause = exception.getCause();
-                Assert.assertTrue(
+                Assertions.assertTrue(
                         (cause instanceof LimiterBlockException)
                                 || (cause instanceof LimiterFallbackException));
                 break;
@@ -80,7 +79,7 @@ public class SentinelLimiterTest extends TestCase {
                     .getException();
         } catch (Exception exception) {
             Throwable cause = exception.getCause();
-            Assert.assertTrue(cause instanceof LimiterFallbackException);
+            Assertions.assertTrue(cause instanceof LimiterFallbackException);
         }
     }
 

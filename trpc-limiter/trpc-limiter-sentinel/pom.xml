@@ -127,9 +127,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>ai.grakn</groupId>
-            <artifactId>redis-mock</artifactId>
-            <version>0.1.6</version>
+            <groupId>com.github.fppt</groupId>
+            <artifactId>jedis-mock</artifactId>
+            <version>1.1.6</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>

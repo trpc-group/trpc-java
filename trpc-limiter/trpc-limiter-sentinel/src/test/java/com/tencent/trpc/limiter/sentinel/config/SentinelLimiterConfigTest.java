@@ -13,8 +13,8 @@ package com.tencent.trpc.limiter.sentinel.config;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test limit callback, downgrade configuration
@@ -31,14 +31,14 @@ public class SentinelLimiterConfigTest {
         configMap.put("limiter_config", limiterConfigMap);
 
         SentinelLimiterConfig sentinelLimiterConfig1 = SentinelLimiterConfig.parse(configMap);
-        Assert.assertTrue("test_handler".equals(sentinelLimiterConfig1.getBlockHandler()));
-        Assert.assertTrue("test_fallback".equals(sentinelLimiterConfig1.getFallback()));
-        Assert.assertTrue("test_resource_extractor".equals(sentinelLimiterConfig1.getResourceExtractor()));
+        Assertions.assertTrue("test_handler".equals(sentinelLimiterConfig1.getBlockHandler()));
+        Assertions.assertTrue("test_fallback".equals(sentinelLimiterConfig1.getFallback()));
+        Assertions.assertTrue("test_resource_extractor".equals(sentinelLimiterConfig1.getResourceExtractor()));
 
         SentinelLimiterConfig sentinelLimiterConfig2 = SentinelLimiterConfig.parse(null);
-        Assert.assertTrue("default".equals(sentinelLimiterConfig2.getBlockHandler()));
-        Assert.assertTrue("default".equals(sentinelLimiterConfig2.getFallback()));
-        Assert.assertTrue("default".equals(sentinelLimiterConfig2.getResourceExtractor()));
+        Assertions.assertTrue("default".equals(sentinelLimiterConfig2.getBlockHandler()));
+        Assertions.assertTrue("default".equals(sentinelLimiterConfig2.getFallback()));
+        Assertions.assertTrue("default".equals(sentinelLimiterConfig2.getResourceExtractor()));
 
         Map<String, Object> configMap3 = new HashMap<>();
         Map<String, Object> limiterConfigMap3 = new HashMap<>();
@@ -46,9 +46,9 @@ public class SentinelLimiterConfigTest {
         limiterConfigMap3.put("fallback", "test_fallback3");
         configMap3.put("limiter_config", limiterConfigMap3);
         SentinelLimiterConfig sentinelLimiterConfig3 = SentinelLimiterConfig.parse(configMap3);
-        Assert.assertTrue("test_handler3".equals(sentinelLimiterConfig3.getBlockHandler()));
-        Assert.assertTrue("test_fallback3".equals(sentinelLimiterConfig3.getFallback()));
-        Assert.assertTrue("default".equals(sentinelLimiterConfig3.getResourceExtractor()));
+        Assertions.assertTrue("test_handler3".equals(sentinelLimiterConfig3.getBlockHandler()));
+        Assertions.assertTrue("test_fallback3".equals(sentinelLimiterConfig3.getFallback()));
+        Assertions.assertTrue("default".equals(sentinelLimiterConfig3.getResourceExtractor()));
     }
 
 }

@@ -18,10 +18,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.curator.test.TestingServer;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * ZookeeperDatasourceConfig test class
@@ -31,7 +31,7 @@ public class ZookeeperDatasourceConfigTest {
     private ZookeeperDatasourceConfig zookeeperDatasourceConfig;
     private TestingServer zkServer;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         int port = 2183;
         zkServer = new TestingServer(port, new File("/tmp/sentinel"));
@@ -58,8 +58,8 @@ public class ZookeeperDatasourceConfigTest {
         try {
             zookeeperDatasourceConfig.validate();
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof LimiterDataSourceException);
-            Assert.assertTrue(
+            Assertions.assertTrue(e instanceof LimiterDataSourceException);
+            Assertions.assertTrue(
                     "sentinel zookeeper datasource config error, remote address is empty".equals(e.getMessage()));
         }
     }
@@ -73,13 +73,13 @@ public class ZookeeperDatasourceConfigTest {
         try {
             zookeeperDatasourceConfig.validate();
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof LimiterDataSourceException);
-            Assert.assertTrue(
+            Assertions.assertTrue(e instanceof LimiterDataSourceException);
+            Assertions.assertTrue(
                     "sentinel zookeeper datasource config error, path is empty".equals(e.getMessage()));
         }
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception {
         if (zkServer != null) {
             zkServer.stop();

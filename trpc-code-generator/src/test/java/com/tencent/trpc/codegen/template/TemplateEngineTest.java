@@ -12,8 +12,8 @@
 package com.tencent.trpc.codegen.template;
 
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TemplateEngineTest {
 
@@ -30,6 +30,6 @@ public class TemplateEngineTest {
                 + "  <#assign name = rtxName>\n"
                 + "</#if>\n"
                 + "hello ${name}!", context);
-        Assert.assertEquals("hello kelgonwu!", text);
+        Assertions.assertEquals("hello kelgonwu!", text);
     }
 }

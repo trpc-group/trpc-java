@@ -15,8 +15,8 @@ import com.tencent.trpc.limiter.sentinel.config.datasource.DatasourceConfig;
 import com.tencent.trpc.limiter.sentinel.config.datasource.LocalFileDatasourceConfig;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * LocalFileDatasourceConfigFactory test class
@@ -28,14 +28,14 @@ public class LocalFileDatasourceConfigFactoryTest {
         Map<String, Object> configs = new HashMap<>();
         configs.put("path", "classpath:flow_rule.json");
         DatasourceConfig datasourceConfig = new LocalFileDatasourceConfigFactory().create(configs);
-        Assert.assertTrue(datasourceConfig instanceof LocalFileDatasourceConfig);
+        Assertions.assertTrue(datasourceConfig instanceof LocalFileDatasourceConfig);
     }
 
     @Test
     public void testName() {
         Map<String, Object> configs = new HashMap<>();
         configs.put("path", "classpath:flow_rule.json");
-        Assert.assertTrue(DatasourceType.LOCAL_FILE.getName().equals(new LocalFileDatasourceConfigFactory().name()));
+        Assertions.assertTrue(DatasourceType.LOCAL_FILE.getName().equals(new LocalFileDatasourceConfigFactory().name()));
     }
 
 }

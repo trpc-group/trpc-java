@@ -15,8 +15,8 @@ import com.tencent.trpc.limiter.sentinel.config.datasource.DatasourceConfig;
 import com.tencent.trpc.limiter.sentinel.config.datasource.RedisDatasourceConfig;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * RedisDatasourceConfigFactory test class
@@ -36,12 +36,12 @@ public class RedisDatasourceConfigFactoryTest {
         configs.put("sentinel_master_id", "sentinel_master_id");
         configs.put("timeout", 5000);
         DatasourceConfig datasourceConfig = new RedisDatasourceConfigFactory().create(configs);
-        Assert.assertTrue(datasourceConfig instanceof RedisDatasourceConfig);
+        Assertions.assertTrue(datasourceConfig instanceof RedisDatasourceConfig);
     }
 
     @Test
     public void testName() {
-        Assert.assertTrue(new RedisDatasourceConfigFactory().name().equals(DatasourceType.REDIS.getName()));
+        Assertions.assertTrue(new RedisDatasourceConfigFactory().name().equals(DatasourceType.REDIS.getName()));
     }
 
 }
