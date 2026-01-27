@@ -27,11 +27,11 @@ import java.util.concurrent.Executors;
 
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.test.TestingServer;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.powermock.reflect.Whitebox;
+import java.lang.reflect.Method;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CuratorZookeeperClientTest {
 
@@ -52,15 +52,19 @@ public class CuratorZookeeperClientTest {
     private static String testNodeName = "providers";
     private static String testNodeFullPath = String.format("%s/%s", testServicePath, testNodeName);
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-        zkServer = new TestingServer(PORT, new File("/tmp/zk/curator"));
+        File tempDir = new File(System.getProperty("java.io.tmpdir"), "zk/curator");
+        if (!tempDir.exists()) {
+            tempDir.mkdirs();
+        }
+        zkServer = new TestingServer(PORT, tempDir);
         zkServer.start();
         curatorZookeeperFactory = new CuratorZookeeperFactory();
         client = curatorZookeeperFactory.connect(buildConfig());
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         if (client.isConnected()) {
             List<String> children = client.getChildren(testNodeFullPath);
@@ -91,34 +95,34 @@ public class CuratorZookeeperClientTest {
     @Test
     public void testIsConnected() {
         client.getChildren(testRootPath);
-        Assert.assertTrue(client.isConnected());
+        Assertions.assertTrue(client.isConnected());
     }
 
     @Test
     public void testOperate() {
         List<String> children = client.getChildren(testRootPath);
-        Assert.assertNull(children);
+        Assertions.assertNull(children);
 
         client.create(testNodeFullPath, true);
         client.create(testNodeFullPath, true);
 
         children = client.getChildren("/");
-        Assert.assertNotNull(children);
-        Assert.assertTrue(children.size() > 0);
+        Assertions.assertNotNull(children);
+        Assertions.assertTrue(children.size() > 0);
 
         children = client.getChildren(testRootPath);
-        Assert.assertNotNull(children);
-        Assert.assertEquals(1, children.size());
-        Assert.assertEquals(testServiceName, children.get(0));
+        Assertions.assertNotNull(children);
+        Assertions.assertEquals(1, children.size());
+        Assertions.assertEquals(testServiceName, children.get(0));
 
         children = client.getChildren(testServicePath);
-        Assert.assertNotNull(children);
-        Assert.assertEquals(1, children.size());
-        Assert.assertEquals(testNodeName, children.get(0));
+        Assertions.assertNotNull(children);
+        Assertions.assertEquals(1, children.size());
+        Assertions.assertEquals(testNodeName, children.get(0));
 
         children = client.getChildren(testNodeFullPath);
-        Assert.assertNotNull(children);
-        Assert.assertEquals(0, children.size());
+        Assertions.assertNotNull(children);
+        Assertions.assertEquals(0, children.size());
 
         this.testDelete();
     }
@@ -137,14 +141,14 @@ public class CuratorZookeeperClientTest {
         client.delete(testRootPath);
 
         children = client.getChildren(testRootPath);
-        Assert.assertNull(children);
+        Assertions.assertNull(children);
     }
 
     @Test
     public void testChildListener() throws InterruptedException {
         this.testDelete();
         List<String> children = client.getChildren(testRootPath);
-        Assert.assertNull(children);
+        Assertions.assertNull(children);
 
         final Map<String, List> assertCache = new HashMap<>();
         ChildListener childListener = new ChildListener() {
@@ -160,9 +164,9 @@ public class CuratorZookeeperClientTest {
         client.create(testNodeFullPath, false);
 
         children = client.getChildren(testServicePath);
-        Assert.assertNotNull(children);
-        Assert.assertEquals(1, children.size());
-        Assert.assertEquals(testNodeName, children.get(0));
+        Assertions.assertNotNull(children);
+        Assertions.assertEquals(1, children.size());
+        Assertions.assertEquals(testNodeName, children.get(0));
 
         // 正常添加
         client.addChildListener(testNodeFullPath, childListener);
@@ -171,12 +175,12 @@ public class CuratorZookeeperClientTest {
         client.create(providerPath, true);
 
         children = client.getChildren(testNodeFullPath);
-        Assert.assertNotNull(children);
-        Assert.assertEquals(1, children.size());
+        Assertions.assertNotNull(children);
+        Assertions.assertEquals(1, children.size());
         Thread.sleep(1000);
-        Assert.assertTrue(assertCache.containsKey(testNodeFullPath));
-        Assert.assertEquals(1, assertCache.get(testNodeFullPath).size());
-        Assert.assertEquals("provider1", assertCache.get(testNodeFullPath).get(0));
+        Assertions.assertTrue(assertCache.containsKey(testNodeFullPath));
+        Assertions.assertEquals(1, assertCache.get(testNodeFullPath).size());
+        Assertions.assertEquals("provider1", assertCache.get(testNodeFullPath).get(0));
 
         client.removeChildListener(testNodeFullPath, childListener);
 
@@ -186,13 +190,13 @@ public class CuratorZookeeperClientTest {
     public void testDataListener() throws InterruptedException {
         this.testDelete();
         List<String> children = client.getChildren(testRootPath);
-        Assert.assertNull(children);
+        Assertions.assertNull(children);
         client.create(testNodeFullPath, false);
 
         children = client.getChildren(testServicePath);
-        Assert.assertNotNull(children);
-        Assert.assertEquals(1, children.size());
-        Assert.assertEquals(testNodeName, children.get(0));
+        Assertions.assertNotNull(children);
+        Assertions.assertEquals(1, children.size());
+        Assertions.assertEquals(testNodeName, children.get(0));
 
         final Map<String, List<ChildData>> assertCache = new HashMap<>();
 
@@ -207,31 +211,31 @@ public class CuratorZookeeperClientTest {
         client.create(providerPath, "aaaa", true);
 
         children = client.getChildren(testNodeFullPath);
-        Assert.assertNotNull(children);
-        Assert.assertEquals(1, children.size());
+        Assertions.assertNotNull(children);
+        Assertions.assertEquals(1, children.size());
         Thread.sleep(1000);
 
-        Assert.assertTrue(assertCache.containsKey(providerPath));
-        Assert.assertEquals(2, assertCache.get(providerPath).size());
-        Assert.assertEquals("aaaa", new String(assertCache.get(providerPath).get(1).getData()));
+        Assertions.assertTrue(assertCache.containsKey(providerPath));
+        Assertions.assertEquals(2, assertCache.get(providerPath).size());
+        Assertions.assertEquals("aaaa", new String(assertCache.get(providerPath).get(1).getData()));
 
         client.create(providerPath, "bbbb", true);
 
         Thread.sleep(1000);
 
-        Assert.assertTrue(assertCache.containsKey(providerPath));
-        Assert.assertEquals(2, assertCache.get(providerPath).size());
-        Assert.assertEquals("aaaa", new String(assertCache.get(providerPath).get(0).getData()));
-        Assert.assertEquals("bbbb", new String(assertCache.get(providerPath).get(1).getData()));
+        Assertions.assertTrue(assertCache.containsKey(providerPath));
+        Assertions.assertEquals(2, assertCache.get(providerPath).size());
+        Assertions.assertEquals("aaaa", new String(assertCache.get(providerPath).get(0).getData()));
+        Assertions.assertEquals("bbbb", new String(assertCache.get(providerPath).get(1).getData()));
 
         client.create(providerPath, "cccc", false);
 
         Thread.sleep(1000);
 
-        Assert.assertTrue(assertCache.containsKey(providerPath));
-        Assert.assertEquals(2, assertCache.get(providerPath).size());
-        Assert.assertEquals(null, assertCache.get(providerPath).get(0));
-        Assert.assertEquals("cccc", new String(assertCache.get(providerPath).get(1).getData()));
+        Assertions.assertTrue(assertCache.containsKey(providerPath));
+        Assertions.assertEquals(2, assertCache.get(providerPath).size());
+        Assertions.assertEquals(null, assertCache.get(providerPath).get(0));
+        Assertions.assertEquals("cccc", new String(assertCache.get(providerPath).get(1).getData()));
 
         client.removeDataListener(providerPath, dataListener);
 
@@ -283,8 +287,9 @@ public class CuratorZookeeperClientTest {
         final String providerPath = testNodeFullPath + "/provider3";
 
         try {
-            Whitebox.invokeMethod(client, "createEphemeral", providerPath);
-
+            Method method = CuratorZookeeperClient.class.getDeclaredMethod("createEphemeral", String.class);
+            method.setAccessible(true);
+            method.invoke(client, providerPath);
         } catch (Exception e) {
             LOGGER.info("testCreateError success");
         }
@@ -298,8 +303,9 @@ public class CuratorZookeeperClientTest {
         final String providerPath = testNodeFullPath + "/provider3";
 
         try {
-            Whitebox.invokeMethod(client, "createEphemeral", providerPath, "aaa");
-
+            Method method = CuratorZookeeperClient.class.getDeclaredMethod("createEphemeral", String.class, String.class);
+            method.setAccessible(true);
+            method.invoke(client, providerPath, "aaa");
         } catch (Exception e) {
             LOGGER.info("testCreateError success");
         }
@@ -313,8 +319,9 @@ public class CuratorZookeeperClientTest {
         final String providerPath = testNodeFullPath + "/provider3";
 
         try {
-            Whitebox.invokeMethod(client, "createPersistent", providerPath, "aaa");
-
+            Method method = CuratorZookeeperClient.class.getDeclaredMethod("createPersistent", String.class, String.class);
+            method.setAccessible(true);
+            method.invoke(client, providerPath, "aaa");
         } catch (Exception e) {
             LOGGER.info("testCreatePersistent0Error success");
         }
@@ -386,7 +393,9 @@ public class CuratorZookeeperClientTest {
 
         try {
             client.create(providerPath, false);
-            Whitebox.invokeMethod(client, "createPersistent", providerPath, "aaa");
+            Method method = CuratorZookeeperClient.class.getDeclaredMethod("createPersistent", String.class, String.class);
+            method.setAccessible(true);
+            method.invoke(client, providerPath, "aaa");
         } catch (Exception e) {
             LOGGER.info("testCloseError success");
         }

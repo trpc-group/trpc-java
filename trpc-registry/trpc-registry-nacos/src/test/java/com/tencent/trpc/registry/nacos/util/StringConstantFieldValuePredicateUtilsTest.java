@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.registry.nacos.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.function.Predicate;
 
@@ -22,10 +22,10 @@ public class StringConstantFieldValuePredicateUtilsTest {
     @Test
     public void of() {
         Predicate<String> of = StringConstantFieldValuePredicateUtils.of(TestConstant.class);
-        Assert.assertFalse(of.test("group"));
-        Assert.assertTrue(of.test("endpoint"));
-        Assert.assertTrue(of.test("isUseEndpointParsingRule"));
-        Assert.assertTrue(of.test("isUseCloudNamespaceParsing"));
+        Assertions.assertFalse(of.test("group"));
+        Assertions.assertTrue(of.test("endpoint"));
+        Assertions.assertTrue(of.test("isUseEndpointParsingRule"));
+        Assertions.assertTrue(of.test("isUseCloudNamespaceParsing"));
     }
 
     public static class TestConstant {

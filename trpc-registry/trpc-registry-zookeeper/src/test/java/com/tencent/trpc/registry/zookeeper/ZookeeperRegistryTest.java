@@ -39,10 +39,10 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.curator.test.TestingServer;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tests.service.GreeterJsonService;
 import tests.service.GreeterService;
 import tests.service.impl1.GreeterJsonServiceImpl1;
@@ -95,7 +95,7 @@ public class ZookeeperRegistryTest {
     /**
      * Initialize and start the test service
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         zkServer = new TestingServer(2182, new File("/tmp/zk"));
         zkServer.start();
@@ -163,7 +163,7 @@ public class ZookeeperRegistryTest {
             }
         }
         children = client.getChildren(path);
-        Assert.assertTrue(CollectionUtils.isEmpty(children));
+        Assertions.assertTrue(CollectionUtils.isEmpty(children));
     }
 
     private RegisterInfo buildRegisterInfo(String ip, int port, String serviceName) {
@@ -184,7 +184,7 @@ public class ZookeeperRegistryTest {
         return config;
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         ConfigManager.stopTest();
         if (serverConfig != null) {
@@ -205,18 +205,18 @@ public class ZookeeperRegistryTest {
                 return;
             }
         }
-        Assert.fail();
+        Assertions.fail();
     }
 
     private void assertNodeChildSize(String path, int size) {
         List<String> children = client.getChildren(path);
-        Assert.assertEquals(size, children.size());
+        Assertions.assertEquals(size, children.size());
     }
 
     @Test
     public void testRegistry() {
         serverConfig.register();
-        Assert.assertEquals(2, serverRegistry.getRegisteredRegisterInfos().size());
+        Assertions.assertEquals(2, serverRegistry.getRegisteredRegisterInfos().size());
 
         assertNodeContainsChild(rootPath, SERVICE_NAME1);
         assertNodeContainsChild(rootPath, SERVICE_NAME2);
@@ -233,7 +233,7 @@ public class ZookeeperRegistryTest {
     public void testUnregistry() {
         this.testRegistry();
         serverConfig.unregister();
-        Assert.assertEquals(0, serverRegistry.getRegisteredRegisterInfos().size());
+        Assertions.assertEquals(0, serverRegistry.getRegisteredRegisterInfos().size());
         assertNodeChildSize(rootPath + "/" + SERVICE_NAME1 + "/" + "providers", 0);
         assertNodeChildSize(rootPath + "/" + SERVICE_NAME2 + "/" + "providers", 0);
     }
@@ -252,8 +252,8 @@ public class ZookeeperRegistryTest {
         RegistryDiscovery discovery2 = new RegistryDiscovery(serviceId, clientRegistry);
         subscribeMap.put(registerInfo2, discovery2);
 
-        Assert.assertEquals(2, clientRegistry.getRegisteredRegisterInfos().size());
-        Assert.assertEquals(2, clientRegistry.getSubscribedRegisterInfos().size());
+        Assertions.assertEquals(2, clientRegistry.getRegisteredRegisterInfos().size());
+        Assertions.assertEquals(2, clientRegistry.getSubscribedRegisterInfos().size());
 
         assertNodeContainsChild(rootPath + "/" + SERVICE_NAME1, "consumers");
         assertNodeContainsChild(rootPath + "/" + SERVICE_NAME2, "consumers");
@@ -277,17 +277,17 @@ public class ZookeeperRegistryTest {
         }
 
         serviceId.setServiceName(SERVICE_NAME1);
-        Assert.assertEquals(1, discovery1.getServiceInstances().size());
-        Assert.assertEquals(1, discovery1.list(serviceId).size());
-        Assert.assertEquals(LOCAL_IP, discovery1.list(serviceId).get(0).getHost());
-        Assert.assertEquals(18080, discovery1.list(serviceId).get(0).getPort());
+        Assertions.assertEquals(1, discovery1.getServiceInstances().size());
+        Assertions.assertEquals(1, discovery1.list(serviceId).size());
+        Assertions.assertEquals(LOCAL_IP, discovery1.list(serviceId).get(0).getHost());
+        Assertions.assertEquals(18080, discovery1.list(serviceId).get(0).getPort());
 
         ServiceId serviceId2 = new ServiceId();
         serviceId2.setServiceName(SERVICE_NAME2);
-        Assert.assertEquals(1, discovery2.getServiceInstances().size());
-        Assert.assertEquals(1, discovery2.list(serviceId2).size());
-        Assert.assertEquals(LOCAL_IP, discovery2.list(serviceId2).get(0).getHost());
-        Assert.assertEquals(18081, discovery2.list(serviceId2).get(0).getPort());
+        Assertions.assertEquals(1, discovery2.getServiceInstances().size());
+        Assertions.assertEquals(1, discovery2.list(serviceId2).size());
+        Assertions.assertEquals(LOCAL_IP, discovery2.list(serviceId2).get(0).getHost());
+        Assertions.assertEquals(18081, discovery2.list(serviceId2).get(0).getPort());
 
 
     }
@@ -299,23 +299,23 @@ public class ZookeeperRegistryTest {
             clientRegistry.unsubscribe(entry.getKey(), entry.getValue());
             ServiceId serviceId = new ServiceId();
             serviceId.setServiceName(entry.getKey().getServiceName());
-            Assert.assertEquals(0, entry.getValue().getServiceInstances().size());
-            Assert.assertEquals(0, entry.getValue().list(serviceId).size());
+            Assertions.assertEquals(0, entry.getValue().getServiceInstances().size());
+            Assertions.assertEquals(0, entry.getValue().list(serviceId).size());
         }
-        Assert.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
+        Assertions.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
     }
 
     @Test
     public void testDestroy() {
         this.testUnsubscribe();
         clientRegistry.destroy();
-        Assert.assertEquals(0, clientRegistry.getRegisteredRegisterInfos().size());
-        Assert.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
+        Assertions.assertEquals(0, clientRegistry.getRegisteredRegisterInfos().size());
+        Assertions.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
         assertNodeChildSize(rootPath + "/" + SERVICE_NAME1 + "/" + "consumers", 0);
         assertNodeChildSize(rootPath + "/" + SERVICE_NAME2 + "/" + "consumers", 0);
 
         serverRegistry.destroy();
-        Assert.assertEquals(0, serverRegistry.getRegisteredRegisterInfos().size());
+        Assertions.assertEquals(0, serverRegistry.getRegisteredRegisterInfos().size());
         assertNodeChildSize(rootPath + "/" + SERVICE_NAME1 + "/" + "providers", 0);
         assertNodeChildSize(rootPath + "/" + SERVICE_NAME2 + "/" + "providers", 0);
     }

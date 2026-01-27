@@ -33,10 +33,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class AbstractRegistryCenterTest {
 
@@ -49,7 +49,7 @@ public class AbstractRegistryCenterTest {
     private static String serverCacheFilePath = "/tmp/server_zookeeper.cache";
     private static int CACHE_EXPIRE_TIME = 1;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         clientRegistry = new AbstractRegistryCenter() {
             @Override
@@ -87,7 +87,7 @@ public class AbstractRegistryCenterTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         this.delCacheFile();
         clientRegistry.destroy();
@@ -160,9 +160,9 @@ public class AbstractRegistryCenterTest {
     @Test
     public void testRegistry() {
         RegisterInfo registerInfo = buildRegisterInfo();
-        Assert.assertEquals(0, clientRegistry.getRegisteredRegisterInfos().size());
+        Assertions.assertEquals(0, clientRegistry.getRegisteredRegisterInfos().size());
         clientRegistry.register(registerInfo);
-        Assert.assertEquals(1, clientRegistry.getRegisteredRegisterInfos().size());
+        Assertions.assertEquals(1, clientRegistry.getRegisteredRegisterInfos().size());
 
     }
 
@@ -171,7 +171,7 @@ public class AbstractRegistryCenterTest {
         this.testRegistry();
         RegisterInfo registerInfo = buildRegisterInfo();
         clientRegistry.unregister(registerInfo);
-        Assert.assertEquals(0, clientRegistry.getRegisteredRegisterInfos().size());
+        Assertions.assertEquals(0, clientRegistry.getRegisteredRegisterInfos().size());
     }
 
     @Test
@@ -179,10 +179,10 @@ public class AbstractRegistryCenterTest {
 
         RegisterInfo registerInfo = buildRegisterInfo();
         NotifyListener discovery = getNotifyListener(registerInfo);
-        Assert.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
+        Assertions.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
         clientRegistry.subscribe(registerInfo, discovery);
-        Assert.assertEquals(1, clientRegistry.getSubscribedRegisterInfos().size());
-        Assert.assertEquals(1,
+        Assertions.assertEquals(1, clientRegistry.getSubscribedRegisterInfos().size());
+        Assertions.assertEquals(1,
                 clientRegistry.getSubscribedRegisterInfos().get(registerInfo).getNotifyListeners().size());
     }
 
@@ -192,7 +192,7 @@ public class AbstractRegistryCenterTest {
         RegisterInfo registerInfo = buildRegisterInfo();
         NotifyListener discovery = getNotifyListener(registerInfo);
         clientRegistry.unsubscribe(registerInfo, discovery);
-        Assert.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
+        Assertions.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
     }
 
     @Test
@@ -205,10 +205,10 @@ public class AbstractRegistryCenterTest {
         registerInfos.add(buildRegisterInfo("test.service2"));
         NotifyListener discovery = getNotifyListener(registerInfo);
 
-        Assert.assertEquals(0, clientRegistry.getNotifiedRegisterInfos().size());
+        Assertions.assertEquals(0, clientRegistry.getNotifiedRegisterInfos().size());
         clientRegistry.notify(registerInfo, discovery, registerInfos);
-        Assert.assertEquals(1, clientRegistry.getNotifiedRegisterInfos().size());
-        Assert.assertEquals(10,
+        Assertions.assertEquals(1, clientRegistry.getNotifiedRegisterInfos().size());
+        Assertions.assertEquals(10,
                 clientRegistry.getNotifiedRegisterInfos().get(registerInfo).getRegisterInfos(
                         RegistryCenterEnum.transferFrom(DEFAULT_REGISTRY_CENTER_SERVICE_TYPE)).size());
     }
@@ -217,10 +217,10 @@ public class AbstractRegistryCenterTest {
     public void testNotify01() {
         RegisterInfo registerInfo = buildRegisterInfo();
         NotifyListener discovery = getNotifyListener(registerInfo);
-        Assert.assertEquals(0, clientRegistry.getNotifiedRegisterInfos().size());
+        Assertions.assertEquals(0, clientRegistry.getNotifiedRegisterInfos().size());
         clientRegistry.notify(registerInfo, discovery, Lists.newArrayList());
-        Assert.assertEquals(1, clientRegistry.getNotifiedRegisterInfos().size());
-        Assert.assertEquals(0,
+        Assertions.assertEquals(1, clientRegistry.getNotifiedRegisterInfos().size());
+        Assertions.assertEquals(0,
                 clientRegistry.getNotifiedRegisterInfos().get(registerInfo).getRegisterInfos(
                         RegistryCenterEnum.transferFrom(DEFAULT_REGISTRY_CENTER_SERVICE_TYPE)).size());
     }
@@ -233,8 +233,8 @@ public class AbstractRegistryCenterTest {
         NotifyListener discovery = getNotifyListener(registerInfo);
         clientRegistry.subscribe(registerInfo, discovery);
         clientRegistry.destroy();
-        Assert.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
-        Assert.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
+        Assertions.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
+        Assertions.assertEquals(0, clientRegistry.getSubscribedRegisterInfos().size());
     }
 
     @Test
@@ -244,7 +244,7 @@ public class AbstractRegistryCenterTest {
         RegisterInfo registerInfo = buildRegisterInfo();
         List<RegisterInfo> registerInfos = clientRegistry.cache
                 .getRegisterInfos(registerInfo.getServiceName());
-        Assert.assertEquals(10, registerInfos.size());
+        Assertions.assertEquals(10, registerInfos.size());
     }
 
     @Test
@@ -255,9 +255,9 @@ public class AbstractRegistryCenterTest {
         Method method = clientRegistry.getClass().getSuperclass().getDeclaredMethod("recover");
         method.setAccessible(true);
         method.invoke(clientRegistry);
-        Assert.assertEquals(1, clientRegistry.getRegisteredRegisterInfos().size());
-        Assert.assertEquals(1, clientRegistry.getSubscribedRegisterInfos().size());
-        Assert.assertEquals(1,
+        Assertions.assertEquals(1, clientRegistry.getRegisteredRegisterInfos().size());
+        Assertions.assertEquals(1, clientRegistry.getSubscribedRegisterInfos().size());
+        Assertions.assertEquals(1,
                 clientRegistry.getSubscribedRegisterInfos().get(buildRegisterInfo()).getNotifyListeners().size());
     }
 
@@ -275,7 +275,7 @@ public class AbstractRegistryCenterTest {
         Thread.sleep((CACHE_EXPIRE_TIME + 1) * 1000);
         List<RegisterInfo> registerInfos = clientRegistry.cache
                 .getRegisterInfos(buildRegisterInfo().getServiceName());
-        Assert.assertEquals(0, registerInfos.size());
+        Assertions.assertEquals(0, registerInfos.size());
 
     }
 
@@ -298,7 +298,7 @@ public class AbstractRegistryCenterTest {
         Thread.sleep((CACHE_EXPIRE_TIME + 1) * 1000);
         List<RegisterInfo> registerInfos = clientRegistry.cache
                 .getRegisterInfos(buildRegisterInfo().getServiceName());
-        Assert.assertEquals(10, registerInfos.size());
+        Assertions.assertEquals(10, registerInfos.size());
     }
 
     @Test
@@ -318,7 +318,7 @@ public class AbstractRegistryCenterTest {
                     initPluginConfig("0.0.0.0", 2181, false, false, "/xxxx/" + serverCacheFilePath,
                             CACHE_EXPIRE_TIME));
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
 
     }

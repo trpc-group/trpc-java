@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
@@ -47,26 +47,27 @@ public class NacosNamingServiceUtilsTest {
                 "trpc.TestApp.TestServer.Greeter1Naming");
         List<RegisterInfo> registerInfos = NacosNamingServiceUtils.convert(instances, registerInfo);
 
-        Assert.assertNotNull(registerInfos);
-        Assert.assertEquals(registerInfos.get(0).getPort(), 12345);
+        Assertions.assertNotNull(registerInfos);
+        Assertions.assertEquals(registerInfos.get(0).getPort(), 12345);
 
         // Instance为空的
         List<Instance> emptyInstances = new ArrayList<>();
         List<RegisterInfo> emptyRegisterInfos = NacosNamingServiceUtils.convert(emptyInstances, registerInfo);
 
-        Assert.assertNotNull(emptyRegisterInfos);
-        Assert.assertEquals(emptyRegisterInfos.get(0).getPort(), 0);
+        Assertions.assertNotNull(emptyRegisterInfos);
+        Assertions.assertEquals(emptyRegisterInfos.get(0).getPort(), 0);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void createNamingService() {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("addresses", "127.0.0.1:8844");
-        properties.put("username", "testUserName");
-        PluginConfig pluginConfig = new PluginConfig("nacos", NacosRegistryCenter.class, properties);
-        NacosRegistryCenterConfig config = new NacosRegistryCenterConfig(pluginConfig);
-
-        NamingService namingService = NacosNamingServiceUtils.createNamingService(config);
-        Assert.assertNull(namingService);
+    @Test
+    void createNamingService() {
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("addresses", "127.0.0.1:8844");
+            properties.put("username", "testUserName");
+            PluginConfig pluginConfig = new PluginConfig("nacos", NacosRegistryCenter.class, properties);
+            NacosRegistryCenterConfig config = new NacosRegistryCenterConfig(pluginConfig);
+            NamingService namingService = NacosNamingServiceUtils.createNamingService(config);
+            Assertions.assertNull(namingService);
+        });
     }
 }

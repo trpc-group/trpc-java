@@ -17,25 +17,22 @@ import com.tencent.trpc.core.registry.RegisterInfo;
 import com.tencent.trpc.registry.polaris.PolarisRegistry;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(APIFactory.class)
-@PowerMockIgnore({"javax.management.*"})
+@ExtendWith(MockitoExtension.class)
 public class HeatBeatManagerTest {
+    private MockedStatic<APIFactory> mockedAPIFactory;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         try {
-            PowerMockito.mockStatic(APIFactory.class);
+        mockedAPIFactory = Mockito.mockStatic(APIFactory.class);
             HeartBeatManager.init(200);
         } catch (Throwable e) {
             //To prevent exceptions from occurring when tasks are submitted after the UT is completed
@@ -43,7 +40,6 @@ public class HeatBeatManagerTest {
             e.printStackTrace();
         }
     }
-
 
     @Test
     public void startHeartBeatTest() throws PolarisException {
@@ -61,8 +57,12 @@ public class HeatBeatManagerTest {
         Mockito.verify(registry, Mockito.atLeast(1)).heartbeat(registerInfo);
     }
 
-    @After
+    @AfterEach
     public void destroy() throws PolarisException {
+        if (mockedAPIFactory != null) {
+            mockedAPIFactory.close();
+        }
+
         HeartBeatManager.destroy();
     }
 }
