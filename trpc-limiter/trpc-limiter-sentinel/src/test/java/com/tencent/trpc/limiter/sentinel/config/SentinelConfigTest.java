@@ -15,8 +15,8 @@ import com.tencent.trpc.limiter.sentinel.config.datasource.LocalFileDatasourceCo
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * SentinelConfig test class
@@ -32,7 +32,7 @@ public class SentinelConfigTest {
         sentinelMap.put("datasource", datasourceMap);
         configMap.put("sentinel", sentinelMap);
         SentinelConfig sentinelConfig = SentinelConfig.parse(sentinelMap);
-        Assert.assertTrue(sentinelConfig.getDataSourceConfig() instanceof LocalFileDatasourceConfig);
+        Assertions.assertTrue(sentinelConfig.getDataSourceConfig() instanceof LocalFileDatasourceConfig);
     }
 
 }

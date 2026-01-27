@@ -37,10 +37,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class AbstractFailedRetryRegistryCenterTest {
 
@@ -55,7 +55,7 @@ public class AbstractFailedRetryRegistryCenterTest {
     private static String serverCacheFilePath = "/tmp/server_zookeeper.cache";
     private static int CACHE_EXPIRE_TIME = 1;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         clientRegistry = buildFailedRetryRegistryCenter();
         clientRegistry.setPluginConfig(initPluginConfig());
@@ -63,7 +63,7 @@ public class AbstractFailedRetryRegistryCenterTest {
         serverRegistry.setPluginConfig(initPluginConfig());
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         clientRegistry.destroy();
         serverRegistry.destroy();
@@ -198,49 +198,49 @@ public class AbstractFailedRetryRegistryCenterTest {
 
     @Test
     public void testRegistry() throws InterruptedException {
-        Assert.assertEquals(0, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(0, clientRegistry.getFailedTasks().size());
         RegisterInfo registerInfo = buildRegisterInfo();
         clientRegistry.register(registerInfo);
-        Assert.assertEquals(1, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(1, clientRegistry.getFailedTasks().size());
         Thread.sleep(500);
-        Assert.assertEquals(0, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(0, clientRegistry.getFailedTasks().size());
     }
 
     @Test
     public void testUnregistry() throws InterruptedException {
         this.testRegistry();
 
-        Assert.assertEquals(0, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(0, clientRegistry.getFailedTasks().size());
         RegisterInfo registerInfo = buildRegisterInfo();
         clientRegistry.unregister(registerInfo);
-        Assert.assertEquals(1, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(1, clientRegistry.getFailedTasks().size());
         Thread.sleep(500);
-        Assert.assertEquals(0, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(0, clientRegistry.getFailedTasks().size());
     }
 
     @Test
     public void testSubscribe() throws InterruptedException {
         this.delCacheFile();
-        Assert.assertEquals(0, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(0, clientRegistry.getFailedTasks().size());
         RegisterInfo registerInfo = buildRegisterInfo();
         NotifyListener discovery = getNotifyListener(registerInfo);
         clientRegistry.subscribe(registerInfo, discovery);
-        Assert.assertEquals(1, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(1, clientRegistry.getFailedTasks().size());
         Thread.sleep(500);
-        Assert.assertEquals(0, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(0, clientRegistry.getFailedTasks().size());
     }
 
     @Test
     public void testUnsubscribe() throws InterruptedException {
         this.testSubscribe();
 
-        Assert.assertEquals(0, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(0, clientRegistry.getFailedTasks().size());
         RegisterInfo registerInfo = buildRegisterInfo();
         NotifyListener discovery = getNotifyListener(registerInfo);
         clientRegistry.unsubscribe(registerInfo, discovery);
-        Assert.assertEquals(1, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(1, clientRegistry.getFailedTasks().size());
         Thread.sleep(500);
-        Assert.assertEquals(0, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(0, clientRegistry.getFailedTasks().size());
     }
 
     @Test
@@ -253,13 +253,13 @@ public class AbstractFailedRetryRegistryCenterTest {
         registerInfos.add(buildRegisterInfo("test.service2"));
         NotifyListener discovery = getNotifyListener(registerInfo);
 
-        Assert.assertEquals(0, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(0, clientRegistry.getFailedTasks().size());
         clientRegistry.notify(registerInfo, discovery, registerInfos);
-        Assert.assertEquals(1, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(1, clientRegistry.getFailedTasks().size());
         Thread.sleep(500);
-        Assert.assertEquals(0, clientRegistry.getFailedTasks().size());
-        Assert.assertEquals(1, clientRegistry.getNotifiedRegisterInfos().size());
-        Assert.assertEquals(10,
+        Assertions.assertEquals(0, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(1, clientRegistry.getNotifiedRegisterInfos().size());
+        Assertions.assertEquals(10,
                 clientRegistry.getNotifiedRegisterInfos().get(registerInfo).getRegisterInfos(
                         RegistryCenterEnum.transferFrom(DEFAULT_REGISTRY_CENTER_SERVICE_TYPE)).size());
     }
@@ -269,7 +269,7 @@ public class AbstractFailedRetryRegistryCenterTest {
         RegisterInfo registerInfo = buildRegisterInfo();
         NotifyListener discovery = getNotifyListener(registerInfo);
         clientRegistry.notify(registerInfo, discovery, Lists.newArrayList());
-        Assert.assertEquals(1, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(1, clientRegistry.getFailedTasks().size());
     }
 
     /**
@@ -278,13 +278,13 @@ public class AbstractFailedRetryRegistryCenterTest {
     @Test
     public void testSubscribeCache() throws InterruptedException {
         this.testNotify();
-        Assert.assertEquals(0, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(0, clientRegistry.getFailedTasks().size());
         RegisterInfo registerInfo = buildRegisterInfo();
         NotifyListener discovery = getNotifyListener(registerInfo);
         clientRegistry.subscribe(registerInfo, discovery);
-        Assert.assertEquals(1, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(1, clientRegistry.getFailedTasks().size());
         Thread.sleep(500);
-        Assert.assertEquals(0, clientRegistry.getFailedTasks().size());
+        Assertions.assertEquals(0, clientRegistry.getFailedTasks().size());
     }
 
     @Test
@@ -295,9 +295,9 @@ public class AbstractFailedRetryRegistryCenterTest {
         Method method = clientRegistry.getClass().getSuperclass().getSuperclass().getDeclaredMethod("recover");
         method.setAccessible(true);
         method.invoke(clientRegistry);
-        Assert.assertEquals(1, clientRegistry.getRegisteredRegisterInfos().size());
-        Assert.assertEquals(1, clientRegistry.getSubscribedRegisterInfos().size());
-        Assert.assertEquals(1,
+        Assertions.assertEquals(1, clientRegistry.getRegisteredRegisterInfos().size());
+        Assertions.assertEquals(1, clientRegistry.getSubscribedRegisterInfos().size());
+        Assertions.assertEquals(1,
                 clientRegistry.getSubscribedRegisterInfos().get(buildRegisterInfo()).getNotifyListeners().size());
     }
 
@@ -332,7 +332,7 @@ public class AbstractFailedRetryRegistryCenterTest {
         RegisterInfoListenerHolder registerInfoListenerHolder =
                 new RegisterInfoListenerHolder(registerInfo, notifyListener);
         boolean test = registerInfoListenerHolder.equals("test");
-        Assert.assertFalse(test);
+        Assertions.assertFalse(test);
     }
 
 

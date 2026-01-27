@@ -24,8 +24,8 @@ import com.tencent.trpc.registry.center.AbstractFailedRetryRegistryCenter;
 import com.tencent.trpc.registry.center.NotifyListener;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -70,7 +70,7 @@ public class AbstractRetryTaskTest {
      *
      * @throws Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Map<String, Object> properties = new HashMap<>();
         properties.put("test", "test");

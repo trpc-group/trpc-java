@@ -14,9 +14,9 @@ package com.tencent.trpc.admin.dto;
 import com.tencent.trpc.core.management.ForkJoinPoolMXBeanImpl;
 import java.util.HashMap;
 import java.util.concurrent.ForkJoinPool;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * WorkerPoolInfoDtoTest
@@ -25,28 +25,28 @@ public class WorkerPoolInfoDtoTest {
 
     private WorkerPoolInfoDto workerPoolInfoDto;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.workerPoolInfoDto = new WorkerPoolInfoDto(null);
     }
 
     @Test
     public void testGetWorkerPoolInfo() {
-        Assert.assertNull(workerPoolInfoDto.getWorkerPoolInfo());
+        Assertions.assertNull(workerPoolInfoDto.getWorkerPoolInfo());
     }
 
     @Test
     public void testSetWorkerPoolInfo() {
         workerPoolInfoDto.setWorkerPoolInfo(new HashMap<>());
-        Assert.assertNotNull(workerPoolInfoDto.getWorkerPoolInfo());
+        Assertions.assertNotNull(workerPoolInfoDto.getWorkerPoolInfo());
         ForkJoinPoolMXBeanImpl report = new ForkJoinPoolMXBeanImpl(new ForkJoinPool());
         workerPoolInfoDto.getWorkerPoolInfo().put("a", report);
-        Assert.assertEquals(workerPoolInfoDto.getWorkerPoolInfo().get("a"), report);
+        Assertions.assertEquals(workerPoolInfoDto.getWorkerPoolInfo().get("a"), report);
     }
 
     @Test
     public void testToString() {
-        Assert.assertEquals(workerPoolInfoDto.toString(),
+        Assertions.assertEquals(workerPoolInfoDto.toString(),
                 "WorkerPoolInfoDto{workerPoolInfo=null} CommonDto{errorcode='0', message=''}");
     }
 }

@@ -12,8 +12,8 @@
 package com.tencent.trpc.codegen.protoc;
 
 import com.tencent.trpc.codegen.CodegenTestHelper;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,7 +37,7 @@ public class ProtocTest {
                 .importPaths(Collections.singletonList(importPath))
                 .output(rootPath.resolve("hello.pb"))
                 .build());
-        Assert.assertTrue(result.isSuccess());
+        Assertions.assertTrue(result.isSuccess());
     }
 
     /**
@@ -52,7 +52,7 @@ public class ProtocTest {
                 .importPaths(Collections.singletonList(importPath))
                 .output(rootPath.resolve("hello2.pb"))
                 .build());
-        Assert.assertFalse(result.isSuccess());
+        Assertions.assertFalse(result.isSuccess());
     }
 
     /**
@@ -67,7 +67,7 @@ public class ProtocTest {
                 .importPaths(Collections.singletonList(importPath))
                 .output(rootPath.resolve("non-exist.pb"))
                 .build());
-        Assert.assertFalse(result.isSuccess());
+        Assertions.assertFalse(result.isSuccess());
     }
 
     /**
@@ -85,6 +85,6 @@ public class ProtocTest {
                 .language(Language.JAVA)
                 .output(outPath)
                 .build());
-        Assert.assertTrue(result.isSuccess());
+        Assertions.assertTrue(result.isSuccess());
     }
 }

@@ -15,7 +15,6 @@ import com.google.protobuf.ApiOrBuilder;
 import com.tencent.trpc.codegen.protoc.Protoc;
 import com.tencent.trpc.codegen.protoc.ProtocTest;
 import com.tencent.trpc.codegen.util.JarUtils;
-import org.junit.Assert;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.jar.JarFile;
+import org.junit.jupiter.api.Assertions;
 
 public class CodegenTestHelper {
     public static final Path TEST_ROOT = getTestClassesRoot(); // target/test-classes
@@ -34,13 +34,13 @@ public class CodegenTestHelper {
 
     private static Path getTestClassesRoot() {
         URL url = ProtocTest.class.getClassLoader().getResource("TEST-1/hello.proto");
-        Assert.assertNotNull(url);
+        Assertions.assertNotNull(url);
         return Paths.get(url.getPath()).getParent().getParent();
     }
 
     private static Path getImportRoot() {
         URL url = Protoc.class.getClassLoader().getResource("imports/trpc.proto");
-        Assert.assertNotNull(url);
+        Assertions.assertNotNull(url);
         Path importRoot = Paths.get(url.getPath()).getParent();
         try {
             extractCommonProtoFiles(importRoot);

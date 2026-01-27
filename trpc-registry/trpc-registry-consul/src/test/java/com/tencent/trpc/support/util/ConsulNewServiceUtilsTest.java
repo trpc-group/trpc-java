@@ -14,8 +14,8 @@ package com.tencent.trpc.support.util;
 import com.ecwid.consul.v1.health.model.HealthService;
 import com.google.common.collect.Lists;
 import com.tencent.trpc.core.registry.RegisterInfo;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +42,6 @@ public class ConsulNewServiceUtilsTest {
         healthService.setService(service);
 
         List<RegisterInfo> convertList = ConsulServiceUtils.convert(Lists.newArrayList(healthService), registerInfo);
-        Assert.assertEquals(1, convertList.size());
+        Assertions.assertEquals(1, convertList.size());
     }
 }

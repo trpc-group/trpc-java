@@ -16,8 +16,8 @@ import com.tencent.trpc.admin.dto.LoggerLevelDto;
 import com.tencent.trpc.admin.dto.LoggerLevelRevisedDto;
 import com.tencent.trpc.admin.impl.LoggerAdmin;
 import java.util.Objects;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class LoggerAdminTest {
 
@@ -26,8 +26,8 @@ public class LoggerAdminTest {
         LoggerAdmin loggerAdmin = new LoggerAdmin();
         LoggerLevelDto loggerLevelDto = loggerAdmin.getLoggerLevelInfo();
         loggerLevelDto.toString();
-        Assert.assertTrue(Objects.nonNull(CommonDto.SUCCESS.equals(loggerLevelDto.getErrorcode())));
-        Assert.assertTrue(Objects.nonNull(loggerLevelDto.getLogger()));
+        Assertions.assertTrue(Objects.nonNull(CommonDto.SUCCESS.equals(loggerLevelDto.getErrorcode())));
+        Assertions.assertTrue(Objects.nonNull(loggerLevelDto.getLogger()));
     }
 
     @Test
@@ -35,7 +35,7 @@ public class LoggerAdminTest {
         LoggerAdmin loggerAdmin = new LoggerAdmin();
         LoggerLevelRevisedDto loggerLevelRevisedDto = loggerAdmin.setLoggerLevel("ROOT", "INFO");
         LoggerLevelRevisedDto loggerLevelRevisedDto2 = loggerAdmin.setLoggerLevel("root", "INFO");
-        Assert.assertTrue(
+        Assertions.assertTrue(
                 CommonDto.SUCCESS.equals(loggerLevelRevisedDto.getErrorcode()) || CommonDto.SUCCESS
                         .equals(loggerLevelRevisedDto2.getErrorcode()));
     }
@@ -44,7 +44,7 @@ public class LoggerAdminTest {
     public void testSetLoggerLevelWithInvalidLevel() {
         LoggerAdmin loggerAdmin = new LoggerAdmin();
         LoggerLevelRevisedDto loggerLevelRevisedDto = loggerAdmin.setLoggerLevel("ROOT", "1234");
-        Assert.assertTrue(CommonDto.FAIL.equals(loggerLevelRevisedDto.getErrorcode()));
+        Assertions.assertTrue(CommonDto.FAIL.equals(loggerLevelRevisedDto.getErrorcode()));
     }
 
     @Test
@@ -52,15 +52,15 @@ public class LoggerAdminTest {
         LoggerAdmin loggerAdmin = new LoggerAdmin();
         LoggerLevelRevisedDto loggerLevelRevisedDto = loggerAdmin.setLoggerLevel("123", "INFO");
         loggerLevelRevisedDto.toString();
-        Assert.assertTrue(CommonDto.FAIL.equals(loggerLevelRevisedDto.getErrorcode()));
+        Assertions.assertTrue(CommonDto.FAIL.equals(loggerLevelRevisedDto.getErrorcode()));
     }
 
     @Test
     public void testLoggerLevelDtoBuildFail() {
         String message = "error";
         LoggerLevelDto loggerLevelDto = LoggerLevelDto.buildFail(message);
-        Assert.assertTrue(CommonDto.FAIL.equals(loggerLevelDto.getErrorcode()));
-        Assert.assertTrue(message.equals(loggerLevelDto.getMessage()));
+        Assertions.assertTrue(CommonDto.FAIL.equals(loggerLevelDto.getErrorcode()));
+        Assertions.assertTrue(message.equals(loggerLevelDto.getMessage()));
     }
 
     @Test
@@ -70,8 +70,8 @@ public class LoggerAdminTest {
         LoggerLevelDto loggerLevelDto = new LoggerLevelDto();
         loggerLevelDto.setErrorcode(errorCode);
         loggerLevelDto.setMessage(message);
-        Assert.assertTrue(errorCode.equals(loggerLevelDto.getErrorcode()));
-        Assert.assertTrue(message.equals(loggerLevelDto.getMessage()));
+        Assertions.assertTrue(errorCode.equals(loggerLevelDto.getErrorcode()));
+        Assertions.assertTrue(message.equals(loggerLevelDto.getMessage()));
     }
 
     @Test
@@ -85,10 +85,10 @@ public class LoggerAdminTest {
         loggerLevelRevisedDto.setMessage(message);
         loggerLevelRevisedDto.setLevel(level);
         loggerLevelRevisedDto.setPrelevel(preLevel);
-        Assert.assertTrue(errorCode.equals(loggerLevelRevisedDto.getErrorcode()));
-        Assert.assertTrue(message.equals(loggerLevelRevisedDto.getMessage()));
-        Assert.assertTrue(level.equals(loggerLevelRevisedDto.getLevel()));
-        Assert.assertTrue(preLevel.equals(loggerLevelRevisedDto.getPrelevel()));
+        Assertions.assertTrue(errorCode.equals(loggerLevelRevisedDto.getErrorcode()));
+        Assertions.assertTrue(message.equals(loggerLevelRevisedDto.getMessage()));
+        Assertions.assertTrue(level.equals(loggerLevelRevisedDto.getLevel()));
+        Assertions.assertTrue(preLevel.equals(loggerLevelRevisedDto.getPrelevel()));
     }
 }
 

@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.configcenter.nacos;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
@@ -33,19 +33,11 @@ import com.tencent.trpc.core.configcenter.ConfigurationListener;
 import com.tencent.trpc.core.exception.ConfigCenterException;
 import com.tencent.trpc.core.exception.TRpcExtensionException;
 import com.tencent.trpc.core.extension.ExtensionLoader;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,13 +46,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
+import org.mockito.MockedStatic;
 
 /**
  * NacosConfigurationLoader Test
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({NacosConfigurationLoader.class, NacosFactory.class})
-@PowerMockIgnore({"javax.management.*"})
 public class NacosConfigurationLoaderTest {
 
     /**
@@ -141,7 +131,7 @@ public class NacosConfigurationLoaderTest {
     /**
      * setUp
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
@@ -191,7 +181,7 @@ public class NacosConfigurationLoaderTest {
         }
     }
 
-    @After
+    @AfterEach
     public void setDown() {
         ConfigManager.stopTest();
         ExtensionLoader.destroyAllPlugin();
@@ -211,7 +201,7 @@ public class NacosConfigurationLoaderTest {
         config.setDataId(DEFAULT_DATA_ID);
         NacosConfig.Config configOther = new NacosConfig.Config(DEFAULT_GROUP, DEFAULT_DATA_ID);
         boolean equals = config.equals(configOther);
-        Assert.assertTrue(equals);
+        Assertions.assertTrue(equals);
     }
 
     @Test
@@ -220,56 +210,53 @@ public class NacosConfigurationLoaderTest {
         String key1 = "example.config.list[0].key1";
 
         when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(YAML_EXAMPLE);
-        Assert.assertEquals(configYaml.getValue(key, DEFAULT_GROUP), "example");
-        Assert.assertEquals(configYaml.getValue(key1, DEFAULT_GROUP), "value1");
+        Assertions.assertEquals(configYaml.getValue(key, DEFAULT_GROUP), "example");
+        Assertions.assertEquals(configYaml.getValue(key1, DEFAULT_GROUP), "value1");
 
         String key2 = "example.config.list[1].key2";
         when(configService.getConfig(APP_DATA_ID, APP_GROUP, TIMEOUT)).thenReturn(PROPERTIES_EXAMPLE);
-        Assert.assertEquals(configProperties.getValue(key, APP_GROUP), "example");
-        Assert.assertEquals(configProperties.getValue(key2, APP_GROUP), "value2");
+        Assertions.assertEquals(configProperties.getValue(key, APP_GROUP), "example");
+        Assertions.assertEquals(configProperties.getValue(key2, APP_GROUP), "value2");
     }
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     @Test
     public void testGetValueForException() throws NacosException {
-        expectedEx.expect(ConfigCenterException.class);
-        expectedEx.expectMessage(String.format(
-                "Fetch config failed from Nacos, group: %s, dataId: %s", DEFAULT_GROUP, DEFAULT_DATA_ID));
         String key = "example.config.name";
         when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenThrow(new NacosException());
-        Assert.assertNull(configYaml.getValue(key, DEFAULT_GROUP));
+        ConfigCenterException exception = Assertions.assertThrows(ConfigCenterException.class, () -> {
+            configYaml.getValue(key, DEFAULT_GROUP);
+        });
+        Assertions.assertTrue(exception.getMessage().contains(
+                String.format("Fetch config failed from Nacos, group: %s, dataId: %s", DEFAULT_GROUP, DEFAULT_DATA_ID)));
     }
 
     @Test
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void testGroupDataIdCaches() throws NacosException, IllegalAccessException {
+    public void testGroupDataIdCaches() throws Exception {
         String key = "example.config.name";
         when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(YAML_EXAMPLE);
-        Assert.assertEquals(configYaml.getValue(key, DEFAULT_GROUP), "example");
+        Assertions.assertEquals(configYaml.getValue(key, DEFAULT_GROUP), "example");
 
-        Field groupDataIdToKeysField = Whitebox
-                .getField(NacosConfigurationLoader.class, "groupDataIdToKeys");
+        Field groupDataIdToKeysField = NacosConfigurationLoader.class.getDeclaredField("groupDataIdToKeys");
         boolean groupDataIdToKeysFieldAccessible = groupDataIdToKeysField.isAccessible();
         groupDataIdToKeysField.setAccessible(true);
         Multimap groupDataIdToKeys = (Multimap) groupDataIdToKeysField.get(configYaml);
         groupDataIdToKeysField.setAccessible(groupDataIdToKeysFieldAccessible);
 
         Collection<String> keys = groupDataIdToKeys.get(String.format("%s_%s", DEFAULT_GROUP, DEFAULT_DATA_ID));
-        Assert.assertEquals(keys.size(), 1);
-        Assert.assertTrue(keys.contains(key));
+        Assertions.assertEquals(keys.size(), 1);
+        Assertions.assertTrue(keys.contains(key));
 
-        Field groupDataIdToNacosListenerField = Whitebox
-                .getField(NacosConfigurationLoader.class, "groupDataIdToNacosListener");
+        Field groupDataIdToNacosListenerField = NacosConfigurationLoader.class
+                .getDeclaredField("groupDataIdToNacosListener");
         boolean groupDataIdToNacosListenerFieldAccessible = groupDataIdToNacosListenerField.isAccessible();
         groupDataIdToNacosListenerField.setAccessible(true);
         Map groupDataIdToNacosListener = (Map) groupDataIdToNacosListenerField.get(configYaml);
         groupDataIdToNacosListenerField.setAccessible(groupDataIdToNacosListenerFieldAccessible);
 
         Object listener = groupDataIdToNacosListener.get(String.format("%s_%s", DEFAULT_GROUP, DEFAULT_DATA_ID));
-        Assert.assertTrue(listener instanceof Listener);
-        Assert.assertTrue(listener instanceof AbstractConfigChangeListener);
+        Assertions.assertTrue(listener instanceof Listener);
+        Assertions.assertTrue(listener instanceof AbstractConfigChangeListener);
 
         // Test configuration DELETED changes
         ConfigChangeItem item = new ConfigChangeItem(key, "", "");
@@ -277,10 +264,10 @@ public class NacosConfigurationLoaderTest {
         ConfigChangeEvent event = new ConfigChangeEvent(ImmutableMap.of(key, item));
         ((AbstractConfigChangeListener) listener).receiveConfigChange(event);
         keys = groupDataIdToKeys.get(String.format("%s_%s", DEFAULT_GROUP, DEFAULT_DATA_ID));
-        Assert.assertEquals(keys.size(), 0);
+        Assertions.assertEquals(keys.size(), 0);
 
         Executor executor = ((AbstractConfigChangeListener) listener).getExecutor();
-        Assert.assertNotNull(executor);
+        Assertions.assertNotNull(executor);
     }
 
     @Test
@@ -290,40 +277,48 @@ public class NacosConfigurationLoaderTest {
 
         when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(YAML_EXAMPLE);
         Map<String, String> allYamlValue = configYaml.getAllValue(DEFAULT_GROUP);
-        Assert.assertEquals(allYamlValue.get(key), "example");
-        Assert.assertEquals(allYamlValue.get(key1), "value1");
+        Assertions.assertEquals(allYamlValue.get(key), "example");
+        Assertions.assertEquals(allYamlValue.get(key1), "value1");
 
         String key2 = "example.config.list[1].key2";
         when(configService.getConfig(APP_DATA_ID, APP_GROUP, TIMEOUT)).thenReturn(PROPERTIES_EXAMPLE);
         Map<String, String> allPropsValue1 = configProperties.getAllValue(APP_GROUP);
-        Assert.assertEquals(allPropsValue1.get(key), "example");
-        Assert.assertEquals(allPropsValue1.get(key2), "value2");
+        Assertions.assertEquals(allPropsValue1.get(key), "example");
+        Assertions.assertEquals(allPropsValue1.get(key2), "value2");
     }
 
-    @Test(expected = ConfigCenterException.class)
-    public void testGetAllValueXml() throws NacosException {
-        String xmlValue = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
-        when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(xmlValue);
-        configYaml.getAllValue(DEFAULT_GROUP);
+    @Test
+    void testGetAllValueXml() {
+        Assertions.assertThrows(ConfigCenterException.class, () -> {
+            String xmlValue = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
+            when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(xmlValue);
+            configYaml.getAllValue(DEFAULT_GROUP);
+        });
     }
 
-    @Test(expected = ConfigCenterException.class)
-    public void testGetAllValueHtml() throws NacosException {
-        String htmlValue = "<html lang=\"en\">";
-        when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(htmlValue);
-        configYaml.getAllValue(DEFAULT_GROUP);
+    @Test
+    void testGetAllValueHtml() {
+        Assertions.assertThrows(ConfigCenterException.class, () -> {
+            String htmlValue = "<html lang=\"en\">";
+            when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(htmlValue);
+            configYaml.getAllValue(DEFAULT_GROUP);
+        });
     }
 
-    @Test(expected = ConfigCenterException.class)
-    public void testGetAllValueText() throws NacosException {
-        String textValue = "Test text.";
-        when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(textValue);
-        configYaml.getAllValue(DEFAULT_GROUP);
+    @Test
+    void testGetAllValueText() {
+        Assertions.assertThrows(ConfigCenterException.class, () -> {
+            String textValue = "Test text.";
+            when(configService.getConfig(DEFAULT_DATA_ID, DEFAULT_GROUP, TIMEOUT)).thenReturn(textValue);
+            configYaml.getAllValue(DEFAULT_GROUP);
+        });
     }
 
-    @Test(expected = ConfigCenterException.class)
-    public void testLoadConfig() {
-        configYaml.loadConfig("fileName");
+    @Test
+    void testLoadConfig() {
+        Assertions.assertThrows(ConfigCenterException.class, () -> {
+            configYaml.loadConfig("fileName");
+        });
     }
 
     @Test
@@ -345,22 +340,22 @@ public class NacosConfigurationLoaderTest {
         }
         configYaml.setConfigService(configService);
 
-        expectedEx.expect(ConfigCenterException.class);
-
         ConfigurationListener listener = Mockito.mock(ConfigurationListener.class);
-        configYaml.addListener(listener);
+        Assertions.assertThrows(ConfigCenterException.class, () -> {
+            configYaml.addListener(listener);
+        });
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void testListenerCallback() throws IllegalAccessException {
+    public void testListenerCallback() throws Exception {
         String key = "example.config.name";
 
-        ConfigurationListener listener = event -> Assert.assertEquals(event.getKey(), key);
+        ConfigurationListener listener = event -> Assertions.assertEquals(event.getKey(), key);
         configYaml.addListener(listener);
 
-        Field configurationListenerToNacosListener = Whitebox
-                .getField(NacosConfigurationLoader.class, "configurationListenerToNacosListener");
+        Field configurationListenerToNacosListener = NacosConfigurationLoader.class
+                .getDeclaredField("configurationListenerToNacosListener");
         boolean groupDataIdToKeysFieldAccessible = configurationListenerToNacosListener.isAccessible();
         configurationListenerToNacosListener.setAccessible(true);
         Map listenerMap = (Map) configurationListenerToNacosListener.get(configYaml);
@@ -368,8 +363,8 @@ public class NacosConfigurationLoaderTest {
         Map<NacosConfig.Config, Listener> nacosConfigToListener =
                 (Map<NacosConfig.Config, Listener>) listenerMap.get(listener);
         Listener changeListener = nacosConfigToListener.get(new NacosConfig.Config(DEFAULT_GROUP, DEFAULT_DATA_ID));
-        Assert.assertNotNull(changeListener);
-        Assert.assertTrue(changeListener instanceof AbstractConfigChangeListener);
+        Assertions.assertNotNull(changeListener);
+        Assertions.assertTrue(changeListener instanceof AbstractConfigChangeListener);
 
         ConfigChangeItem item = new ConfigChangeItem(key, "", "");
         item.setType(PropertyChangeType.DELETED);
@@ -377,14 +372,17 @@ public class NacosConfigurationLoaderTest {
         ((AbstractConfigChangeListener) changeListener).receiveConfigChange(event);
 
         Executor executor = changeListener.getExecutor();
-        Assert.assertNotNull(executor);
+        Assertions.assertNotNull(executor);
     }
 
     @Test
     public void testConvertConfigurationEvent() throws Exception {
         ConfigChangeItem changeItem = new ConfigChangeItem("test", "123", "1234");
         changeItem.setType(PropertyChangeType.MODIFIED);
-        Whitebox.invokeMethod(configYaml, "convertConfigurationEvent", DEFAULT_GROUP, changeItem);
+        java.lang.reflect.Method method = NacosConfigurationLoader.class
+                .getDeclaredMethod("convertConfigurationEvent", String.class, ConfigChangeItem.class);
+        method.setAccessible(true);
+        method.invoke(configYaml, DEFAULT_GROUP, changeItem);
     }
 
     @Test
@@ -394,7 +392,6 @@ public class NacosConfigurationLoaderTest {
 
     @Test
     public void testDestroyError() {
-        expectedEx.expect(TRpcExtensionException.class);
         try {
             doAnswer(it -> {
                 throw new NacosException();
@@ -402,20 +399,19 @@ public class NacosConfigurationLoaderTest {
         } catch (NacosException e) {
             throw new RuntimeException(e);
         }
-        configYaml.destroy();
+        Assertions.assertThrows(TRpcExtensionException.class, () -> {
+            configYaml.destroy();
+        });
     }
 
     @Test
     public void testInitError() {
-        expectedEx.expect(TRpcExtensionException.class);
-
-        PowerMockito.mockStatic(NacosFactory.class);
-        try {
-            PowerMockito.doThrow(new NacosException()).when(NacosFactory.class,
-                    "createConfigService", any(Properties.class));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        try (MockedStatic<NacosFactory> mockedNacosFactory = Mockito.mockStatic(NacosFactory.class)) {
+            mockedNacosFactory.when(() -> NacosFactory.createConfigService(any(Properties.class)))
+                    .thenThrow(new NacosException());
+            Assertions.assertThrows(TRpcExtensionException.class, () -> {
+                configYaml.init();
+            });
         }
-        configYaml.init();
     }
 }

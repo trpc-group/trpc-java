@@ -15,8 +15,8 @@ import com.tencent.trpc.limiter.sentinel.config.datasource.DatasourceConfig;
 import com.tencent.trpc.limiter.sentinel.config.datasource.NacosDatasourceConfig;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * NacosDatasourceConfigFactory test class
@@ -30,7 +30,7 @@ public class NacosDatasourceConfigFactoryTest {
         configs.put("data_id", "test_data_id");
         configs.put("remote_address", "127.0.0.1");
         DatasourceConfig datasourceConfig = new NacosDatasourceConfigFactory().create(configs);
-        Assert.assertTrue(datasourceConfig instanceof NacosDatasourceConfig);
+        Assertions.assertTrue(datasourceConfig instanceof NacosDatasourceConfig);
     }
 
 }

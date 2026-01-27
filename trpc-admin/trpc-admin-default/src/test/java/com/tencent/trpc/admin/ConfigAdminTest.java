@@ -21,8 +21,8 @@ import com.tencent.trpc.core.common.config.ServerConfig;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ConfigAdminTest {
 
@@ -38,8 +38,8 @@ public class ConfigAdminTest {
         ConfigOverviewDto configOverviewDto = configAdmin.getServerConfigInfo();
         configOverviewDto.toString();
         configOverviewDto.setContent(configOverviewDto.getContent());
-        Assert.assertTrue(CommonDto.SUCCESS.equals(configOverviewDto.getErrorcode()));
-        Assert.assertTrue(Objects.nonNull(configOverviewDto.getContent()));
+        Assertions.assertTrue(CommonDto.SUCCESS.equals(configOverviewDto.getErrorcode()));
+        Assertions.assertTrue(Objects.nonNull(configOverviewDto.getContent()));
     }
 
 }

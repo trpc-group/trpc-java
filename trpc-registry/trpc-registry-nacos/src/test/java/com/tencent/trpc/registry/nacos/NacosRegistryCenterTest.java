@@ -16,13 +16,15 @@ import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.exception.TRpcExtensionException;
 import com.tencent.trpc.core.registry.RegisterInfo;
 import com.tencent.trpc.registry.center.NotifyListener;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
+import org.junit.jupiter.api.Assertions;
+
 
 public class NacosRegistryCenterTest {
 
@@ -36,15 +38,16 @@ public class NacosRegistryCenterTest {
         nacosRegistryCenter.setPluginConfig(pluginConfig);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void init() {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("username", "testUserName");
-        PluginConfig pluginConfig = new PluginConfig("nacos", NacosRegistryCenter.class, properties);
-
-        NacosRegistryCenter nacosRegistryCenter = new NacosRegistryCenter();
-        nacosRegistryCenter.setPluginConfig(pluginConfig);
-        nacosRegistryCenter.init();
+    @Test
+    void init() {
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("username", "testUserName");
+            PluginConfig pluginConfig = new PluginConfig("nacos", NacosRegistryCenter.class, properties);
+            NacosRegistryCenter nacosRegistryCenter = new NacosRegistryCenter();
+            nacosRegistryCenter.setPluginConfig(pluginConfig);
+            nacosRegistryCenter.init();
+        });
     }
 
     @Test

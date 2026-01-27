@@ -22,9 +22,9 @@ import com.tencent.trpc.limiter.sentinel.SentinelLimiter;
 import com.tencent.trpc.limiter.sentinel.TestSentinelInvoker;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * SentinelLimiterFilter test class
@@ -33,7 +33,7 @@ public class SentinelLimiterFilterTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SentinelLimiterFilterTest.class);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         try {
             Map<String, Object> extMap = new HashMap<>();
@@ -52,7 +52,7 @@ public class SentinelLimiterFilterTest {
     @Test
     public void testFilter() {
         SentinelLimiterFilter sentinelLimiterFilter = new SentinelLimiterFilter();
-        Assert.assertEquals(FilterOrdered.SENTINEL_LIMITER_ORDERED, sentinelLimiterFilter.getOrder());
+        Assertions.assertEquals(FilterOrdered.SENTINEL_LIMITER_ORDERED, sentinelLimiterFilter.getOrder());
 
         sentinelLimiterFilter.init();
         DefRequest request = new DefRequest();

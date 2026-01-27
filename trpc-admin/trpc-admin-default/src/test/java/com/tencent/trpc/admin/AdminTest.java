@@ -17,10 +17,10 @@ import com.tencent.trpc.core.common.config.ServerConfig;
 import com.tencent.trpc.core.exception.LifecycleException;
 import com.tencent.trpc.core.extension.ExtensionClass;
 import com.tencent.trpc.core.extension.ExtensionLoader;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ public class AdminTest {
 
     private static final String LOCAL_HOST = "127.0.0.1";
 
-    @After
+    @AfterEach
     public void after() {
         ExtensionLoader.destroyAllPlugin();
     }
@@ -57,7 +57,7 @@ public class AdminTest {
                 adminService2.stop();
             }
         }
-        Assert.assertTrue(exception != null && exception instanceof LifecycleException);
+        Assertions.assertTrue(exception != null && exception instanceof LifecycleException);
     }
 
     private AdminService getAdminService(String ip, int adminPort) {

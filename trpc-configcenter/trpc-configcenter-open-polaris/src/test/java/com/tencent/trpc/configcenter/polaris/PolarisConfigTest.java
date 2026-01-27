@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.configcenter.polaris;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.tencent.trpc.configcenter.polaris.PolarisConfig.Config;
 import com.tencent.trpc.core.common.config.PluginConfig;
@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PolarisConfigTest {
 

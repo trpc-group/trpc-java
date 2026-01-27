@@ -23,17 +23,17 @@ import com.tencent.trpc.core.registry.RegisterInfo;
 import com.tencent.trpc.core.worker.support.thread.ThreadWorkerPool;
 import com.tencent.trpc.registry.center.NotifyListener;
 import com.tencent.trpc.support.ConsulInstanceManager;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class ConsulRegistryTest {
 
     NotifyListener notifyListener = new NotifyListener() {
@@ -160,7 +160,7 @@ public class ConsulRegistryTest {
         ConsulClient consulClient = Mockito.mock(ConsulClient.class);
         List<HealthService> healthServices = new ArrayList<>();
         Response<List<HealthService>> response = new Response<>(healthServices, 10L, true, 2L);
-        PowerMockito.when(consulClient.getHealthServices(Mockito.anyString(), Mockito.any(HealthServicesRequest.class)))
+        Mockito.when(consulClient.getHealthServices(Mockito.anyString(), Mockito.any(HealthServicesRequest.class)))
                 .thenReturn(response);
 
         ConsulInstanceManager consulInstanceManager = new ConsulInstanceManager(protocolConfig);
@@ -177,7 +177,7 @@ public class ConsulRegistryTest {
         ConsulClient consulClient01 = Mockito.mock(ConsulClient.class);
         Map<String, List<String>> healthServices01 = new HashMap<>();
         Response<Map<String, List<String>>> response01 = new Response<>(healthServices01, 10L, true, 2L);
-        PowerMockito.when(consulClient01.getCatalogServices(Mockito.any(CatalogServicesRequest.class)))
+        Mockito.when(consulClient01.getCatalogServices(Mockito.any(CatalogServicesRequest.class)))
                 .thenReturn(response01);
         ConsulInstanceManager consulInstanceManager01 = new ConsulInstanceManager(protocolConfig);
         consulInstanceManager01.resetClient(consulClient01);
@@ -208,7 +208,7 @@ public class ConsulRegistryTest {
         ConsulClient consulClient = Mockito.mock(ConsulClient.class);
         List<HealthService> healthServices = new ArrayList<>();
         Response<List<HealthService>> response = new Response<>(healthServices, 1L, true, 2L);
-        PowerMockito.when(consulClient.getHealthServices(Mockito.anyString(), Mockito.any(HealthServicesRequest.class)))
+        Mockito.when(consulClient.getHealthServices(Mockito.anyString(), Mockito.any(HealthServicesRequest.class)))
                 .thenReturn(response);
 
         ConsulInstanceManager consulInstanceManager = new ConsulInstanceManager(protocolConfig);
@@ -269,7 +269,7 @@ public class ConsulRegistryTest {
 
         List<HealthService> healthServices = new ArrayList<>();
         Response<List<HealthService>> response = new Response<>(healthServices, 1L, true, 2L);
-        PowerMockito.when(consulClient.getHealthServices(Mockito.anyString(), Mockito.any(HealthServicesRequest.class)))
+        Mockito.when(consulClient.getHealthServices(Mockito.anyString(), Mockito.any(HealthServicesRequest.class)))
                 .thenReturn(response);
 
         ProtocolConfig protocolConfig = new ProtocolConfig();

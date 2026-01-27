@@ -14,28 +14,29 @@ package com.tencent.trpc.registry.nacos.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.registry.nacos.NacosRegistryCenter;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static com.tencent.trpc.registry.nacos.util.StringConstantFieldValuePredicateUtils.of;
 
 public class NacosRegistryCenterConfigTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void getParametersParamException() {
-        PluginConfig pluginConfig = new PluginConfig("nacos",
-                NacosRegistryCenter.class, (Map<String, Object>) null);
-        NacosRegistryCenterConfig config = new NacosRegistryCenterConfig(pluginConfig);
-
-        Map<String, Object> parameters = config.getParameters();
-        Assert.assertNull(parameters);
+    @Test
+    void getParametersParamException() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            PluginConfig pluginConfig = new PluginConfig("nacos",
+            NacosRegistryCenter.class, (Map<String, Object>) null);
+            NacosRegistryCenterConfig config = new NacosRegistryCenterConfig(pluginConfig);
+            Map<String, Object> parameters = config.getParameters();
+            Assertions.assertNull(parameters);
+        });
     }
 
     @Test

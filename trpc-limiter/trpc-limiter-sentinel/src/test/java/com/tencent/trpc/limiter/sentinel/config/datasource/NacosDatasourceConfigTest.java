@@ -16,8 +16,8 @@ import com.tencent.trpc.limiter.sentinel.config.datasource.factory.DatasourceCon
 import com.tencent.trpc.limiter.sentinel.config.datasource.factory.DatasourceType;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * NacosDatasourceConfig test class
@@ -35,7 +35,7 @@ public class NacosDatasourceConfigTest {
             nacosDatasourceConfig.validate();
         } catch (Exception e) {
             e.printStackTrace();
-            Assert.assertTrue(e instanceof LimiterDataSourceException);
+            Assertions.assertTrue(e instanceof LimiterDataSourceException);
         }
     }
 
@@ -50,7 +50,7 @@ public class NacosDatasourceConfigTest {
             localFileDatasourceConfig.register();
         } catch (Exception e) {
             e.printStackTrace();
-            Assert.assertTrue(e instanceof LimiterDataSourceException);
+            Assertions.assertTrue(e instanceof LimiterDataSourceException);
         }
     }
 
@@ -65,7 +65,7 @@ public class NacosDatasourceConfigTest {
             localFileDatasourceConfig.register();
         } catch (Exception e) {
             e.printStackTrace();
-            Assert.assertTrue(e instanceof LimiterDataSourceException);
+            Assertions.assertTrue(e instanceof LimiterDataSourceException);
         }
     }
 
@@ -81,7 +81,7 @@ public class NacosDatasourceConfigTest {
             localFileDatasourceConfig.register();
         } catch (Exception e) {
             e.printStackTrace();
-            Assert.assertTrue(e instanceof LimiterDataSourceException);
+            Assertions.assertTrue(e instanceof LimiterDataSourceException);
         }
     }
 

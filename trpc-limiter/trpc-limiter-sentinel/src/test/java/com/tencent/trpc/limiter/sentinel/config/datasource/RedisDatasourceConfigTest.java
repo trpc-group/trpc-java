@@ -11,16 +11,17 @@
 
 package com.tencent.trpc.limiter.sentinel.config.datasource;
 
+import com.github.fppt.jedismock.RedisServer;
 import com.tencent.trpc.core.exception.LimiterDataSourceException;
 import com.tencent.trpc.limiter.sentinel.config.datasource.factory.DatasourceConfigFactoryManger;
 import com.tencent.trpc.limiter.sentinel.config.datasource.factory.DatasourceType;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import redis.embedded.RedisServer;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * RedisDatasourceConfig test class
@@ -30,12 +31,11 @@ public class RedisDatasourceConfigTest {
     private RedisServer redisServer;
     private int port = 6380;
 
-    @Before
-    public void setUp() {
-
-        redisServer = RedisServer.builder().setting("maxmemory 128M").setting("bind localhost")
-                .port(port).build();
-        redisServer.start();
+    @BeforeEach
+    public void setUp() throws Exception {
+        redisServer = RedisServer
+                .newRedisServer(port)
+                        .start();
     }
 
     @Test
@@ -61,8 +61,8 @@ public class RedisDatasourceConfigTest {
         try {
             configWithoutRuleKey1.validate();
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof LimiterDataSourceException);
-            Assert.assertTrue(e.getMessage().equals("sentinel redis datasource config error, channel is empty"));
+            Assertions.assertTrue(e instanceof LimiterDataSourceException);
+            Assertions.assertTrue(e.getMessage().equals("sentinel redis datasource config error, channel is empty"));
         }
     }
 
@@ -78,13 +78,13 @@ public class RedisDatasourceConfigTest {
         try {
             configWithoutRuleKey.validate();
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof LimiterDataSourceException);
-            Assert.assertTrue(e.getMessage().equals("sentinel redis datasource config error, rule key is empty"));
+            Assertions.assertTrue(e instanceof LimiterDataSourceException);
+            Assertions.assertTrue(e.getMessage().equals("sentinel redis datasource config error, rule key is empty"));
         }
     }
 
-    @After
-    public void after() {
+    @AfterEach
+    public void after() throws IOException {
         if (redisServer != null) {
             redisServer.stop();
         }
