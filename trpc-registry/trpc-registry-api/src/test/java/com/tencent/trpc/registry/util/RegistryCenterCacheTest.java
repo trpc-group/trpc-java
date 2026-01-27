@@ -23,34 +23,27 @@ import com.tencent.trpc.registry.center.AbstractRegistryCenter;
 import com.tencent.trpc.registry.common.RegistryCenterConfig;
 import com.tencent.trpc.registry.common.RegistryCenterData;
 import com.tencent.trpc.registry.common.RegistryCenterEnum;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Test class for registry cache.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({RegistryCenterCache.class})
 public class RegistryCenterCacheTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RegistryCenterCacheTest.class);
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    Path tempDir;
 
     @Test
     public void testNormal() {
         try {
-            PowerMockito.whenNew(File.class).withAnyArguments().thenReturn(folder.newFile("testfile1.txt"));
-            RegistryCenterConfig registryCenterConfig = new RegistryCenterConfig(initPluginConfig());
+            String cachePath = tempDir.resolve("cache").toString();
+            RegistryCenterConfig registryCenterConfig = new RegistryCenterConfig(initPluginConfig(cachePath));
             RegisterInfo registerInfo = new RegisterInfo("trpc", "0.0.0.0", 12001,
                     "test.service1");
             RegistryCenterData registryCenterData = new RegistryCenterData();
@@ -67,11 +60,10 @@ public class RegistryCenterCacheTest {
     @Test
     public void testRetry() {
         try {
-            PowerMockito.whenNew(File.class).withAnyArguments().thenReturn(folder.newFile("testfile1.txt"));
-            RegistryCenterConfig registryCenterConfig = new RegistryCenterConfig(initPluginConfig());
+            String cachePath = tempDir.resolve("cache").toString();
+            RegistryCenterConfig registryCenterConfig = new RegistryCenterConfig(initPluginConfig(cachePath));
             RegistryCenterCache cache = new RegistryCenterCache(registryCenterConfig);
 
-            PowerMockito.when(cache, "syncToDisk").thenThrow(new IllegalArgumentException("error"));
             RegisterInfo registerInfo = new RegisterInfo("trpc", "0.0.0.0", 12001,
                     "test.service1");
             RegistryCenterData registryCenterData = new RegistryCenterData();
@@ -84,13 +76,13 @@ public class RegistryCenterCacheTest {
         }
     }
 
-    private PluginConfig initPluginConfig() {
+    private PluginConfig initPluginConfig(String cachePath) {
         Map<String, Object> properties = new HashMap<>();
         properties.put("ip", "0.0.0.0");
         properties.put("port", 2181);
         properties.put(REGISTRY_CENTER_SAVE_CACHE_KEY, true);
         properties.put(REGISTRY_CENTER_SYNCED_SAVE_CACHE_KEY, true);
-        properties.put(REGISTRY_CENTER_CACHE_FILE_PATH_KEY, "/tmp/cache");
+        properties.put(REGISTRY_CENTER_CACHE_FILE_PATH_KEY, cachePath);
         PluginConfig pluginConfig = new PluginConfig("zookeeper", AbstractRegistryCenter.class,
                 properties);
         return pluginConfig;

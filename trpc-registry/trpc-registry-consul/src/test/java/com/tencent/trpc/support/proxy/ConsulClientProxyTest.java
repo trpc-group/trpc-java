@@ -13,7 +13,7 @@ package com.tencent.trpc.support.proxy;
 
 import com.ecwid.consul.v1.ConsulClient;
 import com.tencent.trpc.support.ConsulInstanceManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**

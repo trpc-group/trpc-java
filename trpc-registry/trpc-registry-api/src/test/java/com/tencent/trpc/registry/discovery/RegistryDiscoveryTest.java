@@ -30,9 +30,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RegistryDiscoveryTest {
 
@@ -41,7 +41,7 @@ public class RegistryDiscoveryTest {
     private static RegistryDiscovery discovery;
     private static AbstractRegistryCenter clientRegistry;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         clientRegistry = new AbstractRegistryCenter() {
             @Override
@@ -65,12 +65,12 @@ public class RegistryDiscoveryTest {
 
     @Test
     public void testSelfRegistry() {
-        Assert.assertEquals(1, clientRegistry.getRegisteredRegisterInfos().size());
+        Assertions.assertEquals(1, clientRegistry.getRegisteredRegisterInfos().size());
     }
 
     @Test
     public void testSubscribe() {
-        Assert.assertEquals(1, clientRegistry.getSubscribedRegisterInfos().size());
+        Assertions.assertEquals(1, clientRegistry.getSubscribedRegisterInfos().size());
     }
 
     @Test
@@ -80,7 +80,7 @@ public class RegistryDiscoveryTest {
             registerInfos.add(buildRegisterInfo(12000 + i));
         }
         discovery.notify(registerInfos);
-        Assert.assertEquals(10, discovery.getServiceInstances().size());
+        Assertions.assertEquals(10, discovery.getServiceInstances().size());
     }
 
     @Test
@@ -88,9 +88,9 @@ public class RegistryDiscoveryTest {
         this.testNotify();
         ServiceId serviceId = new ServiceId();
         serviceId.setServiceName("test.service1");
-        Assert.assertEquals(10, discovery.list(serviceId).size());
+        Assertions.assertEquals(10, discovery.list(serviceId).size());
         serviceId.setServiceName("test.service2");
-        Assert.assertEquals(0, discovery.list(serviceId).size());
+        Assertions.assertEquals(0, discovery.list(serviceId).size());
 
     }
 
@@ -102,10 +102,10 @@ public class RegistryDiscoveryTest {
 
         Executor executor = Executors.newSingleThreadExecutor();
 
-        Assert.assertEquals(10, discovery.asyncList(serviceId, executor).toCompletableFuture()
+        Assertions.assertEquals(10, discovery.asyncList(serviceId, executor).toCompletableFuture()
                 .get().size());
         serviceId.setServiceName("test.service2");
-        Assert.assertEquals(0,
+        Assertions.assertEquals(0,
                 discovery.asyncList(serviceId, executor).toCompletableFuture().get().size());
 
     }

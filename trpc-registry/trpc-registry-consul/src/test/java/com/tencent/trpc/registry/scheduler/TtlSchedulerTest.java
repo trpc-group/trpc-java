@@ -14,8 +14,8 @@ package com.tencent.trpc.registry.scheduler;
 import com.ecwid.consul.v1.ConsulClient;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.support.ConsulInstanceManager;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ public class TtlSchedulerTest {
     private TtlScheduler ttlScheduler;
     private String serviceId = "trpc.test.testName";
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         Map<String, Object> extMap = new HashMap<>();

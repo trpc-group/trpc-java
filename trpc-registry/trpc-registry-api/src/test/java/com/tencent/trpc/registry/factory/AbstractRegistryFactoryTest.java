@@ -19,8 +19,8 @@ import com.tencent.trpc.core.registry.RegisterInfo;
 import com.tencent.trpc.registry.center.AbstractRegistryCenter;
 import com.tencent.trpc.registry.center.NotifyListener;
 import com.tencent.trpc.registry.center.RegistryCenter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -195,7 +195,7 @@ public class AbstractRegistryFactoryTest {
         Map<String, AbstractRegistryCenter> registriesMap = AbstractRegistryFactory.REGISTRIES;
         registriesMap.clear();
         Collection<AbstractRegistryCenter> registries = AbstractRegistryFactory.getRegistries();
-        Assert.assertEquals(0, registries.size());
+        Assertions.assertEquals(0, registries.size());
     }
 
     @Test
@@ -203,7 +203,7 @@ public class AbstractRegistryFactoryTest {
         Map<String, AbstractRegistryCenter> registries = AbstractRegistryFactory.REGISTRIES;
         registries.put("test", null);
         AbstractRegistryCenter registryCenter = AbstractRegistryFactory.getRegistry("test");
-        Assert.assertNull(registryCenter);
+        Assertions.assertNull(registryCenter);
     }
 
     @Test
@@ -213,7 +213,7 @@ public class AbstractRegistryFactoryTest {
         extMap.put("addresses", "127.0.0.1:8500");
         protocolConfig.setExtMap(extMap);
         RegistryCenter registryCenter = registryFactory.connect(protocolConfig);
-        Assert.assertNotNull(registryCenter);
+        Assertions.assertNotNull(registryCenter);
         AbstractRegistryFactory.clearRegistryNotDestroy();
     }
 
@@ -224,18 +224,18 @@ public class AbstractRegistryFactoryTest {
         extMap.put("addresses", "127.0.0.1:8500");
         protocolConfig.setExtMap(extMap);
         RegistryCenter registryCenter = registryFactory.connect(protocolConfig);
-        Assert.assertNotNull(registryCenter);
+        Assertions.assertNotNull(registryCenter);
 
         AbstractRegistryFactory.destroyAll();
         AbstractRegistryCenter registryCenterT = registryFactory.connect(protocolConfig);
-        Assert.assertNotNull(registryCenterT);
+        Assertions.assertNotNull(registryCenterT);
         registryCenterT.unsubscribe(null, null);
         registryCenterT.subscribe(null, null);
         registryCenterT.register(null);
         registryCenterT.unregister(null);
         registryCenterT.destroy();
         boolean available = registryCenterT.isAvailable();
-        Assert.assertFalse(available);
+        Assertions.assertFalse(available);
     }
 
     @Test
@@ -262,7 +262,7 @@ public class AbstractRegistryFactoryTest {
         registries.put("127.0.0.1:8500", registryCenter);
 
         RegistryCenter registryCenter = registryFactory02.connect(protocolConfig);
-        Assert.assertNotNull(registryCenter);
+        Assertions.assertNotNull(registryCenter);
     }
 
 

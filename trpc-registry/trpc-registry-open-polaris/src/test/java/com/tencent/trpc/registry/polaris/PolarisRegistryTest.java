@@ -13,7 +13,7 @@ package com.tencent.trpc.registry.polaris;
 
 import static com.tencent.trpc.polaris.common.PolarisRegistryConstant.PRIORITY_PARAM_KEY;
 import static com.tencent.trpc.polaris.common.PolarisRegistryConstant.WEIGHT_PARAM_KEY;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 
 import com.tencent.polaris.api.core.ProviderAPI;
 import com.tencent.polaris.api.exception.PolarisException;
@@ -33,35 +33,51 @@ import com.tencent.trpc.polaris.common.PolarisRegistryConstant;
 import com.tencent.trpc.support.HeartBeatManager;
 import java.util.HashMap;
 import java.util.Map;
-import junit.framework.TestCase;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({APIFactory.class, HeartBeatManager.class})
-@PowerMockIgnore({"javax.management.*"})
-public class PolarisRegistryTest extends TestCase {
+@ExtendWith(MockitoExtension.class)
+public class PolarisRegistryTest {
+
+    private MockedStatic<APIFactory> mockedAPIFactory;
+    private MockedStatic<HeartBeatManager> mockedHeartBeatManager;
+    private AutoCloseable mockitoCloseable;
 
     @Captor
     private ArgumentCaptor<Integer> intervalCaptor;
 
+    @BeforeEach
     protected void setUp() {
-        MockitoAnnotations.initMocks(this);
-        PowerMockito.mockStatic(APIFactory.class);
-        PowerMockito.mockStatic(HeartBeatManager.class);
+        mockitoCloseable = MockitoAnnotations.openMocks(this);
+        mockedAPIFactory = Mockito.mockStatic(APIFactory.class);
+        mockedHeartBeatManager = Mockito.mockStatic(HeartBeatManager.class);
+    }
+
+    @AfterEach
+    protected void tearDown() throws Exception {
+        if (mockedAPIFactory != null) {
+            mockedAPIFactory.close();
+        }
+        if (mockedHeartBeatManager != null) {
+            mockedHeartBeatManager.close();
+        }
+        if (mockitoCloseable != null) {
+            mockitoCloseable.close();
+        }
     }
 
     @Test
     public void testRegistry() throws PolarisException {
-        PowerMockito.when(APIFactory.createProviderAPIByConfig(anyObject()))
+        mockedAPIFactory.when(() -> APIFactory.createProviderAPIByConfig(any()))
                 .thenReturn(new ProviderAPI() {
                     @Override
                     public InstanceRegisterResponse registerInstance(InstanceRegisterRequest instanceRegisterRequest)
@@ -72,20 +88,20 @@ public class PolarisRegistryTest extends TestCase {
                     @Override
                     public InstanceRegisterResponse register(
                             InstanceRegisterRequest instanceRegisterRequest) {
-                        Assert.assertEquals(2000, instanceRegisterRequest.getTtl().intValue());
+                        Assertions.assertEquals(2000, instanceRegisterRequest.getTtl().intValue());
                         return new InstanceRegisterResponse("101", true);
                     }
 
                     @Override
                     public void deRegister(InstanceDeregisterRequest instanceDeRegisterRequest)
                             throws PolarisException {
-                        Assert.assertEquals("101", instanceDeRegisterRequest.getInstanceID());
+                        Assertions.assertEquals("101", instanceDeRegisterRequest.getInstanceID());
                     }
 
                     @Override
                     public void heartbeat(InstanceHeartbeatRequest instanceHeartbeatRequest)
                             throws PolarisException {
-                        Assert.assertEquals("101", instanceHeartbeatRequest.getInstanceID());
+                        Assertions.assertEquals("101", instanceHeartbeatRequest.getInstanceID());
                     }
 
                     @Override
@@ -132,10 +148,10 @@ public class PolarisRegistryTest extends TestCase {
                 .getExtensionLoader(Registry.class)
                 .getExtension("polaris");
         registry.register(registerInfo);
-        PowerMockito.verifyStatic();
-        HeartBeatManager.init(intervalCaptor.capture());
 
-        Assert.assertEquals(3000, intervalCaptor.getValue().longValue());
+        // 验证 HeartBeatManager.init 被调用
+        mockedHeartBeatManager.verify(() -> HeartBeatManager.init(intervalCaptor.capture()));
+        Assertions.assertEquals(3000, intervalCaptor.getValue().longValue());
 
         registry.heartbeat(registerInfo);
         registry.heartbeat(registerInfo);

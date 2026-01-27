@@ -22,8 +22,8 @@ import com.tencent.polaris.factory.config.global.APIConfigImpl;
 import com.tencent.polaris.factory.config.global.ServerConnectorConfigImpl;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class PolarisTransTest {
 
@@ -32,19 +32,19 @@ public class PolarisTransTest {
         Map<String, Object> map = new HashMap<>();
         map.put("test", "test");
         Map<String, String> strMap = PolarisRegisterUtil.trans2StringMap(map);
-        Assert.assertEquals("test", strMap.get("test"));
+        Assertions.assertEquals("test", strMap.get("test"));
 
         map = new HashMap<>();
         map.put("test", 1L);
         strMap = PolarisRegisterUtil.trans2StringMap(map);
-        Assert.assertEquals("1", strMap.get("test"));
+        Assertions.assertEquals("1", strMap.get("test"));
 
         map = new HashMap<>();
         Map<String, Integer> notString = new HashMap<>();
         notString.put("test", 2);
         map.put("test", notString);
         strMap = PolarisRegisterUtil.trans2StringMap(map);
-        Assert.assertEquals("{\"test\":2}", strMap.get("test"));
+        Assertions.assertEquals("{\"test\":2}", strMap.get("test"));
     }
 
     @Test
@@ -56,8 +56,8 @@ public class PolarisTransTest {
         configuration.setDefault();
         APIConfigImpl apiConfig = configuration.getGlobal().getAPI();
         PolarisRegisterUtil.overrideApiConfig(apiConfig, extMap);
-        Assert.assertEquals(10, apiConfig.getMaxRetryTimes());
-        Assert.assertEquals("if", apiConfig.getBindIf());
+        Assertions.assertEquals(10, apiConfig.getMaxRetryTimes());
+        Assertions.assertEquals("if", apiConfig.getBindIf());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class PolarisTransTest {
         configuration.setDefault();
         ServerConnectorConfigImpl serverConnectorConfig = configuration.getGlobal().getServerConnector();
         PolarisRegisterUtil.overrideServerConnectorConfig(serverConnectorConfig, extMap);
-        Assert.assertEquals("10.0.0.1:1239", serverConnectorConfig.getAddresses().get(0));
-        Assert.assertEquals("http", serverConnectorConfig.getProtocol());
+        Assertions.assertEquals("10.0.0.1:1239", serverConnectorConfig.getAddresses().get(0));
+        Assertions.assertEquals("http", serverConnectorConfig.getProtocol());
     }
 }

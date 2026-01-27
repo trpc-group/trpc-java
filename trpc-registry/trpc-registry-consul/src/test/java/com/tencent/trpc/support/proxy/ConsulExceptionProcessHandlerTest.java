@@ -14,7 +14,7 @@ package com.tencent.trpc.support.proxy;
 import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import com.tencent.trpc.support.ConsulInstanceManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.concurrent.Callable;
