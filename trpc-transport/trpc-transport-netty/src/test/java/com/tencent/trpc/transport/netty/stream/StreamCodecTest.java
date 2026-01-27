@@ -15,8 +15,8 @@ import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class StreamCodecTest {
 
@@ -36,11 +36,11 @@ public class StreamCodecTest {
         ByteBuf buffer = Unpooled.buffer(0);
 
         frameDecoderHandler.decode(null, buffer, out);
-        Assert.assertEquals(0, out.size());
+        Assertions.assertEquals(0, out.size());
 
         buffer.writeByte(1);
         frameDecoderHandler.decode(null, buffer, out);
-        Assert.assertEquals(1, out.size());
+        Assertions.assertEquals(1, out.size());
     }
 
 }

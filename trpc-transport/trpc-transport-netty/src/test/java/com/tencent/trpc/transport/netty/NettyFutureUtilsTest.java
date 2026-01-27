@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.transport.netty;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.utils.FutureUtils;
@@ -22,9 +22,9 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class NettyFutureUtilsTest {
 
@@ -33,7 +33,7 @@ public class NettyFutureUtilsTest {
         assertTrue(((NettyChannel) (channelmap.values().toArray()[0])).getIoChannel() == channel);
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         NettyChannelManager.getChannelMap().clear();
     }
@@ -53,7 +53,7 @@ public class NettyFutureUtilsTest {
         ProtocolConfig config = new ProtocolConfig();
         NettyFutureUtils.adaptConnectingFuture(future, newFuture, config);
         checkChannelInManager(channel);
-        Assert.assertTrue(((NettyChannel) newFuture.join()).getIoChannel() == channel);
+        Assertions.assertTrue(((NettyChannel) newFuture.join()).getIoChannel() == channel);
     }
 
     /**

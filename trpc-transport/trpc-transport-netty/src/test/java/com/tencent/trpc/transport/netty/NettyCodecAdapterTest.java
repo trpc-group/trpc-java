@@ -1,5 +1,9 @@
 package com.tencent.trpc.transport.netty;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.exception.ErrorCode;
 import com.tencent.trpc.core.exception.TRpcException;
@@ -10,15 +14,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.DecoderException;
-import org.junit.Assert;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import java.nio.charset.StandardCharsets;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-
 
 public class NettyCodecAdapterTest {
 
@@ -27,7 +25,6 @@ public class NettyCodecAdapterTest {
         Codec codec = mock(Codec.class);
         doThrow(TRpcException.newFrameException(ErrorCode.TRPC_CLIENT_DECODE_ERR, "the request protocol is not trpc"))
                 .when(codec).decode(any(), any());
-
 
         ProtocolConfig protocolConfig = new ProtocolConfig();
         // set batchDecoder true
@@ -43,12 +40,12 @@ public class NettyCodecAdapterTest {
 
         // write illegal packet
         EmbeddedChannel tmpEmbeddedChannel = embeddedChannel;
-        DecoderException decoderException = Assert.assertThrows(DecoderException.class, () -> {
+        DecoderException decoderException = Assertions.assertThrows(DecoderException.class, () -> {
             tmpEmbeddedChannel.writeInbound(byteBuf);
         });
 
-        Assert.assertTrue(decoderException.getCause() instanceof TransportException);
-        Assert.assertEquals(byteBuf.refCnt(), 0);
+        Assertions.assertTrue(decoderException.getCause() instanceof TransportException);
+        Assertions.assertEquals(byteBuf.refCnt(), 0);
     }
 
     @Test
@@ -56,7 +53,6 @@ public class NettyCodecAdapterTest {
         Codec codec = mock(Codec.class);
         doThrow(TRpcException.newFrameException(ErrorCode.TRPC_CLIENT_DECODE_ERR, "the request protocol is not trpc"))
                 .when(codec).decode(any(), any());
-
 
         ProtocolConfig protocolConfig = new ProtocolConfig();
         // set batchDecoder false
@@ -72,11 +68,11 @@ public class NettyCodecAdapterTest {
 
         // write illegal packet
         EmbeddedChannel tmpEmbeddedChannel = embeddedChannel;
-        DecoderException decoderException = Assert.assertThrows(DecoderException.class, () -> {
+        DecoderException decoderException = Assertions.assertThrows(DecoderException.class, () -> {
             tmpEmbeddedChannel.writeInbound(byteBuf);
         });
 
-        Assert.assertTrue(decoderException.getCause() instanceof TransportException);
-        Assert.assertEquals(byteBuf.refCnt(), 0);
+        Assertions.assertTrue(decoderException.getCause() instanceof TransportException);
+        Assertions.assertEquals(byteBuf.refCnt(), 0);
     }
 }

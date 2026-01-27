@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.transport.netty;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.rpc.AbstractRequest;
@@ -24,10 +24,10 @@ import com.tencent.trpc.core.utils.NetUtils;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test Netty Transport
@@ -38,12 +38,12 @@ public class NettyTest extends AbstractNettyTest {
     ServerTransport server;
     ClientTransport client;
 
-    @Before
+    @BeforeEach
     public void before() {
 
     }
 
-    @After
+    @AfterEach
     public void after() {
         if (server != null) {
             server.close();
@@ -153,8 +153,8 @@ public class NettyTest extends AbstractNettyTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Assert.assertEquals(serverReceive.get(), MESSAGE);
-        Assert.assertEquals(clientReceive.get(), MESSAGE);
+        Assertions.assertEquals(serverReceive.get(), MESSAGE);
+        Assertions.assertEquals(clientReceive.get(), MESSAGE);
         try {
             server.toString();
             server.getChannels();

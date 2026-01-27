@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.transport.netty;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.collect.Lists;
 import com.tencent.trpc.core.common.config.BaseProtocolConfig;
@@ -31,23 +31,21 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.api.support.membermodification.MemberModifier;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Test the potential leak issue during the conversion process between Netty and CompletableFuture
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore("javax.management.*")
-@PrepareForTest({NettyTcpServerTransport.class})
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class NettyChannelTest {
 
     /**
@@ -233,89 +231,76 @@ public class NettyChannelTest {
     @Test
     public void testNettyTcpServerTransport_multiOccupyPort() {
         try {
-            ProtocolConfig config = PowerMockito.mock(ProtocolConfig.class);
-            PowerMockito.when(config.getBossThreads()).thenReturn(1);
-            PowerMockito.when(config.getReusePort()).thenReturn(true);
+            ProtocolConfig config = Mockito.mock(ProtocolConfig.class);
+            Mockito.when(config.getBossThreads()).thenReturn(1);
+            Mockito.when(config.getReusePort()).thenReturn(true);
 
-            ChannelHandler chan = PowerMockito.mock(ChannelHandler.class);
-            ServerCodec serverCodec = PowerMockito.mock(ServerCodec.class);
+            ChannelHandler chan = Mockito.mock(ChannelHandler.class);
+            ServerCodec serverCodec = Mockito.mock(ServerCodec.class);
 
-            InetSocketAddress bindAddress = PowerMockito.mock(InetSocketAddress.class);
-            PowerMockito.when(bindAddress.getPort()).thenReturn(8080);
+            InetSocketAddress bindAddress = Mockito.mock(InetSocketAddress.class);
+            Mockito.when(bindAddress.getPort()).thenReturn(8080);
 
-            ServerBootstrap bootstrap = PowerMockito.mock(ServerBootstrap.class);
+            ServerBootstrap bootstrap = Mockito.mock(ServerBootstrap.class);
 
-            ChannelFuture channelFuture = PowerMockito.mock(ChannelFuture.class);
+            ChannelFuture channelFuture = Mockito.mock(ChannelFuture.class);
 
-            PowerMockito.when(channelFuture.isSuccess()).thenReturn(true);
+            Mockito.when(channelFuture.isSuccess()).thenReturn(true);
 
-            PowerMockito.when(bootstrap.bind(Mockito.any(InetSocketAddress.class))).thenReturn(channelFuture);
+            Mockito.when(bootstrap.bind(Mockito.any(InetSocketAddress.class))).thenReturn(channelFuture);
 
-            PowerMockito.when(channelFuture.await()).thenReturn(channelFuture);
+            Mockito.when(channelFuture.await()).thenReturn(channelFuture);
 
             NettyTcpServerTransport nettyTcpServerTransport = new NettyTcpServerTransport(config, chan, serverCodec);
-            NettyTcpServerTransport mockTcpServerTransport = PowerMockito.spy(nettyTcpServerTransport);
+            NettyTcpServerTransport mockTcpServerTransport = Mockito.spy(nettyTcpServerTransport);
 
-            MemberModifier.field(NettyTcpServerTransport.class, "bindAddress")
-                    .set(mockTcpServerTransport, bindAddress);
+            setField(mockTcpServerTransport, "bindAddress", bindAddress);
+            setField(mockTcpServerTransport, "bootstrap", bootstrap);
+            setField(mockTcpServerTransport, "config", config);
+            ChannelFuture connect = invokeMethod(mockTcpServerTransport, "multiOccupyPort");
+            Assertions.assertNotNull(connect);
 
-            MemberModifier.field(NettyTcpServerTransport.class, "bootstrap")
-                    .set(mockTcpServerTransport, bootstrap);
+            Mockito.when(channelFuture.isSuccess()).thenReturn(false);
 
-            MemberModifier.field(NettyTcpServerTransport.class, "config")
-                    .set(mockTcpServerTransport, config);
-
-            PowerMockito.when(mockTcpServerTransport, "canMultiOccupyPort").thenReturn(true);
-
-            ChannelFuture connect = Whitebox.invokeMethod(mockTcpServerTransport, "multiOccupyPort");
-            Assert.assertNotNull(connect);
-
-            PowerMockito.when(channelFuture.isSuccess()).thenReturn(false);
-
-            ChannelFuture future = Whitebox.invokeMethod(mockTcpServerTransport, "multiOccupyPort");
-            Assert.assertNotNull(future);
+            ChannelFuture future = invokeMethod(mockTcpServerTransport, "multiOccupyPort");
+            Assertions.assertNotNull(future);
         } catch (Exception e) {
             e.printStackTrace();
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
     }
 
     @Test
     public void testNettyTcpServerTransport_multiOccupyPortFail() {
         try {
-            ProtocolConfig config = PowerMockito.mock(ProtocolConfig.class);
-            PowerMockito.when(config.getBossThreads()).thenReturn(1);
-            PowerMockito.when(config.getReusePort()).thenReturn(true);
-            ChannelHandler chan = PowerMockito.mock(ChannelHandler.class);
-            ServerCodec serverCodec = PowerMockito.mock(ServerCodec.class);
-            InetSocketAddress bindAddress = PowerMockito.mock(InetSocketAddress.class);
-            PowerMockito.when(bindAddress.getPort()).thenReturn(8080);
-            ServerBootstrap bootstrap = PowerMockito.mock(ServerBootstrap.class);
+            ProtocolConfig config = Mockito.mock(ProtocolConfig.class);
+            Mockito.when(config.getBossThreads()).thenReturn(1);
+            Mockito.when(config.getReusePort()).thenReturn(true);
+            ChannelHandler chan = Mockito.mock(ChannelHandler.class);
+            ServerCodec serverCodec = Mockito.mock(ServerCodec.class);
+            InetSocketAddress bindAddress = Mockito.mock(InetSocketAddress.class);
+            Mockito.when(bindAddress.getPort()).thenReturn(8080);
+            ServerBootstrap bootstrap = Mockito.mock(ServerBootstrap.class);
 
             NettyTcpServerTransport nettyTcpServerTransport = new NettyTcpServerTransport(config, chan, serverCodec);
-            NettyTcpServerTransport mockTcpServerTransport = PowerMockito.spy(nettyTcpServerTransport);
+            NettyTcpServerTransport mockTcpServerTransport = Mockito.spy(nettyTcpServerTransport);
 
-            MemberModifier.field(NettyTcpServerTransport.class, "bindAddress")
-                    .set(mockTcpServerTransport, bindAddress);
-
-            MemberModifier.field(NettyTcpServerTransport.class, "bootstrap")
-                    .set(mockTcpServerTransport, bootstrap);
-
-            MemberModifier.field(NettyTcpServerTransport.class, "config")
-                    .set(mockTcpServerTransport, config);
-            ChannelFuture connect = Whitebox.invokeMethod(mockTcpServerTransport, "multiOccupyPort");
-            Assert.assertNull(connect);
+            setField(mockTcpServerTransport, "bindAddress", bindAddress);
+            setField(mockTcpServerTransport, "bootstrap", bootstrap);
+            setField(mockTcpServerTransport, "config", config);
+            ChannelFuture connect = invokeMethod(mockTcpServerTransport, "multiOccupyPort");
+            Assertions.assertNull(connect);
 
 
         } catch (Exception e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
     }
 
     @Test
     public void testTRPCNettyBindException() {
         TRPCNettyBindException trpcNettyBindException = new TRPCNettyBindException("exception");
-        Assert.assertNotNull(trpcNettyBindException);
+        Assertions.assertNotNull(trpcNettyBindException);
 
         BaseProtocolConfig baseProtocolConfig = new BaseProtocolConfig();
         baseProtocolConfig.setBossThreads(1);
@@ -325,7 +310,7 @@ public class NettyChannelTest {
         protocolConfig.setIp("127.0.0.1");
         protocolConfig.setIoThreads(2);
         protocolConfig.setBossThreads(1);
-        Assert.assertTrue(protocolConfig.getBossThreads() > 0);
+        Assertions.assertTrue(protocolConfig.getBossThreads() > 0);
     }
 
 
@@ -337,7 +322,7 @@ public class NettyChannelTest {
             protocolConfig.setIoThreads(1);
             protocolConfig.setBossThreads(2);
         } catch (Exception e) {
-            Assert.assertNotNull(e.getMessage());
+            Assertions.assertNotNull(e.getMessage());
         }
     }
 
@@ -348,8 +333,42 @@ public class NettyChannelTest {
             protocolConfig.setIp("127.0.0.1");
             protocolConfig.setBossThreads(999999);
         } catch (Exception e) {
-            Assert.assertNotNull(e.getMessage());
+            Assertions.assertNotNull(e.getMessage());
         }
+    }
+
+    private void setField(Object target, String fieldName, Object value) throws Exception {
+        Class<?> clazz = target.getClass();
+        Field field = null;
+        while (clazz != null && field == null) {
+            try {
+                field = clazz.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                clazz = clazz.getSuperclass();
+            }
+        }
+        if (field == null) {
+            throw new NoSuchFieldException(fieldName);
+        }
+        field.setAccessible(true);
+        field.set(target, value);
+    }
+
+    private <T> T invokeMethod(Object target, String methodName) throws Exception {
+        Class<?> clazz = target.getClass();
+        Method method = null;
+        while (clazz != null && method == null) {
+            try {
+                method = clazz.getDeclaredMethod(methodName);
+            } catch (NoSuchMethodException e) {
+                clazz = clazz.getSuperclass();
+            }
+        }
+        if (method == null) {
+            throw new NoSuchMethodException(methodName);
+        }
+        method.setAccessible(true);
+        return (T) method.invoke(target);
     }
 
 }

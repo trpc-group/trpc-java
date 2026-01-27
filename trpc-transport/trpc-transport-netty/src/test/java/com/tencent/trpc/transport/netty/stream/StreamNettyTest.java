@@ -18,8 +18,8 @@ import com.tencent.trpc.core.stream.transport.RpcConnection;
 import com.tencent.trpc.core.stream.transport.ServerTransport;
 import com.tencent.trpc.core.utils.NetUtils;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 public class StreamNettyTest {
@@ -35,30 +35,30 @@ public class StreamNettyTest {
         NettyServerTransportFactory serverTransportFactory = new NettyServerTransportFactory();
         ServerTransport<? extends Closeable> serverTransport =
                 serverTransportFactory.create(protoConfig, () -> in -> in);
-        Assert.assertNotNull(serverTransport);
+        Assertions.assertNotNull(serverTransport);
         Mono<? extends Closeable> serverMono = serverTransport.start(conn -> {
             connected.incrementAndGet();
             return Mono.empty();
         });
-        Assert.assertNotNull(serverMono);
+        Assertions.assertNotNull(serverMono);
 
         Closeable[] server = new Closeable[1];
         serverMono.log().doOnSuccess(svr -> server[0] = svr).block();
-        Assert.assertNotNull(server[0]);
+        Assertions.assertNotNull(server[0]);
 
         NettyClientTransportFactory clientTransportFactory = new NettyClientTransportFactory();
         ClientTransport clientTransport = clientTransportFactory.create(protoConfig, () -> in -> in);
-        Assert.assertNotNull(clientTransport);
+        Assertions.assertNotNull(clientTransport);
 
         final RpcConnection[] conn = new RpcConnection[1];
 
         Mono<RpcConnection> connMono = clientTransport.connect();
-        Assert.assertNotNull(connMono);
+        Assertions.assertNotNull(connMono);
         connMono.doOnSuccess(c -> conn[0] = c).block();
-        Assert.assertNotNull(conn[0]);
+        Assertions.assertNotNull(conn[0]);
 
         conn[0].dispose();
-        Assert.assertTrue(conn[0].isDisposed());
+        Assertions.assertTrue(conn[0].isDisposed());
         server[0].dispose();
     }
 
