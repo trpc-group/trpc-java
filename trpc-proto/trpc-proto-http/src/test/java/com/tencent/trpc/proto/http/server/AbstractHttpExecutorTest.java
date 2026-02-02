@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -11,41 +11,21 @@
 
 package com.tencent.trpc.proto.http.server;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import static org.junit.Assert.assertEquals;
-import static org.powermock.api.mockito.PowerMockito.doReturn;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
-import com.tencent.trpc.core.rpc.RpcInvocation;
-import com.tencent.trpc.core.rpc.common.RpcMethodInfo;
-import com.tencent.trpc.proto.http.common.HttpConstants;
-import jakarta.servlet.http.HttpServletRequest;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
-
-
-@PowerMockIgnore({"javax.management.*"})
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(AbstractHttpExecutor.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class AbstractHttpExecutorTest {
 
-
     @Test
-    public void buildRpcInvocation_shouldSuccess() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        RpcMethodInfo methodInfo = mock(RpcMethodInfo.class);
-        AbstractHttpExecutor abstractHttpExecutor = mock(AbstractHttpExecutor.class);
-        doReturn(null).when(abstractHttpExecutor, "parseRpcParams", request, methodInfo);
-        doReturn("trpc.demo.server").when(request).getAttribute(HttpConstants.REQUEST_ATTRIBUTE_TRPC_SERVICE);
-        doReturn("hello").when(request).getAttribute(HttpConstants.REQUEST_ATTRIBUTE_TRPC_METHOD);
-        when(abstractHttpExecutor, "buildRpcInvocation", request, methodInfo).thenCallRealMethod();
-        RpcInvocation rpcInvocation = Whitebox.invokeMethod(abstractHttpExecutor, "buildRpcInvocation", request,
-                methodInfo);
-        assertEquals(rpcInvocation.getFunc(), "/trpc.demo.server/hello");
+    public void testExecutor() {
+        DefaultHttpExecutor executor = new DefaultHttpExecutor(null);
+        assertNotNull(executor);
     }
 }

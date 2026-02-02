@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.proto.support;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tencent.trpc.core.common.config.ConsumerConfig;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
@@ -30,7 +30,7 @@ import com.tencent.trpc.core.transport.handler.ChannelHandlerAdapter;
 import com.tencent.trpc.transport.netty.NettyClientTransportFactory;
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DefResponseFutureTest {
 

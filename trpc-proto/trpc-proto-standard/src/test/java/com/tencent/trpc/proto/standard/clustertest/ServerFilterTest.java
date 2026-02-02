@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.proto.standard.clustertest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.tencent.trpc.core.filter.spi.Filter;
 import com.tencent.trpc.core.rpc.CallInfo;

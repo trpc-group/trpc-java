@@ -39,10 +39,10 @@ import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpHeaders;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tests.service.GreeterJavaBeanService;
 import tests.service.GreeterJsonService;
 import tests.service.GreeterService;
@@ -63,7 +63,7 @@ public class Http2cRpcServerTest {
 
     private static CloseableHttpAsyncClient httpAsyncClient;
 
-    @BeforeClass
+    @BeforeAll
     public static void startHttpServer() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
@@ -121,7 +121,7 @@ public class Http2cRpcServerTest {
         return serviceConfig;
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopHttpServer() {
         ConfigManager.stopTest();
         if (serverConfig != null) {
@@ -153,15 +153,15 @@ public class Http2cRpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(404, simpleHttpResponse.getCode());
+        Assertions.assertEquals(404, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
         ErrorResponse errorResponse = JsonUtils.fromJson(simpleHttpResponse.getBodyText(), ErrorResponse.class);
-        Assert.assertEquals("not found service", errorResponse.getMessage());
+        Assertions.assertEquals("not found service", errorResponse.getMessage());
 
     }
 
@@ -194,14 +194,14 @@ public class Http2cRpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals(TEST_MESSAGE_BODY_BASE64, simpleHttpResponse.getBodyText());
+        Assertions.assertEquals(TEST_MESSAGE_BODY_BASE64, simpleHttpResponse.getBodyText());
     }
 
     @Test
@@ -233,14 +233,14 @@ public class Http2cRpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals(TEST_MESSAGE_BODY, simpleHttpResponse.getBodyText());
+        Assertions.assertEquals(TEST_MESSAGE_BODY, simpleHttpResponse.getBodyText());
     }
 
     @Test
@@ -272,14 +272,14 @@ public class Http2cRpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals("{\"message\":\"Hi:dFJQQy1KYXZhIQ==\"}",
+        Assertions.assertEquals("{\"message\":\"Hi:dFJQQy1KYXZhIQ==\"}",
                 simpleHttpResponse.getBodyText());
     }
 
@@ -309,14 +309,14 @@ public class Http2cRpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals("{\"message\":\"Hello, 5L2g5aW9VFJwYy1KYXZh\"}",
+        Assertions.assertEquals("{\"message\":\"Hello, 5L2g5aW9VFJwYy1KYXZh\"}",
                 simpleHttpResponse.getBodyText());
     }
 
@@ -344,14 +344,14 @@ public class Http2cRpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals("{\"message\":\"Hello,TRpc-Java\",\"status\":1,\"comments\":[\"first\",\"two\"]}",
+        Assertions.assertEquals("{\"message\":\"Hello,TRpc-Java\",\"status\":1,\"comments\":[\"first\",\"two\"]}",
                 simpleHttpResponse.getBodyText());
     }
 
@@ -381,14 +381,14 @@ public class Http2cRpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals("{\"message\":\"5L2g5aW9VFJwYy1KYXZh\"}",
+        Assertions.assertEquals("{\"message\":\"5L2g5aW9VFJwYy1KYXZh\"}",
                 simpleHttpResponse.getBodyText());
     }
 
@@ -419,14 +419,14 @@ public class Http2cRpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals("{\"message\":\"Hello, 5L2g5aW9VFJwYy1KYXZh\"}",
+        Assertions.assertEquals("{\"message\":\"Hello, 5L2g5aW9VFJwYy1KYXZh\"}",
                 simpleHttpResponse.getBodyText());
     }
 
@@ -457,15 +457,15 @@ public class Http2cRpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(405, simpleHttpResponse.getCode());
+        Assertions.assertEquals(405, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
         ErrorResponse errorResponse = JsonUtils.fromJson(simpleHttpResponse.getBodyText(), ErrorResponse.class);
-        Assert.assertEquals("http method is not allow", errorResponse.getMessage());
+        Assertions.assertEquals("http method is not allow", errorResponse.getMessage());
 
     }
 }

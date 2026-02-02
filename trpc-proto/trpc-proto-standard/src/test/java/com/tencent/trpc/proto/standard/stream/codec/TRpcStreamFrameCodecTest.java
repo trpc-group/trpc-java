@@ -19,8 +19,8 @@ import com.tencent.trpc.proto.standard.common.TRPCProtocol.TrpcStreamFrameType;
 import com.tencent.trpc.proto.standard.stream.codec.TRpcStreamFrameCodec.RpcCallInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TRpcStreamFrameCodecTest {
 
@@ -29,23 +29,23 @@ public class TRpcStreamFrameCodecTest {
         try {
             TRpcStreamFrameCodec.encodeStreamInitRequestFrame(UnpooledByteBufAllocator.DEFAULT, 0, 0,
                     getCallInfo(), getBackendConfig("notExist", "notExist"));
-            Assert.fail("check invalid serialization failed, should throw an exception");
+            Assertions.fail("check invalid serialization failed, should throw an exception");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
 
         try {
             TRpcStreamFrameCodec.encodeStreamInitRequestFrame(UnpooledByteBufAllocator.DEFAULT, 0, 0,
                     getCallInfo(), getBackendConfig(PBSerialization.NAME, "notExist"));
-            Assert.fail("check invalid compressor failed, should throw an exception");
+            Assertions.fail("check invalid compressor failed, should throw an exception");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
 
         ByteBuf frame = TRpcStreamFrameCodec.encodeStreamInitRequestFrame(UnpooledByteBufAllocator.DEFAULT, 0, 0,
                 getCallInfo(), getBackendConfig(PBSerialization.NAME, SnappyCompressor.NAME));
-        Assert.assertNotNull(frame);
-        Assert.assertEquals(TrpcStreamFrameType.TRPC_STREAM_FRAME_INIT_VALUE,
+        Assertions.assertNotNull(frame);
+        Assertions.assertEquals(TrpcStreamFrameType.TRPC_STREAM_FRAME_INIT_VALUE,
                 TRpcStreamFrameHeaderCodec.frameType(frame).getEncodedType());
     }
 
@@ -54,30 +54,30 @@ public class TRpcStreamFrameCodecTest {
         try {
             TRpcStreamFrameCodec.encodeStreamInitResponseFrame(UnpooledByteBufAllocator.DEFAULT, 0, 0,
                     getProtocolConfig("notExist", "notExist"), 0, "OK");
-            Assert.fail("check invalid serialization failed, should throw an exception");
+            Assertions.fail("check invalid serialization failed, should throw an exception");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
 
         try {
             TRpcStreamFrameCodec.encodeStreamInitResponseFrame(UnpooledByteBufAllocator.DEFAULT, 0, 0,
                     getProtocolConfig(PBSerialization.NAME, "notExist"), 0, "OK");
-            Assert.fail("check invalid compressor failed, should throw an exception");
+            Assertions.fail("check invalid compressor failed, should throw an exception");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
 
         ByteBuf frame = TRpcStreamFrameCodec.encodeStreamInitResponseFrame(UnpooledByteBufAllocator.DEFAULT, 0, 0,
                 getProtocolConfig(PBSerialization.NAME, SnappyCompressor.NAME), 0, "OK");
-        Assert.assertNotNull(frame);
-        Assert.assertEquals(TrpcStreamFrameType.TRPC_STREAM_FRAME_INIT_VALUE,
+        Assertions.assertNotNull(frame);
+        Assertions.assertEquals(TrpcStreamFrameType.TRPC_STREAM_FRAME_INIT_VALUE,
                 TRpcStreamFrameHeaderCodec.frameType(frame).getEncodedType());
 
         // 异常情况不检查serialization和compressor
         ByteBuf frame2 = TRpcStreamFrameCodec.encodeStreamInitResponseFrame(UnpooledByteBufAllocator.DEFAULT, 0, 0,
                 getProtocolConfig("notExist", "notExist"), 404, "FAIL");
-        Assert.assertNotNull(frame2);
-        Assert.assertEquals(TrpcStreamFrameType.TRPC_STREAM_FRAME_INIT_VALUE,
+        Assertions.assertNotNull(frame2);
+        Assertions.assertEquals(TrpcStreamFrameType.TRPC_STREAM_FRAME_INIT_VALUE,
                 TRpcStreamFrameHeaderCodec.frameType(frame2).getEncodedType());
     }
 

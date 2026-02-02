@@ -33,10 +33,10 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tests.service.GreeterJavaBeanService;
 import tests.service.GreeterJavaBeanService.GenericResponseBean;
 import tests.service.GreeterJavaBeanService.InnerMsg;
@@ -68,7 +68,7 @@ public class HttpRpcClientTest {
     private static final Integer CONNECTION_REQUEST_TIMEOUT_VALUE = 900;
     private static ServerConfig serverConfig;
 
-    @BeforeClass
+    @BeforeAll
     public static void startHttpServer() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
@@ -153,7 +153,7 @@ public class HttpRpcClientTest {
         return serviceConfig;
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopHttpServer() {
         ConfigManager.stopTest();
         if (serverConfig != null) {
@@ -199,10 +199,10 @@ public class HttpRpcClientTest {
             for (int i = 0; i < 20; i++) {
                 RpcClientContext context = new RpcClientContext();
                 HelloResponse helloResponse = proxy.sayHello(context, createPbRequest(TEST_INNER_MESSAGE));
-                Assert.assertNotNull(helloResponse);
+                Assertions.assertNotNull(helloResponse);
                 String rspMessage = helloResponse.getMessage();
                 logger.info("http rpc client request result: {}", rspMessage);
-                Assert.assertTrue(rspMessage.contains(TEST_INNER_MESSAGE));
+                Assertions.assertTrue(rspMessage.contains(TEST_INNER_MESSAGE));
             }
         } finally {
             backendConfig.stop();
@@ -229,10 +229,10 @@ public class HttpRpcClientTest {
             for (int i = 0; i < 20; i++) {
                 RpcClientContext context = new RpcClientContext();
                 HelloResponse helloResponse = proxy.sayHello(context, createPbRequest(TEST_INNER_MESSAGE));
-                Assert.assertNotNull(helloResponse);
+                Assertions.assertNotNull(helloResponse);
                 String rspMessage = helloResponse.getMessage();
                 logger.info("http rpc client request result: {}", rspMessage);
-                Assert.assertTrue(rspMessage.contains(TEST_INNER_MESSAGE));
+                Assertions.assertTrue(rspMessage.contains(TEST_INNER_MESSAGE));
             }
         } finally {
             backendConfig.stop();
@@ -262,10 +262,10 @@ public class HttpRpcClientTest {
 
                 RpcClientContext context = new RpcClientContext();
                 Map helloResponse = proxy.sayHelloJson(context, obj);
-                Assert.assertNotNull(helloResponse);
+                Assertions.assertNotNull(helloResponse);
                 String rspMessage = (String) helloResponse.get("message");
                 logger.info("http rpc client request result: {}", rspMessage);
-                Assert.assertTrue(rspMessage.contains(TEST_INNER_MESSAGE));
+                Assertions.assertTrue(rspMessage.contains(TEST_INNER_MESSAGE));
             }
         } finally {
             backendConfig.stop();
@@ -291,9 +291,9 @@ public class HttpRpcClientTest {
 
             RpcClientContext context = new RpcClientContext();
             proxy.sayHello(context, createPbRequest(TEST_INNER_MESSAGE));
-            Assert.fail("no exception thrown");
+            Assertions.fail("no exception thrown");
         } catch (TRpcException e) {
-            Assert.assertEquals(404, e.getBizCode());
+            Assertions.assertEquals(404, e.getBizCode());
         } finally {
             backendConfig.stop();
         }
@@ -324,10 +324,10 @@ public class HttpRpcClientTest {
                 RpcClientContext context = new RpcClientContext();
                 Map helloResponse = proxy
                         .sayHelloParameterized(context, RequestParameterizedBean.of("message", msg + innerMsg));
-                Assert.assertNotNull(helloResponse);
+                Assertions.assertNotNull(helloResponse);
                 String rspMessage = (String) helloResponse.get("message");
                 logger.info("http rpc client request result: {}", rspMessage);
-                Assert.assertTrue(rspMessage.contains(msg));
+                Assertions.assertTrue(rspMessage.contains(msg));
             }
         } finally {
             backendConfig.stop();
@@ -354,12 +354,12 @@ public class HttpRpcClientTest {
                 RpcClientContext context = new RpcClientContext();
                 ResponseBean helloResponse = proxy
                         .sayHello(context, createJavaBeanRequest(TEST_MESSAGE, TEST_INNER_MESSAGE));
-                Assert.assertNotNull(helloResponse);
+                Assertions.assertNotNull(helloResponse);
                 String rspMessage = helloResponse.getMessage();
                 logger.info("http rpc client request result: {}", rspMessage);
-                Assert.assertTrue(rspMessage.contains(TEST_MESSAGE));
-                Assert.assertEquals(TEST_MESSAGE, helloResponse.getMessage());
-                Assert.assertEquals(TEST_INNER_MESSAGE, helloResponse.getInnerMsg().getMsg());
+                Assertions.assertTrue(rspMessage.contains(TEST_MESSAGE));
+                Assertions.assertEquals(TEST_MESSAGE, helloResponse.getMessage());
+                Assertions.assertEquals(TEST_INNER_MESSAGE, helloResponse.getInnerMsg().getMsg());
             }
         } finally {
             backendConfig.stop();
@@ -386,12 +386,12 @@ public class HttpRpcClientTest {
                 RpcClientContext context = new RpcClientContext();
                 GenericResponseBean<String> helloResponse = proxy
                         .sayHelloWithGeneric(context, createJavaBeanRequest(TEST_MESSAGE, TEST_INNER_MESSAGE));
-                Assert.assertNotNull(helloResponse);
+                Assertions.assertNotNull(helloResponse);
                 String rspMessage = helloResponse.getMessage();
                 logger.info("http rpc client request result: {}", rspMessage);
-                Assert.assertTrue(rspMessage.contains(TEST_MESSAGE));
-                Assert.assertEquals(TEST_MESSAGE, helloResponse.getMessage());
-                Assert.assertEquals(TEST_INNER_MESSAGE, helloResponse.getInnerMsg().getMsg());
+                Assertions.assertTrue(rspMessage.contains(TEST_MESSAGE));
+                Assertions.assertEquals(TEST_MESSAGE, helloResponse.getMessage());
+                Assertions.assertEquals(TEST_INNER_MESSAGE, helloResponse.getInnerMsg().getMsg());
             }
         } finally {
             backendConfig.stop();
@@ -417,9 +417,9 @@ public class HttpRpcClientTest {
             for (int i = 0; i < 20; i++) {
                 RpcClientContext context = new RpcClientContext();
                 String helloResponse = proxy.sayBlankHello(context, createPbRequest(TEST_INNER_MESSAGE));
-                Assert.assertNull(helloResponse);
+                Assertions.assertNull(helloResponse);
                 logger.info("http rpc client request result: {}", helloResponse);
-                Assert.assertTrue(StringUtils.isEmpty(helloResponse));
+                Assertions.assertTrue(StringUtils.isEmpty(helloResponse));
             }
         } finally {
             backendConfig.stop();
@@ -453,10 +453,10 @@ public class HttpRpcClientTest {
             context.getReqAttachMap().put("key2", "key".getBytes(StandardCharsets.UTF_8));
             HelloResponse helloResponse = proxy.sayHello(context.newClientContext(),
                     createPbRequest(TEST_INNER_MESSAGE));
-            Assert.assertNotNull(helloResponse);
+            Assertions.assertNotNull(helloResponse);
             String rspMessage = helloResponse.getMessage();
             logger.info("http rpc client request result: {}", rspMessage);
-            Assert.assertTrue(rspMessage.contains(TEST_INNER_MESSAGE));
+            Assertions.assertTrue(rspMessage.contains(TEST_INNER_MESSAGE));
         } finally {
             backendConfig.stop();
         }
@@ -490,10 +490,10 @@ public class HttpRpcClientTest {
             context.getReqAttachMap().put("key", "key");
             context.getReqAttachMap().put("key2", "key".getBytes(StandardCharsets.UTF_8));
             HelloResponse helloResponse = proxy.sayHello(context, createPbRequest(TEST_INNER_MESSAGE));
-            Assert.assertNotNull(helloResponse);
+            Assertions.assertNotNull(helloResponse);
             String rspMessage = helloResponse.getMessage();
             logger.info("http rpc client request result: {}", rspMessage);
-            Assert.assertTrue(rspMessage.contains(TEST_INNER_MESSAGE));
+            Assertions.assertTrue(rspMessage.contains(TEST_INNER_MESSAGE));
         } finally {
             backendConfig.stop();
         }
@@ -518,12 +518,12 @@ public class HttpRpcClientTest {
             RpcClientContext context = new RpcClientContext();
             ResponseBean helloResponse = proxy
                     .assertAttachment(context, createJavaBeanRequest(TEST_MESSAGE, TEST_INNER_MESSAGE));
-            Assert.assertNotNull(helloResponse);
+            Assertions.assertNotNull(helloResponse);
             String rspMessage = helloResponse.getMessage();
             logger.info("http rpc client request result: {}", rspMessage);
-            Assert.assertTrue(rspMessage.contains(TEST_MESSAGE));
-            Assert.assertEquals(TEST_MESSAGE, helloResponse.getMessage());
-            Assert.assertEquals(TEST_INNER_MESSAGE, helloResponse.getInnerMsg().getMsg());
+            Assertions.assertTrue(rspMessage.contains(TEST_MESSAGE));
+            Assertions.assertEquals(TEST_MESSAGE, helloResponse.getMessage());
+            Assertions.assertEquals(TEST_INNER_MESSAGE, helloResponse.getInnerMsg().getMsg());
         } finally {
             backendConfig.stop();
         }

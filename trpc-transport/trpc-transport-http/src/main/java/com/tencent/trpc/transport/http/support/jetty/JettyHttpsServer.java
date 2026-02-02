@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -18,6 +18,7 @@ import static com.tencent.trpc.transport.http.common.Constants.KEYSTORE_PATH;
 
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.transport.http.HttpExecutor;
+import com.tencent.trpc.transport.http.common.Constants;
 import org.eclipse.jetty.http2.HTTP2Cipher;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -54,7 +55,8 @@ public class JettyHttpsServer extends JettyHttpServer {
         sslContextFactory
                 .setKeyStorePassword(String.valueOf(config.getExtMap().get(KEYSTORE_PASS)));
         sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
-        sslContextFactory.setProvider("Conscrypt");
+        sslContextFactory.setSniRequired(false);
+        sslContextFactory.setEndpointIdentificationAlgorithm(Constants.HTTPS);
 
         // 2. Configure http protocol
         HttpConfiguration httpConfig = new HttpConfiguration();

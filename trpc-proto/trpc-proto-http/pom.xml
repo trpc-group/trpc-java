@@ -64,5 +64,9 @@
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
+        <dependency>
+            <artifactId>jetty-alpn-java-server</artifactId>
+            <groupId>org.eclipse.jetty</groupId>
+        </dependency>
     </dependencies>
 </project>

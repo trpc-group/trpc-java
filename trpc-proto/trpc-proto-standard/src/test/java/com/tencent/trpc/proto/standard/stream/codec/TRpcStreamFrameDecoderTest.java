@@ -18,8 +18,8 @@ import com.tencent.trpc.proto.standard.common.TRPCProtocol.TrpcDataFrameType;
 import com.tencent.trpc.proto.standard.common.TRpcFrameType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TRpcStreamFrameDecoderTest {
 
@@ -34,22 +34,22 @@ public class TRpcStreamFrameDecoderTest {
             ByteBuf decoded = frameDecoder.decode(frame);
             int decodedFrameSize = decoded.readableBytes();
 
-            Assert.assertEquals(0, frame.readableBytes());
-            Assert.assertTrue(decodedFrameSize > 0);
-            Assert.assertEquals(frameSize, decodedFrameSize);
+            Assertions.assertEquals(0, frame.readableBytes());
+            Assertions.assertTrue(decodedFrameSize > 0);
+            Assertions.assertEquals(frameSize, decodedFrameSize);
 
-            Assert.assertNull(frameDecoder.decode(frame));
+            Assertions.assertNull(frameDecoder.decode(frame));
 
             frame.writeByte(0);
-            Assert.assertEquals(decodedFrameSize, decoded.readableBytes());
+            Assertions.assertEquals(decodedFrameSize, decoded.readableBytes());
         }
     }
 
     @Test
     public void testNotEnoughData() {
         TRpcStreamFrameDecoder frameDecoder = new TRpcStreamFrameDecoder();
-        Assert.assertNull(frameDecoder.decode(getNotEnoughHeaderTRpcFrame()));
-        Assert.assertNull(frameDecoder.decode(getNotEnoughDataTRpcFrame(100)));
+        Assertions.assertNull(frameDecoder.decode(getNotEnoughHeaderTRpcFrame()));
+        Assertions.assertNull(frameDecoder.decode(getNotEnoughDataTRpcFrame(100)));
     }
 
     @Test
@@ -57,9 +57,9 @@ public class TRpcStreamFrameDecoderTest {
         TRpcStreamFrameDecoder frameDecoder = new TRpcStreamFrameDecoder();
         try {
             frameDecoder.decode(getInvalidMagicTRpcFrame());
-            Assert.fail("check unknown magic failed, should throw an exception");
+            Assertions.fail("check unknown magic failed, should throw an exception");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof TRpcException);
+            Assertions.assertTrue(e instanceof TRpcException);
         }
     }
 
@@ -79,10 +79,10 @@ public class TRpcStreamFrameDecoderTest {
             if (decoded == null) {
                 break;
             }
-            Assert.assertEquals(singleFrameSize, decoded.readableBytes());
+            Assertions.assertEquals(singleFrameSize, decoded.readableBytes());
             got++;
         }
-        Assert.assertEquals(count, got);
+        Assertions.assertEquals(count, got);
     }
 
     private ByteBuf getNormalTRpcFrame(int streamID, TRpcFrameType frameType) {
@@ -138,8 +138,8 @@ public class TRpcStreamFrameDecoderTest {
 
     @Test
     public void testErrorCodeStream() {
-        Assert.assertNotNull(Stream.FRAME_DECODE_MAGIC_ERR.getMessage());
-        Assert.assertNotNull(Stream.FRAME_DECODE_MAGIC_ERR.getStatusCode());
+        Assertions.assertNotNull(Stream.FRAME_DECODE_MAGIC_ERR.getMessage());
+        Assertions.assertNotNull(Stream.FRAME_DECODE_MAGIC_ERR.getStatusCode());
     }
 
 

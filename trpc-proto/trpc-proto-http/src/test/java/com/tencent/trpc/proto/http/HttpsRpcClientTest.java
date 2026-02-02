@@ -29,10 +29,10 @@ import com.tencent.trpc.core.utils.NetUtils;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tests.service.GreeterJsonService;
 import tests.service.GreeterService;
 import tests.service.HelloRequestProtocol.HelloRequest;
@@ -51,7 +51,7 @@ public class HttpsRpcClientTest {
 
     private static Map<String, Object> extMap = new HashMap<>();
 
-    @BeforeClass
+    @BeforeAll
     public static void startHttpServer() {
 
         String path = Http2RpcServerTest.class.getClassLoader().getResource("keystore.jks")
@@ -126,7 +126,7 @@ public class HttpsRpcClientTest {
         return serviceConfig;
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopHttpServer() {
         ConfigManager.stopTest();
         if (serverConfig != null) {
@@ -149,7 +149,7 @@ public class HttpsRpcClientTest {
         backendConfig.setRequestTimeout(10000);
         consumerConfig.setServiceInterface(GreeterService.class);
         consumerConfig.setBackendConfig(backendConfig);
-        backendConfig.setNamingUrl("ip://127.0.0.1:18091");
+        backendConfig.setNamingUrl("ip://localhost:18091");
         backendConfig.setKeepAlive(false);
         backendConfig.setConnsPerAddr(4);
         backendConfig.setProtocol(HTTP_SCHEME);
@@ -162,10 +162,10 @@ public class HttpsRpcClientTest {
 
                 RpcClientContext context = new RpcClientContext();
                 HelloResponse helloResponse = proxy.sayHello(context, createPbRequest(msg));
-                Assert.assertNotNull(helloResponse);
+                Assertions.assertNotNull(helloResponse);
                 String rspMessage = helloResponse.getMessage();
                 logger.info("http rpc client request result: {}", rspMessage);
-                Assert.assertTrue(rspMessage.contains(msg));
+                Assertions.assertTrue(rspMessage.contains(msg));
             }
         } finally {
             backendConfig.stop();
@@ -180,7 +180,7 @@ public class HttpsRpcClientTest {
         backendConfig.setRequestTimeout(10000);
         consumerConfig.setServiceInterface(GreeterService.class);
         consumerConfig.setBackendConfig(backendConfig);
-        backendConfig.setNamingUrl("ip://127.0.0.1:18091");
+        backendConfig.setNamingUrl("ip://localhost:18091");
         backendConfig.setKeepAlive(false);
         backendConfig.setConnsPerAddr(4);
         backendConfig.setProtocol(HTTP_SCHEME);
@@ -194,7 +194,7 @@ public class HttpsRpcClientTest {
                 RpcClientContext context = new RpcClientContext();
                 context.setOneWay(true);
                 HelloResponse helloResponse = proxy.sayHello(context, createPbRequest(msg));
-                Assert.assertNull(helloResponse);
+                Assertions.assertNull(helloResponse);
             }
         } finally {
             backendConfig.stop();
@@ -209,7 +209,7 @@ public class HttpsRpcClientTest {
         backendConfig.setRequestTimeout(10000);
         consumerConfig.setServiceInterface(GreeterService.class);
         consumerConfig.setBackendConfig(backendConfig);
-        backendConfig.setNamingUrl("ip://127.0.0.1:18092");
+        backendConfig.setNamingUrl("ip://localhost:18092");
         backendConfig.setKeepAlive(false);
         backendConfig.setConnsPerAddr(4);
         backendConfig.setProtocol(HTTP_SCHEME);
@@ -223,10 +223,10 @@ public class HttpsRpcClientTest {
 
                 RpcClientContext context = new RpcClientContext();
                 HelloResponse helloResponse = proxy.sayHello(context, createPbRequest(msg));
-                Assert.assertNotNull(helloResponse);
+                Assertions.assertNotNull(helloResponse);
                 String rspMessage = helloResponse.getMessage();
                 logger.info("http rpc client request result: {}", rspMessage);
-                Assert.assertTrue(rspMessage.contains(msg));
+                Assertions.assertTrue(rspMessage.contains(msg));
             }
         } finally {
             backendConfig.stop();
@@ -241,7 +241,7 @@ public class HttpsRpcClientTest {
         backendConfig.setRequestTimeout(10000);
         consumerConfig.setServiceInterface(GreeterJsonService.class);
         consumerConfig.setBackendConfig(backendConfig);
-        backendConfig.setNamingUrl("ip://127.0.0.1:18092");
+        backendConfig.setNamingUrl("ip://localhost:18092");
         backendConfig.setKeepAlive(false);
         backendConfig.setConnsPerAddr(4);
         backendConfig.setProtocol(HTTP_SCHEME);
@@ -258,10 +258,10 @@ public class HttpsRpcClientTest {
 
                 RpcClientContext context = new RpcClientContext();
                 Map helloResponse = proxy.sayHelloJson(context, obj);
-                Assert.assertNotNull(helloResponse);
+                Assertions.assertNotNull(helloResponse);
                 String rspMessage = (String) helloResponse.get("message");
                 logger.info("http rpc client request result: {}", rspMessage);
-                Assert.assertTrue(rspMessage.contains(msg));
+                Assertions.assertTrue(rspMessage.contains(msg));
             }
         } finally {
             backendConfig.stop();
@@ -276,7 +276,7 @@ public class HttpsRpcClientTest {
         backendConfig.setRequestTimeout(10000);
         consumerConfig.setServiceInterface(GreeterService.class);
         consumerConfig.setBackendConfig(backendConfig);
-        backendConfig.setNamingUrl("ip://127.0.0.1:18092");
+        backendConfig.setNamingUrl("ip://localhost:18092");
         backendConfig.setKeepAlive(false);
         backendConfig.setConnsPerAddr(4);
         backendConfig.setProtocol(HTTP_SCHEME);
@@ -288,9 +288,9 @@ public class HttpsRpcClientTest {
             final String msg = "TRpc-Java!";
             RpcClientContext context = new RpcClientContext();
             proxy.sayHello(context, createPbRequest(msg));
-            Assert.fail("no exception thrown");
+            Assertions.fail("no exception thrown");
         } catch (TRpcException e) {
-            Assert.assertEquals(404, e.getBizCode());
+            Assertions.assertEquals(404, e.getBizCode());
         } finally {
             backendConfig.stop();
         }
@@ -304,7 +304,7 @@ public class HttpsRpcClientTest {
         backendConfig.setRequestTimeout(10000);
         consumerConfig.setServiceInterface(GreeterService.class);
         consumerConfig.setBackendConfig(backendConfig);
-        backendConfig.setNamingUrl("ip://127.0.0.1:18093");
+        backendConfig.setNamingUrl("ip://localhost:18093");
         backendConfig.setKeepAlive(false);
         backendConfig.setConnsPerAddr(4);
         backendConfig.setProtocol(HTTP_SCHEME);
@@ -316,9 +316,9 @@ public class HttpsRpcClientTest {
             final String msg = "TRpc-Java!";
             RpcClientContext context = new RpcClientContext();
             proxy.sayHello(context, createPbRequest(msg));
-            Assert.fail("no exception thrown");
+            Assertions.fail("no exception thrown");
         } catch (TRpcException e) {
-            Assert.assertEquals(0, e.getBizCode());
+            Assertions.assertEquals(0, e.getBizCode());
         } finally {
             backendConfig.stop();
         }

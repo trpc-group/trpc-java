@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.proto.standard.clustertest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
@@ -26,10 +26,10 @@ import com.tencent.trpc.core.rpc.CallInfo;
 import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.core.utils.Charsets;
 import com.tencent.trpc.proto.standard.common.HelloRequestProtocol;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ClusterTest {
 
@@ -58,7 +58,7 @@ public class ClusterTest {
         return serviceConfig;
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         FilterManager.registerPlugin("serverTest", ServerFilterTest.class);
         FilterManager.registerPlugin("clientTest", ClientFilterTest.class);
@@ -67,7 +67,7 @@ public class ClusterTest {
         startServer();
     }
 
-    @After
+    @AfterEach
     public void stop() {
         ConfigManager.getInstance().stop();
         if (serviceConfig != null) {
@@ -108,9 +108,9 @@ public class ClusterTest {
                                 .setMessage(ByteString.copyFromUtf8("haha")).build())
                 .getMessage().toStringUtf8();
         assertEquals("haha", message);
-        Assert.assertEquals("container", context.getCallInfo().getCallerContainerName());
-        Assert.assertEquals("set", context.getCallInfo().getCallerSetName());
-        Assert.assertEquals("reqAttachValue",
+        Assertions.assertEquals("container", context.getCallInfo().getCallerContainerName());
+        Assertions.assertEquals("set", context.getCallInfo().getCallerSetName());
+        Assertions.assertEquals("reqAttachValue",
                 new String((byte[]) (context.getRspAttachMap().get("attachKey")), Charsets.UTF_8));
         System.out.println(">>>[client]receive msg:" + message);
     }

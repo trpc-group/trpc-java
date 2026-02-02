@@ -18,7 +18,7 @@ import com.tencent.trpc.core.rpc.TrpcTransInfoKeys;
 import com.tencent.trpc.core.utils.Charsets;
 import com.tencent.trpc.core.utils.RpcContextUtils;
 import java.util.Map;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import tests.service.GreeterJavaBeanService;
 
 /**
@@ -56,19 +56,19 @@ public class GreeterJavaBeanServiceImpl implements GreeterJavaBeanService {
         responseBean.setMessage(request.getMessage());
         responseBean.setInnerMsg(request.getInnerMsg());
         Map<String, Object> attachments = context.getReqAttachMap();
-        Assert.assertNotNull(attachments);
-        Assert.assertTrue(attachments.containsKey(TrpcTransInfoKeys.CALLER_CONTAINER_NAME));
-        Assert.assertEquals("test-container",
+        Assertions.assertNotNull(attachments);
+        Assertions.assertTrue(attachments.containsKey(TrpcTransInfoKeys.CALLER_CONTAINER_NAME));
+        Assertions.assertEquals("test-container",
                 new String((byte[]) attachments.get(TrpcTransInfoKeys.CALLER_CONTAINER_NAME), Charsets.UTF_8));
-        Assert.assertEquals("test-container",
+        Assertions.assertEquals("test-container",
                 RpcContextUtils.getRequestAttachValue(context, TrpcTransInfoKeys.CALLER_CONTAINER_NAME));
-        Assert.assertTrue(attachments.containsKey(TrpcTransInfoKeys.CALLER_SET_NAME));
-        Assert.assertEquals("test-fullset",
+        Assertions.assertTrue(attachments.containsKey(TrpcTransInfoKeys.CALLER_SET_NAME));
+        Assertions.assertEquals("test-fullset",
                 new String((byte[]) attachments.get(TrpcTransInfoKeys.CALLER_SET_NAME), Charsets.UTF_8));
-        Assert.assertEquals("test-fullset",
+        Assertions.assertEquals("test-fullset",
                 RpcContextUtils.getRequestAttachValue(context, TrpcTransInfoKeys.CALLER_SET_NAME));
-        Assert.assertTrue(attachments.containsKey("Connection"));
-        Assert.assertEquals("keep-alive", RpcContextUtils.getRequestAttachValue(context, "Connection"));
+        Assertions.assertTrue(attachments.containsKey("Connection"));
+        Assertions.assertEquals("keep-alive", RpcContextUtils.getRequestAttachValue(context, "Connection"));
         return responseBean;
     }
 }

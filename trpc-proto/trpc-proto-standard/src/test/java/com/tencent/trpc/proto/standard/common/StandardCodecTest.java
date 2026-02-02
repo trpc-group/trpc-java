@@ -33,13 +33,13 @@ import io.netty.buffer.UnpooledByteBufAllocator;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.lang3.ArrayUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class StandardCodecTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         ServerConfig serverConfig = new ServerConfig();
         serverConfig.setServer("abc");
@@ -78,18 +78,18 @@ public class StandardCodecTest {
         Request serverRequest = (Request) standardServerCodec.decode(channel, nettyChannelBuffer);
         serverRequest.getAttachments().put("hello", "hello");
         TRpcReqHead tRpcReqHead = serverRequest.getAttachReqHead();
-        Assert.assertEquals(CompressType.GZIP, tRpcReqHead.getHead().getContentEncoding());
-        Assert.assertEquals(8889521, serverRequest.getRequestId());
-        Assert.assertEquals(serverRequest.getInvocation().getRpcMethodName(), "sayHello");
-        Assert.assertEquals(serverRequest.getInvocation().getRpcServiceName(), "helloservice");
-        Assert.assertTrue(ArrayUtils.isEquals(serverRequest.getAttachment("abc"), "abc".getBytes()));
+        Assertions.assertEquals(CompressType.GZIP, tRpcReqHead.getHead().getContentEncoding());
+        Assertions.assertEquals(8889521, serverRequest.getRequestId());
+        Assertions.assertEquals(serverRequest.getInvocation().getRpcMethodName(), "sayHello");
+        Assertions.assertEquals(serverRequest.getInvocation().getRpcServiceName(), "helloservice");
+        Assertions.assertTrue(ArrayUtils.isEquals(serverRequest.getAttachment("abc"), "abc".getBytes()));
         Object decode = ((DecodableValue) serverRequest.getInvocation().getArguments()[0])
                 .decode(HelloRequest.class, false);
-        Assert.assertEquals(((HelloRequest) decode).getMessage().toStringUtf8(), "hello standard");
-        Assert.assertEquals(new String(((byte[]) serverRequest.getAttachment("key")), "UTF-8"), "value");
-        Assert.assertEquals(((TRpcReqHead) serverRequest.getAttachReqHead()).getHead().getCaller().toStringUtf8(),
+        Assertions.assertEquals(((HelloRequest) decode).getMessage().toStringUtf8(), "hello standard");
+        Assertions.assertEquals(new String(((byte[]) serverRequest.getAttachment("key")), "UTF-8"), "value");
+        Assertions.assertEquals(((TRpcReqHead) serverRequest.getAttachReqHead()).getHead().getCaller().toStringUtf8(),
                 "trpc...");
-        Assert.assertEquals(((TRpcReqHead) serverRequest.getAttachReqHead()).getHead().getFunc().toStringUtf8(),
+        Assertions.assertEquals(((TRpcReqHead) serverRequest.getAttachReqHead()).getHead().getFunc().toStringUtf8(),
                 "/helloservice/sayHello");
         DefResponse serverSendResponse = new DefResponse();
         serverSendResponse.setRequest(serverRequest);
@@ -103,24 +103,24 @@ public class StandardCodecTest {
 
         DefResponse clientResponse = (DefResponse) standardClientCodec.decode(channel, nettyChannelBuffer);
         TRpcRspHead tRpcRspHead = clientResponse.getAttachRspHead();
-        Assert.assertEquals(CompressType.GZIP, tRpcRspHead.getHead().getContentEncoding());
-        Assert.assertEquals(clientResponse.getRequestId(), 8889521);
-        Assert.assertEquals(
+        Assertions.assertEquals(CompressType.GZIP, tRpcRspHead.getHead().getContentEncoding());
+        Assertions.assertEquals(clientResponse.getRequestId(), 8889521);
+        Assertions.assertEquals(
                 new String(((byte[]) clientResponse.getAttachment("rsp-key")), StandardCharsets.UTF_8),
                 "value");
-        Assert.assertEquals(((TRpcRspHead) clientResponse.getAttachRspHead()).getHead().getCallType(),
+        Assertions.assertEquals(((TRpcRspHead) clientResponse.getAttachRspHead()).getHead().getCallType(),
                 TRPCProtocol.TrpcCallType.TRPC_UNARY_CALL_VALUE);
         Object clientRspDecode = ((DecodableValue) clientResponse.getValue()).decode(HelloResponse.class, false);
-        Assert.assertEquals(((HelloResponse) clientRspDecode).getMessage().toStringUtf8(), "response");
-        Assert.assertEquals(new String((byte[]) clientResponse.getAttachment("key"), StandardCharsets.UTF_8),
+        Assertions.assertEquals(((HelloResponse) clientRspDecode).getMessage().toStringUtf8(), "response");
+        Assertions.assertEquals(new String((byte[]) clientResponse.getAttachment("key"), StandardCharsets.UTF_8),
                 "value");
-        Assert.assertEquals(new String((byte[]) clientResponse.getAttachment("abc")), "abc");
+        Assertions.assertEquals(new String((byte[]) clientResponse.getAttachment("abc")), "abc");
         try {
             ((DecodableValue) clientResponse.getValue()).decode(DefResponse.class, false);
-            Assert.fail();
+            Assertions.fail();
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof RuntimeException);
-            Assert.assertTrue(e.getMessage().contains("deserialize to"));
+            Assertions.assertTrue(e instanceof RuntimeException);
+            Assertions.assertTrue(e.getMessage().contains("deserialize to"));
         }
     }
 
@@ -156,19 +156,19 @@ public class StandardCodecTest {
 
         Request serverRequest = (Request) standardServerCodec.decode(channel, nettyChannelBuffer);
         TRpcReqHead tRpcReqHead = serverRequest.getAttachReqHead();
-        Assert.assertEquals(CompressType.NONE, tRpcReqHead.getHead().getContentEncoding());
-        Assert.assertEquals(8889521, serverRequest.getRequestId());
-        Assert.assertEquals(serverRequest.getInvocation().getRpcMethodName(), "sayHello");
-        Assert.assertEquals(serverRequest.getInvocation().getRpcServiceName(), "helloservice");
-        Assert.assertTrue(ArrayUtils.isEquals(serverRequest.getAttachment("abc"), "abc".getBytes()));
+        Assertions.assertEquals(CompressType.NONE, tRpcReqHead.getHead().getContentEncoding());
+        Assertions.assertEquals(8889521, serverRequest.getRequestId());
+        Assertions.assertEquals(serverRequest.getInvocation().getRpcMethodName(), "sayHello");
+        Assertions.assertEquals(serverRequest.getInvocation().getRpcServiceName(), "helloservice");
+        Assertions.assertTrue(ArrayUtils.isEquals(serverRequest.getAttachment("abc"), "abc".getBytes()));
         Object decode = ((DecodableValue) serverRequest.getInvocation().getArguments()[0])
                 .decode(HelloRequest.class, false);
-        Assert.assertEquals(((HelloRequest) decode).getMessage().toStringUtf8(), "hello standard");
-        Assert.assertEquals(new String(((byte[]) serverRequest.getAttachment("key")), "UTF-8"),
+        Assertions.assertEquals(((HelloRequest) decode).getMessage().toStringUtf8(), "hello standard");
+        Assertions.assertEquals(new String(((byte[]) serverRequest.getAttachment("key")), "UTF-8"),
                 "value");
-        Assert.assertEquals(((TRpcReqHead) serverRequest.getAttachReqHead()).getHead().getCaller().toStringUtf8(),
+        Assertions.assertEquals(((TRpcReqHead) serverRequest.getAttachReqHead()).getHead().getCaller().toStringUtf8(),
                 "trpc...");
-        Assert.assertEquals(((TRpcReqHead) serverRequest.getAttachReqHead()).getHead().getFunc().toStringUtf8(),
+        Assertions.assertEquals(((TRpcReqHead) serverRequest.getAttachReqHead()).getHead().getFunc().toStringUtf8(),
                 "/helloservice/sayHello");
 
         DefResponse serverSendResponse = new DefResponse();
@@ -181,13 +181,13 @@ public class StandardCodecTest {
         standardServerCodec.encode(channel, nettyChannelBuffer, serverSendResponse);
         DefResponse clientResponse = (DefResponse) standardClientCodec.decode(channel, nettyChannelBuffer);
         TRpcReqHead tRpcReqHead1 = serverRequest.getAttachReqHead();
-        Assert.assertEquals(CompressType.NONE, tRpcReqHead1.getHead().getContentEncoding());
-        Assert.assertEquals(clientResponse.getRequestId(), 8889521);
-        Assert.assertEquals(new String(((byte[]) clientResponse.getAttachment("rsp-key")), "UTF-8"), "value");
-        Assert.assertEquals(((TRpcRspHead) clientResponse.getAttachRspHead()).getHead().getCallType(),
+        Assertions.assertEquals(CompressType.NONE, tRpcReqHead1.getHead().getContentEncoding());
+        Assertions.assertEquals(clientResponse.getRequestId(), 8889521);
+        Assertions.assertEquals(new String(((byte[]) clientResponse.getAttachment("rsp-key")), "UTF-8"), "value");
+        Assertions.assertEquals(((TRpcRspHead) clientResponse.getAttachRspHead()).getHead().getCallType(),
                 TRPCProtocol.TrpcCallType.TRPC_UNARY_CALL_VALUE);
         Object clientRspDecode =
                 ((DecodableValue) clientResponse.getValue()).decode(HelloResponse.class, false);
-        Assert.assertEquals(((HelloResponse) clientRspDecode).getMessage().toStringUtf8(), "response");
+        Assertions.assertEquals(((HelloResponse) clientRspDecode).getMessage().toStringUtf8(), "response");
     }
 }

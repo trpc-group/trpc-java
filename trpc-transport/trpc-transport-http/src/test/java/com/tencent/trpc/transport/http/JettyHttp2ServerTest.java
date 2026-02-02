@@ -40,8 +40,10 @@ import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
-import org.apache.hc.core5.http2.ssl.ConscryptClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.core5.ssl.SSLContexts;
+import org.apache.hc.core5.ssl.TrustStrategy;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -97,11 +99,15 @@ public class JettyHttp2ServerTest {
         String keyStorePath = String.valueOf(path);
         String keyStorePass = "init234";
         final SSLContext sslContext = SSLContexts.custom()
-                .loadTrustMaterial(new File(keyStorePath), keyStorePass.toCharArray())
+                .loadTrustMaterial(new File(keyStorePath), keyStorePass.toCharArray(),
+                        (TrustStrategy) (chain, authType) -> true)
                 .build();
         final PoolingAsyncClientConnectionManager cm = PoolingAsyncClientConnectionManagerBuilder
-                .create().useSystemProperties()
-                .setTlsStrategy(new ConscryptClientTlsStrategy(sslContext))
+                .create()
+                .setTlsStrategy(ClientTlsStrategyBuilder.create()
+                        .setSslContext(sslContext)
+                        .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                        .build())
                 .build();
         httpAsyncClient = HttpAsyncClients.custom()
                 .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2).setConnectionManager(cm)

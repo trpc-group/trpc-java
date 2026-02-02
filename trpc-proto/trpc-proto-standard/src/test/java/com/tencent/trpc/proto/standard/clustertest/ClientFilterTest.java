@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.proto.standard.clustertest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.tencent.trpc.core.filter.spi.Filter;
 import com.tencent.trpc.core.rpc.CallInfo;
@@ -19,7 +19,7 @@ import com.tencent.trpc.core.rpc.Invoker;
 import com.tencent.trpc.core.rpc.Request;
 import com.tencent.trpc.core.rpc.Response;
 import java.util.concurrent.CompletionStage;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 public class ClientFilterTest implements Filter {
 
@@ -27,14 +27,14 @@ public class ClientFilterTest implements Filter {
     public CompletionStage<Response> filter(Invoker<?> filterChain, Request req) {
         req.getMeta().addMessageType(100);
         CallInfo callInfo = req.getMeta().getCallInfo();
-        Assert.assertEquals("calleeapp", callInfo.getCalleeApp());
-        Assert.assertEquals("calleeserver", callInfo.getCalleeServer());
-        Assert.assertEquals("calleemethod", callInfo.getCalleeMethod());
-        Assert.assertEquals("calleeservice", callInfo.getCalleeService());
-        Assert.assertEquals("callerapp", callInfo.getCallerApp());
-        Assert.assertEquals("callerserver", callInfo.getCallerServer());
-        Assert.assertEquals("callermethod", callInfo.getCallerMethod());
-        Assert.assertEquals("callerservice", callInfo.getCallerService());
+        Assertions.assertEquals("calleeapp", callInfo.getCalleeApp());
+        Assertions.assertEquals("calleeserver", callInfo.getCalleeServer());
+        Assertions.assertEquals("calleemethod", callInfo.getCalleeMethod());
+        Assertions.assertEquals("calleeservice", callInfo.getCalleeService());
+        Assertions.assertEquals("callerapp", callInfo.getCallerApp());
+        Assertions.assertEquals("callerserver", callInfo.getCallerServer());
+        Assertions.assertEquals("callermethod", callInfo.getCallerMethod());
+        Assertions.assertEquals("callerservice", callInfo.getCallerService());
         return filterChain.invoke(req).thenApply(r -> {
             assertEquals(200, r.getMeta().getMessageType());
             return r;

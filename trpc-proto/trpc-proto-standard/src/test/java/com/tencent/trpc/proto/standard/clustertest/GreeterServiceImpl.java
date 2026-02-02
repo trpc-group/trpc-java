@@ -17,7 +17,7 @@ import com.tencent.trpc.core.rpc.CallInfo;
 import com.tencent.trpc.core.rpc.RpcServerContext;
 import com.tencent.trpc.core.utils.Charsets;
 import com.tencent.trpc.proto.standard.common.HelloRequestProtocol;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 public class GreeterServiceImpl implements GreeterService {
 
@@ -25,29 +25,29 @@ public class GreeterServiceImpl implements GreeterService {
     public HelloRequestProtocol.HelloResponse sayHello(RpcServerContext context,
             HelloRequestProtocol.HelloRequest request) {
         System.out.println(">>>[server]receive msg[" + TextFormat.shortDebugString(request) + "]");
-        Assert.assertEquals("reqDyeingKey", context.getDyeingKey());
-        Assert.assertEquals("reqAttachValue",
+        Assertions.assertEquals("reqDyeingKey", context.getDyeingKey());
+        Assertions.assertEquals("reqAttachValue",
                 new String((byte[]) context.getReqAttachMap().get("attachKey"), Charsets.UTF_8));
 
         CallInfo callInfo = context.getCallInfo();
-        Assert.assertEquals("trpc.calleeapp.calleeserver.calleeservice", callInfo.getCallee());
-        Assert.assertEquals("calleeapp", callInfo.getCalleeApp());
-        Assert.assertEquals("calleeserver", callInfo.getCalleeServer());
-        Assert.assertEquals("sayHello", callInfo.getCalleeMethod());
-        Assert.assertEquals("calleeservice", callInfo.getCalleeService());
-        Assert.assertEquals("trpc.callerapp.callerserver.callerservice", callInfo.getCaller());
-        Assert.assertEquals("callerapp", callInfo.getCallerApp());
-        Assert.assertEquals("callerserver", callInfo.getCallerServer());
-        Assert.assertEquals("", callInfo.getCallerMethod());
-        Assert.assertEquals("callerservice", callInfo.getCallerService());
+        Assertions.assertEquals("trpc.calleeapp.calleeserver.calleeservice", callInfo.getCallee());
+        Assertions.assertEquals("calleeapp", callInfo.getCalleeApp());
+        Assertions.assertEquals("calleeserver", callInfo.getCalleeServer());
+        Assertions.assertEquals("sayHello", callInfo.getCalleeMethod());
+        Assertions.assertEquals("calleeservice", callInfo.getCalleeService());
+        Assertions.assertEquals("trpc.callerapp.callerserver.callerservice", callInfo.getCaller());
+        Assertions.assertEquals("callerapp", callInfo.getCallerApp());
+        Assertions.assertEquals("callerserver", callInfo.getCallerServer());
+        Assertions.assertEquals("", callInfo.getCallerMethod());
+        Assertions.assertEquals("callerservice", callInfo.getCallerService());
 
         CallInfo clientCallInfo = context.newClientContext().getCallInfo();
-        Assert.assertEquals("trpc.calleeapp.calleeserver.calleeservice",
+        Assertions.assertEquals("trpc.calleeapp.calleeserver.calleeservice",
                 clientCallInfo.getCaller());
-        Assert.assertEquals("calleeapp", clientCallInfo.getCallerApp());
-        Assert.assertEquals("calleeserver", clientCallInfo.getCallerServer());
-        Assert.assertEquals("sayHello", clientCallInfo.getCallerMethod());
-        Assert.assertEquals("calleeservice", clientCallInfo.getCallerService());
+        Assertions.assertEquals("calleeapp", clientCallInfo.getCallerApp());
+        Assertions.assertEquals("calleeserver", clientCallInfo.getCallerServer());
+        Assertions.assertEquals("sayHello", clientCallInfo.getCallerMethod());
+        Assertions.assertEquals("calleeservice", clientCallInfo.getCallerService());
 
         String message = request.getMessage().toStringUtf8();
         HelloRequestProtocol.HelloResponse.Builder rspBuilder =

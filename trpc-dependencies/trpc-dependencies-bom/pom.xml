@@ -637,6 +637,11 @@
                 <version>${jetty.version}</version>
             </dependency>
             <dependency>
+                <artifactId>jetty-alpn-java-server</artifactId>
+                <groupId>org.eclipse.jetty</groupId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
                 <artifactId>jetty-alpn-openjdk8-server</artifactId>
                 <groupId>org.eclipse.jetty</groupId>
                 <version>${jetty.version}</version>

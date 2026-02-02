@@ -11,9 +11,9 @@
 
 package com.tencent.trpc.proto.standard.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -48,10 +48,10 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.codec.binary.StringUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TRpcServerTest {
 
@@ -62,7 +62,7 @@ public class TRpcServerTest {
     RpcClient createRpcClient;
     ConsumerConfig<HelloServiceApi> helloClientConfig;
 
-    @Before
+    @BeforeEach
     public void before() {
         ConfigManager.stopTest();
         ConfigManager.getInstance().startTest();
@@ -98,7 +98,7 @@ public class TRpcServerTest {
         helloClientConfig.setBackendConfig(helloBackendConfig);
     }
 
-    @After
+    @AfterEach
     public void after() {
         ConfigManager.stopTest();
         if (serviceConfig != null) {
@@ -456,7 +456,7 @@ public class TRpcServerTest {
         HelloRequest.Builder builder = HelloRequest.newBuilder();
         builder.setMessage(ByteString.copyFromUtf8("hello"));
         HelloResponse response = helloClientConfig.getProxy().sayHello(new RpcClientContext(), builder.build());
-        Assert.assertEquals(response.getMessage().toStringUtf8(), "hello response");
+        Assertions.assertEquals(response.getMessage().toStringUtf8(), "hello response");
     }
 
     @Test
@@ -465,12 +465,12 @@ public class TRpcServerTest {
         builder.setMessage(ByteString.copyFromUtf8("hello"));
         HelloServiceApi serviceApi = helloClientConfig.getProxy();
         HelloResponse response = serviceApi.doDefaultMethod(new RpcClientContext(), builder.build());
-        Assert.assertEquals(response.getMessage().toStringUtf8(), "this is default method");
+        Assertions.assertEquals(response.getMessage().toStringUtf8(), "this is default method");
         response = serviceApi.doUnExitedMethod(new RpcClientContext(), builder.build());
-        Assert.assertEquals(response.getMessage().toStringUtf8(), "this is default method");
+        Assertions.assertEquals(response.getMessage().toStringUtf8(), "this is default method");
         try {
             clientConfig.getProxy().sayHellox(new RpcClientContext(), builder.build());
-            Assert.fail();
+            Assertions.fail();
         } catch (Exception ex) {
             assertTrue(ex instanceof TRpcException
                     && ((TRpcException) ex).getCode() == ErrorCode.TRPC_SERVER_NOFUNC_ERR);
@@ -485,7 +485,7 @@ public class TRpcServerTest {
         byte[] resBytes = helloClientConfig.getProxy().doGenericMethod(new RpcClientContext(), reqBytes);
 
         HelloResponse response = HelloResponse.parseFrom(resBytes);
-        Assert.assertArrayEquals("this is generic method".getBytes(StandardCharsets.UTF_8),
+        Assertions.assertArrayEquals("this is generic method".getBytes(StandardCharsets.UTF_8),
                 response.getMessage().toByteArray());
     }
 

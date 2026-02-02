@@ -34,10 +34,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tests.service.GreeterJavaBeanService;
 import tests.service.GreeterJsonService;
 import tests.service.GreeterParameterizedService;
@@ -55,7 +55,7 @@ public class HttpRpcServerTest {
 
     private static ServerConfig serverConfig;
 
-    @BeforeClass
+    @BeforeAll
     public static void startHttpServer() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
@@ -116,7 +116,7 @@ public class HttpRpcServerTest {
         return serviceConfig;
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopHttpServer() {
         ConfigManager.stopTest();
         if (serverConfig != null) {
@@ -141,7 +141,7 @@ public class HttpRpcServerTest {
 
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
-            Assert.assertEquals(responseCode, 404);
+            Assertions.assertEquals(responseCode, 404);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -176,7 +176,7 @@ public class HttpRpcServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -220,7 +220,7 @@ public class HttpRpcServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(405, responseCode);
+            Assertions.assertEquals(405, responseCode);
 
         } finally {
             if (connection != null) {
@@ -256,7 +256,7 @@ public class HttpRpcServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(responseCode, 200);
+            Assertions.assertEquals(responseCode, 200);
 
             in = connection.getInputStream();
 
@@ -307,7 +307,7 @@ public class HttpRpcServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(responseCode, 200);
+            Assertions.assertEquals(responseCode, 200);
 
             in = connection.getInputStream();
 
@@ -352,7 +352,7 @@ public class HttpRpcServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -392,7 +392,7 @@ public class HttpRpcServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -402,9 +402,9 @@ public class HttpRpcServerTest {
             String messageContent = new String(bos.toByteArray(), StandardCharsets.UTF_8);
             TestBeanConvertWithGetMethodRsp response = JsonUtils.fromJson(messageContent,
                     TestBeanConvertWithGetMethodRsp.class);
-            Assert.assertEquals(1, response.getStatus());
-            Assert.assertEquals("Hello,TRpc-Java", response.getMessage());
-            Assert.assertArrayEquals(new String[]{"first", "two"}, response.getComments());
+            Assertions.assertEquals(1, response.getStatus());
+            Assertions.assertEquals("Hello,TRpc-Java", response.getMessage());
+            Assertions.assertArrayEquals(new String[]{"first", "two"}, response.getComments());
 
             logger.info("http response is: {}",
                     new String(bos.toByteArray(), StandardCharsets.UTF_8));
@@ -440,7 +440,7 @@ public class HttpRpcServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -481,7 +481,7 @@ public class HttpRpcServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(responseCode, 200);
+            Assertions.assertEquals(responseCode, 200);
 
             in = connection.getInputStream();
 
@@ -521,7 +521,7 @@ public class HttpRpcServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(405, responseCode);
+            Assertions.assertEquals(405, responseCode);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -548,7 +548,7 @@ public class HttpRpcServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -587,7 +587,7 @@ public class HttpRpcServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -640,7 +640,7 @@ public class HttpRpcServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -652,8 +652,8 @@ public class HttpRpcServerTest {
 
             Map<String, Object> rspData = JsonUtils.fromJson(rsp, Map.class);
 
-            Assert.assertEquals("hello", rspData.get("message"));
-            Assert.assertEquals("trpc", ((Map) rspData.get("innerMsg")).get("msg"));
+            Assertions.assertEquals("hello", rspData.get("message"));
+            Assertions.assertEquals("trpc", ((Map) rspData.get("innerMsg")).get("msg"));
         } finally {
             if (in != null) {
                 in.close();
@@ -699,7 +699,7 @@ public class HttpRpcServerTest {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -711,8 +711,8 @@ public class HttpRpcServerTest {
 
             Map<String, Object> rspData = JsonUtils.fromJson(rsp, Map.class);
 
-            Assert.assertEquals("hello", rspData.get("message"));
-            Assert.assertEquals("trpc", ((Map) rspData.get("innerMsg")).get("msg"));
+            Assertions.assertEquals("hello", rspData.get("message"));
+            Assertions.assertEquals("trpc", ((Map) rspData.get("innerMsg")).get("msg"));
         } finally {
             if (in != null) {
                 in.close();
