@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.proto.standard.concurrenttest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.protobuf.ByteString;
 import com.tencent.trpc.core.common.ConfigManager;
@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class UdpConcurrentTest {
 
@@ -44,14 +44,14 @@ public class UdpConcurrentTest {
         return serviceConfig;
     }
 
-    @Before
+    @BeforeEach
     public void before() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
         startServer();
     }
 
-    @After
+    @AfterEach
     public void stop() {
         ConfigManager.stopTest();
         if (serviceConfig != null) {

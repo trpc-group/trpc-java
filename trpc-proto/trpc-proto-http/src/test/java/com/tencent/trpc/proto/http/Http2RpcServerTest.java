@@ -53,12 +53,14 @@ import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
-import org.apache.hc.core5.http2.ssl.ConscryptClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.core5.ssl.TrustStrategy;
 import org.apache.hc.core5.ssl.SSLContexts;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tests.service.GreeterJavaBeanService;
 import tests.service.GreeterJsonService;
 import tests.service.GreeterService;
@@ -80,7 +82,7 @@ public class Http2RpcServerTest {
 
     private static CloseableHttpAsyncClient httpAsyncClient;
 
-    @BeforeClass
+    @BeforeAll
     public static void startHttpServer() throws CertificateException, NoSuchAlgorithmException,
             KeyStoreException, IOException, KeyManagementException {
         ConfigManager.stopTest();
@@ -127,11 +129,15 @@ public class Http2RpcServerTest {
         String keyStorePath = new File(path).getAbsolutePath();
         String keyStorePass = "init234";
         final SSLContext sslContext = SSLContexts.custom()
-                .loadTrustMaterial(new File(keyStorePath), keyStorePass.toCharArray())
+                .loadTrustMaterial(new File(keyStorePath), keyStorePass.toCharArray(),
+                        (TrustStrategy) (chain, authType) -> true)
                 .build();
         final PoolingAsyncClientConnectionManager cm = PoolingAsyncClientConnectionManagerBuilder
-                .create().useSystemProperties()
-                .setTlsStrategy(new ConscryptClientTlsStrategy(sslContext))
+                .create()
+                .setTlsStrategy(ClientTlsStrategyBuilder.create()
+                        .setSslContext(sslContext)
+                        .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                        .build())
                 .build();
         httpAsyncClient = HttpAsyncClients.custom()
                 .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2).setConnectionManager(cm)
@@ -155,7 +161,7 @@ public class Http2RpcServerTest {
         return serviceConfig;
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopHttpServer() {
         ConfigManager.stopTest();
         if (serverConfig != null) {
@@ -187,15 +193,15 @@ public class Http2RpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(404, simpleHttpResponse.getCode());
+        Assertions.assertEquals(404, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
         ErrorResponse errorResponse = JsonUtils.fromJson(simpleHttpResponse.getBodyText(), ErrorResponse.class);
-        Assert.assertEquals("not found service", errorResponse.getMessage());
+        Assertions.assertEquals("not found service", errorResponse.getMessage());
 
     }
 
@@ -228,14 +234,14 @@ public class Http2RpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals(TEST_MESSAGE_BODY, simpleHttpResponse.getBodyText());
+        Assertions.assertEquals(TEST_MESSAGE_BODY, simpleHttpResponse.getBodyText());
     }
 
     @Test
@@ -267,14 +273,14 @@ public class Http2RpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals(TEST_MESSAGE_BODY, simpleHttpResponse.getBodyText());
+        Assertions.assertEquals(TEST_MESSAGE_BODY, simpleHttpResponse.getBodyText());
     }
 
     @Test
@@ -306,14 +312,14 @@ public class Http2RpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals(TEST_MESSAGE_BODY2, simpleHttpResponse.getBodyText());
+        Assertions.assertEquals(TEST_MESSAGE_BODY2, simpleHttpResponse.getBodyText());
     }
 
     @Test
@@ -339,14 +345,14 @@ public class Http2RpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals(TEST_MESSAGE_BODY, simpleHttpResponse.getBodyText());
+        Assertions.assertEquals(TEST_MESSAGE_BODY, simpleHttpResponse.getBodyText());
     }
 
     @Test
@@ -373,14 +379,14 @@ public class Http2RpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals("{\"message\":\"Hello,TRpc-Java\",\"status\":1,\"comments\":[\"first\",\"two\"]}",
+        Assertions.assertEquals("{\"message\":\"Hello,TRpc-Java\",\"status\":1,\"comments\":[\"first\",\"two\"]}",
                 simpleHttpResponse.getBodyText());
     }
 
@@ -407,14 +413,14 @@ public class Http2RpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals(TEST_MESSAGE_BEAN, simpleHttpResponse.getBodyText());
+        Assertions.assertEquals(TEST_MESSAGE_BEAN, simpleHttpResponse.getBodyText());
     }
 
     @Test
@@ -441,14 +447,14 @@ public class Http2RpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(200, simpleHttpResponse.getCode());
+        Assertions.assertEquals(200, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
-        Assert.assertEquals(TEST_MESSAGE_BODY, simpleHttpResponse.getBodyText());
+        Assertions.assertEquals(TEST_MESSAGE_BODY, simpleHttpResponse.getBodyText());
     }
 
     @Test
@@ -478,15 +484,15 @@ public class Http2RpcServerTest {
                     }
                 });
         SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
-        Assert.assertNotEquals(null, simpleHttpResponse);
+        Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
-        Assert.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
-        Assert.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
+        Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
+        Assertions.assertEquals(2, simpleHttpResponse.getVersion().getMajor());
         logger.info("response code is {}", simpleHttpResponse.getCode());
-        Assert.assertEquals(405, simpleHttpResponse.getCode());
+        Assertions.assertEquals(405, simpleHttpResponse.getCode());
         logger.info("http response is: {}", simpleHttpResponse.getBodyText());
         ErrorResponse errorResponse = JsonUtils.fromJson(simpleHttpResponse.getBodyText(), ErrorResponse.class);
-        Assert.assertEquals("http method is not allow", errorResponse.getMessage());
+        Assertions.assertEquals("http method is not allow", errorResponse.getMessage());
 
     }
 }

@@ -11,7 +11,7 @@
 
 package com.tencent.trpc.proto.standard.common;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.protobuf.ByteString;
 import com.tencent.trpc.core.common.ConfigManager;
@@ -29,9 +29,9 @@ import com.tencent.trpc.core.utils.NetUtils;
 import com.tencent.trpc.proto.standard.common.HelloRequestProtocol.HelloRequest;
 import com.tencent.trpc.proto.standard.common.HelloRequestProtocol.HelloResponse;
 import com.tencent.trpc.proto.support.DefRpcClient;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TRpcMockServerTest {
 
@@ -39,7 +39,7 @@ public class TRpcMockServerTest {
     BackendConfig backendConfig;
     RpcClient createRpcClient;
 
-    @Before
+    @BeforeEach
     public void before() {
         ConfigManager.stopTest();
         ConfigManager.getInstance().startTest();
@@ -66,7 +66,7 @@ public class TRpcMockServerTest {
         clientConfig.setMockClass(GreeterServiceMockImp.class.getName());
     }
 
-    @After
+    @AfterEach
     public void after() {
         ConfigManager.stopTest();
         if (backendConfig != null) {

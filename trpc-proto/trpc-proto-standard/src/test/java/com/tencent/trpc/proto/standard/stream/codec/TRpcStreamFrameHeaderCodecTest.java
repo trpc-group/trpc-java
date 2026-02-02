@@ -16,8 +16,8 @@ import com.tencent.trpc.proto.standard.common.TRPCProtocol.TrpcDataFrameType;
 import com.tencent.trpc.proto.standard.common.TRpcFrameType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TRpcStreamFrameHeaderCodecTest {
 
@@ -34,26 +34,26 @@ public class TRpcStreamFrameHeaderCodecTest {
     }
 
     private void checkNormalFrame(ByteBuf frame, int streamId, TRpcFrameType frameType) {
-        Assert.assertEquals(TRpcStreamFrameHeaderCodec.magic(frame), StandardFrame.TRPC_MAGIC);
-        Assert.assertEquals(TRpcStreamFrameHeaderCodec.frameSize(frame), frame.readableBytes());
-        Assert.assertEquals(TRpcStreamFrameHeaderCodec.streamId(frame), streamId);
-        Assert.assertEquals(TRpcStreamFrameHeaderCodec.frameType(frame), frameType);
+        Assertions.assertEquals(TRpcStreamFrameHeaderCodec.magic(frame), StandardFrame.TRPC_MAGIC);
+        Assertions.assertEquals(TRpcStreamFrameHeaderCodec.frameSize(frame), frame.readableBytes());
+        Assertions.assertEquals(TRpcStreamFrameHeaderCodec.streamId(frame), streamId);
+        Assertions.assertEquals(TRpcStreamFrameHeaderCodec.frameType(frame), frameType);
     }
 
     @Test
     public void testUnknownFrame() {
         try {
             TRpcStreamFrameHeaderCodec.frameType(getAbnormalDataTypeTRpcFrame());
-            Assert.fail("check unknown dataType failed, should throw an exception");
+            Assertions.fail("check unknown dataType failed, should throw an exception");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
 
         try {
             TRpcStreamFrameHeaderCodec.frameType(getAbnormalFrameTypeTRpcFrame());
-            Assert.fail("check unknown frameType failed, should throw an exception");
+            Assertions.fail("check unknown frameType failed, should throw an exception");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
     }
 

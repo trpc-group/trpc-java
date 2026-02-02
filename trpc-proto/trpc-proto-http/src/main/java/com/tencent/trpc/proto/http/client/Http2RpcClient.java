@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -22,8 +22,9 @@ import javax.net.ssl.SSLContext;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
+import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
-import org.apache.hc.core5.http2.ssl.ConscryptClientTlsStrategy;
 import org.apache.hc.core5.ssl.SSLContexts;
 
 /**
@@ -63,7 +64,10 @@ public class Http2RpcClient extends Http2cRpcClient {
             // 2. Configure connection pool.
             final PoolingAsyncClientConnectionManager cm = PoolingAsyncClientConnectionManagerBuilder
                     .create().useSystemProperties()
-                    .setTlsStrategy(new ConscryptClientTlsStrategy(sslContext))
+                    .setTlsStrategy(ClientTlsStrategyBuilder.create()
+                            .setSslContext(sslContext)
+                            .setHostnameVerifier(new DefaultHostnameVerifier())
+                            .build())
                     .build();
 
             // 3. Configure the client to force HTTPS protocol to use HTTP1 communication and H2 protocol

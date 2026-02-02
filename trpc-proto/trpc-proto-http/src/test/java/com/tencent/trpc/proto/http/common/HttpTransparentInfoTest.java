@@ -35,10 +35,10 @@ import com.tencent.trpc.core.utils.NetUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import org.apache.http.HttpHeaders;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tests.service.GreeterService;
 import tests.service.HelloRequestProtocol.HelloRequest;
 import tests.service.HelloRequestProtocol.HelloResponse;
@@ -52,7 +52,7 @@ public class HttpTransparentInfoTest {
 
     private static int TRPC_JAVA_TEST_HTTP_PORT;
 
-    @BeforeClass
+    @BeforeAll
     public static void startHttpServer() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
@@ -93,7 +93,7 @@ public class HttpTransparentInfoTest {
         return serviceConfig;
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopHttpServer() {
         ConfigManager.stopTest();
         if (serverConfig != null) {
@@ -132,14 +132,14 @@ public class HttpTransparentInfoTest {
             HelloResponse helloResponse = proxy.sayHello(context, createPbRequest(TEST_MESSAGE));
             // get server tran info
             byte[] bytesRspValue = (byte[]) context.getRspAttachMap().get(TEST_BYTES_RSP_KEY);
-            Assert.assertArrayEquals(bytesRspValue, TEST_BYTES_RSP_VALUE);
+            Assertions.assertArrayEquals(bytesRspValue, TEST_BYTES_RSP_VALUE);
 
             byte[] stringRspValue = (byte[]) context.getRspAttachMap().get(TEST_STRING_RSP_KEY);
-            Assert.assertEquals(new String(stringRspValue, StandardCharsets.UTF_8), TEST_STRING_RSP_VALUE);
+            Assertions.assertEquals(new String(stringRspValue, StandardCharsets.UTF_8), TEST_STRING_RSP_VALUE);
 
-            Assert.assertNotNull(helloResponse);
+            Assertions.assertNotNull(helloResponse);
             String rspMessage = helloResponse.getMessage();
-            Assert.assertEquals(rspMessage, TEST_RSP_MESSAGE);
+            Assertions.assertEquals(rspMessage, TEST_RSP_MESSAGE);
         } finally {
             backendConfig.stop();
         }
@@ -167,14 +167,14 @@ public class HttpTransparentInfoTest {
             HelloResponse helloResponse = proxy.sayHello(context, createPbRequest(TEST_MESSAGE));
             // get server tran info
             byte[] bytesRspValue = (byte[]) context.getRspAttachMap().get(TEST_BYTES_RSP_KEY);
-            Assert.assertArrayEquals(bytesRspValue, TEST_BYTES_RSP_VALUE);
+            Assertions.assertArrayEquals(bytesRspValue, TEST_BYTES_RSP_VALUE);
 
             byte[] stringRspValue = (byte[]) context.getRspAttachMap().get(TEST_STRING_RSP_KEY);
-            Assert.assertEquals(new String(stringRspValue, StandardCharsets.UTF_8), TEST_STRING_RSP_VALUE);
+            Assertions.assertEquals(new String(stringRspValue, StandardCharsets.UTF_8), TEST_STRING_RSP_VALUE);
 
-            Assert.assertNotNull(helloResponse);
+            Assertions.assertNotNull(helloResponse);
             String rspMessage = helloResponse.getMessage();
-            Assert.assertEquals(rspMessage, TEST_RSP_MESSAGE);
+            Assertions.assertEquals(rspMessage, TEST_RSP_MESSAGE);
         } finally {
             backendConfig.stop();
         }

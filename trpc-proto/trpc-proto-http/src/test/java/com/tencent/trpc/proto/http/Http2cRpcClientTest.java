@@ -26,10 +26,10 @@ import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.core.utils.NetUtils;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tests.service.GreeterJsonService;
 import tests.service.GreeterService;
 import tests.service.HelloRequestProtocol.HelloRequest;
@@ -47,7 +47,7 @@ public class Http2cRpcClientTest {
 
     private static ServerConfig serverConfig;
 
-    @BeforeClass
+    @BeforeAll
     public static void startHttpServer() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
@@ -116,7 +116,7 @@ public class Http2cRpcClientTest {
         return serviceConfig;
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopHttpServer() {
         ConfigManager.stopTest();
         if (serverConfig != null) {
@@ -151,10 +151,10 @@ public class Http2cRpcClientTest {
             for (int i = 0; i < 20; i++) {
                 RpcClientContext context = new RpcClientContext();
                 HelloResponse helloResponse = proxy.sayHello(context, createPbRequest(TEST_MESSAGE));
-                Assert.assertNotNull(helloResponse);
+                Assertions.assertNotNull(helloResponse);
                 String rspMessage = helloResponse.getMessage();
                 logger.info("http rpc client request result: {}", rspMessage);
-                Assert.assertTrue(rspMessage.contains(TEST_MESSAGE));
+                Assertions.assertTrue(rspMessage.contains(TEST_MESSAGE));
             }
         } finally {
             backendConfig.stop();
@@ -182,7 +182,7 @@ public class Http2cRpcClientTest {
                 RpcClientContext context = new RpcClientContext();
                 context.setOneWay(true);
                 HelloResponse helloResponse = proxy.sayHello(context, createPbRequest(TEST_MESSAGE));
-                Assert.assertNull(helloResponse);
+                Assertions.assertNull(helloResponse);
             }
         } finally {
             backendConfig.stop();
@@ -210,10 +210,10 @@ public class Http2cRpcClientTest {
             for (int i = 0; i < 20; i++) {
                 RpcClientContext context = new RpcClientContext();
                 HelloResponse helloResponse = proxy.sayHello(context, createPbRequest(TEST_MESSAGE));
-                Assert.assertNotNull(helloResponse);
+                Assertions.assertNotNull(helloResponse);
                 String rspMessage = helloResponse.getMessage();
                 logger.info("http rpc client request result: {}", rspMessage);
-                Assert.assertTrue(rspMessage.contains(TEST_MESSAGE));
+                Assertions.assertTrue(rspMessage.contains(TEST_MESSAGE));
             }
         } finally {
             backendConfig.stop();
@@ -244,10 +244,10 @@ public class Http2cRpcClientTest {
 
                 RpcClientContext context = new RpcClientContext();
                 Map helloResponse = proxy.sayHelloJson(context, obj);
-                Assert.assertNotNull(helloResponse);
+                Assertions.assertNotNull(helloResponse);
                 String rspMessage = (String) helloResponse.get("message");
                 logger.info("http rpc client request result: {}", rspMessage);
-                Assert.assertTrue(rspMessage.contains(TEST_MESSAGE));
+                Assertions.assertTrue(rspMessage.contains(TEST_MESSAGE));
             }
         } finally {
             backendConfig.stop();
@@ -274,9 +274,9 @@ public class Http2cRpcClientTest {
 
             RpcClientContext context = new RpcClientContext();
             proxy.sayHello(context, createPbRequest(TEST_MESSAGE));
-            Assert.fail("no exception thrown");
+            Assertions.fail("no exception thrown");
         } catch (TRpcException e) {
-            Assert.assertEquals(404, e.getBizCode());
+            Assertions.assertEquals(404, e.getBizCode());
         } finally {
             backendConfig.stop();
         }
@@ -302,9 +302,9 @@ public class Http2cRpcClientTest {
 
             RpcClientContext context = new RpcClientContext();
             proxy.sayHello(context, createPbRequest(TEST_MESSAGE));
-            Assert.fail("no exception thrown");
+            Assertions.fail("no exception thrown");
         } catch (TRpcException e) {
-            Assert.assertEquals(0, e.getBizCode());
+            Assertions.assertEquals(0, e.getBizCode());
         } finally {
             backendConfig.stop();
         }

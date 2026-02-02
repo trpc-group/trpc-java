@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.proto.standard.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.protobuf.ByteString;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
@@ -21,7 +21,7 @@ import com.tencent.trpc.transport.netty.NettyChannel;
 import com.tencent.trpc.transport.netty.NettyChannelBuffer;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import org.apache.commons.lang3.ArrayUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class StandardPackageTest {
 

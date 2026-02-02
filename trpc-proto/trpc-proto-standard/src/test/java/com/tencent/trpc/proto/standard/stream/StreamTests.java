@@ -41,10 +41,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.reactivestreams.Subscription;
 import reactor.core.publisher.BaseSubscriber;
 import reactor.core.publisher.Flux;
@@ -55,7 +55,7 @@ public class StreamTests {
     ServiceConfig serviceConfig;
     StreamGreeterServiceImpl1 streamGreeterService = new StreamGreeterServiceImpl1();
 
-    @Before
+    @BeforeEach
     public void before() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
@@ -63,7 +63,7 @@ public class StreamTests {
         this.streamGreeterService.reset();
     }
 
-    @After
+    @AfterEach
     public void stop() {
         ConfigManager.stopTest();
         if (serviceConfig != null) {
@@ -115,7 +115,7 @@ public class StreamTests {
             countDownLatch.await(1, TimeUnit.MINUTES);
         }
 
-        Assert.assertEquals(2 * times * batch, count.get());
+        Assertions.assertEquals(2 * times * batch, count.get());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class StreamTests {
             countDownLatch.await(1, TimeUnit.MINUTES);
         }
 
-        Assert.assertEquals(2 * times, count.get());
+        Assertions.assertEquals(2 * times, count.get());
     }
 
     @Test
@@ -201,22 +201,22 @@ public class StreamTests {
 
             countDownLatch.await(1, TimeUnit.MINUTES);
         }
-        Assert.assertEquals(2 * times * batch, count.get());
+        Assertions.assertEquals(2 * times * batch, count.get());
 
         final AtomicInteger failedCount = new AtomicInteger();
         Flux<HelloResponse> resp = proxy
                 .serverSayHellos(new RpcClientContext(), HelloRequest.newBuilder().setMessage("exception").build());
         resp
-                .doOnNext(rsp -> Assert.fail("should not got response " + resp))
+                .doOnNext(rsp -> Assertions.fail("should not got response " + resp))
                 .doOnError(t -> {
-                    Assert.assertNotNull("exception is null", t);
+                    Assertions.assertNotNull(t, "exception is null");
                     System.out.println("got expected exception: " + t.getMessage());
                     failedCount.incrementAndGet();
                 })
                 .then(Mono.<HelloResponse>never())
                 .onErrorReturn(HelloResponse.newBuilder().build())
                 .block();
-        Assert.assertEquals(1, failedCount.get());
+        Assertions.assertEquals(1, failedCount.get());
     }
 
     @Test
@@ -249,8 +249,8 @@ public class StreamTests {
 
         latch.await(1, TimeUnit.MINUTES);
 
-        Assert.assertEquals(0, rspCount.get());
-        Assert.assertEquals(times, errCount.get());
+        Assertions.assertEquals(0, rspCount.get());
+        Assertions.assertEquals(times, errCount.get());
     }
 
     @Test
@@ -287,8 +287,8 @@ public class StreamTests {
 
         latch.await(1, TimeUnit.MINUTES);
 
-        Assert.assertEquals(0, rspCount.get());
-        Assert.assertEquals(2, errCount.get());
+        Assertions.assertEquals(0, rspCount.get());
+        Assertions.assertEquals(2, errCount.get());
     }
 
     @Test
@@ -314,8 +314,8 @@ public class StreamTests {
 
         latch.await(1, TimeUnit.MINUTES);
 
-        Assert.assertEquals(batch, rspCount.get());
-        Assert.assertEquals(0, errCount.get());
+        Assertions.assertEquals(batch, rspCount.get());
+        Assertions.assertEquals(0, errCount.get());
     }
 
     @Test
@@ -344,8 +344,8 @@ public class StreamTests {
 
         latch.await(1, TimeUnit.MINUTES);
 
-        Assert.assertEquals(0, rspCount.get());
-        Assert.assertEquals(times, errCount.get());
+        Assertions.assertEquals(0, rspCount.get());
+        Assertions.assertEquals(times, errCount.get());
     }
 
     @Test
@@ -357,10 +357,10 @@ public class StreamTests {
             providerConfig.setRefClazz(StreamGreeterServiceImpl3.class.getCanonicalName());
 
             startServer(serviceConfig, Collections.singletonList(providerConfig));
-            Assert.fail("do not support service with multi protocol types");
+            Assertions.fail("do not support service with multi protocol types");
         } catch (Exception e) {
             e.printStackTrace();
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
 
         try {
@@ -372,10 +372,10 @@ public class StreamTests {
             providerConfig2.setRefClazz(StreamGreeterServiceImpl1.class.getCanonicalName()); // stream
 
             startServer(serviceConfig, Arrays.asList(providerConfig1, providerConfig2));
-            Assert.fail("do not support services with different protocol types");
+            Assertions.fail("do not support services with different protocol types");
         } catch (Exception e) {
             e.printStackTrace();
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
     }
 
@@ -388,10 +388,10 @@ public class StreamTests {
             consumerConfig.setServiceInterface(StreamGreeterService4.class);
             StreamGreeterService4 proxy = backendConfig.getProxy(consumerConfig);
             proxy.sayHello(new RpcClientContext(), HelloRequest.newBuilder().build());
-            Assert.fail("do not support service with multi protocol types");
+            Assertions.fail("do not support service with multi protocol types");
         } catch (Exception e) {
             e.printStackTrace();
-            Assert.assertTrue(e instanceof TRpcException);
+            Assertions.assertTrue(e instanceof TRpcException);
         }
     }
 
@@ -426,19 +426,19 @@ public class StreamTests {
         connectedLatch.await(1, TimeUnit.MINUTES);
         HelloResponse helloResponse = responseHolder.get();
         System.out.println(Thread.currentThread().getName() + ">>>>got response: " + helloResponse);
-        Assert.assertNotNull(helloResponse);
-        Assert.assertEquals(flag, helloResponse.getMessage());
+        Assertions.assertNotNull(helloResponse);
+        Assertions.assertEquals(flag, helloResponse.getMessage());
 
         // check the unbound server stream consumer stats
         CountDownLatch latch = streamGreeterService.getLatch(flag);
-        Assert.assertNotNull(latch);
+        Assertions.assertNotNull(latch);
         latch.await(1, TimeUnit.MINUTES);
         int stat = streamGreeterService.getStat(flag);
-        Assert.assertEquals(count, stat);
+        Assertions.assertEquals(count, stat);
 
         // check the response stream stats
         resultLatch.await(1, TimeUnit.MINUTES);
-        Assert.assertEquals(1, responseCount.get());
+        Assertions.assertEquals(1, responseCount.get());
     }
 
     @Test
@@ -459,9 +459,9 @@ public class StreamTests {
                 .subscribe(null, ex -> exHolder[0] = ex);
 
         latch.await(1, TimeUnit.MINUTES);
-        Assert.assertNotNull(exHolder[0]);
+        Assertions.assertNotNull(exHolder[0]);
         System.out.println(">>>>got transfered error: " + exHolder[0].getMessage());
-        Assert.assertTrue(exHolder[0].getMessage().contains(error.toString()));
+        Assertions.assertTrue(exHolder[0].getMessage().contains(error.toString()));
     }
 
     @Test
@@ -506,8 +506,8 @@ public class StreamTests {
                                 + ", actual: " + actual);
 
                         try {
-                            Assert.assertTrue("expect less than " + maxExpect + " got " + actual,
-                                    actual <= maxExpect);
+                            Assertions.assertTrue(actual <= maxExpect,
+                                    "expect less than " + maxExpect + " got " + actual);
                         } catch (Throwable t) {
                             exception.compareAndSet(null, t);
                         }

@@ -24,7 +24,7 @@ import static com.tencent.trpc.proto.http.constant.Constant.TEST_STRING_RSP_VALU
 
 import com.tencent.trpc.core.rpc.RpcContext;
 import java.nio.charset.StandardCharsets;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import tests.service.GreeterService;
 import tests.service.HelloRequestProtocol;
 import tests.service.TestBeanConvertWithGetMethodReq;
@@ -35,13 +35,13 @@ public class GreeterServiceImpl2 implements GreeterService {
     @Override
     public HelloRequestProtocol.HelloResponse sayHello(RpcContext context, HelloRequestProtocol.HelloRequest request) {
         byte[] stringReqValue = (byte[]) context.getReqAttachMap().get(TEST_STRING_REQ_KEY);
-        Assert.assertEquals(new String(stringReqValue, StandardCharsets.UTF_8), TEST_STRING_REQ_VALUE);
+        Assertions.assertEquals(TEST_STRING_REQ_VALUE, new String(stringReqValue, StandardCharsets.UTF_8));
 
         byte[] bytesReqValue = (byte[]) context.getReqAttachMap().get(TEST_BYTES_REQ_KEY);
-        Assert.assertArrayEquals(TEST_BYTES_REQ_VALUE, bytesReqValue);
+        Assertions.assertArrayEquals(TEST_BYTES_REQ_VALUE, bytesReqValue);
 
         String message = request.getMessage();
-        Assert.assertEquals(TEST_MESSAGE, message);
+        Assertions.assertEquals(TEST_MESSAGE, message);
 
         context.getRspAttachMap().put(TEST_BYTES_RSP_KEY, TEST_BYTES_RSP_VALUE);
         context.getRspAttachMap().put(TEST_STRING_RSP_KEY, TEST_STRING_RSP_VALUE);
