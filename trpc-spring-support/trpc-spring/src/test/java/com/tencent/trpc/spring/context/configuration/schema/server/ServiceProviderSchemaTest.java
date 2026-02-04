@@ -13,15 +13,15 @@ package com.tencent.trpc.spring.context.configuration.schema.server;
 
 import java.util.Collections;
 import org.assertj.core.util.Lists;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ServiceProviderSchemaTest {
 
     private ServiceProviderSchema serviceProviderSchema;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         serviceProviderSchema = new ServiceProviderSchema();
         serviceProviderSchema.setImpl("a");
@@ -33,61 +33,61 @@ public class ServiceProviderSchemaTest {
 
     @Test
     public void testGetImpl() {
-        Assert.assertEquals("a", serviceProviderSchema.getImpl());
+        Assertions.assertEquals("a", serviceProviderSchema.getImpl());
     }
 
     @Test
     public void testGetRequestTimeout() {
-        Assert.assertEquals(20, serviceProviderSchema.getRequestTimeout().intValue());
+        Assertions.assertEquals(20, serviceProviderSchema.getRequestTimeout().intValue());
     }
 
     @Test
     public void testGetWorkerPool() {
-        Assert.assertEquals("pool", serviceProviderSchema.getWorkerPool());
+        Assertions.assertEquals("pool", serviceProviderSchema.getWorkerPool());
     }
 
     @Test
     public void testGetFilters() {
-        Assert.assertEquals("b", serviceProviderSchema.getFilters().get(0));
+        Assertions.assertEquals("b", serviceProviderSchema.getFilters().get(0));
     }
 
     @Test
     public void testGetEnableLinkTimeout() {
-        Assert.assertFalse(serviceProviderSchema.getEnableLinkTimeout());
+        Assertions.assertFalse(serviceProviderSchema.getEnableLinkTimeout());
     }
 
     @Test
     public void testToString() {
-        Assert.assertNotNull(serviceProviderSchema.toString());
+        Assertions.assertNotNull(serviceProviderSchema.toString());
     }
 
     @Test
     public void testSetImpl() {
         serviceProviderSchema.setImpl("");
-        Assert.assertEquals("", serviceProviderSchema.getImpl());
+        Assertions.assertEquals("", serviceProviderSchema.getImpl());
     }
 
     @Test
     public void testSetRequestTimeout() {
         serviceProviderSchema.setRequestTimeout(100);
-        Assert.assertEquals(100, serviceProviderSchema.getRequestTimeout().intValue());
+        Assertions.assertEquals(100, serviceProviderSchema.getRequestTimeout().intValue());
     }
 
     @Test
     public void testSetWorkerPool() {
         serviceProviderSchema.setWorkerPool("worker");
-        Assert.assertEquals("worker", serviceProviderSchema.getWorkerPool());
+        Assertions.assertEquals("worker", serviceProviderSchema.getWorkerPool());
     }
 
     @Test
     public void testSetFilters() {
         serviceProviderSchema.setFilters(Collections.emptyList());
-        Assert.assertTrue(serviceProviderSchema.getFilters().isEmpty());
+        Assertions.assertTrue(serviceProviderSchema.getFilters().isEmpty());
     }
 
     @Test
     public void testSetEnableLinkTimeout() {
         serviceProviderSchema.setEnableLinkTimeout(Boolean.TRUE);
-        Assert.assertTrue(serviceProviderSchema.getEnableLinkTimeout());
+        Assertions.assertTrue(serviceProviderSchema.getEnableLinkTimeout());
     }
 }

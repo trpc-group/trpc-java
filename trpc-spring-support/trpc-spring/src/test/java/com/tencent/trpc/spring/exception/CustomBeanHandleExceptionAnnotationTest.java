@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -33,10 +33,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
@@ -44,9 +43,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestSpringApplication.class)
 @ContextConfiguration(classes = CustomBeanHandleExceptionAnnotationTestConfiguration.class)
 public class CustomBeanHandleExceptionAnnotationTest {
@@ -58,7 +55,7 @@ public class CustomBeanHandleExceptionAnnotationTest {
         return new RpcClientContext();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         CustomBeanHandleExceptionAnnotationTestConfiguration.STATE = 0;
     }
@@ -70,9 +67,9 @@ public class CustomBeanHandleExceptionAnnotationTest {
     public void testHandleException() {
         String code = String.valueOf(RandomUtils.nextInt());
         Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("1").setName(code).build());
-        Assert.assertEquals("12345", response.getResult());
-        Assert.assertEquals("customHandleException", response.getResInfo());
-        Assert.assertEquals(2, CustomBeanHandleExceptionAnnotationTestConfiguration.STATE);
+        Assertions.assertEquals("12345", response.getResult());
+        Assertions.assertEquals("customHandleException", response.getResInfo());
+        Assertions.assertEquals(2, CustomBeanHandleExceptionAnnotationTestConfiguration.STATE);
     }
 
     /**
@@ -82,9 +79,9 @@ public class CustomBeanHandleExceptionAnnotationTest {
     public void testHandleNullPointerException() {
         String code = String.valueOf(RandomUtils.nextInt());
         Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("2").setName(code).build());
-        Assert.assertEquals("98765", response.getResult());
-        Assert.assertEquals("{name=NullPointerException}", response.getResInfo());
-        Assert.assertEquals(1, CustomBeanHandleExceptionAnnotationTestConfiguration.STATE);
+        Assertions.assertEquals("98765", response.getResult());
+        Assertions.assertEquals("{name=NullPointerException}", response.getResInfo());
+        Assertions.assertEquals(1, CustomBeanHandleExceptionAnnotationTestConfiguration.STATE);
     }
 
     /**
@@ -94,19 +91,22 @@ public class CustomBeanHandleExceptionAnnotationTest {
     public void testHandleIndexOutOfBoundsException() {
         String code = String.valueOf(RandomUtils.nextInt());
         Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("3").setInfo(code).build());
-        Assert.assertEquals("1111", response.getResult());
-        Assert.assertEquals("local IndexOutOfBoundsException " + code, response.getResInfo());
-        Assert.assertEquals(1, CustomBeanHandleExceptionAnnotationTestConfiguration.STATE);
+        Assertions.assertEquals("1111", response.getResult());
+        Assertions.assertEquals("local IndexOutOfBoundsException " + code, response.getResInfo());
+        Assertions.assertEquals(1, CustomBeanHandleExceptionAnnotationTestConfiguration.STATE);
     }
 
     /**
      * Test for IllegalArgumentException handling
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testHandleIllegalArgumentException() {
-        String code = String.valueOf(RandomUtils.nextInt());
-        Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("4").setName(code).build());
-        Assert.fail();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            String code = String.valueOf(RandomUtils.nextInt());
+            Response response = testServiceApi.test(newContext(),
+                    Request.newBuilder().setId("4").setName(code).build());
+            Assertions.fail();
+        });
     }
 
     /**
@@ -116,8 +116,8 @@ public class CustomBeanHandleExceptionAnnotationTest {
     public void testUnsupportedOperationException() {
         String code = String.valueOf(RandomUtils.nextInt());
         Resp response = testServiceApi.call(newContext(), Req.newBuilder().setResult("2").setInfo(code).build());
-        Assert.assertEquals("54321", response.getRetCode());
-        Assert.assertEquals("{name=UnsupportedOperationException}", response.getRetMsg());
+        Assertions.assertEquals("54321", response.getRetCode());
+        Assertions.assertEquals("{name=UnsupportedOperationException}", response.getRetMsg());
     }
 
     @Configuration

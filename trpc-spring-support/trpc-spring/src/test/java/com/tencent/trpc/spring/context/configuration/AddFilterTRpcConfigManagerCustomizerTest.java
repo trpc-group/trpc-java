@@ -18,9 +18,9 @@ import com.tencent.trpc.core.common.config.ServerConfig;
 import com.tencent.trpc.core.common.config.ServiceConfig;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class AddFilterTRpcConfigManagerCustomizerTest {
 
@@ -48,28 +48,28 @@ public class AddFilterTRpcConfigManagerCustomizerTest {
 
     private static AddFilterTRpcConfigManagerCustomizer addFilterTRpcConfigManagerCustomizer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         addFilterTRpcConfigManagerCustomizer = new AddFilterTRpcConfigManagerCustomizer();
     }
 
     @Test
     public void testConstructor() {
-        Assert.assertNotNull(addFilterTRpcConfigManagerCustomizer);
+        Assertions.assertNotNull(addFilterTRpcConfigManagerCustomizer);
     }
 
     @Test
     public void testAddClientFilters() {
         AddFilterTRpcConfigManagerCustomizer customizer = addFilterTRpcConfigManagerCustomizer.addClientFilters(
                 FILTER_ONE, FILTER_TWO);
-        Assert.assertEquals(addFilterTRpcConfigManagerCustomizer, customizer);
+        Assertions.assertEquals(addFilterTRpcConfigManagerCustomizer, customizer);
     }
 
     @Test
     public void testAddServerFilters() {
         AddFilterTRpcConfigManagerCustomizer customizer = addFilterTRpcConfigManagerCustomizer.addServerFilters(
                 FILTER_ONE, FILTER_TWO);
-        Assert.assertEquals(addFilterTRpcConfigManagerCustomizer, customizer);
+        Assertions.assertEquals(addFilterTRpcConfigManagerCustomizer, customizer);
     }
 
     @Test
@@ -82,15 +82,15 @@ public class AddFilterTRpcConfigManagerCustomizerTest {
         addFilterTRpcConfigManagerCustomizer.customize(instance);
         List<String> filters = instance.getClientConfig().getFilters();
 
-        Assert.assertEquals(filters.size(), list.size());
-        Assert.assertEquals(list, instance.getClientConfig().getFilters());
+        Assertions.assertEquals(filters.size(), list.size());
+        Assertions.assertEquals(list, instance.getClientConfig().getFilters());
     }
 
     @Test
     public void testGetOrder() {
-        Assert.assertEquals(Integer.MAX_VALUE, addFilterTRpcConfigManagerCustomizer.getOrder());
+        Assertions.assertEquals(Integer.MAX_VALUE, addFilterTRpcConfigManagerCustomizer.getOrder());
         addFilterTRpcConfigManagerCustomizer = new TestAddFilterTRpcConfigManagerCustomizer();
-        Assert.assertEquals((long) ORDER_VALUE, addFilterTRpcConfigManagerCustomizer.getOrder());
+        Assertions.assertEquals((long) ORDER_VALUE, addFilterTRpcConfigManagerCustomizer.getOrder());
     }
 
     static final class TestAddFilterTRpcConfigManagerCustomizer extends AddFilterTRpcConfigManagerCustomizer {
@@ -124,11 +124,11 @@ public class AddFilterTRpcConfigManagerCustomizerTest {
         addFilterTRpcConfigManagerCustomizer.customize(configManager);
         List<String> clientExpected = Arrays.asList(FILTER_ONE, FILTER_TWO, FILTER_THREE, FILTER_FOUR);
         // backendConfig filters test
-        Assert.assertEquals(clientExpected.size(), backendConfig.getFilters().size());
+        Assertions.assertEquals(clientExpected.size(), backendConfig.getFilters().size());
         // serviceConfig filters test
         List<String> serverExpected = Arrays.asList(SERVER_FILTER_ONE, SERVER_FILTER_TWO, SERVICE_FILTER_THREE,
                 SERVICE_FILTER_FOUR);
-        Assert.assertEquals(serverExpected.size(), serviceConfig.getFilters().size());
+        Assertions.assertEquals(serverExpected.size(), serviceConfig.getFilters().size());
     }
 
     @Test
@@ -149,9 +149,9 @@ public class AddFilterTRpcConfigManagerCustomizerTest {
         addFilterTRpcConfigManagerCustomizer.customize(configManager);
 
         List<String> expected = Arrays.asList(FILTER_ONE, FILTER_TWO, FILTER_THREE, FILTER_FOUR);
-        Assert.assertEquals(expected, backendConfig.getFilters());
+        Assertions.assertEquals(expected, backendConfig.getFilters());
 
         expected = Arrays.asList(FILTER_ONE, FILTER_TWO, FILTER_THREE);
-        Assert.assertNotEquals(expected, backendConfig.getFilters());
+        Assertions.assertNotEquals(expected, backendConfig.getFilters());
     }
 }

@@ -14,7 +14,7 @@ server:
       impls:
         - tests.service.impl.GreeterServiceImpl                                                    #service协议接口实现类
       ip: 127.0.0.1
-      port: 12345                                                                                                    #port
+      port: 12445                                                                                                    #port
       network: tcp                                                                                                   #tcp/udp
     - name: trpc.TestApp.TestServer.Greeter2Naming                                                                  #service的id,附带naming的含义
       impls:

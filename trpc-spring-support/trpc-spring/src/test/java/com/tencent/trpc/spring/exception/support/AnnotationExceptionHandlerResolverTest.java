@@ -22,8 +22,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for AnnotationExceptionHandlerResolver
@@ -33,11 +33,13 @@ public class AnnotationExceptionHandlerResolverTest {
     /**
      * Ambiguous ExceptionHandlers
      */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testDetectExceptionHandlers() {
-        MyAnnotationExceptionHandlerResolver resolver = new MyAnnotationExceptionHandlerResolver();
-        resolver.detectExceptionHandlers(new MyHandlerBean());
-        Assert.fail();
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            MyAnnotationExceptionHandlerResolver resolver = new MyAnnotationExceptionHandlerResolver();
+            resolver.detectExceptionHandlers(new MyHandlerBean());
+            Assertions.fail();
+        });
     }
 
     /**
@@ -50,7 +52,7 @@ public class AnnotationExceptionHandlerResolverTest {
         resolver.detectExceptionHandlers(new MyHandlerBean());
         ExceptionHandler handler = resolver.resolveExceptionHandler(new NullPointerException(), null, null);
         Object result = handler.handle(new NullPointerException(), null, null);
-        Assert.assertEquals(true, result.toString().contains("handle"));
+        Assertions.assertEquals(true, result.toString().contains("handle"));
     }
 
     /**
@@ -63,7 +65,7 @@ public class AnnotationExceptionHandlerResolverTest {
         resolver.detectExceptionHandlers(new MyHandlerBean());
         ExceptionHandler handler = resolver.resolveExceptionHandler(new IllegalArgumentException(), null, null);
         Object result = handler.handle(new IllegalArgumentException(), null, null);
-        Assert.assertEquals(true, result.toString().contains("handle"));
+        Assertions.assertEquals(true, result.toString().contains("handle"));
     }
 
     /**
@@ -76,7 +78,7 @@ public class AnnotationExceptionHandlerResolverTest {
         resolver.detectExceptionHandlers(new MyHandlerBean());
         ExceptionHandler handler = resolver.resolveExceptionHandler(new IllegalStateException(), null, null);
         Object result = handler.handle(new IllegalStateException(), null, null);
-        Assert.assertEquals("handle3", result);
+        Assertions.assertEquals("handle3", result);
     }
 
     @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})

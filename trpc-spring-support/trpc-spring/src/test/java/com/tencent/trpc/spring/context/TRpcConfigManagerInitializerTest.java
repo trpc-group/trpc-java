@@ -24,9 +24,8 @@ import com.tencent.trpc.spring.context.configuration.AddFilterTRpcConfigManagerC
 import com.tencent.trpc.spring.context.configuration.TRpcConfigManagerCustomizer;
 import com.tencent.trpc.spring.test.TRpcConfigManagerTestUtils;
 import com.tencent.trpc.spring.test.TestSpringApplication;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -35,9 +34,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestSpringApplication.class)
 @ContextConfiguration(classes = {BeanConfiguration.class, TRpcConfiguration.class},
         initializers = InitConfigManagerApplicationContextInitializer.class)
@@ -60,14 +57,14 @@ public class TRpcConfigManagerInitializerTest {
     public void test() {
         BackendConfig backendConfig = ConfigManager.getInstance().getClientConfig().getBackendConfigMap()
                 .get(CLIENT_ID);
-        Assert.assertNotNull(backendConfig);
-        Assert.assertEquals(backendConfig.getNamingUrl(), CUSTOMIZED_NAMING_URL);
-        Assert.assertFalse(backendConfig.getBatchDecoder());
-        Assert.assertTrue(backendConfig.getFilters().contains(ADDITIONAL_CLIENT_FILTER));
+        Assertions.assertNotNull(backendConfig);
+        Assertions.assertEquals(backendConfig.getNamingUrl(), CUSTOMIZED_NAMING_URL);
+        Assertions.assertFalse(backendConfig.getBatchDecoder());
+        Assertions.assertTrue(backendConfig.getFilters().contains(ADDITIONAL_CLIENT_FILTER));
 
         ServiceConfig serviceConfig = ConfigManager.getInstance().getServerConfig().getServiceMap().get(SERVICE_ID);
-        Assert.assertNotNull(serviceConfig);
-        Assert.assertTrue(serviceConfig.getFilters().contains(ADDITIONAL_SERVER_FILTER));
+        Assertions.assertNotNull(serviceConfig);
+        Assertions.assertTrue(serviceConfig.getFilters().contains(ADDITIONAL_SERVER_FILTER));
     }
 
     @TRpcService(name = SERVICE_ID)

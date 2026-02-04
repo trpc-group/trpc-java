@@ -25,10 +25,9 @@ import com.tencent.trpc.spring.context.TRpcConfigAutoRegistryTest.TRpcConfigAuto
 import com.tencent.trpc.spring.context.configuration.TRpcConfigManagerCustomizer;
 import com.tencent.trpc.spring.test.TRpcConfigManagerTestUtils;
 import com.tencent.trpc.spring.test.TestSpringApplication;
-import javax.annotation.Resource;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import jakarta.annotation.Resource;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +45,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestSpringApplication.class)
 @ContextConfiguration(classes = {TRpcConfigAutoRegistryTestConfiguration.class,
         TRpcConfiguration.class}, initializers = TRpcConfigAutoRegistryTestInitializer.class)
@@ -83,16 +80,16 @@ public class TRpcConfigAutoRegistryTest {
     @Test
     public void testTRpcClientAutoRegistryByField() {
         // test field
-        Assert.assertNotNull(injectByFieldBean.getMyTestService());
-        Assert.assertNotNull(injectByFieldBean.getMyTestService1());
-        Assert.assertNotNull(injectByFieldBean.getMyTestService2());
-        Assert.assertNotNull(injectByFieldBean.getMyTestServiceByResource());
-        Assert.assertNotNull(injectByFieldBean.getTestService1());
-        Assert.assertNotNull(injectByFieldBean.getTestService2());
-        Assert.assertSame(injectByFieldBean.getTestService1(), injectByFieldBean.getMyTestService());
-        Assert.assertSame(injectByFieldBean.getTestService1(), injectByFieldBean.getMyTestService1());
-        Assert.assertSame(injectByFieldBean.getTestService2(), injectByFieldBean.getMyTestService2());
-        Assert.assertSame(injectByFieldBean.getTestService2(), injectByFieldBean.getMyTestServiceByResource());
+        Assertions.assertNotNull(injectByFieldBean.getMyTestService());
+        Assertions.assertNotNull(injectByFieldBean.getMyTestService1());
+        Assertions.assertNotNull(injectByFieldBean.getMyTestService2());
+        Assertions.assertNotNull(injectByFieldBean.getMyTestServiceByResource());
+        Assertions.assertNotNull(injectByFieldBean.getTestService1());
+        Assertions.assertNotNull(injectByFieldBean.getTestService2());
+        Assertions.assertSame(injectByFieldBean.getTestService1(), injectByFieldBean.getMyTestService());
+        Assertions.assertSame(injectByFieldBean.getTestService1(), injectByFieldBean.getMyTestService1());
+        Assertions.assertSame(injectByFieldBean.getTestService2(), injectByFieldBean.getMyTestService2());
+        Assertions.assertSame(injectByFieldBean.getTestService2(), injectByFieldBean.getMyTestServiceByResource());
     }
 
     /**
@@ -101,14 +98,14 @@ public class TRpcConfigAutoRegistryTest {
     @Test
     public void testTRpcClientAutoRegistry() {
         // test constructor
-        Assert.assertNotNull(injectByConstructorBean.getMyTestService());
-        Assert.assertNotNull(injectByConstructorBean.getMyTestService1());
-        Assert.assertNotNull(injectByConstructorBean.getMyTestService2());
-        Assert.assertNotNull(injectByConstructorBean.getTestService1());
-        Assert.assertNotNull(injectByConstructorBean.getTestService2());
-        Assert.assertSame(injectByConstructorBean.getTestService1(), injectByConstructorBean.getMyTestService());
-        Assert.assertSame(injectByConstructorBean.getTestService1(), injectByConstructorBean.getMyTestService1());
-        Assert.assertSame(injectByConstructorBean.getTestService2(), injectByConstructorBean.getMyTestService2());
+        Assertions.assertNotNull(injectByConstructorBean.getMyTestService());
+        Assertions.assertNotNull(injectByConstructorBean.getMyTestService1());
+        Assertions.assertNotNull(injectByConstructorBean.getMyTestService2());
+        Assertions.assertNotNull(injectByConstructorBean.getTestService1());
+        Assertions.assertNotNull(injectByConstructorBean.getTestService2());
+        Assertions.assertSame(injectByConstructorBean.getTestService1(), injectByConstructorBean.getMyTestService());
+        Assertions.assertSame(injectByConstructorBean.getTestService1(), injectByConstructorBean.getMyTestService1());
+        Assertions.assertSame(injectByConstructorBean.getTestService2(), injectByConstructorBean.getMyTestService2());
     }
 
     /**
@@ -117,15 +114,15 @@ public class TRpcConfigAutoRegistryTest {
     @Test
     public void testTRpcClientAutoRegistryBySetter() {
         // test setter
-        Assert.assertNotNull(injectBySetterBean.getMyTestService());
-        Assert.assertNotNull(injectBySetterBean.getMyTestService1());
-        Assert.assertNotNull(injectBySetterBean.getMyTestService2());
-        Assert.assertNotNull(injectBySetterBean.getTestService1());
-        Assert.assertNotNull(injectBySetterBean.getTestService2());
-        Assert.assertSame(injectBySetterBean.getTestService1(), injectBySetterBean.getMyTestService());
-        Assert.assertSame(injectBySetterBean.getTestService1(), injectBySetterBean.getMyTestService1());
-        Assert.assertSame(injectBySetterBean.getTestService2(), injectBySetterBean.getMyTestService2());
-        Assert.assertSame(injectBySetterBean.getTestService2(), injectBySetterBean.getMyTestServiceByResource());
+        Assertions.assertNotNull(injectBySetterBean.getMyTestService());
+        Assertions.assertNotNull(injectBySetterBean.getMyTestService1());
+        Assertions.assertNotNull(injectBySetterBean.getMyTestService2());
+        Assertions.assertNotNull(injectBySetterBean.getTestService1());
+        Assertions.assertNotNull(injectBySetterBean.getTestService2());
+        Assertions.assertSame(injectBySetterBean.getTestService1(), injectBySetterBean.getMyTestService());
+        Assertions.assertSame(injectBySetterBean.getTestService1(), injectBySetterBean.getMyTestService1());
+        Assertions.assertSame(injectBySetterBean.getTestService2(), injectBySetterBean.getMyTestService2());
+        Assertions.assertSame(injectBySetterBean.getTestService2(), injectBySetterBean.getMyTestServiceByResource());
     }
 
     /**
@@ -133,12 +130,12 @@ public class TRpcConfigAutoRegistryTest {
      */
     @Test
     public void testNotAutoRegistry() {
-        Assert.assertNull(customizedMyService);
-        Assert.assertTrue(beanFactory.containsBean("myTRpcConfigManagerCustomizer"));
-        Assert.assertFalse(beanFactory.containsBean("my.trpc.customized.client"));
-        Assert.assertEquals(1, beanFactory.getBeanProvider(MyService.class).stream().count());
-        Assert.assertTrue(myTRpcConfigManagerCustomizer.isEnabled());
-        Assert.assertEquals("add", myTRpcConfigManagerCustomizer.getFlag());
+        Assertions.assertNull(customizedMyService);
+        Assertions.assertTrue(beanFactory.containsBean("myTRpcConfigManagerCustomizer"));
+        Assertions.assertFalse(beanFactory.containsBean("my.trpc.customized.client"));
+        Assertions.assertEquals(1, beanFactory.getBeanProvider(MyService.class).stream().count());
+        Assertions.assertTrue(myTRpcConfigManagerCustomizer.isEnabled());
+        Assertions.assertEquals("add", myTRpcConfigManagerCustomizer.getFlag());
     }
 
     /**
@@ -148,20 +145,20 @@ public class TRpcConfigAutoRegistryTest {
     public void testTRpcFilterAutoRegistry() {
         AutoInjectTestClientFilter clientFilter = (AutoInjectTestClientFilter) FilterManager.get(
                 "auto_inject_test_client_filter");
-        Assert.assertNotNull(clientFilter.getMyTestService1());
-        Assert.assertNotNull(clientFilter.getMyTestService2());
-        Assert.assertSame(clientFilter.getMyTestService1(), myTestService1);
-        Assert.assertSame(clientFilter.getMyTestService2(), myTestService2);
+        Assertions.assertNotNull(clientFilter.getMyTestService1());
+        Assertions.assertNotNull(clientFilter.getMyTestService2());
+        Assertions.assertSame(clientFilter.getMyTestService1(), myTestService1);
+        Assertions.assertSame(clientFilter.getMyTestService2(), myTestService2);
 
         AutoInjectTestServerFilter serverFilter = (AutoInjectTestServerFilter) FilterManager.get(
                 "auto_inject_test_server_filter");
-        Assert.assertSame(serverFilter, autoInjectTestServerFilter);
-        Assert.assertNotNull(serverFilter.getInjectByFieldBean());
-        Assert.assertNotNull(serverFilter.getAutowiredByFieldBean());
-        Assert.assertNotNull(serverFilter.getInjectBySetterBean());
-        Assert.assertSame(serverFilter.getInjectByFieldBean(), injectByFieldBean);
-        Assert.assertSame(serverFilter.getAutowiredByFieldBean(), injectByFieldBean);
-        Assert.assertSame(serverFilter.getInjectBySetterBean(), injectBySetterBean);
+        Assertions.assertSame(serverFilter, autoInjectTestServerFilter);
+        Assertions.assertNotNull(serverFilter.getInjectByFieldBean());
+        Assertions.assertNotNull(serverFilter.getAutowiredByFieldBean());
+        Assertions.assertNotNull(serverFilter.getInjectBySetterBean());
+        Assertions.assertSame(serverFilter.getInjectByFieldBean(), injectByFieldBean);
+        Assertions.assertSame(serverFilter.getAutowiredByFieldBean(), injectByFieldBean);
+        Assertions.assertSame(serverFilter.getInjectBySetterBean(), injectBySetterBean);
     }
 
     @TRpcService(name = "test_trpc_config_registry")
@@ -350,7 +347,8 @@ public class TRpcConfigAutoRegistryTest {
         }
 
         @Autowired
-        public InjectByConstructorBean(TestService myTestService1, TestService myTestService2,
+        public InjectByConstructorBean(@Qualifier("myTestService1") TestService myTestService1,
+                @Qualifier("myTestService2") TestService myTestService2,
                 @Qualifier("myTestService1") TestService myTestService) {
             this.myTestService1 = myTestService1;
             this.myTestService2 = myTestService2;
@@ -415,6 +413,7 @@ public class TRpcConfigAutoRegistryTest {
         }
 
         @Autowired
+        @Qualifier("myTestService1")
         public void setMyTestService1(TestService myTestService1) {
             this.myTestService1 = myTestService1;
         }
@@ -424,6 +423,7 @@ public class TRpcConfigAutoRegistryTest {
         }
 
         @Autowired
+        @Qualifier("myTestService2")
         public void setMyTestService2(TestService myTestService2) {
             this.myTestService2 = myTestService2;
         }

@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -31,18 +31,15 @@ import com.tencent.trpc.spring.exception.api.HandleExceptionConfigurer;
 import com.tencent.trpc.spring.test.TestSpringApplication;
 import java.lang.reflect.Method;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestSpringApplication.class)
 @ContextConfiguration(classes = CustomConfigHandleExceptionAnnotationTestConfiguration.class)
 public class CustomConfigHandleExceptionAnnotationTest {
@@ -54,7 +51,7 @@ public class CustomConfigHandleExceptionAnnotationTest {
         return new RpcClientContext();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         CustomConfigHandleExceptionAnnotationTestConfiguration.STATE = 0;
     }
@@ -66,9 +63,9 @@ public class CustomConfigHandleExceptionAnnotationTest {
     public void testHandleException() {
         String code = String.valueOf(RandomUtils.nextInt());
         Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("1").setName(code).build());
-        Assert.assertEquals("12345", response.getResult());
-        Assert.assertEquals("custom", response.getResInfo());
-        Assert.assertEquals(1, CustomConfigHandleExceptionAnnotationTestConfiguration.STATE);
+        Assertions.assertEquals("12345", response.getResult());
+        Assertions.assertEquals("custom", response.getResInfo());
+        Assertions.assertEquals(1, CustomConfigHandleExceptionAnnotationTestConfiguration.STATE);
     }
 
     /**
@@ -78,9 +75,9 @@ public class CustomConfigHandleExceptionAnnotationTest {
     public void testHandleNullPointerException() {
         String code = String.valueOf(RandomUtils.nextInt());
         Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("2").setName(code).build());
-        Assert.assertEquals("12345", response.getResult());
-        Assert.assertEquals("custom", response.getResInfo());
-        Assert.assertEquals(1, CustomConfigHandleExceptionAnnotationTestConfiguration.STATE);
+        Assertions.assertEquals("12345", response.getResult());
+        Assertions.assertEquals("custom", response.getResInfo());
+        Assertions.assertEquals(1, CustomConfigHandleExceptionAnnotationTestConfiguration.STATE);
     }
 
     /**
@@ -90,33 +87,35 @@ public class CustomConfigHandleExceptionAnnotationTest {
     public void testHandleIndexOutOfBoundsException() {
         String code = String.valueOf(RandomUtils.nextInt());
         Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("3").setName(code).build());
-        Assert.assertEquals("12345", response.getResult());
-        Assert.assertEquals("custom", response.getResInfo());
-        Assert.assertEquals(1, CustomConfigHandleExceptionAnnotationTestConfiguration.STATE);
+        Assertions.assertEquals("12345", response.getResult());
+        Assertions.assertEquals("custom", response.getResInfo());
+        Assertions.assertEquals(1, CustomConfigHandleExceptionAnnotationTestConfiguration.STATE);
     }
 
     /**
      * Test for IllegalArgumentException handling
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testHandleIllegalArgumentException() {
-        String code = String.valueOf(RandomUtils.nextInt());
-        Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("4").setName(code).build());
-        Assert.fail();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            String code = String.valueOf(RandomUtils.nextInt());
+            Response response = testServiceApi.test(newContext(),
+                    Request.newBuilder().setId("4").setName(code).build());
+            Assertions.fail();
+        });
     }
 
     /**
      * Test for handle result type error
      */
-    @Test(expected = ClassCastException.class)
+    @Test
     public void testClassCastException() {
-        String code = String.valueOf(RandomUtils.nextInt());
-        try {
+        Assertions.assertThrows(ClassCastException.class, () -> {
+            String code = String.valueOf(RandomUtils.nextInt());
             Resp response = testServiceApi.call(newContext(), Req.newBuilder().setResult("2").setInfo(code).build());
-            Assert.fail();
-        } finally {
-            Assert.assertEquals(3, CustomConfigHandleExceptionAnnotationTestConfiguration.STATE);
-        }
+            Assertions.fail();
+        });
+        Assertions.assertEquals(3, CustomConfigHandleExceptionAnnotationTestConfiguration.STATE);
     }
 
     /**
@@ -126,9 +125,9 @@ public class CustomConfigHandleExceptionAnnotationTest {
     public void testSpecificExceptionHandler() {
         String code = String.valueOf(RandomUtils.nextInt());
         Resp response = testServiceApi.call(newContext(), Req.newBuilder().setResult("1").setInfo(code).build());
-        Assert.assertEquals("666666", response.getRetCode());
-        Assert.assertEquals("myHandler", response.getRetMsg());
-        Assert.assertEquals(3, CustomConfigHandleExceptionAnnotationTestConfiguration.STATE);
+        Assertions.assertEquals("666666", response.getRetCode());
+        Assertions.assertEquals("myHandler", response.getRetMsg());
+        Assertions.assertEquals(3, CustomConfigHandleExceptionAnnotationTestConfiguration.STATE);
     }
 
     @Configuration

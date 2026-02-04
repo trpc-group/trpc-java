@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -30,11 +30,11 @@ public class DefaultTrpcResponseRewriter implements TrpcResponseRewriter {
             Mono<byte[]> result) {
         ServerHttpResponse response = exchange.getResponse();
         if (result != null) {
-            DataBuffer dataBuffer = response.bufferFactory().wrap(result.block());
-            logger.info("dataBuffer :{}", dataBuffer.toString(StandardCharsets.UTF_8));
-            // Content-Type uses application/json by default
-            response.getHeaders().add("Content-Type", MimeTypeUtils.APPLICATION_JSON_VALUE);
-            return response.writeWith(Mono.justOrEmpty(dataBuffer));
+            return result.flatMap(bytes -> {
+                DataBuffer dataBuffer = response.bufferFactory().wrap(bytes);
+                response.getHeaders().add("Content-Type", MimeTypeUtils.APPLICATION_JSON_VALUE);
+                return response.writeWith(Mono.just(dataBuffer));
+            });
         }
         return Mono.empty();
     }

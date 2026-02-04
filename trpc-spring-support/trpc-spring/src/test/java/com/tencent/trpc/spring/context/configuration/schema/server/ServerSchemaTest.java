@@ -1,7 +1,7 @@
 package com.tencent.trpc.spring.context.configuration.schema.server;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ServerSchemaTest {
 
@@ -10,7 +10,7 @@ public class ServerSchemaTest {
         ServerSchema serverSchema = new ServerSchema();
         serverSchema.setCloseTimeout(2000L);
         serverSchema.setWaitTimeout(2000L);
-        Assert.assertEquals(Long.valueOf(2000), serverSchema.getWaitTimeout());
-        Assert.assertEquals(Long.valueOf(2000), serverSchema.getCloseTimeout());
+        Assertions.assertEquals(Long.valueOf(2000), serverSchema.getWaitTimeout());
+        Assertions.assertEquals(Long.valueOf(2000), serverSchema.getCloseTimeout());
     }
 }

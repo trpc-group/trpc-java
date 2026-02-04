@@ -23,8 +23,8 @@ import com.tencent.trpc.spring.context.configuration.schema.server.ServerSchema;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.YamlPropertySourceLoader;
@@ -56,10 +56,10 @@ public class SchemaTest {
 
     private void assertBound(Binder binder, String prefix, Class<?> clazz) {
         Object bound = bind(binder, prefix, clazz);
-        Assert.assertNotNull(bound);
+        Assertions.assertNotNull(bound);
 
         Map<String, Object> map = MAP_CONVERTER.convertValue(bound, MAP_TYPE);
-        Assert.assertTrue(map.size() > 0);
+        Assertions.assertTrue(map.size() > 0);
     }
 
     private Binder getBinder() {

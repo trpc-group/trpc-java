@@ -27,22 +27,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 import tests.TrpcSpringmvcDemoApplication;
 import tests.proto.HelloRequestProtocol;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = TrpcSpringmvcDemoApplication.class,
-        webEnvironment = WebEnvironment.RANDOM_PORT)
+        webEnvironment = WebEnvironment.DEFINED_PORT)
 public class TRpcHttpTests {
 
     private static final Logger logger = LoggerFactory.getLogger(TRpcHttpTests.class);
@@ -63,7 +60,7 @@ public class TRpcHttpTests {
 
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
-            Assert.assertEquals(404, responseCode);
+            Assertions.assertEquals(404, responseCode);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -86,7 +83,7 @@ public class TRpcHttpTests {
 
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
-            Assert.assertEquals(404, responseCode);
+            Assertions.assertEquals(404, responseCode);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -109,7 +106,7 @@ public class TRpcHttpTests {
 
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
-            Assert.assertEquals(404, responseCode);
+            Assertions.assertEquals(404, responseCode);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -151,7 +148,7 @@ public class TRpcHttpTests {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(expectStatus, responseCode);
+            Assertions.assertEquals(expectStatus, responseCode);
             if (expectStatus == 404) {
                 return;
             }
@@ -204,7 +201,7 @@ public class TRpcHttpTests {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -256,7 +253,7 @@ public class TRpcHttpTests {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(responseCode, 200);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -307,7 +304,7 @@ public class TRpcHttpTests {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -352,7 +349,7 @@ public class TRpcHttpTests {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -393,7 +390,7 @@ public class TRpcHttpTests {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -434,7 +431,7 @@ public class TRpcHttpTests {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -475,7 +472,7 @@ public class TRpcHttpTests {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(responseCode, 200);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
 
@@ -515,7 +512,7 @@ public class TRpcHttpTests {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(404, responseCode);
+            Assertions.assertEquals(404, responseCode);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -561,7 +558,7 @@ public class TRpcHttpTests {
             int responseCode = connection.getResponseCode();
             logger.info("response code is {}", responseCode);
 
-            Assert.assertEquals(408, responseCode);
+            Assertions.assertEquals(408, responseCode);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -577,7 +574,7 @@ public class TRpcHttpTests {
 
         String responseStr = restTemplate
                 .postForObject("http://localhost:12347/test", body, String.class);
-        Assert.assertEquals("{\"message\":\"testControllerPostPbByJsontest\"}", responseStr);
+        Assertions.assertEquals("{\"message\":\"testControllerPostPbByJsontest\"}", responseStr);
 
         List<HttpMessageConverter<?>> messageConverters = restTemplate.getMessageConverters();
         messageConverters.add(0, new ProtoJsonHttpMessageConverter<>());
@@ -585,7 +582,7 @@ public class TRpcHttpTests {
 
         HelloRequestProtocol.HelloResponse response = restTemplate
                 .postForObject("http://localhost:12347/test", body, HelloRequestProtocol.HelloResponse.class);
-        Assert.assertEquals("testControllerPostPbByJsontest", response.getMessage());
+        Assertions.assertEquals("testControllerPostPbByJsontest", response.getMessage());
 
         URL url = new URL("http://localhost:12347/test");
         HttpURLConnection connection = null;
@@ -606,13 +603,13 @@ public class TRpcHttpTests {
             out.close();
 
             int responseCode = connection.getResponseCode();
-            Assert.assertEquals(200, responseCode);
+            Assertions.assertEquals(200, responseCode);
 
             in = connection.getInputStream();
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             StreamUtils.copy(in, bos);
 
-            Assert.assertEquals("{\"message\":\"你好TRpc-Java!test\"}",
+            Assertions.assertEquals("{\"message\":\"你好TRpc-Java!test\"}",
                     new String(bos.toByteArray(), StandardCharsets.UTF_8));
         } finally {
             if (out != null) {
