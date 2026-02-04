@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -9,18 +9,19 @@
  * A copy of the Apache 2.0 License can be found in the LICENSE file.
  */
 
-package com.tencent.trpc.spring.cloud.gateway;
+package com.tencent.trpc.spring.cloud.gateway.filter;
 
+import com.tencent.trpc.spring.boot.starters.annotation.EnableTRpc;
 import com.tencent.trpc.spring.cloud.gateway.autoconfigure.EnableTrpcRouting;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @EnableTrpcRouting
+@EnableTRpc
 @SpringBootApplication
-public class TrpcGatewayApplication {
+public class TestSpringApplication {
 
     public static void main(String[] args) {
-        new SpringApplicationBuilder().sources(TrpcGatewayApplication.class).run(args);
+        SpringApplication.run(TestSpringApplication.class, args);
     }
-
 }
