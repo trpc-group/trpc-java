@@ -14,7 +14,6 @@ package com.tencent.trpc.spring.cloud.gateway.filter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.tencent.trpc.spring.cloud.gateway.TrpcGatewayApplication;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import okhttp3.MediaType;
@@ -25,23 +24,22 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 public class TrpcRoutingFilterTest {
 
-    private final String requestBody = "{\"msg\":\"hello gateway!\",\"id\":\"\"}";
+    private static final String REQUEST_BODY = "{\"msg\":\"hello gateway!\",\"id\":\"\"}";
+    private static ConfigurableApplicationContext application;
+    private static OkHttpClient httpClient;
 
-    private ConfigurableApplicationContext application;
-    private OkHttpClient httpClient;
-
-    @BeforeEach
-    void setUp() throws InterruptedException {
-        application = new SpringApplicationBuilder().sources(TrpcGatewayApplication.class).run(new String[0]);
-        TimeUnit.SECONDS.sleep(5);
+    @BeforeAll
+    static void setUp() throws InterruptedException {
+        application = SpringApplication.run(TestSpringApplication.class);
+        Thread.sleep(3000);
 
         httpClient = new OkHttpClient().newBuilder()
                 .readTimeout(10, TimeUnit.SECONDS)
@@ -50,37 +48,25 @@ public class TrpcRoutingFilterTest {
                 .build();
     }
 
-    @AfterEach
-    void tearDown() {
+    @AfterAll
+    static void tearDown() {
         if (application != null) {
             application.close();
         }
     }
 
     @Test
-    void filter() {
-        trpcTest();
-        httpTest();
+    void httpTest() throws JSONException, IOException {
+        JSONObject response = gateway(getHttpRequest());
+        assertNotNull(response);
+        assertEquals(REQUEST_BODY, response.toString());
     }
 
-    private void httpTest() {
-        try {
-            JSONObject response = gateway(getHttpRequest());
-            assertNotNull(response);
-            assertEquals(requestBody, response.toString());
-        } catch (JSONException | IOException e) {
-            throw new AssertionError("httpTest failed", e);
-        }
-    }
-
-    private void trpcTest() {
-        try {
-            JSONObject response = gateway(getTRPCRequest(requestBody));
-            assertNotNull(response);
-            assertEquals(requestBody, response.toString());
-        } catch (JSONException | IOException e) {
-            throw new AssertionError("trpcTest failed", e);
-        }
+    @Test
+    void trpcTest() throws JSONException, IOException {
+        JSONObject response = gateway(getTRPCRequest(REQUEST_BODY));
+        assertNotNull(response);
+        assertEquals(REQUEST_BODY, response.toString());
     }
 
     private JSONObject gateway(Request httpRequest) throws JSONException, IOException {
