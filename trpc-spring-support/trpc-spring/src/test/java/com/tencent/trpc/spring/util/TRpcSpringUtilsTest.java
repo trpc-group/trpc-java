@@ -17,9 +17,8 @@ import com.tencent.trpc.core.rpc.anno.TRpcMethod;
 import com.tencent.trpc.core.rpc.anno.TRpcService;
 import com.tencent.trpc.spring.test.TestSpringApplication;
 import com.tencent.trpc.spring.util.TRpcSpringUtilsTest.BeanConfiguration;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,9 +27,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestSpringApplication.class)
 @ContextConfiguration(classes = BeanConfiguration.class)
 public class TRpcSpringUtilsTest {
@@ -51,8 +48,8 @@ public class TRpcSpringUtilsTest {
 
         TRpcSpringUtils.setRef(context, config);
 
-        Assert.assertEquals(TestService.class, config.getServiceInterface());
-        Assert.assertEquals(context.getBean(TestService.class), config.getRef());
+        Assertions.assertEquals(TestService.class, config.getServiceInterface());
+        Assertions.assertEquals(context.getBean(TestService.class), config.getRef());
     }
 
     @TRpcService(name = "testService")

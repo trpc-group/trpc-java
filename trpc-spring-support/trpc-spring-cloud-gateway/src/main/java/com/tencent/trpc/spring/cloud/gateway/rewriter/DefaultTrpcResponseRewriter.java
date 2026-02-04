@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -30,11 +30,25 @@ public class DefaultTrpcResponseRewriter implements TrpcResponseRewriter {
             Mono<byte[]> result) {
         ServerHttpResponse response = exchange.getResponse();
         if (result != null) {
-            DataBuffer dataBuffer = response.bufferFactory().wrap(result.block());
-            logger.info("dataBuffer :{}", dataBuffer.toString(StandardCharsets.UTF_8));
-            // Content-Type uses application/json by default
-            response.getHeaders().add("Content-Type", MimeTypeUtils.APPLICATION_JSON_VALUE);
-            return response.writeWith(Mono.justOrEmpty(dataBuffer));
+            return result.flatMap(bytes -> {
+                if (bytes == null || bytes.length == 0) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Empty response body, skipping write");
+                    }
+                    return Mono.empty();
+                }
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Writing response: {}", new String(bytes, StandardCharsets.UTF_8));
+                }
+
+                DataBuffer dataBuffer = response.bufferFactory().wrap(bytes);
+                response.getHeaders().setContentLength(bytes.length);
+                response.getHeaders().set("Content-Type", MimeTypeUtils.APPLICATION_JSON_VALUE);
+
+                return response.writeWith(Mono.just(dataBuffer))
+                        .doOnError(error -> logger.error("Failed to write response", error));
+            });
         }
         return Mono.empty();
     }

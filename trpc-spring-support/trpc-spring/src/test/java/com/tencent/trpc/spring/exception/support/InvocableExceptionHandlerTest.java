@@ -13,8 +13,8 @@ package com.tencent.trpc.spring.exception.support;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 
 /**
@@ -34,12 +34,12 @@ public class InvocableExceptionHandlerTest {
         InvocableExceptionHandler handler2 = new InvocableExceptionHandler(bean, method);
         HashSet<InvocableExceptionHandler> set = new HashSet<>();
         set.add(handler1);
-        Assert.assertEquals(handler1.hashCode(), handler2.hashCode());
-        Assert.assertEquals(true, handler1.equals(handler1));
-        Assert.assertEquals(true, handler1.equals(handler2));
-        Assert.assertEquals(false, handler1.equals(bean));
-        Assert.assertEquals(true, set.contains(handler2));
-        Assert.assertEquals(MyExceptionHandle.class, handler1.getTargetType());
+        Assertions.assertEquals(handler1.hashCode(), handler2.hashCode());
+        Assertions.assertEquals(true, handler1.equals(handler1));
+        Assertions.assertEquals(true, handler1.equals(handler2));
+        Assertions.assertEquals(false, handler1.equals(bean));
+        Assertions.assertEquals(true, set.contains(handler2));
+        Assertions.assertEquals(MyExceptionHandle.class, handler1.getTargetType());
     }
 
     /**
@@ -52,16 +52,15 @@ public class InvocableExceptionHandlerTest {
                 .getDeclaredMethod("handle", MyBean.class, RuntimeException.class, Method.class);
         MyExceptionHandle bean = new MyExceptionHandle();
         InvocableExceptionHandler handler = new InvocableExceptionHandler(bean, invokeMethod);
-        handler.setParameterNameDiscoverer(null);
         MethodParameter[] methodParameters = handler.getMethodParameters();
         Object result = handler.handle(new IllegalArgumentException(), targetMethod,
                 new Object[]{new MyBean("name1"), new MyBean("name2")});
-        Assert.assertEquals(3, methodParameters.length);
-        Assert.assertEquals("myBean1", methodParameters[0].getParameterName());
-        Assert.assertEquals("e", methodParameters[1].getParameterName());
-        Assert.assertEquals("method11111", methodParameters[2].getParameterName());
-        Assert.assertEquals(true, String.class.isAssignableFrom(result.getClass()));
-        Assert.assertEquals("name1_IllegalArgumentException_targetMethod", result);
+        Assertions.assertEquals(3, methodParameters.length);
+        Assertions.assertEquals(MyBean.class, methodParameters[0].getParameterType());
+        Assertions.assertEquals(RuntimeException.class, methodParameters[1].getParameterType());
+        Assertions.assertEquals(Method.class, methodParameters[2].getParameterType());
+        Assertions.assertEquals(true, String.class.isAssignableFrom(result.getClass()));
+        Assertions.assertEquals("name1_IllegalArgumentException_targetMethod", result);
     }
 
     public static class MyExceptionHandle {

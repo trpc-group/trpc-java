@@ -30,20 +30,17 @@ import com.tencent.trpc.spring.exception.api.ExceptionResultTransformer;
 import com.tencent.trpc.spring.test.TestSpringApplication;
 import java.lang.reflect.Method;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * Test for exception-handling
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestSpringApplication.class)
 @ContextConfiguration(classes = TestHandleExceptionConfiguration.class)
 public class HandleExceptionAnnotationTest {
@@ -62,8 +59,8 @@ public class HandleExceptionAnnotationTest {
     public void testHandleException() {
         String code = String.valueOf(RandomUtils.nextInt());
         Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("1").setName(code).build());
-        Assert.assertEquals("999", response.getResult());
-        Assert.assertEquals("test_Request", response.getResInfo());
+        Assertions.assertEquals("999", response.getResult());
+        Assertions.assertEquals("test_Request", response.getResInfo());
     }
 
     /**
@@ -74,8 +71,8 @@ public class HandleExceptionAnnotationTest {
         String code = String.valueOf(RandomUtils.nextInt());
         Response response = testServiceApi.test(newContext(),
                 Request.newBuilder().setId("3").setName(code).setInfo("testHandleMyException").build());
-        Assert.assertEquals(code, response.getResult());
-        Assert.assertEquals("testHandleMyException", response.getResInfo());
+        Assertions.assertEquals(code, response.getResult());
+        Assertions.assertEquals("testHandleMyException", response.getResInfo());
     }
 
     /**
@@ -86,8 +83,8 @@ public class HandleExceptionAnnotationTest {
         Response response = testServiceApi
                 .test(newContext(), Request.newBuilder().setId("2").setName("testHandleSonException")
                         .setInfo("testHandleSonExceptiontestHandleSonException").build());
-        Assert.assertEquals("testHandleSonException", response.getResult());
-        Assert.assertEquals("testHandleSonExceptiontestHandleSonException", response.getResInfo());
+        Assertions.assertEquals("testHandleSonException", response.getResult());
+        Assertions.assertEquals("testHandleSonExceptiontestHandleSonException", response.getResInfo());
     }
 
     /**
@@ -98,45 +95,53 @@ public class HandleExceptionAnnotationTest {
         String code = String.valueOf(RandomUtils.nextInt());
         Response response = testServiceApi.test(newContext(),
                 Request.newBuilder().setId("4").setName(code).setInfo("testHandleException").build());
-        Assert.assertEquals(code, response.getResult());
-        Assert.assertEquals("handleTRpcException testHandleException", response.getResInfo());
+        Assertions.assertEquals(code, response.getResult());
+        Assertions.assertEquals("handleTRpcException testHandleException", response.getResInfo());
     }
 
     /**
      * Test for unhandled exception type 'Error'
      */
-    @Test(expected = Error.class)
+    @Test
     public void testNotHandleError() {
-        Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("5").build());
-        Assert.fail();
+        Assertions.assertThrows(Error.class, () -> {
+            Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("5").build());
+            Assertions.fail();
+        });
     }
 
     /**
      * Test for Excluded exception IllegalArgumentException
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testExcludeHandleException() {
-        Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("6").build());
-        Assert.fail();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("6").build());
+            Assertions.fail();
+        });
     }
 
     /**
      * Test for throw another exception in handler
      */
-    @Test(expected = IllegalMonitorStateException.class)
+    @Test
     public void testThrowIllegalStateException() {
-        Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("7").build());
-        Assert.fail();
+        Assertions.assertThrows(IllegalMonitorStateException.class, () -> {
+            Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("7").build());
+            Assertions.fail();
+        });
     }
 
     /**
      * Exception thrown by non-tRPC method shouldn't be handled
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testCustomHandleException() {
-        String code = String.valueOf(RandomUtils.nextInt());
-        Response response = testServiceApi.ex(newContext(), Request.newBuilder().setId("8").build());
-        Assert.fail();
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            String code = String.valueOf(RandomUtils.nextInt());
+            Response response = testServiceApi.ex(newContext(), Request.newBuilder().setId("8").build());
+            Assertions.fail();
+        });
     }
 
     /**
@@ -145,7 +150,7 @@ public class HandleExceptionAnnotationTest {
     @Test
     public void testHandlerReturnNull() {
         Response response = testServiceApi.test(newContext(), Request.newBuilder().setId("9").build());
-        Assert.assertNull(response);
+        Assertions.assertNull(response);
     }
 
     /**
@@ -156,8 +161,8 @@ public class HandleExceptionAnnotationTest {
         String random = String.valueOf(System.nanoTime());
         Response response = testServiceApi
                 .test(newContext(), Request.newBuilder().setId("10").setInfo(random).build());
-        Assert.assertEquals("1111", response.getResult());
-        Assert.assertEquals("local IndexOutOfBoundsException " + random, response.getResInfo());
+        Assertions.assertEquals("1111", response.getResult());
+        Assertions.assertEquals("local IndexOutOfBoundsException " + random, response.getResInfo());
     }
 
     /**
@@ -168,26 +173,30 @@ public class HandleExceptionAnnotationTest {
         String random = String.valueOf(System.nanoTime());
         Resp response = testServiceApi.call(newContext(),
                 Req.newBuilder().setInfo(random).setResult("testSpecificHandleResultTransform").build());
-        Assert.assertEquals("8888", response.getRetCode());
-        Assert.assertEquals(random + "_testSpecificHandleResultTransform999", response.getRetMsg());
+        Assertions.assertEquals("8888", response.getRetCode());
+        Assertions.assertEquals(random + "_testSpecificHandleResultTransform999", response.getRetMsg());
     }
 
     /**
      * Exception thrown by non-tRPC method shouldn't be handled
      */
-    @Test(expected = MyException.class)
+    @Test
     public void testUselessForNotTRpcServiceMethod() {
-        Response response = testServiceApi.ex(newContext(), Request.newBuilder().setId("3").build());
-        Assert.fail();
+        Assertions.assertThrows(MyException.class, () -> {
+            Response response = testServiceApi.ex(newContext(), Request.newBuilder().setId("3").build());
+            Assertions.fail();
+        });
     }
 
     /**
      * Exception thrown by non-tRPC method shouldn't be handled
      */
-    @Test(expected = IllegalMonitorStateException.class)
+    @Test
     public void testIllegalMonitorStateException() {
-        Response response = testServiceApi.ex(newContext(), Request.newBuilder().setId("11").build());
-        Assert.fail();
+        Assertions.assertThrows(IllegalMonitorStateException.class, () -> {
+            Response response = testServiceApi.ex(newContext(), Request.newBuilder().setId("11").build());
+            Assertions.fail();
+        });
     }
 
     public static class MyException extends RuntimeException {
