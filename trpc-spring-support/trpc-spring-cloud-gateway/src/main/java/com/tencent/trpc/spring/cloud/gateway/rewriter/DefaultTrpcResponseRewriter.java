@@ -31,9 +31,23 @@ public class DefaultTrpcResponseRewriter implements TrpcResponseRewriter {
         ServerHttpResponse response = exchange.getResponse();
         if (result != null) {
             return result.flatMap(bytes -> {
+                if (bytes == null || bytes.length == 0) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Empty response body, skipping write");
+                    }
+                    return Mono.empty();
+                }
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Writing response: {}", new String(bytes, StandardCharsets.UTF_8));
+                }
+
                 DataBuffer dataBuffer = response.bufferFactory().wrap(bytes);
-                response.getHeaders().add("Content-Type", MimeTypeUtils.APPLICATION_JSON_VALUE);
-                return response.writeWith(Mono.just(dataBuffer));
+                response.getHeaders().setContentLength(bytes.length);
+                response.getHeaders().set("Content-Type", MimeTypeUtils.APPLICATION_JSON_VALUE);
+
+                return response.writeWith(Mono.just(dataBuffer))
+                        .doOnError(error -> logger.error("Failed to write response", error));
             });
         }
         return Mono.empty();
