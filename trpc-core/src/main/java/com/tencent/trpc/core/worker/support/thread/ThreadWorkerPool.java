@@ -45,7 +45,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.reflections.ReflectionUtils;
 
 @Extension(ThreadWorkerPool.TYPE)
 public class ThreadWorkerPool extends AbstractWorkerPool
@@ -104,7 +103,7 @@ public class ThreadWorkerPool extends AbstractWorkerPool
             try {
                 // Use JDK 21+ method Executors.newThreadPerTaskExecutor(ThreadFactory threadFactory)
                 // to create a virtual thread executor service
-                Class<?> executorsClazz = ReflectionUtils.forName(EXECUTORS_CLASS_NAME);
+                Class<?> executorsClazz = Class.forName(EXECUTORS_CLASS_NAME);
                 Method newThreadPerTaskExecutorMethod = executorsClazz
                         .getDeclaredMethod(NEW_THREAD_PER_TASK_EXECUTOR_NAME, ThreadFactory.class);
                 ThreadPerTaskExecutorWrapper wrappedThreadPool = ThreadPerTaskExecutorWrapper
@@ -115,7 +114,8 @@ public class ThreadWorkerPool extends AbstractWorkerPool
                 logger.info("Successfully created an executor that assigns each task to a "
                         + "new virtual thread for processing");
                 return;
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
+            } catch (NoSuchMethodException | InvocationTargetException |
+                     IllegalAccessException | ClassNotFoundException exception) {
                 logger.warn("The current JDK version does not support virtual threads, please use OpenJDK 21+, "
                         + "or remove use_virtual_thread_per_task_executor config, error: ", exception);
             }
@@ -219,7 +219,7 @@ public class ThreadWorkerPool extends AbstractWorkerPool
                 // introducing the "java.lang.Thread.Builder.OfVirtual" dependency will result in an error,
                 // so we create virtual threads through reflection, which is compatible with JDKs that do not support
                 // virtual threads. When the JDK does not support virtual threads, it downgrades to thread.
-                Class<?> threadClazz = ReflectionUtils.forName(THREAD_CLASS_NAME);
+                Class<?> threadClazz = Class.forName(THREAD_CLASS_NAME);
                 Method ofVirtualMethod = threadClazz.getDeclaredMethod(OF_VIRTUAL_NAME);
                 Object virtual = ofVirtualMethod.invoke(threadClazz);
                 Class<?> virtualClazz = ofVirtualMethod.getReturnType();
@@ -238,7 +238,8 @@ public class ThreadWorkerPool extends AbstractWorkerPool
                 threadFactory = (ThreadFactory) factoryMethod.invoke(virtual);
                 logger.info("Successfully created virtual thread factory");
                 return threadFactory;
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException exception) {
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
+                     ClassNotFoundException exception) {
                 logger.error("The current JDK version cannot use virtual threads, please use OpenJDK 21+ or "
                         + "Tencent Kona JDK FIBER 8+ version, error: ", exception);
             }
