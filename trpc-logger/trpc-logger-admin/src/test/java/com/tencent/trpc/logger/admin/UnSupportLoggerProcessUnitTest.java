@@ -12,19 +12,17 @@
 package com.tencent.trpc.logger.admin;
 
 import com.tencent.trpc.core.logger.LoggerLevel;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UnSupportLoggerProcessUnitTest {
 
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
-
     private UnSupportLoggerProcessUnit unSupportLoggerProcessUnit;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         unSupportLoggerProcessUnit = new UnSupportLoggerProcessUnit();
     }
@@ -36,23 +34,23 @@ public class UnSupportLoggerProcessUnitTest {
 
     @Test
     public void testGetLoggers() {
-        expectedEx.expect(UnsupportedOperationException.class);
-        expectedEx.expectMessage("Current log frame doesn't support this operation!");
-        unSupportLoggerProcessUnit.getLoggers();
+        UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> unSupportLoggerProcessUnit.getLoggers());
+        assertEquals("Current log frame doesn't support this operation!", exception.getMessage());
     }
 
     @Test
     public void testGetLoggerLevelInfo() {
-        expectedEx.expect(UnsupportedOperationException.class);
-        expectedEx.expectMessage("Current log frame doesn't support this operation!");
-        unSupportLoggerProcessUnit.getLoggerLevelInfo();
+        UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> unSupportLoggerProcessUnit.getLoggerLevelInfo());
+        assertEquals("Current log frame doesn't support this operation!", exception.getMessage());
     }
 
     @Test
     public void testSetLoggerLevel() {
-        expectedEx.expect(UnsupportedOperationException.class);
-        expectedEx.expectMessage("Current log frame doesn't support this operation!");
-        unSupportLoggerProcessUnit.setLoggerLevel("a", LoggerLevel.ALL);
+        UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class,
+                () -> unSupportLoggerProcessUnit.setLoggerLevel("a", LoggerLevel.ALL));
+        assertEquals("Current log frame doesn't support this operation!", exception.getMessage());
     }
 
 }

@@ -12,15 +12,15 @@
 package com.tencent.trpc.logger.admin;
 
 import com.tencent.trpc.core.logger.LoggerLevel;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class LoggerLevelInfoTest {
 
     private LoggerLevelInfo loggerLevelInfo;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         loggerLevelInfo = new LoggerLevelInfo();
         loggerLevelInfo.setLoggerName("logger");
@@ -29,17 +29,17 @@ public class LoggerLevelInfoTest {
 
     @Test
     public void testGetLoggerName() {
-        Assert.assertEquals("logger", loggerLevelInfo.getLoggerName());
+        Assertions.assertEquals("logger", loggerLevelInfo.getLoggerName());
     }
 
     @Test
     public void testGetLevel() {
-        Assert.assertEquals(LoggerLevel.ALL.name(), loggerLevelInfo.getLevel());
+        Assertions.assertEquals(LoggerLevel.ALL.name(), loggerLevelInfo.getLevel());
     }
 
     @Test
     public void testTestToString() {
-        Assert.assertTrue(loggerLevelInfo.toString().contains("LoggerLevelInfo"));
+        Assertions.assertTrue(loggerLevelInfo.toString().contains("LoggerLevelInfo"));
     }
 
 }
