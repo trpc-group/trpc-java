@@ -26,7 +26,7 @@ public class LoggerProcessUnitFactoryTest {
     }
 
     /**
-     * 通过反射重置 LoggerProcessUnitFactory 的静态变量
+     * Reset static variable of LoggerProcessUnitFactory via reflection
      */
     private void resetLoggerProcessUnit() throws Exception {
         Field field = LoggerProcessUnitFactory.class.getDeclaredField("loggerProcessUnit");
@@ -38,7 +38,7 @@ public class LoggerProcessUnitFactoryTest {
     public void testGetGetLoggerProcessUnit() {
         try (MockedStatic<LoggerFactory> mockedLoggerFactory = Mockito.mockStatic(LoggerFactory.class);
              MockedStatic<LoggerFactoryEnum> mockedEnum = Mockito.mockStatic(LoggerFactoryEnum.class)) {
-            // 模拟 LoggerFactoryEnum.getLoggerFactoryEnum 返回 LOG4J2_FACTORY
+            // Mock LoggerFactoryEnum.getLoggerFactoryEnum to return LOG4J2_FACTORY
             mockedLoggerFactory.when(LoggerFactory::getILoggerFactory).thenReturn(new NOPLoggerFactory());
             mockedEnum.when(() -> LoggerFactoryEnum.getLoggerFactoryEnum(Mockito.anyString()))
                     .thenReturn(LoggerFactoryEnum.LOG4J2_FACTORY);
