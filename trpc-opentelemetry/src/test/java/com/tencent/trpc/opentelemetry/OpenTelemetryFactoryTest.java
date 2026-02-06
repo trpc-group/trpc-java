@@ -17,8 +17,8 @@ import com.tencent.trpc.core.telemetry.spi.TelemetryFactory;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class OpenTelemetryFactoryTest {
 
@@ -32,7 +32,7 @@ public class OpenTelemetryFactoryTest {
         ExtensionLoader.registerPlugin(pluginConfig);
         OpenTelemetryFactory factory = (OpenTelemetryFactory) ExtensionLoader.getExtensionLoader(
                 TelemetryFactory.class).getExtension(OpenTelemetryFactory.NAME);
-        Assert.assertNotNull(factory);
+        Assertions.assertNotNull(factory);
     }
 
 }

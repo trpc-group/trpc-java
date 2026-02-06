@@ -13,7 +13,7 @@ package com.tencent.trpc.logger.admin;
 
 import com.tencent.trpc.core.logger.LoggerLevel;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LoggerManagerTest {
 

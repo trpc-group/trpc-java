@@ -1,52 +1,73 @@
 package com.tencent.trpc.logger.admin;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ch.qos.logback.classic.LoggerContext;
-import org.apache.logging.slf4j.Log4jLoggerFactory;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import java.lang.reflect.Field;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.NOPLoggerFactory;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
-@RunWith(PowerMockRunner.class)
 public class LoggerProcessUnitFactoryTest {
 
+    @BeforeEach
+    public void setUp() throws Exception {
+        resetLoggerProcessUnit();
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception {
+        resetLoggerProcessUnit();
+    }
+
+    /**
+     * Reset static variable of LoggerProcessUnitFactory via reflection
+     */
+    private void resetLoggerProcessUnit() throws Exception {
+        Field field = LoggerProcessUnitFactory.class.getDeclaredField("loggerProcessUnit");
+        field.setAccessible(true);
+        field.set(null, null);
+    }
+
     @Test
-    @PrepareForTest({LoggerFactory.class})
     public void testGetGetLoggerProcessUnit() {
-        PowerMockito.mockStatic(LoggerFactory.class);
-        PowerMockito.when(LoggerFactory.getILoggerFactory()).thenReturn(new Log4jLoggerFactory());
-        LoggerProcessUnit log = LoggerProcessUnitFactory.getLoggerProcessUnit();
-        assertNotNull(log);
-        assertTrue(log instanceof Log4j2LoggerProcessUnit);
+        try (MockedStatic<LoggerFactory> mockedLoggerFactory = Mockito.mockStatic(LoggerFactory.class);
+             MockedStatic<LoggerFactoryEnum> mockedEnum = Mockito.mockStatic(LoggerFactoryEnum.class)) {
+            // Mock LoggerFactoryEnum.getLoggerFactoryEnum to return LOG4J2_FACTORY
+            mockedLoggerFactory.when(LoggerFactory::getILoggerFactory).thenReturn(new NOPLoggerFactory());
+            mockedEnum.when(() -> LoggerFactoryEnum.getLoggerFactoryEnum(Mockito.anyString()))
+                    .thenReturn(LoggerFactoryEnum.LOG4J2_FACTORY);
+            LoggerProcessUnit log = LoggerProcessUnitFactory.getLoggerProcessUnit();
+            assertNotNull(log);
+            assertTrue(log instanceof Log4j2LoggerProcessUnit);
+        }
     }
 
-
     @Test
-    @PrepareForTest({LoggerFactory.class})
     public void testLogback() {
-        PowerMockito.mockStatic(LoggerFactory.class);
-        PowerMockito.when(LoggerFactory.getILoggerFactory()).thenReturn(new LoggerContext());
-        LoggerProcessUnit log = LoggerProcessUnitFactory.getLoggerProcessUnit();
-        assertNotNull(log);
-        assertTrue(log instanceof LogbackLoggerProcessUnit);
-        log = LoggerProcessUnitFactory.getLoggerProcessUnit();
-        assertNotNull(log);
+        try (MockedStatic<LoggerFactory> mockedLoggerFactory = Mockito.mockStatic(LoggerFactory.class)) {
+            mockedLoggerFactory.when(LoggerFactory::getILoggerFactory).thenReturn(new LoggerContext());
+            LoggerProcessUnit log = LoggerProcessUnitFactory.getLoggerProcessUnit();
+            assertNotNull(log);
+            assertTrue(log instanceof LogbackLoggerProcessUnit);
+            log = LoggerProcessUnitFactory.getLoggerProcessUnit();
+            assertNotNull(log);
+        }
     }
 
     @Test
-    @PrepareForTest({LoggerFactory.class})
     public void testUnSupport() {
-        PowerMockito.mockStatic(LoggerFactory.class);
-        PowerMockito.when(LoggerFactory.getILoggerFactory()).thenReturn(new NOPLoggerFactory());
-        LoggerProcessUnit log = LoggerProcessUnitFactory.getLoggerProcessUnit();
-        assertNotNull(log);
-        assertTrue(log instanceof UnSupportLoggerProcessUnit);
+        try (MockedStatic<LoggerFactory> mockedLoggerFactory = Mockito.mockStatic(LoggerFactory.class)) {
+            mockedLoggerFactory.when(LoggerFactory::getILoggerFactory).thenReturn(new NOPLoggerFactory());
+            LoggerProcessUnit log = LoggerProcessUnitFactory.getLoggerProcessUnit();
+            assertNotNull(log);
+            assertTrue(log instanceof UnSupportLoggerProcessUnit);
+        }
     }
 
 }
