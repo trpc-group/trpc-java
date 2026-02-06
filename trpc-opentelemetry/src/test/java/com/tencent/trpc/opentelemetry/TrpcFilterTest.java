@@ -29,10 +29,10 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TrpcFilterTest {
 
@@ -44,7 +44,7 @@ public class TrpcFilterTest {
     private Invoker<?> invoker;
     private Response response;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
@@ -75,7 +75,7 @@ public class TrpcFilterTest {
         };
     }
 
-    @After
+    @AfterEach
     public void teardown() {
         ConfigManager.stopTest();
     }
@@ -88,13 +88,13 @@ public class TrpcFilterTest {
         request.getMeta().setRemoteAddress(address);
         request.getMeta().setLocalAddress(address);
         CompletableFuture<Response> clientFilter = (CompletableFuture<Response>) trpcFilter.filter(invoker, request);
-        Assert.assertEquals(RESPONSE_VALUE, clientFilter.get().getValue());
+        Assertions.assertEquals(RESPONSE_VALUE, clientFilter.get().getValue());
 
         rpcContext = new RpcServerContext();
         request.setContext(rpcContext);
         trpcFilter.filter(invoker, request);
         CompletableFuture<Response> serverFilter = (CompletableFuture<Response>) trpcFilter.filter(invoker, request);
-        Assert.assertEquals(RESPONSE_VALUE, serverFilter.get().getValue());
+        Assertions.assertEquals(RESPONSE_VALUE, serverFilter.get().getValue());
     }
 
 }
