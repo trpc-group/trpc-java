@@ -19,7 +19,7 @@ import com.tencent.trpc.core.selector.ServiceId;
 import com.tencent.trpc.core.selector.loadbalance.support.RandomLoadBalance;
 import com.tencent.trpc.registry.center.NotifyListener;
 import com.tencent.trpc.registry.center.RegistryCenter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ConsulSelectorTest {
 

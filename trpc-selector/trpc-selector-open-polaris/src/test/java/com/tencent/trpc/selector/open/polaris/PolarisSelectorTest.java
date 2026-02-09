@@ -43,28 +43,28 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
 
-@PrepareForTest({APIFactory.class})
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.management.*"})
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class PolarisSelectorTest {
 
     private static final int PORT_BASE = 1230;
     private PluginConfig selectorConfig;
     private int expPort = PORT_BASE + 1024;
+    private MockedStatic<APIFactory> mockedStatic;
 
-    @Before
+    @BeforeEach
     public void before() {
         ConfigManager.stopTest();
         DataTest.init();
@@ -73,8 +73,11 @@ public class PolarisSelectorTest {
         ConfigManager.startTest();
     }
 
-    @After
+    @AfterEach
     public void after() {
+        if (mockedStatic != null) {
+            mockedStatic.close();
+        }
         ConfigManager.stopTest();
     }
 
@@ -89,17 +92,17 @@ public class PolarisSelectorTest {
         clusterNaming.asyncSelectOne(serviceId, DataTest.request).whenComplete((res, err) -> {
             if (err != null) {
                 err.printStackTrace();
-                Assert.fail("error happens:" + err.getMessage());
+                Assertions.fail("error happens:" + err.getMessage());
             }
-            Assert.assertNull("res not null", res);
+            Assertions.assertNull(res, "res not null");
         });
 
         clusterNaming.asyncSelectAll(serviceId, DataTest.request).whenComplete((res, err) -> {
             if (err != null) {
                 err.printStackTrace();
-                Assert.fail("list error happens:" + err.getMessage());
+                Assertions.fail("list error happens:" + err.getMessage());
             }
-            Assert.assertNull("list res not null", res);
+            Assertions.assertNull(res, "list res not null");
         });
     }
 
@@ -111,11 +114,11 @@ public class PolarisSelectorTest {
         clusterNaming.init();
         CompletionStage<ServiceInstance> future =
                 clusterNaming.asyncSelectOne(expService, DataTest.request);
-        future.whenComplete((res, err) -> Assert.assertNull("err not null", err));
+        future.whenComplete((res, err) -> Assertions.assertNull(err, "err not null"));
 
         CompletionStage<List<ServiceInstance>> listFuture =
                 clusterNaming.asyncSelectAll(expService, DataTest.request);
-        listFuture.whenComplete((res, err) -> Assert.assertNull("err not null", err));
+        listFuture.whenComplete((res, err) -> Assertions.assertNull(err, "err not null"));
     }
 
     @Test
@@ -143,7 +146,7 @@ public class PolarisSelectorTest {
             }
         });
         CompletableFuture.allOf(stage.toCompletableFuture()).join();
-        Assert.assertNull(errorRef.get());
+        Assertions.assertNull(errorRef.get());
     }
 
     @Test
@@ -164,7 +167,7 @@ public class PolarisSelectorTest {
             }
         });
         CompletableFuture.allOf(stage.toCompletableFuture()).join();
-        Assert.assertNull(errorRef.get());
+        Assertions.assertNull(errorRef.get());
     }
 
     @Test
@@ -185,7 +188,7 @@ public class PolarisSelectorTest {
             }
         });
         CompletableFuture.allOf(stage.toCompletableFuture()).join();
-        Assert.assertNull(errorRef.get());
+        Assertions.assertNull(errorRef.get());
     }
 
     @Test
@@ -205,11 +208,12 @@ public class PolarisSelectorTest {
             }
         });
         CompletableFuture.allOf(stage.toCompletableFuture()).join();
-        Assert.assertNull(errorRef.get());
+        Assertions.assertNull(errorRef.get());
     }
 
     private void mockPolaris() {
         try {
+            mockedStatic = Mockito.mockStatic(APIFactory.class);
             ConsumerAPI consumerAPI = Mockito.mock(ConsumerAPI.class);
             Mockito.doNothing().when(consumerAPI).updateServiceCallResult(Mockito.any());
             Supplier supplier = Mockito.mock(Supplier.class);
@@ -220,10 +224,9 @@ public class PolarisSelectorTest {
 
             when(consumerAPI.asyncGetOneInstance(Mockito.any())).thenAnswer(newPolarisAnswer(true));
 
-            PowerMockito.mockStatic(APIFactory.class);
-            when(APIFactory.createConsumerAPIByContext(Mockito.any())).thenReturn(consumerAPI);
-            when(APIFactory.createConsumerAPIByConfig(Mockito.any())).thenReturn(consumerAPI);
-            when(APIFactory.initContextByConfig(Mockito.any())).thenReturn(sdkContext);
+            mockedStatic.when(() -> APIFactory.createConsumerAPIByContext(Mockito.any())).thenReturn(consumerAPI);
+            mockedStatic.when(() -> APIFactory.createConsumerAPIByConfig(Mockito.any())).thenReturn(consumerAPI);
+            mockedStatic.when(() -> APIFactory.initContextByConfig(Mockito.any())).thenReturn(sdkContext);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -306,12 +309,12 @@ public class PolarisSelectorTest {
         List<ServiceInstance> serviceInstances = new ArrayList<>();
         serviceInstances.add(serviceInstance);
         ServiceInstances polarisServiceInstance = PolarisTrans.toPolarisInstance(serviceInstances);
-        Assert.assertEquals("1.0.0", polarisServiceInstance.getRevision());
-        Assert.assertEquals(1000, polarisServiceInstance.getTotalWeight());
-        Assert.assertEquals(1, polarisServiceInstance.getInstances().size());
-        Assert.assertEquals("dev", polarisServiceInstance.getNamespace());
-        Assert.assertEquals("trpc.test.test.1", polarisServiceInstance.getService());
-        Assert.assertEquals("set.sz.1", polarisServiceInstance.getMetadata().get("set"));
+        Assertions.assertEquals("1.0.0", polarisServiceInstance.getRevision());
+        Assertions.assertEquals(1000, polarisServiceInstance.getTotalWeight());
+        Assertions.assertEquals(1, polarisServiceInstance.getInstances().size());
+        Assertions.assertEquals("dev", polarisServiceInstance.getNamespace());
+        Assertions.assertEquals("trpc.test.test.1", polarisServiceInstance.getService());
+        Assertions.assertEquals("set.sz.1", polarisServiceInstance.getMetadata().get("set"));
     }
 
     @Test
@@ -331,7 +334,7 @@ public class PolarisSelectorTest {
         PolarisSelector polarisSelector = new PolarisSelector();
         polarisSelector.setPluginConfig(selectorConfig);
         polarisSelector.init();
-        Assert.assertNotNull(polarisSelector.getPolarisAPI());
+        Assertions.assertNotNull(polarisSelector.getPolarisAPI());
         polarisSelector.destroy();
     }
 }

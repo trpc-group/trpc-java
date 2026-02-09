@@ -38,10 +38,13 @@ public class StreamingEchoAPIImpl implements StreamingEchoAPI {
                     LOGGER.info("got req {}", req.getMessage());
                     counter.incrementAndGet();
                 })
+                .onErrorResume(e -> {
+                    error.set(true);
+                    return Flux.empty();
+                })
                 .count()
-                .doOnError(e -> error.set(true))
                 .map(count -> EchoResponse.newBuilder()
-                        .setMessage(count + (error.get() ? "e" : ""))
+                        .setMessage(counter.get() + (error.get() ? "e" : ""))
                         .build());
     }
 
@@ -68,13 +71,18 @@ public class StreamingEchoAPIImpl implements StreamingEchoAPI {
     @Override
     public Flux<EchoResponse> mutualStreamEcho(RpcContext context, Publisher<EchoRequest> request) {
         return Flux.from(request)
-                .onErrorReturn(EchoRequest.newBuilder().setMessage("e").build())
                 .map(req -> {
                     LOGGER.info("got req {}", req.getMessage());
                     if ("e".equals(req.getMessage())) {
                         throw new RuntimeException("server error");
                     }
                     return EchoResponse.newBuilder().setMessage(req.getMessage()).build();
+                })
+                .onErrorResume(e -> {
+                    if (e.getMessage() != null && e.getMessage().contains("client error")) {
+                        return Flux.just(EchoResponse.newBuilder().setMessage("e").build());
+                    }
+                    return Flux.error(e);
                 });
     }
 }

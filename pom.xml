@@ -103,7 +103,7 @@
         <jacoco.version>0.8.11</jacoco.version>
         <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
         <exec.maven.version>3.1.0</exec.maven.version>
-        <junit.version>5.14.2</junit.version>
+        <junit.version>5.12.2</junit.version>
         <mockito-core.version>5.21.0</mockito-core.version>
         <mockito-inline.version>5.2.0</mockito-inline.version>
         <file.encoding>UTF-8</file.encoding>

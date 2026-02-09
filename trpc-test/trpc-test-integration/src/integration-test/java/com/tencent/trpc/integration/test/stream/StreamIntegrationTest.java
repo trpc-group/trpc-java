@@ -21,6 +21,7 @@ import com.tencent.trpc.spring.annotation.TRpcClient;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -39,6 +40,7 @@ import java.util.stream.Stream;
  */
 @ActiveProfiles("stream")
 @SpringBootTest(classes = TrpcServerApplication.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class StreamIntegrationTest {
 
     private final ExecutorService executor = Executors.newCachedThreadPool();

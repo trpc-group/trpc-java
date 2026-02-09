@@ -1,7 +1,7 @@
 package com.tencent.trpc.selector.open.polaris;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.tencent.polaris.metadata.core.MessageMetadataContainer;
 import com.tencent.trpc.core.constant.proto.HttpConstants;
@@ -22,16 +22,17 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentMap;
 import jakarta.servlet.http.HttpServletRequest;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.http.HttpHeaders;
 
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.management.*"})
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class RequestMetadataTest {
 
     private static final String CALLEE_METHOD = "testMethod";
@@ -51,7 +52,7 @@ public class RequestMetadataTest {
      * @throws UnknownHostException
      * @throws NoSuchMethodException
      */
-    @Before
+    @BeforeEach
     public void before() throws UnknownHostException, NoSuchMethodException {
         // set meta
         RequestMeta requestMeta = new RequestMeta();

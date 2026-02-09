@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -24,6 +24,11 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,13 +39,13 @@ import java.nio.file.Paths;
  */
 public class TRpcMavenPluginTest extends AbstractMojoTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    public void tearDown() throws Exception {
         super.tearDown();
     }
 
@@ -48,63 +53,67 @@ public class TRpcMavenPluginTest extends AbstractMojoTestCase {
      * Simulate 'mvn trpc:gen-code' on maven project at src/test/resources/TEST-1.
      * Only check the output files structure, since file content is checked by test cases of trpc-code-generator
      */
+    @Test
     public void test1() throws Exception {
         executeTest("TEST-1");
         Path base = Paths.get("src", "test", "resources", "TEST-1", "target", "generated-sources",
                 "trpc", "java").toAbsolutePath();
         Path output = base.resolve(Paths.get("com", "tencent", "test", "helloworld"));
-        assertTrue(Files.exists(output));
-        assertTrue(Files.exists(output.resolve("GreeterAPI.java")));
-        assertTrue(Files.exists(output.resolve("GreeterAsyncAPI.java")));
-        assertTrue(Files.exists(output.resolve("GreeterSvr.java")));
-        assertTrue(Files.exists(base.resolve("pom.xml")));
+        Assertions.assertTrue(Files.exists(output));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterAPI.java")));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterAsyncAPI.java")));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterSvr.java")));
+        Assertions.assertTrue(Files.exists(base.resolve("pom.xml")));
     }
 
     /**
      * Simulate 'mvn trpc:gen-code' on maven project at src/test/resources/TEST-2.
      */
+    @Test
     public void test2() throws Exception {
         executeTest("TEST-2");
         Path base = Paths.get("src", "test", "resources", "TEST-2", "gen").toAbsolutePath();
         Path output = base.resolve(Paths.get("com", "tencent", "test", "helloworld"));
-        assertTrue(Files.exists(output));
-        assertTrue(Files.exists(output.resolve("GreeterAPI.java")));
-        assertTrue(Files.exists(output.resolve("GreeterAsyncAPI.java")));
-        assertTrue(Files.exists(output.resolve("GreeterSvr.java")));
-        assertFalse(Files.exists(base.resolve("pom.xml")));
+        Assertions.assertTrue(Files.exists(output));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterAPI.java")));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterAsyncAPI.java")));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterSvr.java")));
+        Assertions.assertFalse(Files.exists(base.resolve("pom.xml")));
     }
 
     /**
      * Simulate 'mvn trpc:gen-code' on maven project at src/test/resources/TEST-3.
      */
+    @Test
     public void test3() throws Exception {
         executeTest("TEST-3");
         Path base = Paths.get("src", "test", "resources", "TEST-3", "target", "generated-sources",
                 "trpc", "java").toAbsolutePath();
         Path output = base.resolve(Paths.get("com", "tencent", "test", "helloworld"));
-        assertTrue(Files.exists(output));
-        assertTrue(Files.exists(output.resolve("GreeterAPI.java")));
-        assertTrue(Files.exists(output.resolve("GreeterAsyncAPI.java")));
-        assertTrue(Files.exists(output.resolve("GreeterSvr.java")));
-        assertTrue(Files.exists(output.resolve("GreeterTest.java")));
-        assertEquals("Greeter foobar", new String(Files.readAllBytes(output.resolve("GreeterTest.java"))));
-        assertTrue(Files.exists(base.resolve("pom.xml")));
+        Assertions.assertTrue(Files.exists(output));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterAPI.java")));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterAsyncAPI.java")));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterSvr.java")));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterTest.java")));
+        Assertions.assertEquals("Greeter foobar", new String(Files.readAllBytes(output.resolve("GreeterTest.java"))));
+        Assertions.assertTrue(Files.exists(base.resolve("pom.xml")));
     }
 
     /**
      * Simulate 'mvn trpc:gen-code' on maven project at src/test/resources/TEST-4.
      */
+    @Test
     public void test4() throws Exception {
         executeTest("TEST-4");
         Path base = Paths.get("src", "test", "resources", "TEST-4", "target", "generated-sources",
                 "trpc", "java").toAbsolutePath();
         Path output = base.resolve(Paths.get("com", "tencent", "test", "helloworld"));
-        assertTrue(Files.exists(output));
-        assertTrue(Files.exists(output.resolve("GreeterAPI.java")));
-        assertTrue(Files.exists(output.resolve("GreeterAsyncAPI.java")));
-        assertTrue(Files.exists(output.resolve("GreeterSvr.java")));
-        assertTrue(Files.exists(output.resolve("GreeterSvrValidator.java")));
-        assertTrue(Files.exists(base.resolve("pom.xml")));
+        Assertions.assertTrue(Files.exists(output));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterAPI.java")));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterAsyncAPI.java")));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterSvr.java")));
+        Assertions.assertTrue(Files.exists(output.resolve("GreeterSvrValidator.java")));
+        Assertions.assertTrue(Files.exists(base.resolve("pom.xml")));
     }
 
     private void executeTest(String root) throws Exception {
@@ -124,7 +133,7 @@ public class TRpcMavenPluginTest extends AbstractMojoTestCase {
         ProjectBuildingRequest configuration = request.getProjectBuildingRequest();
         configuration.setLocalRepository(createLocalArtifactRepository());
         MavenProject project = lookup(ProjectBuilder.class).build(pom, configuration).getProject();
-        assertNotNull(project);
+        Assertions.assertNotNull(project);
         return project;
     }
 
