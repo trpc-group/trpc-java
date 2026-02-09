@@ -18,19 +18,16 @@ import com.tencent.trpc.spring.boot.starters.test.AutoInjectTestFilter;
 import com.tencent.trpc.spring.boot.starters.test.HelloRequestProtocol.HelloRequest;
 import com.tencent.trpc.spring.boot.starters.test.HelloRequestProtocol.HelloResponse;
 import com.tencent.trpc.spring.boot.starters.test.SpringBootTestApplication;
-import javax.annotation.Resource;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import jakarta.annotation.Resource;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = SpringBootTestApplication.class, webEnvironment = WebEnvironment.NONE)
 @ContextConfiguration(classes = EnableAnnotationTestConfiguration.class)
 public class EnableAnnotationTest {
@@ -45,25 +42,25 @@ public class EnableAnnotationTest {
 
         HelloResponse hello = demoService.sayHello(HelloRequest.newBuilder().setMessage("hello").build());
 
-        Assert.assertEquals("hello", hello.getMessage());
-        Assert.assertNotNull(demoService.getGreeterService1Bean());
-        Assert.assertNotNull(demoService.getGreeterService2Bean());
-        Assert.assertNotNull(demoService.getMyTestServer());
-        Assert.assertSame(demoService.getGreeterService(), demoService.getGreeterService1Bean());
-        Assert.assertSame(demoService.getGreeterService2(), demoService.getGreeterService2Bean());
-        Assert.assertSame(demoService.getMyTestServerClient(), demoService.getMyTestServer());
+        Assertions.assertEquals("hello", hello.getMessage());
+        Assertions.assertNotNull(demoService.getGreeterService1Bean());
+        Assertions.assertNotNull(demoService.getGreeterService2Bean());
+        Assertions.assertNotNull(demoService.getMyTestServer());
+        Assertions.assertSame(demoService.getGreeterService(), demoService.getGreeterService1Bean());
+        Assertions.assertSame(demoService.getGreeterService2(), demoService.getGreeterService2Bean());
+        Assertions.assertSame(demoService.getMyTestServerClient(), demoService.getMyTestServer());
     }
 
     @Test
     public void testFilterInject() {
         AutoInjectTestFilter filter = (AutoInjectTestFilter) FilterManager.get("auto_inject_test_filter");
-        Assert.assertSame(filter, autoInjectTestFilter);
-        Assert.assertNotNull(filter.getGreeterService());
-        Assert.assertNotNull(filter.getGreeterService2());
-        Assert.assertNotNull(filter.getMyTestServer());
-        Assert.assertSame(filter.getGreeterService(), demoService.getGreeterService1Bean());
-        Assert.assertSame(filter.getGreeterService2(), demoService.getGreeterService2Bean());
-        Assert.assertSame(filter.getMyTestServer(), demoService.getMyTestServer());
+        Assertions.assertSame(filter, autoInjectTestFilter);
+        Assertions.assertNotNull(filter.getGreeterService());
+        Assertions.assertNotNull(filter.getGreeterService2());
+        Assertions.assertNotNull(filter.getMyTestServer());
+        Assertions.assertSame(filter.getGreeterService(), demoService.getGreeterService1Bean());
+        Assertions.assertSame(filter.getGreeterService2(), demoService.getGreeterService2Bean());
+        Assertions.assertSame(filter.getMyTestServer(), demoService.getMyTestServer());
     }
 
     @Configuration

@@ -38,7 +38,7 @@ trpc:
           - com.tencent.trpc.spring.boot.starters.test.GreeterServiceImpl                                                    #service协议接口实现类
         ip: 127.0.0.1
         nic: eth3
-        port: 12345                                                                                                    #port
+        port: 15673                                                                                                    #port
         network: udp                                                                                                   #tcp/udp
         protocol: trpc                                                                                                 #协议类型 trpc oidb ilive http等
         serialization: pb
@@ -69,7 +69,6 @@ trpc:
     worker_pool: woker_pool_consumer_test
     request_timeout: 2000
     nic: eth3
-    port: 12345                                                                                                    #port
     network: udp                                                                                                   #tcp/udp
     protocol: trpc                                                                                                 #协议类型 trpc oidb ilive http等
     serialization: pb
@@ -94,7 +93,7 @@ trpc:
     service:
       - name: trpc.TestApp.TestServer.Greeter1Naming
         interface: com.tencent.trpc.spring.boot.starters.test.GreeterService
-        naming_url: ip://127.0.0.1:12345                                         #naming配置,直连 ip://ip:port, 名字服务: polaris://trpc.TestApp.TestServer.Greeter?key=value&key=value  l5://mid:cmid  cmlb://id
+        naming_url: ip://127.0.0.1:15673                                         #naming配置,直连 ip://ip:port, 名字服务: polaris://trpc.TestApp.TestServer.Greeter?key=value&key=value  l5://mid:cmid  cmlb://id
         namespace: dev2
         callee: trpc.TestApp.TestServer.GreeterCallee
         caller_service_name: trpc.TestApp.TestServer.GreeterCallee2

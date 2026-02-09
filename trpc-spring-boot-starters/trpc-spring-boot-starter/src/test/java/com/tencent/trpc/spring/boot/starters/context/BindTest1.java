@@ -14,16 +14,13 @@ package com.tencent.trpc.spring.boot.starters.context;
 import com.tencent.trpc.spring.boot.starters.context.configuration.TRpcConfigurationProperties;
 import com.tencent.trpc.spring.boot.starters.test.SpringBootTestApplication;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringBootTestApplication.class, webEnvironment = WebEnvironment.NONE)
 @ActiveProfiles("bind-test1")
 public class BindTest1 {
@@ -35,9 +32,9 @@ public class BindTest1 {
     @Test
     @SuppressWarnings("unchecked")
     public void test() {
-        Assert.assertEquals(properties.getServer().getApp(), "TestApp");
+        Assertions.assertEquals(properties.getServer().getApp(), "TestApp");
         List<Object> serviceList = (List<Object>) properties.getPlugins().getRegistry().get("polaris").get("service");
-        Assert.assertNotNull(serviceList);
-        Assert.assertEquals(serviceList.size(), 1);
+        Assertions.assertNotNull(serviceList);
+        Assertions.assertEquals(serviceList.size(), 1);
     }
 }

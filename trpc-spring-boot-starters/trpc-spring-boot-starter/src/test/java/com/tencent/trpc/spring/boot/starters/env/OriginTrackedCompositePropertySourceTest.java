@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.spring.boot.starters.env;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class OriginTrackedCompositePropertySourceTest {
 
@@ -20,7 +20,7 @@ public class OriginTrackedCompositePropertySourceTest {
     public void test() {
         OriginTrackedCompositePropertySource propertySource = new OriginTrackedCompositePropertySource("test");
 
-        Assert.assertFalse(propertySource.isImmutable());
-        Assert.assertNull(propertySource.getOrigin("absentKey"));
+        Assertions.assertFalse(propertySource.isImmutable());
+        Assertions.assertNull(propertySource.getOrigin("absentKey"));
     }
 }

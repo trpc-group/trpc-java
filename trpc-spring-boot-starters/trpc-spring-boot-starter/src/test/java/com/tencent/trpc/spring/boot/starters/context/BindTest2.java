@@ -19,16 +19,13 @@ import com.tencent.trpc.spring.context.configuration.schema.client.ClientService
 import com.tencent.trpc.spring.context.configuration.schema.server.IoMode;
 import com.tencent.trpc.spring.context.configuration.schema.server.ServerServiceSchema;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringBootTestApplication.class, webEnvironment = WebEnvironment.NONE)
 @ActiveProfiles("bind-test2")
 public class BindTest2 {
@@ -48,136 +45,136 @@ public class BindTest2 {
     }
 
     private void assertGlobal() {
-        Assert.assertEquals(properties.getGlobal().getNamespace(), "test_namespace");
-        Assert.assertEquals(properties.getGlobal().getEnvName(), "test_env_name");
-        Assert.assertEquals(properties.getGlobal().getContainerName(), "test_container_name");
-        Assert.assertEquals(properties.getGlobal().getEnableSet(), YesOrNo.Y);
-        Assert.assertEquals(properties.getGlobal().getFullSetName(), "a.b.c");
+        Assertions.assertEquals(properties.getGlobal().getNamespace(), "test_namespace");
+        Assertions.assertEquals(properties.getGlobal().getEnvName(), "test_env_name");
+        Assertions.assertEquals(properties.getGlobal().getContainerName(), "test_container_name");
+        Assertions.assertEquals(properties.getGlobal().getEnableSet(), YesOrNo.Y);
+        Assertions.assertEquals(properties.getGlobal().getFullSetName(), "a.b.c");
     }
 
     private void assertServer() {
-        Assert.assertEquals(properties.getServer().getApp(), "QQPIM");
-        Assert.assertEquals(properties.getServer().getServer(), "DMServer");
-        Assert.assertEquals(properties.getServer().getAdmin().getAdminIp(), "127.0.0.1");
-        Assert.assertEquals(properties.getServer().getAdmin().getAdminPort(), Integer.valueOf(8091));
-        Assert.assertEquals(properties.getServer().getLocalIp(), "127.0.0.1");
-        Assert.assertEquals(properties.getServer().getCloseTimeout(), Long.valueOf(1000));
-        Assert.assertEquals(properties.getServer().getWaitTimeout(), Long.valueOf(1100));
-        Assert.assertEquals(properties.getServer().getNic(), "eth1");
-        Assert.assertEquals(properties.getServer().getRequestTimeout(), Integer.valueOf(2000));
-        Assert.assertEquals(properties.getServer().getEnableLinkTimeout(), false);
-        Assert.assertEquals(properties.getServer().getWorkerPool(), "woker_pool_provider_test");
-        Assert.assertEquals(properties.getServer().getFilters(), Lists.newArrayList("additional_server_filter"));
+        Assertions.assertEquals(properties.getServer().getApp(), "QQPIM");
+        Assertions.assertEquals(properties.getServer().getServer(), "DMServer");
+        Assertions.assertEquals(properties.getServer().getAdmin().getAdminIp(), "127.0.0.1");
+        Assertions.assertEquals(properties.getServer().getAdmin().getAdminPort(), Integer.valueOf(8091));
+        Assertions.assertEquals(properties.getServer().getLocalIp(), "127.0.0.1");
+        Assertions.assertEquals(properties.getServer().getCloseTimeout(), Long.valueOf(1000));
+        Assertions.assertEquals(properties.getServer().getWaitTimeout(), Long.valueOf(1100));
+        Assertions.assertEquals(properties.getServer().getNic(), "eth1");
+        Assertions.assertEquals(properties.getServer().getRequestTimeout(), Integer.valueOf(2000));
+        Assertions.assertEquals(properties.getServer().getEnableLinkTimeout(), false);
+        Assertions.assertEquals(properties.getServer().getWorkerPool(), "woker_pool_provider_test");
+        Assertions.assertEquals(properties.getServer().getFilters(), Lists.newArrayList("additional_server_filter"));
     }
 
     private void assertServerService() {
         ServerServiceSchema serviceSchema = properties.getServer().getService().get(0);
-        Assert.assertEquals(serviceSchema.getName(), "trpc.TestApp.TestServer.Greeter");
-        Assert.assertEquals(serviceSchema.getVersion(), "v.121");
-        Assert.assertEquals(serviceSchema.getGroup(), "g1");
-        Assert.assertEquals(serviceSchema.getImpls().get(0),
+        Assertions.assertEquals(serviceSchema.getName(), "trpc.TestApp.TestServer.Greeter");
+        Assertions.assertEquals(serviceSchema.getVersion(), "v.121");
+        Assertions.assertEquals(serviceSchema.getGroup(), "g1");
+        Assertions.assertEquals(serviceSchema.getImpls().get(0),
                 "com.tencent.trpc.spring.boot.starters.test.GreeterServiceImpl");
-        Assert.assertEquals(serviceSchema.getIp(), "127.0.0.1");
-        Assert.assertEquals(serviceSchema.getNic(), "eth3");
-        Assert.assertEquals(serviceSchema.getPort(), Integer.valueOf(12345));
-        Assert.assertEquals(serviceSchema.getNetwork(), "udp");
-        Assert.assertEquals(serviceSchema.getProtocol(), "trpc");
-        Assert.assertEquals(serviceSchema.getSerialization(), "pb");
-        Assert.assertEquals(serviceSchema.getCompressor(), "gzip");
-        Assert.assertEquals(serviceSchema.getCompressMinBytes(), Integer.valueOf(10));
-        Assert.assertEquals(serviceSchema.getCharset(), "gbk");
-        Assert.assertEquals(serviceSchema.getKeepAlive(), false);
-        Assert.assertEquals(serviceSchema.getMaxConns(), Integer.valueOf(10));
-        Assert.assertEquals(serviceSchema.getBacklog(), Integer.valueOf(1111));
-        Assert.assertEquals(serviceSchema.getSendBuffer(), Integer.valueOf(10));
-        Assert.assertEquals(serviceSchema.getReceiveBuffer(), Integer.valueOf(20));
-        Assert.assertEquals(serviceSchema.getPayload(), Integer.valueOf(2222));
-        Assert.assertEquals(serviceSchema.getIdleTimeout(), Integer.valueOf(200));
-        Assert.assertEquals(serviceSchema.getLazyinit(), false);
-        Assert.assertEquals(serviceSchema.getIoMode(), IoMode.kqueue);
-        Assert.assertEquals(serviceSchema.getIoThreadGroupShare(), false);
-        Assert.assertEquals(serviceSchema.getIoThreads(), Integer.valueOf(20));
-        Assert.assertEquals(serviceSchema.getRequestTimeout(), Integer.valueOf(3000));
-        Assert.assertEquals(serviceSchema.getWorkerPool(), "woker_pool_provider_test");
-        Assert.assertEquals(serviceSchema.getEnableLinkTimeout(), true);
-        Assert.assertEquals(serviceSchema.getReusePort(), true);
-        Assert.assertEquals(serviceSchema.getFilters(), Lists.newArrayList("additional_server_filter"));
+        Assertions.assertEquals(serviceSchema.getIp(), "127.0.0.1");
+        Assertions.assertEquals(serviceSchema.getNic(), "eth3");
+        Assertions.assertEquals(serviceSchema.getPort(), Integer.valueOf(12345));
+        Assertions.assertEquals(serviceSchema.getNetwork(), "udp");
+        Assertions.assertEquals(serviceSchema.getProtocol(), "trpc");
+        Assertions.assertEquals(serviceSchema.getSerialization(), "pb");
+        Assertions.assertEquals(serviceSchema.getCompressor(), "gzip");
+        Assertions.assertEquals(serviceSchema.getCompressMinBytes(), Integer.valueOf(10));
+        Assertions.assertEquals(serviceSchema.getCharset(), "gbk");
+        Assertions.assertEquals(serviceSchema.getKeepAlive(), false);
+        Assertions.assertEquals(serviceSchema.getMaxConns(), Integer.valueOf(10));
+        Assertions.assertEquals(serviceSchema.getBacklog(), Integer.valueOf(1111));
+        Assertions.assertEquals(serviceSchema.getSendBuffer(), Integer.valueOf(10));
+        Assertions.assertEquals(serviceSchema.getReceiveBuffer(), Integer.valueOf(20));
+        Assertions.assertEquals(serviceSchema.getPayload(), Integer.valueOf(2222));
+        Assertions.assertEquals(serviceSchema.getIdleTimeout(), Integer.valueOf(200));
+        Assertions.assertEquals(serviceSchema.getLazyinit(), false);
+        Assertions.assertEquals(serviceSchema.getIoMode(), IoMode.kqueue);
+        Assertions.assertEquals(serviceSchema.getIoThreadGroupShare(), false);
+        Assertions.assertEquals(serviceSchema.getIoThreads(), Integer.valueOf(20));
+        Assertions.assertEquals(serviceSchema.getRequestTimeout(), Integer.valueOf(3000));
+        Assertions.assertEquals(serviceSchema.getWorkerPool(), "woker_pool_provider_test");
+        Assertions.assertEquals(serviceSchema.getEnableLinkTimeout(), true);
+        Assertions.assertEquals(serviceSchema.getReusePort(), true);
+        Assertions.assertEquals(serviceSchema.getFilters(), Lists.newArrayList("additional_server_filter"));
     }
 
     private void assertClient() {
-        Assert.assertEquals(properties.getClient().getNamespace(), "dev");
-        Assert.assertEquals(properties.getClient().getWorkerPool(), "woker_pool_consumer_test");
-        Assert.assertEquals(properties.getClient().getRequestTimeout(), Integer.valueOf(2000));
-        Assert.assertEquals(properties.getClient().getNetwork(), "udp");
-        Assert.assertEquals(properties.getClient().getProtocol(), "trpc");
-        Assert.assertEquals(properties.getClient().getSerialization(), "pb");
-        Assert.assertEquals(properties.getClient().getCompressor(), "snappy");
-        Assert.assertEquals(properties.getClient().getCharset(), "gbk");
-        Assert.assertEquals(properties.getClient().getKeepAlive(), false);
-        Assert.assertEquals(properties.getClient().getMaxConns(), Integer.valueOf(10));
-        Assert.assertEquals(properties.getClient().getBacklog(), Integer.valueOf(1111));
-        Assert.assertEquals(properties.getClient().getSendBuffer(), Integer.valueOf(10));
-        Assert.assertEquals(properties.getClient().getReceiveBuffer(), Integer.valueOf(20));
-        Assert.assertEquals(properties.getClient().getIdleTimeout(), Integer.valueOf(200));
-        Assert.assertEquals(properties.getClient().getLazyinit(), false);
-        Assert.assertEquals(properties.getClient().getConnsPerAddr(), Integer.valueOf(5));
-        Assert.assertEquals(properties.getClient().getConnTimeout(), Integer.valueOf(2000));
-        Assert.assertEquals(properties.getClient().getIoThreadGroupShare(), false);
-        Assert.assertEquals(properties.getClient().getIoThreads(), Integer.valueOf(20));
-        Assert.assertEquals(properties.getClient().getFilters(), Lists.newArrayList("additional_client_filter"));
+        Assertions.assertEquals(properties.getClient().getNamespace(), "dev");
+        Assertions.assertEquals(properties.getClient().getWorkerPool(), "woker_pool_consumer_test");
+        Assertions.assertEquals(properties.getClient().getRequestTimeout(), Integer.valueOf(2000));
+        Assertions.assertEquals(properties.getClient().getNetwork(), "udp");
+        Assertions.assertEquals(properties.getClient().getProtocol(), "trpc");
+        Assertions.assertEquals(properties.getClient().getSerialization(), "pb");
+        Assertions.assertEquals(properties.getClient().getCompressor(), "snappy");
+        Assertions.assertEquals(properties.getClient().getCharset(), "gbk");
+        Assertions.assertEquals(properties.getClient().getKeepAlive(), false);
+        Assertions.assertEquals(properties.getClient().getMaxConns(), Integer.valueOf(10));
+        Assertions.assertEquals(properties.getClient().getBacklog(), Integer.valueOf(1111));
+        Assertions.assertEquals(properties.getClient().getSendBuffer(), Integer.valueOf(10));
+        Assertions.assertEquals(properties.getClient().getReceiveBuffer(), Integer.valueOf(20));
+        Assertions.assertEquals(properties.getClient().getIdleTimeout(), Integer.valueOf(200));
+        Assertions.assertEquals(properties.getClient().getLazyinit(), false);
+        Assertions.assertEquals(properties.getClient().getConnsPerAddr(), Integer.valueOf(5));
+        Assertions.assertEquals(properties.getClient().getConnTimeout(), Integer.valueOf(2000));
+        Assertions.assertEquals(properties.getClient().getIoThreadGroupShare(), false);
+        Assertions.assertEquals(properties.getClient().getIoThreads(), Integer.valueOf(20));
+        Assertions.assertEquals(properties.getClient().getFilters(), Lists.newArrayList("additional_client_filter"));
         ClientServiceSchema clientServiceSchema = properties.getClient().getService().get(0);
-        Assert.assertEquals(clientServiceSchema.getName(), "trpc.TestApp.TestServer.Greeter1Naming");
-        Assert.assertEquals(clientServiceSchema.getInterface(),
+        Assertions.assertEquals(clientServiceSchema.getName(), "trpc.TestApp.TestServer.Greeter1Naming");
+        Assertions.assertEquals(clientServiceSchema.getInterface(),
                 "com.tencent.trpc.spring.boot.starters.test.GreeterService");
-        Assert.assertEquals(clientServiceSchema.getNamingUrl(), "ip://127.0.0.1:12345");
-        Assert.assertEquals(clientServiceSchema.getNamespace(), "dev2");
-        Assert.assertEquals(clientServiceSchema.getCallee(), "trpc.TestApp.TestServer.GreeterCallee");
-        Assert.assertEquals(clientServiceSchema.getCallerServiceName(), "trpc.TestApp.TestServer.GreeterCallee2");
-        Assert.assertEquals(clientServiceSchema.getGroup(), "g1");
-        Assert.assertEquals(clientServiceSchema.getVersion(), "v1");
-        Assert.assertEquals(clientServiceSchema.getCompressor(), "gzip");
-        Assert.assertEquals(clientServiceSchema.getCompressMinBytes(), Integer.valueOf(1));
+        Assertions.assertEquals(clientServiceSchema.getNamingUrl(), "ip://127.0.0.1:12345");
+        Assertions.assertEquals(clientServiceSchema.getNamespace(), "dev2");
+        Assertions.assertEquals(clientServiceSchema.getCallee(), "trpc.TestApp.TestServer.GreeterCallee");
+        Assertions.assertEquals(clientServiceSchema.getCallerServiceName(), "trpc.TestApp.TestServer.GreeterCallee2");
+        Assertions.assertEquals(clientServiceSchema.getGroup(), "g1");
+        Assertions.assertEquals(clientServiceSchema.getVersion(), "v1");
+        Assertions.assertEquals(clientServiceSchema.getCompressor(), "gzip");
+        Assertions.assertEquals(clientServiceSchema.getCompressMinBytes(), Integer.valueOf(1));
     }
 
     private void assertWorkerPool() {
         Map<String, Map<String, Object>> workerPool = properties.getPlugins().getWorkerPool();
-        Assert.assertEquals(workerPool.get("woker_pool_provider_test").get("_type"), "thread");
-        Assert.assertEquals(workerPool.get("woker_pool_provider_test").get("core_pool_size"), 10000);
-        Assert.assertEquals(workerPool.get("woker_pool_consumer_test").get("_type"), "thread");
-        Assert.assertEquals(workerPool.get("woker_pool_consumer_test").get("core_pool_size"), 10000);
+        Assertions.assertEquals(workerPool.get("woker_pool_provider_test").get("_type"), "thread");
+        Assertions.assertEquals(workerPool.get("woker_pool_provider_test").get("core_pool_size"), 10000);
+        Assertions.assertEquals(workerPool.get("woker_pool_consumer_test").get("_type"), "thread");
+        Assertions.assertEquals(workerPool.get("woker_pool_consumer_test").get("core_pool_size"), 10000);
     }
 
     private void assertRegistry() {
         Map<String, Map<String, Object>> registry = properties.getPlugins().getRegistry();
-        Assert.assertEquals(registry.get("polaris").get("heartbeat_interval"), 1000);
-        Assert.assertEquals(registry.get("polaris").get("register_self"), false);
+        Assertions.assertEquals(registry.get("polaris").get("heartbeat_interval"), 1000);
+        Assertions.assertEquals(registry.get("polaris").get("register_self"), false);
     }
 
     private void assertSelector() {
         Map<String, Map<String, Object>> selector = properties.getPlugins().getSelector();
-        Assert.assertEquals(selector.get("polaris").get("mode"), 0);
+        Assertions.assertEquals(selector.get("polaris").get("mode"), 0);
     }
 
     private void assertRemoteLog() {
         Map<String, Map<String, Object>> remoteLog = properties.getPlugins().getRemoteLog();
-        Assert.assertEquals(remoteLog.get("atta").get("attaid"), "0a100055063");
-        Assert.assertEquals(remoteLog.get("atta").get("token"), "3514966829");
-        Assert.assertEquals(remoteLog.get("atta").get("switch"), "open");
+        Assertions.assertEquals(remoteLog.get("atta").get("attaid"), "0a100055063");
+        Assertions.assertEquals(remoteLog.get("atta").get("token"), "3514966829");
+        Assertions.assertEquals(remoteLog.get("atta").get("switch"), "open");
     }
 
     @SuppressWarnings("unchecked")
     private void assertTracing() {
         Map<String, Map<String, Object>> tracing = properties.getPlugins().getTracing();
-        Assert.assertEquals(tracing.get("tjg").get("appid"), "trpc");
-        Assert.assertEquals(tracing.get("tjg").get("service_name"), "trpc.${app}.${server}");
-        Assert.assertEquals(tracing.get("tjg").get("hostname"), "${container_name}");
-        Assert.assertEquals(tracing.get("tjg").get("local_addr"), "${local_ip}");
-        Assert.assertEquals(tracing.get("tjg").get("local_port"), 0);
+        Assertions.assertEquals(tracing.get("tjg").get("appid"), "trpc");
+        Assertions.assertEquals(tracing.get("tjg").get("service_name"), "trpc.${app}.${server}");
+        Assertions.assertEquals(tracing.get("tjg").get("hostname"), "${container_name}");
+        Assertions.assertEquals(tracing.get("tjg").get("local_addr"), "${local_ip}");
+        Assertions.assertEquals(tracing.get("tjg").get("local_port"), 0);
         Map<String, Object> sampler = (Map<String, Object>) tracing.get("tjg").get("sampler");
-        Assert.assertEquals(sampler.get("type"), "mix");
+        Assertions.assertEquals(sampler.get("type"), "mix");
         Map<String, Object> mix = (Map<String, Object>) sampler.get("mix");
-        Assert.assertEquals(mix.get("sample_rate"), 1024);
-        Assert.assertEquals(mix.get("min_speed_rate"), 1);
-        Assert.assertEquals(mix.get("max_speed_rate"), 10);
+        Assertions.assertEquals(mix.get("sample_rate"), 1024);
+        Assertions.assertEquals(mix.get("min_speed_rate"), 1);
+        Assertions.assertEquals(mix.get("max_speed_rate"), 10);
     }
 }
