@@ -9,13 +9,10 @@
  * A copy of the Apache 2.0 License can be found in the LICENSE file.
  */
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestDemo.class)
 @ActiveProfiles("integration-test")
 public class TestDemo {

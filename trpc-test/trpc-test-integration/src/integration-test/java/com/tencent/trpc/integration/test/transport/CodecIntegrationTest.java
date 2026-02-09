@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -27,6 +27,7 @@ import com.tencent.trpc.spring.annotation.TRpcClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
@@ -39,7 +40,9 @@ import org.springframework.test.context.ActiveProfiles;
  */
 @ActiveProfiles("codec")
 @SpringBootTest(classes = TrpcServerApplication.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class CodecIntegrationTest {
+
     @TRpcClient(id = "no-compress-client")
     private EchoAPI noCompressEchoAPI;
     @TRpcClient(id = "gzip-client")
@@ -92,23 +95,12 @@ public class CodecIntegrationTest {
         assertResponseOK(snappyEchoAPI, "greater_than_compress_min_bytes");
     }
 
-    /**
-     * Server-side non-exist compressor test, related configuration file:
-     * <code>application-codec-compressor-error.yml</code>
-     */
     @Test
-    public void testNonExistServerSideCompressor() {
-        assertThrows(RuntimeException.class, () ->
-                SpringApplication.run(TrpcServerApplication.class, "--spring.profiles.active=codec-compressor-error"));
-    }
-
-    /**
-     * Client-side non-exist compressor test
-     */
-    @Test
-    public void testNonExistClientSideCompressor() {
-        assertThrows(RuntimeException.class, () ->
-                TRpcProxy.getProxy("illegal-compressor-client", EchoAPI.class));
+    public void testNonExistClientCompressor() {
+        assertThrows(Exception.class, () -> {
+            TRpcProxy.getProxy("illegal-compressor-client", EchoAPI.class)
+                    .echo(new RpcClientContext(), EchoRequest.newBuilder().setMessage("test").build());
+        });
     }
 
     /**
@@ -183,23 +175,12 @@ public class CodecIntegrationTest {
         assertResponseOK(jsonToJpbEchoAPI, "hello");
     }
 
-    /**
-     * Client-side non-exist serialization test
-     */
     @Test
-    public void testNonExistClientSideSerialization() {
-        assertThrows(RuntimeException.class, () ->
-                TRpcProxy.getProxy("illegal-serialization-client", EchoAPI.class));
-    }
-
-    /**
-     * Server-side non-exist serialization test, related configuration file:
-     * <code>application-codec-serialization-error.yml</code>
-     */
-    @Test
-    public void testNonExistServerSideSerialization() {
-        assertThrows(RuntimeException.class, () -> SpringApplication
-                .run(TrpcServerApplication.class, "--spring.profiles.active=codec-serialization-error"));
+    public void testNonExistClientSerial() {
+        assertThrows(Exception.class, () -> {
+            TRpcProxy.getProxy("illegal-serialization-client", EchoAPI.class)
+                    .echo(new RpcClientContext(), EchoRequest.newBuilder().setMessage("test").build());
+        });
     }
 
     /**

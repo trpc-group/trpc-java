@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.integration.test.transport;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.integration.test.TrpcServerApplication;
@@ -21,18 +21,15 @@ import com.tencent.trpc.integration.test.stub.EchoService.DelayedEchoRequest;
 import com.tencent.trpc.integration.test.stub.EchoService.EchoRequest;
 import com.tencent.trpc.integration.test.stub.EchoService.EchoResponse;
 import com.tencent.trpc.spring.annotation.TRpcClient;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
  * Transport related integration tests. Related configuration file: <code>application-transport.yml</code>
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = TrpcServerApplication.class)
 @ActiveProfiles("transport")
 public class TransportIntegrationTest {
