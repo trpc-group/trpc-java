@@ -18,7 +18,7 @@ server:
       impls:
         - impl: com.tencent.trpc.spring.boot.starters.test.GreeterServiceImpl
           request_timeout: 100
-      port: 12345
+      port: 18888
 
 client:
   protocol: trpc
@@ -27,15 +27,15 @@ client:
   service:
     - name: trpc.TestApp.TestServer.Greeter1Naming
       interface: com.tencent.trpc.spring.boot.starters.test.GreeterService
-      naming_url: ip://127.0.0.1:12345
+      naming_url: ip://127.0.0.1:18888
       network: tcp                                                                                            #tcp/udp
     - name: trpc.TestApp.TestServer.Greeter2Naming
       interface: com.tencent.trpc.spring.boot.starters.test.GreeterService
-      naming_url: ip://127.0.0.1:12345
+      naming_url: ip://127.0.0.1:18888
       network: tcp
     - name: myTestServer
       interface: com.tencent.trpc.spring.boot.starters.test.GreeterService
-      naming_url: ip://127.0.0.1:12345
+      naming_url: ip://127.0.0.1:18888
       network: tcp
 
 plugins:

@@ -13,16 +13,13 @@ package com.tencent.trpc.spring.boot.starters.context;
 
 import com.tencent.trpc.spring.boot.starters.context.configuration.TRpcConfigurationProperties;
 import com.tencent.trpc.spring.boot.starters.test.SpringBootTestApplication;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringBootTestApplication.class, webEnvironment = WebEnvironment.NONE)
 @ActiveProfiles("customized-profile")
 public class CustomizedProfileTest {
@@ -32,6 +29,6 @@ public class CustomizedProfileTest {
 
     @Test
     public void test() {
-        Assert.assertEquals(properties.getServer().getRequestTimeout(), Integer.valueOf(3000));
+        Assertions.assertEquals(properties.getServer().getRequestTimeout(), Integer.valueOf(3000));
     }
 }

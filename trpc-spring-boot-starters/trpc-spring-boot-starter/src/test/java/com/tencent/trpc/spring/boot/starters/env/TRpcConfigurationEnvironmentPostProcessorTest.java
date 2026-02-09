@@ -14,8 +14,8 @@ package com.tencent.trpc.spring.boot.starters.env;
 import com.tencent.trpc.core.common.TRpcSystemProperties;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TRpcConfigurationEnvironmentPostProcessorTest {
 
@@ -27,12 +27,12 @@ public class TRpcConfigurationEnvironmentPostProcessorTest {
         getCustomPropertySourceLocation.setAccessible(Boolean.TRUE);
         TRpcConfigurationEnvironmentPostProcessor processor = new TRpcConfigurationEnvironmentPostProcessor();
         Object configNull = getCustomPropertySourceLocation.invoke(processor);
-        Assert.assertNull(configNull);
+        Assertions.assertNull(configNull);
         TRpcSystemProperties.setProperties(TRpcSystemProperties.CONFIG_PATH, "/aa");
         Object config = getCustomPropertySourceLocation.invoke(processor);
-        Assert.assertEquals(config, "file:///aa");
+        Assertions.assertEquals(config, "file:///aa");
         TRpcSystemProperties.setProperties(TRpcSystemProperties.CONFIG_PATH, "file:///aa");
         Object configFile = getCustomPropertySourceLocation.invoke(processor);
-        Assert.assertEquals(config, "file:///aa");
+        Assertions.assertEquals(config, "file:///aa");
     }
 }

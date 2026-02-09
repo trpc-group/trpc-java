@@ -11,8 +11,8 @@
 
 package com.tencent.trpc.spring.boot.starters.env;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.logging.DeferredLog;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -35,6 +35,6 @@ public class TRpcPropertySourceLoaderTest {
 
         log.switchTo(TRpcPropertySourceLoaderTest.class);
 
-        Assert.assertEquals(environment.getPropertySources().size(), 2);
+        Assertions.assertEquals(environment.getPropertySources().size(), 2);
     }
 }
