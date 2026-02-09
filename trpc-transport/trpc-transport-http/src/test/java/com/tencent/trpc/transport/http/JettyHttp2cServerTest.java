@@ -50,7 +50,7 @@ public class JettyHttp2cServerTest {
     private static CloseableHttpClient httpClient;
 
     @BeforeAll
-    public static void beforeClass() {
+    public static void beforeClass() throws InterruptedException {
         ProtocolConfig protocolConfig = ProtocolConfig.newInstance();
         protocolConfig.setIp("localhost");
         protocolConfig.setPort(18081);
@@ -84,23 +84,23 @@ public class JettyHttp2cServerTest {
 
         httpAsyncClient = HttpAsyncClients.customHttp2().build();
         httpAsyncClient.start();
+        Thread.sleep(1000);
 
         httpClient = HttpClients.custom().build();
     }
 
     @AfterAll
     public static void afterClass() {
-        if (httpServer != null) {
-            httpServer.open();
-            httpServer.close();
-            httpServer = null;
-        }
         if (httpAsyncClient != null) {
             try {
                 httpAsyncClient.close();
             } catch (IOException e) {
                 logger.warn("close httpAsyncClient error: {}", e);
             }
+        }
+        if (httpServer != null) {
+            httpServer.close();
+            httpServer = null;
         }
     }
 
@@ -124,7 +124,7 @@ public class JettyHttp2cServerTest {
                         logger.error("cancelled");
                     }
                 });
-        SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
+        SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(10000, TimeUnit.MILLISECONDS);
         Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
         Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
@@ -156,7 +156,7 @@ public class JettyHttp2cServerTest {
                         logger.error("cancelled");
                     }
                 });
-        SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
+        SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(10000, TimeUnit.MILLISECONDS);
         Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
         Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());

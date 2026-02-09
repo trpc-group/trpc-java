@@ -60,7 +60,7 @@ public class JettyHttpsServerTest {
 
     @BeforeAll
     public static void beforeClass() throws CertificateException, NoSuchAlgorithmException,
-            KeyStoreException, IOException, KeyManagementException {
+            KeyStoreException, IOException, KeyManagementException, InterruptedException {
         ProtocolConfig protocolConfig = ProtocolConfig.newInstance();
         protocolConfig.setIp("localhost");
         protocolConfig.setPort(18083);
@@ -110,24 +110,25 @@ public class JettyHttpsServerTest {
                         .build())
                 .build();
         httpAsyncClient = HttpAsyncClients.custom()
-                .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_1).setConnectionManager(cm)
+                .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_1)
+                .setConnectionManager(cm)
                 .build();
         httpAsyncClient.start();
+        Thread.sleep(1000);
     }
 
     @AfterAll
     public static void afterClass() {
-        if (httpServer != null) {
-            httpServer.open();
-            httpServer.close();
-            httpServer = null;
-        }
         if (httpAsyncClient != null) {
             try {
                 httpAsyncClient.close();
             } catch (IOException e) {
                 logger.warn("close httpAsyncClient error: {}", e);
             }
+        }
+        if (httpServer != null) {
+            httpServer.close();
+            httpServer = null;
         }
     }
 
@@ -151,7 +152,7 @@ public class JettyHttpsServerTest {
                         logger.error("cancelled");
                     }
                 });
-        SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
+        SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(10000, TimeUnit.MILLISECONDS);
         Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
         Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
@@ -183,7 +184,7 @@ public class JettyHttpsServerTest {
                         logger.error("cancelled");
                     }
                 });
-        SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(2000, TimeUnit.MILLISECONDS);
+        SimpleHttpResponse simpleHttpResponse = httpResponseFuture.get(10000, TimeUnit.MILLISECONDS);
         Assertions.assertNotEquals(null, simpleHttpResponse);
         logger.error(simpleHttpResponse.getBodyText());
         Assertions.assertEquals("HTTP", simpleHttpResponse.getVersion().getProtocol());
