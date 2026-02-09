@@ -21,8 +21,8 @@ import com.tencent.trpc.polaris.common.PolarisConstant;
 import com.tencent.trpc.polaris.common.PolarisTrans;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class PolarisTransTest {
 
@@ -34,13 +34,13 @@ public class PolarisTransTest {
         serviceIdParameters.put(PolarisConstant.TrpcPolarisParams.METADATA.getKey(), map);
         map.put("test", "test");
         Map<String, String> strMap = PolarisTrans.trans2PolarisMetadata(serviceIdParameters);
-        Assert.assertEquals("test", strMap.get("test"));
+        Assertions.assertEquals("test", strMap.get("test"));
 
         map = new HashMap<>();
         serviceIdParameters.put(PolarisConstant.TrpcPolarisParams.METADATA.getKey(), map);
         map.put("test", 1L);
         strMap = PolarisTrans.trans2PolarisMetadata(serviceIdParameters);
-        Assert.assertEquals("1", strMap.get("test"));
+        Assertions.assertEquals("1", strMap.get("test"));
 
         map = new HashMap<>();
         serviceIdParameters.put(PolarisConstant.TrpcPolarisParams.METADATA.getKey(), map);
@@ -48,18 +48,18 @@ public class PolarisTransTest {
         notString.put("test", 2);
         map.put("test", notString);
         strMap = PolarisTrans.trans2PolarisMetadata(serviceIdParameters);
-        Assert.assertEquals("{\"test\":2}", strMap.get("test"));
+        Assertions.assertEquals("{\"test\":2}", strMap.get("test"));
 
         strMap = PolarisTrans.trans2PolarisMetadata(Maps.newHashMap());
-        Assert.assertEquals(0, strMap.size());
+        Assertions.assertEquals(0, strMap.size());
 
         serviceIdParameters.put(PolarisConstant.TrpcPolarisParams.METADATA.getKey(), Maps.newHashMap());
         strMap = PolarisTrans.trans2PolarisMetadata(serviceIdParameters);
-        Assert.assertEquals(0, strMap.size());
+        Assertions.assertEquals(0, strMap.size());
 
         serviceIdParameters.put(PolarisConstant.TrpcPolarisParams.METADATA.getKey(), new Object());
         strMap = PolarisTrans.trans2PolarisMetadata(serviceIdParameters);
-        Assert.assertEquals(0, strMap.size());
+        Assertions.assertEquals(0, strMap.size());
     }
 
     @Test
@@ -69,8 +69,8 @@ public class PolarisTransTest {
         extMap.put(PolarisConstant.POLARIS_API_BINDIF_KEY, "if");
         APIConfigImpl apiConfig = new APIConfigImpl();
         PolarisTrans.updateApiConfig(apiConfig, extMap);
-        Assert.assertEquals(10, apiConfig.getMaxRetryTimes());
-        Assert.assertEquals("if", apiConfig.getBindIf());
+        Assertions.assertEquals(10, apiConfig.getMaxRetryTimes());
+        Assertions.assertEquals("if", apiConfig.getBindIf());
     }
 
     @Test
@@ -81,8 +81,8 @@ public class PolarisTransTest {
         extMap.put(PolarisConstant.POLARIS_PROTOCOL_KEY, "http");
         ServerConnectorConfigImpl serverConnectorConfig = new ServerConnectorConfigImpl();
         PolarisTrans.updateServerConnectorConfig(serverConnectorConfig, extMap);
-        Assert.assertEquals("10.0.0.1:1239", serverConnectorConfig.getAddresses().get(0));
-        Assert.assertEquals("http", serverConnectorConfig.getProtocol());
+        Assertions.assertEquals("10.0.0.1:1239", serverConnectorConfig.getAddresses().get(0));
+        Assertions.assertEquals("http", serverConnectorConfig.getProtocol());
     }
 
     @Test
@@ -93,7 +93,7 @@ public class PolarisTransTest {
         ConsumerConfigImpl consumerConfig = configuration.getConsumer();
         PolarisTrans.updateConsumerConfig(consumerConfig, extMap);
         LocalCacheConfigImpl cacheConfig = consumerConfig.getLocalCache();
-        Assert.assertEquals("./polaris/backup", cacheConfig.getPersistDir());
+        Assertions.assertEquals("./polaris/backup", cacheConfig.getPersistDir());
 
         //非map结构
         extMap.put(PolarisConstant.POLARIS_LOCALCACHE, "not map");
@@ -103,7 +103,7 @@ public class PolarisTransTest {
 
         PolarisTrans.updateConsumerConfig(consumerConfig, extMap);
         cacheConfig = consumerConfig.getLocalCache();
-        Assert.assertEquals("./polaris/backup", cacheConfig.getPersistDir());
+        Assertions.assertEquals("./polaris/backup", cacheConfig.getPersistDir());
 
         Map<Object, Object> objectObjectMap = new HashMap<>();
         objectObjectMap.put(1L, 2L);
@@ -114,7 +114,7 @@ public class PolarisTransTest {
 
         PolarisTrans.updateConsumerConfig(consumerConfig, extMap);
         cacheConfig = consumerConfig.getLocalCache();
-        Assert.assertEquals("./polaris/backup", cacheConfig.getPersistDir());
+        Assertions.assertEquals("./polaris/backup", cacheConfig.getPersistDir());
 
         //空 map
         Map<String, Object> localCache = new HashMap<>();
@@ -124,7 +124,7 @@ public class PolarisTransTest {
         consumerConfig = configuration.getConsumer();
         PolarisTrans.updateConsumerConfig(consumerConfig, extMap);
         cacheConfig = consumerConfig.getLocalCache();
-        Assert.assertEquals("./polaris/backup", cacheConfig.getPersistDir());
+        Assertions.assertEquals("./polaris/backup", cacheConfig.getPersistDir());
 
         localCache.put(PolarisConstant.POLARIS_LOCALCACHE_TYPE, "test_type");
         localCache.put(PolarisConstant.POLARIS_LOCALCACHE_PERSISTMAXREADRETRY, 2);
@@ -138,9 +138,9 @@ public class PolarisTransTest {
 
         PolarisTrans.updateConsumerConfig(consumerConfig, extMap);
         cacheConfig = consumerConfig.getLocalCache();
-        Assert.assertEquals("/tmp", cacheConfig.getPersistDir());
-        Assert.assertEquals(2, cacheConfig.getPersistMaxReadRetry());
-        Assert.assertEquals(3, cacheConfig.getPersistMaxWriteRetry());
-        Assert.assertEquals("test_type", cacheConfig.getType());
+        Assertions.assertEquals("/tmp", cacheConfig.getPersistDir());
+        Assertions.assertEquals(2, cacheConfig.getPersistMaxReadRetry());
+        Assertions.assertEquals(3, cacheConfig.getPersistMaxWriteRetry());
+        Assertions.assertEquals("test_type", cacheConfig.getType());
     }
 }

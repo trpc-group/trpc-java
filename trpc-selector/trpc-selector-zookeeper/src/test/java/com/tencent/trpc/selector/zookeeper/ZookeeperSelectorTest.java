@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -10,7 +10,6 @@
  */
 
 package com.tencent.trpc.selector.zookeeper;
-
 
 import com.tencent.trpc.core.common.ConfigManager;
 import com.tencent.trpc.core.common.config.PluginConfig;
@@ -36,10 +35,10 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.curator.test.TestingServer;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tests.service.GreeterJsonService;
 import tests.service.GreeterService;
 import tests.service.impl1.GreeterJsonServiceImpl1;
@@ -88,7 +87,7 @@ public class ZookeeperSelectorTest {
     /**
      * Initialize and create a test service to start
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         zkServer = new TestingServer(PORT, new File("/tmp/zk"));
         zkServer.start();
@@ -150,7 +149,7 @@ public class ZookeeperSelectorTest {
             }
         }
         children = client.getChildren(path);
-        Assert.assertTrue(CollectionUtils.isEmpty(children));
+        Assertions.assertTrue(CollectionUtils.isEmpty(children));
     }
 
     private RegisterInfo buildRegisterInfo(String ip, int port, String serviceName) {
@@ -170,7 +169,7 @@ public class ZookeeperSelectorTest {
         return config;
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         serverConfig.unregister();
         ConfigManager.stopTest();
@@ -191,17 +190,17 @@ public class ZookeeperSelectorTest {
 
         CompletionStage<ServiceInstance> future = selector.asyncSelectOne(serviceId, null);
         ServiceInstance serviceInstance = future.toCompletableFuture().get();
-        Assert.assertNotNull(serviceInstance);
-        Assert.assertEquals(LOCAL_IP, serviceInstance.getHost());
-        Assert.assertEquals(18080, serviceInstance.getPort());
+        Assertions.assertNotNull(serviceInstance);
+        Assertions.assertEquals(LOCAL_IP, serviceInstance.getHost());
+        Assertions.assertEquals(18080, serviceInstance.getPort());
 
         serviceId.setServiceName(SERVICE_NAME2);
 
         future = selector.asyncSelectOne(serviceId, null);
         serviceInstance = future.toCompletableFuture().get();
-        Assert.assertNotNull(serviceInstance);
-        Assert.assertEquals(LOCAL_IP, serviceInstance.getHost());
-        Assert.assertEquals(18081, serviceInstance.getPort());
+        Assertions.assertNotNull(serviceInstance);
+        Assertions.assertEquals(LOCAL_IP, serviceInstance.getHost());
+        Assertions.assertEquals(18081, serviceInstance.getPort());
     }
 
     @Test
@@ -211,19 +210,19 @@ public class ZookeeperSelectorTest {
 
         CompletionStage<List<ServiceInstance>> future = selector.asyncSelectAll(serviceId, null);
         List<ServiceInstance> serviceInstances = future.toCompletableFuture().get();
-        Assert.assertNotNull(serviceInstances);
-        Assert.assertEquals(1, serviceInstances.size());
-        Assert.assertEquals(LOCAL_IP, serviceInstances.get(0).getHost());
-        Assert.assertEquals(18080, serviceInstances.get(0).getPort());
+        Assertions.assertNotNull(serviceInstances);
+        Assertions.assertEquals(1, serviceInstances.size());
+        Assertions.assertEquals(LOCAL_IP, serviceInstances.get(0).getHost());
+        Assertions.assertEquals(18080, serviceInstances.get(0).getPort());
 
         serviceId.setServiceName(SERVICE_NAME2);
 
         future = selector.asyncSelectAll(serviceId, null);
         serviceInstances = future.toCompletableFuture().get();
-        Assert.assertNotNull(serviceInstances);
-        Assert.assertEquals(1, serviceInstances.size());
-        Assert.assertEquals(LOCAL_IP, serviceInstances.get(0).getHost());
-        Assert.assertEquals(18081, serviceInstances.get(0).getPort());
+        Assertions.assertNotNull(serviceInstances);
+        Assertions.assertEquals(1, serviceInstances.size());
+        Assertions.assertEquals(LOCAL_IP, serviceInstances.get(0).getHost());
+        Assertions.assertEquals(18081, serviceInstances.get(0).getPort());
     }
 
     @Test

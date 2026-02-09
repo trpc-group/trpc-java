@@ -34,17 +34,17 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Pgv Filter test class.
  */
 public class PgvValidationFilterTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         ConfigManager.stopTest();
         ConfigManager.startTest();
@@ -74,7 +74,7 @@ public class PgvValidationFilterTest {
         ExtensionLoader.registerPlugin(testNotFound);
     }
 
-    @After
+    @AfterEach
     public void after() {
         ConfigManager.stopTest();
     }
@@ -90,7 +90,7 @@ public class PgvValidationFilterTest {
     public void testPgvValidationFilter() throws NoSuchMethodException, InterruptedException, ExecutionException {
         ExtensionLoader<?> extensionLoader = ExtensionLoader.getExtensionLoader(Filter.class);
         PgvValidationFilter filter = (PgvValidationFilter) extensionLoader.getExtension("pgv");
-        Assert.assertNotNull(filter);
+        Assertions.assertNotNull(filter);
         TestRequest request = new TestRequest();
         request.setVar1("111111111");
         TestBean bean = new TestBean();
@@ -104,7 +104,7 @@ public class PgvValidationFilterTest {
         defRequest.setInvocation(rpcInvocation);
         CompletionStage<Response> response = filter.filter(new TestInvoker(), defRequest);
         CompletableFuture resultFuture = response.toCompletableFuture();
-        Assert.assertNull(((Response) resultFuture.get()).getException());
+        Assertions.assertNull(((Response) resultFuture.get()).getException());
     }
 
     /**
@@ -118,7 +118,7 @@ public class PgvValidationFilterTest {
     public void testPgvValidationFilter1() throws NoSuchMethodException, InterruptedException, ExecutionException {
         ExtensionLoader<?> extensionLoader = ExtensionLoader.getExtensionLoader(Filter.class);
         PgvValidationFilter filter = (PgvValidationFilter) extensionLoader.getExtension("pgv");
-        Assert.assertNotNull(filter);
+        Assertions.assertNotNull(filter);
         TestRequest request = new TestRequest();
         request.setVar1("1111111111111");
         TestBean bean = new TestBean();
@@ -135,14 +135,14 @@ public class PgvValidationFilterTest {
         try {
             resultFuture.get();
         } catch (Exception e) {
-            Assert.assertEquals(ExecutionException.class, e.getClass());
+            Assertions.assertEquals(ExecutionException.class, e.getClass());
         }
         CompletionStage<Response> response1 = filter.filter(new TestInvoker(), defRequest);
         CompletableFuture resultFuture1 = response1.toCompletableFuture();
         try {
             resultFuture1.get();
         } catch (Exception e) {
-            Assert.assertEquals(ExecutionException.class, e.getClass());
+            Assertions.assertEquals(ExecutionException.class, e.getClass());
         }
     }
 
@@ -157,7 +157,7 @@ public class PgvValidationFilterTest {
     public void testPgvValidationFilter2() throws NoSuchMethodException, InterruptedException, ExecutionException {
         ExtensionLoader<?> extensionLoader = ExtensionLoader.getExtensionLoader(Filter.class);
         PgvValidationFilter filter = (PgvValidationFilter) extensionLoader.getExtension("pgv");
-        Assert.assertNotNull(filter);
+        Assertions.assertNotNull(filter);
         TestRequest request = new TestRequest();
         request.setVar1("111111111");
         TestBean bean = new TestBean();
@@ -185,7 +185,7 @@ public class PgvValidationFilterTest {
             }
         }, defRequest);
         CompletableFuture resultFuture = response.toCompletableFuture();
-        Assert.assertNotNull(((Response) resultFuture.get()).getException());
+        Assertions.assertNotNull(((Response) resultFuture.get()).getException());
     }
 
     /**
@@ -199,7 +199,7 @@ public class PgvValidationFilterTest {
     public void testPgvValidationFilter3() throws NoSuchMethodException, InterruptedException, ExecutionException {
         ExtensionLoader<?> extensionLoader = ExtensionLoader.getExtensionLoader(Filter.class);
         PgvValidationFilter filter = (PgvValidationFilter) extensionLoader.getExtension("pgv");
-        Assert.assertNotNull(filter);
+        Assertions.assertNotNull(filter);
         TestInvoker request = new TestInvoker();
         RpcInvocation rpcInvocation = new RpcInvocation();
         rpcInvocation.setArguments(new Object[]{request, "testValue"});
@@ -209,20 +209,20 @@ public class PgvValidationFilterTest {
         defRequest.setInvocation(rpcInvocation);
         CompletionStage<Response> response = filter.filter(new TestInvoker(), defRequest);
         CompletableFuture resultFuture = response.toCompletableFuture();
-        Assert.assertNull(((Response) resultFuture.get()).getException());
+        Assertions.assertNull(((Response) resultFuture.get()).getException());
     }
 
     @Test
     public void testValidatorsPgv() throws NoSuchMethodException, InterruptedException, ExecutionException {
         ExtensionLoader<?> extensionLoader = ExtensionLoader.getExtensionLoader(Filter.class);
         PgvValidationFilter filter = (PgvValidationFilter) extensionLoader.getExtension("test_validators_pgv");
-        Assert.assertNotNull(filter);
+        Assertions.assertNotNull(filter);
     }
 
     @Test
     public void testNotFound() {
         ExtensionLoader<?> extensionLoader = ExtensionLoader.getExtensionLoader(Filter.class);
-        Assert.assertThrows(TRpcExtensionException.class,
+        Assertions.assertThrows(TRpcExtensionException.class,
                 () -> {
                     PgvValidationFilter filter = (PgvValidationFilter) extensionLoader.
                             getExtension("test_not_found_pgv");

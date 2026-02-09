@@ -12,15 +12,15 @@
 package com.tencent.trpc.selector.open.polaris.common;
 
 import com.tencent.trpc.polaris.common.PolarisConstant;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class PolarisConstantsTest {
 
     @Test
     public void testTrpcPolarisKey() {
-        Assert.assertNull(PolarisConstant.TrpcPolarisParams.getByKey("not exist"));
-        Assert.assertTrue(
+        Assertions.assertNull(PolarisConstant.TrpcPolarisParams.getByKey("not exist"));
+        Assertions.assertTrue(
                 PolarisConstant.TrpcPolarisParams
                         .getByKey(PolarisConstant.TrpcPolarisParams.INCLUDE_CIRCUITBREAK.getKey()).isTrpcPluginKey());
     }

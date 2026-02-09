@@ -12,8 +12,8 @@
 package com.tencent.trpc.selector.open.polaris.discovery;
 
 import static com.tencent.trpc.polaris.common.PolarisConstant.NAMESPACE_DIFF_ALLOWED;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.argThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 
 import com.tencent.polaris.api.config.Configuration;
 import com.tencent.polaris.api.core.ConsumerAPI;
@@ -42,26 +42,28 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
-
-import junit.framework.TestCase;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.mockito.ArgumentMatcher;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(APIFactory.class)
-@PowerMockIgnore({"javax.management.*"})
-public class PolarisDiscoveryTest extends TestCase {
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+public class PolarisDiscoveryTest {
 
-    @Override
-    protected void setUp() {
+    private MockedStatic<APIFactory> mockedStatic;
+
+    @BeforeEach
+    public void setUp() {
         ConfigManager.stopTest();
-        PowerMockito.mockStatic(APIFactory.class);
+        mockedStatic = Mockito.mockStatic(APIFactory.class);
         Map<String, Object> extMap = new HashMap<>();
         extMap.put(PolarisConstant.POLARIS_ADDRESSES_KEY, "10.0.0.1");
         HashMap<String, Object> localCache = new HashMap<>();
@@ -73,26 +75,29 @@ public class PolarisDiscoveryTest extends TestCase {
         ConfigManager.getInstance().getGlobalConfig().setNamespace("test");
     }
 
-    @Override
-    protected void tearDown() {
+    @AfterEach
+    public void tearDown() {
+        if (mockedStatic != null) {
+            mockedStatic.close();
+        }
         ConfigManager.stopTest();
     }
 
     @Test
     public void testAsyncList() throws Exception {
-        Instance instance1 = PowerMockito.mock(Instance.class);
-        PowerMockito.when(instance1.getId()).thenReturn("10001");
-        PowerMockito.when(instance1.getHost()).thenReturn("10.0.0.1");
-        PowerMockito.when(instance1.getPort()).thenReturn(2);
-        Instance instance2 = PowerMockito.mock(Instance.class);
-        PowerMockito.when(instance2.getId()).thenReturn("10002");
-        PowerMockito.when(instance2.getHost()).thenReturn("10.0.0.1");
-        PowerMockito.when(instance2.getPort()).thenReturn(1);
+        Instance instance1 = Mockito.mock(Instance.class);
+        Mockito.when(instance1.getId()).thenReturn("10001");
+        Mockito.when(instance1.getHost()).thenReturn("10.0.0.1");
+        Mockito.when(instance1.getPort()).thenReturn(2);
+        Instance instance2 = Mockito.mock(Instance.class);
+        Mockito.when(instance2.getId()).thenReturn("10002");
+        Mockito.when(instance2.getHost()).thenReturn("10.0.0.1");
+        Mockito.when(instance2.getPort()).thenReturn(1);
         List<Instance> instances = new ArrayList<>();
         instances.add(instance1);
         instances.add(instance2);
-        ServiceInstances serviceInstances = PowerMockito.mock(ServiceInstances.class);
-        PowerMockito.when(serviceInstances.getInstances()).thenReturn(instances);
+        ServiceInstances serviceInstances = Mockito.mock(ServiceInstances.class);
+        Mockito.when(serviceInstances.getInstances()).thenReturn(instances);
         InstancesResponse response = new InstancesResponse(serviceInstances, null, null);
 
         CompletableFuture<InstancesResponse> instancesResponseCompletableFuture = CompletableFuture
@@ -105,19 +110,20 @@ public class PolarisDiscoveryTest extends TestCase {
             }
         });
 
-        ConsumerAPI consumerAPI = PowerMockito.mock(ConsumerAPI.class);
-        PowerMockito.when(consumerAPI.asyncGetInstances(anyObject())).thenReturn(instancesFuture);
-        PowerMockito.when(APIFactory
-                .createConsumerAPIByConfig(argThat(new ArgumentMatcher<Configuration>() {
-                    @Override
-                    public boolean matches(Object o) {
-                        Configuration configuration = (Configuration) o;
-                        Assert.assertEquals("/tmp",
-                                configuration.getConsumer().getLocalCache().getPersistDir());
-                        // Modify the properties of input parameters
-                        return true;
-                    }
-                }))).thenReturn(consumerAPI);
+        ConsumerAPI consumerAPI = Mockito.mock(ConsumerAPI.class);
+        Mockito.when(consumerAPI.asyncGetInstances(any())).thenReturn(instancesFuture);
+        mockedStatic.when(() -> APIFactory
+                .createConsumerAPIByConfig(
+                        argThat((ArgumentMatcher<Configuration>) new ArgumentMatcher<Configuration>() {
+                            @Override
+                            public boolean matches(Configuration o) {
+                                Configuration configuration = o;
+                                Assertions.assertEquals("/tmp",
+                                        configuration.getConsumer().getLocalCache().getPersistDir());
+                                // Modify the properties of input parameters
+                                return true;
+                            }
+                        }))).thenReturn(consumerAPI);
 
         Discovery discovery =
                 ExtensionLoader.getExtensionLoader(Discovery.class).getExtension("polaris");
@@ -135,17 +141,17 @@ public class PolarisDiscoveryTest extends TestCase {
             countDownLatch.countDown();
         });
         countDownLatch.await();
-        Assert.assertEquals(2, result.get().size());
+        Assertions.assertEquals(2, result.get().size());
     }
 
     @Test
     public void testInitExp() {
         try {
-            PowerMockito.when(APIFactory.createConsumerAPIByConfig(anyObject())).then(inv -> {
+            mockedStatic.when(() -> APIFactory.createConsumerAPIByConfig(any())).then(inv -> {
                 throw new PolarisException(ErrorCode.INVALID_CONFIG, "test error");
             });
             ExtensionLoader.getExtensionLoader(Discovery.class).getExtension("polaris");
-            Assert.fail("no error happen");
+            Assertions.fail("no error happen");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -153,19 +159,19 @@ public class PolarisDiscoveryTest extends TestCase {
 
     @Test
     public void testListExp() throws Exception {
-        Instance instance1 = PowerMockito.mock(Instance.class);
-        PowerMockito.when(instance1.getId()).thenReturn("10001");
-        PowerMockito.when(instance1.getHost()).thenReturn("10.0.0.1");
-        PowerMockito.when(instance1.getPort()).thenReturn(2);
-        Instance instance2 = PowerMockito.mock(Instance.class);
-        PowerMockito.when(instance2.getId()).thenReturn("10002");
-        PowerMockito.when(instance2.getHost()).thenReturn("10.0.0.1");
-        PowerMockito.when(instance2.getPort()).thenReturn(1);
+        Instance instance1 = Mockito.mock(Instance.class);
+        Mockito.when(instance1.getId()).thenReturn("10001");
+        Mockito.when(instance1.getHost()).thenReturn("10.0.0.1");
+        Mockito.when(instance1.getPort()).thenReturn(2);
+        Instance instance2 = Mockito.mock(Instance.class);
+        Mockito.when(instance2.getId()).thenReturn("10002");
+        Mockito.when(instance2.getHost()).thenReturn("10.0.0.1");
+        Mockito.when(instance2.getPort()).thenReturn(1);
         List<Instance> instances = new ArrayList<>();
         instances.add(instance1);
         instances.add(instance2);
-        ServiceInstances serviceInstances = PowerMockito.mock(ServiceInstances.class);
-        PowerMockito.when(serviceInstances.getInstances()).thenReturn(instances);
+        ServiceInstances serviceInstances = Mockito.mock(ServiceInstances.class);
+        Mockito.when(serviceInstances.getInstances()).thenReturn(instances);
         InstancesResponse response = new InstancesResponse(serviceInstances, null, null);
         CompletableFuture<InstancesResponse> instancesResponseCompletableFuture = CompletableFuture
                 .completedFuture(response);
@@ -176,11 +182,11 @@ public class PolarisDiscoveryTest extends TestCase {
                 throw new RuntimeException(e);
             }
         });
-        ConsumerAPI consumerAPI = PowerMockito.mock(ConsumerAPI.class);
-        PowerMockito.when(consumerAPI.asyncGetInstances(anyObject())).then(inv -> {
+        ConsumerAPI consumerAPI = Mockito.mock(ConsumerAPI.class);
+        Mockito.when(consumerAPI.asyncGetInstances(any())).then(inv -> {
             throw new PolarisException(ErrorCode.INVALID_CONFIG, "test error");
         });
-        PowerMockito.when(APIFactory.createConsumerAPIByConfig(anyObject()))
+        mockedStatic.when(() -> APIFactory.createConsumerAPIByConfig(any()))
                 .thenReturn(consumerAPI);
 
         Discovery discovery =
@@ -193,7 +199,7 @@ public class PolarisDiscoveryTest extends TestCase {
             serviceId.setParameters(params);
             CompletionStage<List<ServiceInstance>> stage =
                     discovery.asyncList(serviceId, Executors.newSingleThreadExecutor());
-            Assert.fail("no error happen");
+            Assertions.fail("no error happen");
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -201,7 +207,7 @@ public class PolarisDiscoveryTest extends TestCase {
 
     @Test
     public void testAsyncListEmpty() throws Exception {
-        InstancesResponse response = new InstancesResponse(PowerMockito.mock(ServiceInstances.class), null, null);
+        InstancesResponse response = new InstancesResponse(Mockito.mock(ServiceInstances.class), null, null);
         CompletableFuture<InstancesResponse> instancesResponseCompletableFuture = CompletableFuture
                 .completedFuture(response);
         InstancesFuture instancesFuture = new InstancesFuture(() -> {
@@ -211,9 +217,9 @@ public class PolarisDiscoveryTest extends TestCase {
                 throw new RuntimeException(e);
             }
         });
-        ConsumerAPI consumerAPI = PowerMockito.mock(ConsumerAPI.class);
-        PowerMockito.when(consumerAPI.asyncGetInstances(anyObject())).thenReturn(instancesFuture);
-        PowerMockito.when(APIFactory.createConsumerAPIByConfig(anyObject()))
+        ConsumerAPI consumerAPI = Mockito.mock(ConsumerAPI.class);
+        Mockito.when(consumerAPI.asyncGetInstances(any())).thenReturn(instancesFuture);
+        mockedStatic.when(() -> APIFactory.createConsumerAPIByConfig(any()))
                 .thenReturn(consumerAPI);
 
         Discovery discovery =
@@ -232,28 +238,28 @@ public class PolarisDiscoveryTest extends TestCase {
             countDownLatch.countDown();
         });
         countDownLatch.await();
-        Assert.assertEquals(0, result.get().size());
+        Assertions.assertEquals(0, result.get().size());
     }
 
     @Test
     public void testList() throws Exception {
-        Instance instance1 = PowerMockito.mock(Instance.class);
-        PowerMockito.when(instance1.getId()).thenReturn("10001");
-        PowerMockito.when(instance1.getHost()).thenReturn("10.0.0.1");
-        PowerMockito.when(instance1.getPort()).thenReturn(2);
-        Instance instance2 = PowerMockito.mock(Instance.class);
-        PowerMockito.when(instance2.getId()).thenReturn("10002");
-        PowerMockito.when(instance2.getHost()).thenReturn("10.0.0.1");
-        PowerMockito.when(instance2.getPort()).thenReturn(1);
+        Instance instance1 = Mockito.mock(Instance.class);
+        Mockito.when(instance1.getId()).thenReturn("10001");
+        Mockito.when(instance1.getHost()).thenReturn("10.0.0.1");
+        Mockito.when(instance1.getPort()).thenReturn(2);
+        Instance instance2 = Mockito.mock(Instance.class);
+        Mockito.when(instance2.getId()).thenReturn("10002");
+        Mockito.when(instance2.getHost()).thenReturn("10.0.0.1");
+        Mockito.when(instance2.getPort()).thenReturn(1);
         List<Instance> instances = new ArrayList<>();
         instances.add(instance1);
         instances.add(instance2);
-        ServiceInstances serviceInstances = PowerMockito.mock(ServiceInstances.class);
-        PowerMockito.when(serviceInstances.getInstances()).thenReturn(instances);
+        ServiceInstances serviceInstances = Mockito.mock(ServiceInstances.class);
+        Mockito.when(serviceInstances.getInstances()).thenReturn(instances);
         InstancesResponse response = new InstancesResponse(serviceInstances, null, null);
-        ConsumerAPI consumerAPI = PowerMockito.mock(ConsumerAPI.class);
-        PowerMockito.when(consumerAPI.getInstances(anyObject())).thenReturn(response);
-        PowerMockito.when(APIFactory.createConsumerAPIByConfig(anyObject()))
+        ConsumerAPI consumerAPI = Mockito.mock(ConsumerAPI.class);
+        Mockito.when(consumerAPI.getInstances(any())).thenReturn(response);
+        mockedStatic.when(() -> APIFactory.createConsumerAPIByConfig(any()))
                 .thenReturn(consumerAPI);
 
         Discovery discovery =
@@ -263,23 +269,23 @@ public class PolarisDiscoveryTest extends TestCase {
         params.put(PolarisConstant.TrpcPolarisParams.NAMESPACE_KEY.getKey(), "test");
         serviceId.setParameters(params);
         List<ServiceInstance> trpcInstances = discovery.list(serviceId);
-        Assert.assertEquals(2, trpcInstances.size());
+        Assertions.assertEquals(2, trpcInstances.size());
     }
 
     @Test
     public void testListAndNamespaceNotEqual() throws Exception {
-        Instance instance1 = PowerMockito.mock(Instance.class);
-        PowerMockito.when(instance1.getId()).thenReturn("10001");
-        PowerMockito.when(instance1.getHost()).thenReturn("10.0.0.1");
-        PowerMockito.when(instance1.getPort()).thenReturn(2);
+        Instance instance1 = Mockito.mock(Instance.class);
+        Mockito.when(instance1.getId()).thenReturn("10001");
+        Mockito.when(instance1.getHost()).thenReturn("10.0.0.1");
+        Mockito.when(instance1.getPort()).thenReturn(2);
         List<Instance> instances = new ArrayList<>();
         instances.add(instance1);
-        ServiceInstances serviceInstances = PowerMockito.mock(ServiceInstances.class);
-        PowerMockito.when(serviceInstances.getInstances()).thenReturn(instances);
+        ServiceInstances serviceInstances = Mockito.mock(ServiceInstances.class);
+        Mockito.when(serviceInstances.getInstances()).thenReturn(instances);
         InstancesResponse response = new InstancesResponse(serviceInstances, null, null);
-        ConsumerAPI consumerAPI = PowerMockito.mock(ConsumerAPI.class);
-        PowerMockito.when(consumerAPI.getInstances(anyObject())).thenReturn(response);
-        PowerMockito.when(APIFactory.createConsumerAPIByConfig(anyObject()))
+        ConsumerAPI consumerAPI = Mockito.mock(ConsumerAPI.class);
+        Mockito.when(consumerAPI.getInstances(any())).thenReturn(response);
+        mockedStatic.when(() -> APIFactory.createConsumerAPIByConfig(any()))
                 .thenReturn(consumerAPI);
         ServiceId serviceId = new ServiceId();
         Map<String, Object> params = new HashMap<>();
@@ -292,9 +298,9 @@ public class PolarisDiscoveryTest extends TestCase {
             discovery.list(serviceId);
         } catch (Exception e) {
             exception = e;
-            Assert.assertTrue(e instanceof IllegalStateException);
+            Assertions.assertTrue(e instanceof IllegalStateException);
         }
-        Assert.assertNotNull(exception);
+        Assertions.assertNotNull(exception);
 
         // namespace is null
         serviceId = new ServiceId();
@@ -305,9 +311,9 @@ public class PolarisDiscoveryTest extends TestCase {
             discovery.list(serviceId);
         } catch (Exception e) {
             exception = e;
-            Assert.assertTrue(e instanceof IllegalStateException);
+            Assertions.assertTrue(e instanceof IllegalStateException);
         }
-        Assert.assertNotNull(exception);
+        Assertions.assertNotNull(exception);
     }
 
     @Test
@@ -316,18 +322,18 @@ public class PolarisDiscoveryTest extends TestCase {
         PluginConfig confg = map.get(Discovery.class)
                 .get("polaris");
         confg.getProperties().put(NAMESPACE_DIFF_ALLOWED, true);
-        Instance instance1 = PowerMockito.mock(Instance.class);
-        PowerMockito.when(instance1.getId()).thenReturn("10001");
-        PowerMockito.when(instance1.getHost()).thenReturn("10.0.0.1");
-        PowerMockito.when(instance1.getPort()).thenReturn(2);
+        Instance instance1 = Mockito.mock(Instance.class);
+        Mockito.when(instance1.getId()).thenReturn("10001");
+        Mockito.when(instance1.getHost()).thenReturn("10.0.0.1");
+        Mockito.when(instance1.getPort()).thenReturn(2);
         List<Instance> instances = new ArrayList<>();
         instances.add(instance1);
-        ServiceInstances serviceInstances = PowerMockito.mock(ServiceInstances.class);
-        PowerMockito.when(serviceInstances.getInstances()).thenReturn(instances);
+        ServiceInstances serviceInstances = Mockito.mock(ServiceInstances.class);
+        Mockito.when(serviceInstances.getInstances()).thenReturn(instances);
         InstancesResponse response = new InstancesResponse(serviceInstances, null, null);
-        ConsumerAPI consumerAPI = PowerMockito.mock(ConsumerAPI.class);
-        PowerMockito.when(consumerAPI.getInstances(anyObject())).thenReturn(response);
-        PowerMockito.when(APIFactory.createConsumerAPIByConfig(anyObject()))
+        ConsumerAPI consumerAPI = Mockito.mock(ConsumerAPI.class);
+        Mockito.when(consumerAPI.getInstances(any())).thenReturn(response);
+        mockedStatic.when(() -> APIFactory.createConsumerAPIByConfig(any()))
                 .thenReturn(consumerAPI);
 
         ServiceId serviceId = new ServiceId();
@@ -338,19 +344,19 @@ public class PolarisDiscoveryTest extends TestCase {
         Discovery discovery =
                 ExtensionLoader.getExtensionLoader(Discovery.class).getExtension("polaris");
         List<ServiceInstance> trpcInstances = discovery.list(serviceId);
-        Assert.assertEquals(1, trpcInstances.size());
-        Assert.assertEquals("10.0.0.1", trpcInstances.get(0).getHost());
-        Assert.assertEquals(2, trpcInstances.get(0).getPort());
+        Assertions.assertEquals(1, trpcInstances.size());
+        Assertions.assertEquals("10.0.0.1", trpcInstances.get(0).getHost());
+        Assertions.assertEquals(2, trpcInstances.get(0).getPort());
     }
 
 
     @Test
     public void testListEmpty() throws Exception {
-        ConsumerAPI consumerAPI = PowerMockito.mock(ConsumerAPI.class);
-        InstancesResponse response = new InstancesResponse(PowerMockito.mock(ServiceInstances.class), null, null);
+        ConsumerAPI consumerAPI = Mockito.mock(ConsumerAPI.class);
+        InstancesResponse response = new InstancesResponse(Mockito.mock(ServiceInstances.class), null, null);
 
-        PowerMockito.when(consumerAPI.getInstances(anyObject())).thenReturn(response);
-        PowerMockito.when(APIFactory.createConsumerAPIByConfig(anyObject()))
+        Mockito.when(consumerAPI.getInstances(any())).thenReturn(response);
+        mockedStatic.when(() -> APIFactory.createConsumerAPIByConfig(any()))
                 .thenReturn(consumerAPI);
 
         Discovery discovery =
@@ -360,7 +366,7 @@ public class PolarisDiscoveryTest extends TestCase {
         params.put(PolarisConstant.TrpcPolarisParams.NAMESPACE_KEY.getKey(), "test");
         serviceId.setParameters(params);
         List<ServiceInstance> serviceInstances = discovery.list(serviceId);
-        Assert.assertEquals(0, serviceInstances.size());
+        Assertions.assertEquals(0, serviceInstances.size());
     }
 
     @Test
@@ -376,9 +382,9 @@ public class PolarisDiscoveryTest extends TestCase {
             }
         });
 
-        ConsumerAPI consumerAPI = PowerMockito.mock(ConsumerAPI.class);
-        PowerMockito.when(consumerAPI.asyncGetInstances(anyObject())).thenReturn(instancesFuture);
-        PowerMockito.when(APIFactory.createConsumerAPIByConfig(anyObject()))
+        ConsumerAPI consumerAPI = Mockito.mock(ConsumerAPI.class);
+        Mockito.when(consumerAPI.asyncGetInstances(any())).thenReturn(instancesFuture);
+        mockedStatic.when(() -> APIFactory.createConsumerAPIByConfig(any()))
                 .thenReturn(consumerAPI);
 
         ServiceId serviceId = new ServiceId();
@@ -398,8 +404,8 @@ public class PolarisDiscoveryTest extends TestCase {
             countDownLatch.countDown();
         });
         countDownLatch.await();
-        Assert.assertEquals(result.get(), null);
-        Assert.assertEquals(exception.get().getCause().getClass(), TRpcException.class);
+        Assertions.assertEquals(result.get(), null);
+        Assertions.assertEquals(exception.get().getCause().getClass(), TRpcException.class);
     }
 
 }
