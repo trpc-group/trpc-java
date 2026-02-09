@@ -10,6 +10,8 @@ name: Pull Request Test
 
 on:
   pull_request_target:
+    branches:
+      - 'master'
 
 jobs:
   test:
