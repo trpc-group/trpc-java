@@ -16,10 +16,6 @@
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
 
-    <properties>
-        <skip_maven_deploy>false</skip_maven_deploy>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.alibaba.csp</groupId>
