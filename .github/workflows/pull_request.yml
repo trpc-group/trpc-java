@@ -31,5 +31,7 @@ jobs:
         run: mvn clean install -B -U --file pom.xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: pull-request
+          name: PR-Coverage
