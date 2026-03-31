@@ -62,6 +62,7 @@ trpc:
         worker_pool: woker_pool_provider_test
         enable_link_timeout: true
         reuse_port: true
+        address: 127.0.0.1:9092?topics=quickstart-events&group=quickstart-group
         filters:
           - additional_server_filter
   client:

@@ -152,6 +152,11 @@ public class BaseProtocolConfig implements Serializable, Cloneable {
     @ConfigProperty(value = Constants.DEFAULT_REUSE_PORT, type = Boolean.class, override = true)
     protected Boolean reusePort;
     /**
+     * Service address.
+     */
+    @ConfigProperty
+    protected String address;
+    /**
      * Extension configuration.
      */
     @ConfigProperty
@@ -387,6 +392,15 @@ public class BaseProtocolConfig implements Serializable, Cloneable {
     public void setReusePort(Boolean reusePort) {
         checkFiledModifyPrivilege();
         this.reusePort = reusePort;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        checkFiledModifyPrivilege();
+        this.address = address;
     }
 
     public int getBossThreads() {

@@ -132,6 +132,11 @@ public abstract class AbstractProtocolSchema {
     private Integer explicitFlushAfterFlushes;
 
     /**
+     * Service address
+     */
+    private String address;
+
+    /**
      * Extension configs
      */
     private Map<String, Object> extMap = Maps.newHashMap();
@@ -318,5 +323,13 @@ public abstract class AbstractProtocolSchema {
 
     public void setExtMap(Map<String, Object> extMap) {
         this.extMap = extMap;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

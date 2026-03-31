@@ -40,7 +40,7 @@ public class ProtocolConfig extends BaseProtocolConfig implements Cloneable {
     protected String ip;
     protected int port;
     protected String nic;
-    protected InetSocketAddress address;
+    protected InetSocketAddress socketAddress;
     /**
      * Protocol type [stream, standard].
      */
@@ -110,7 +110,7 @@ public class ProtocolConfig extends BaseProtocolConfig implements Cloneable {
     @Override
     public String toString() {
         return "ProtocolConfig [name=" + name + ", ip=" + ip + ", port=" + port + ", nic=" + nic
-                + ", address=" + address + ", protocol=" + protocol + ", serializationType="
+                + ", socketAddress=" + socketAddress + ", protocol=" + protocol + ", serializationType="
                 + serialization
                 + ", compressorType=" + compressor + ", keepAlive=" + keepAlive + ", charset="
                 + charset
@@ -144,12 +144,12 @@ public class ProtocolConfig extends BaseProtocolConfig implements Cloneable {
      * @return InetSocketAddress
      */
     public InetSocketAddress toInetSocketAddress() {
-        if (address == null) {
+        if (socketAddress == null) {
             if (StringUtils.isNotBlank(ip)) {
                 return new InetSocketAddress(ip, port);
             }
         }
-        return address;
+        return socketAddress;
     }
 
     /**
@@ -250,7 +250,7 @@ public class ProtocolConfig extends BaseProtocolConfig implements Cloneable {
         return serviceConfig;
     }
 
-    public  void setServiceConfig(ServiceConfig serviceConfig) {
+    public void setServiceConfig(ServiceConfig serviceConfig) {
         checkFiledModifyPrivilege();
         this.serviceConfig = serviceConfig;
     }

@@ -138,6 +138,7 @@ public class ServiceConfigTest {
         config.setVersion("1");
         config.setGroup("b");
         config.setCompressMinBytes(10);
+        config.setAddress("127.0.0.1:9092?topics=quickstart-events&group=quickstart-group");
         config.setRegistryConfigs(new ArrayList<>());
         config.setDefault();
         assertEquals("a", config.getWorkerPool());
@@ -147,6 +148,7 @@ public class ServiceConfigTest {
         assertTrue(config.getEnableLinkTimeout());
         assertTrue(config.getRegistryConfigs().isEmpty());
         assertTrue(config.getRegistries().isEmpty());
+        assertEquals("127.0.0.1:9092?topics=quickstart-events&group=quickstart-group", config.getAddress());
         assertEquals("name", config.getName());
         assertEquals("127.1.1.1", config.getIp());
         assertEquals(8080, config.getPort());

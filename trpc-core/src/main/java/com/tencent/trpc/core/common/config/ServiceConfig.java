@@ -421,7 +421,8 @@ public class ServiceConfig extends BaseProtocolConfig {
                 + ", lazyinit="
                 + lazyinit + ", ioMode=" + ioMode + ", ioThreadGroupShare=" + ioThreadGroupShare
                 + ", ioThreads=" + ioThreads + ", workerPool=" + workerPool + ", requestTimeout="
-                + requestTimeout + ", filters=" + filters + ", extMap=" + extMap + ", setDefault="
+                + requestTimeout + ", filters=" + filters + ", extMap=" + extMap + ", address=" + address
+                + ", setDefault="
                 + setDefault + ", inited=" + initialized + ", exported=" + exported + ", registed="
                 + registered
                 + "]";
