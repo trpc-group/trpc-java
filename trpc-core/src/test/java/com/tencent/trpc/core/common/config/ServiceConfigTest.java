@@ -236,4 +236,17 @@ public class ServiceConfigTest {
         config.register();
         config.unRegister();
     }
+
+    @Test
+    public void testToStringContainsAddress() {
+        ServiceConfig config = new ServiceConfig();
+        config.setName("name");
+        config.setIp("127.0.0.1");
+        config.setPort(8080);
+        config.setAddress("127.0.0.1:9092?topics=quickstart-events&group=quickstart-group");
+        config.setDefault();
+        String str = config.toString();
+        assertTrue(str.contains("address="));
+        assertTrue(str.contains("127.0.0.1:9092?topics=quickstart-events&group=quickstart-group"));
+    }
 }
