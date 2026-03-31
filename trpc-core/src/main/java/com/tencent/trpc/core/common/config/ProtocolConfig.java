@@ -90,7 +90,7 @@ public class ProtocolConfig extends BaseProtocolConfig implements Cloneable {
         BinderUtils.lazyBind(this, ConfigConstants.IP, nic, obj -> NetUtils.resolveMultiNicAddr((String) obj));
         BinderUtils.bind(this, ConfigConstants.IO_THREADS, Constants.DEFAULT_IO_THREADS);
         PreconditionUtils.checkArgument(StringUtils.isNotBlank(ip), "Protocol(%s), ip is null", toSimpleString());
-        BinderUtils.bind(this, "address", new InetSocketAddress(this.getIp(), this.getPort()));
+        BinderUtils.bind(this, "socketAddress", new InetSocketAddress(this.getIp(), this.getPort()));
     }
 
     public RpcClient createClient() {
