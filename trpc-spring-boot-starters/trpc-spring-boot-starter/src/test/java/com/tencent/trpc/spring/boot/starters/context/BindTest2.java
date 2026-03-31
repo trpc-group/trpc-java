@@ -101,6 +101,8 @@ public class BindTest2 {
         Assert.assertEquals(serviceSchema.getWorkerPool(), "woker_pool_provider_test");
         Assert.assertEquals(serviceSchema.getEnableLinkTimeout(), true);
         Assert.assertEquals(serviceSchema.getReusePort(), true);
+        Assert.assertEquals(serviceSchema.getAddress(),
+                "127.0.0.1:9092?topics=quickstart-events&group=quickstart-group");
         Assert.assertEquals(serviceSchema.getFilters(), Lists.newArrayList("additional_server_filter"));
     }
 
