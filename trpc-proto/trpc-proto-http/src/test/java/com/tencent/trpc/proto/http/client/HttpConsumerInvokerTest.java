@@ -47,7 +47,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests the response header parsing logic in {@link HttpConsumerInvoker#handleResponse}.
+ * Tests the response header parsing logic in {@link HttpConsumerInvoker}.
  * Verifies that {@code header.getValue()} returns the complete header value instead of
  * the truncated result previously produced by {@code HeaderElement.getName()}.
  */
