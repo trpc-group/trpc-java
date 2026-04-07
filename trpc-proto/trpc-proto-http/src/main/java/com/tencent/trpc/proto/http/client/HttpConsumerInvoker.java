@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Objects;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
-import org.apache.http.HeaderElement;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpStatus;
@@ -93,10 +92,8 @@ public class HttpConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
         Map<String, Object> respAttachments = new HashMap<>();
         for (Header header : httpResponse.getAllHeaders()) {
             String name = header.getName();
-            for (HeaderElement element : header.getElements()) {
-                String value = element.getName();
-                respAttachments.put(name, value.getBytes(StandardCharsets.UTF_8));
-            }
+            String value = header.getValue();
+            respAttachments.put(name, value.getBytes(StandardCharsets.UTF_8));
         }
 
         Header contentLengthHdr = httpResponse.getFirstHeader(HttpHeaders.CONTENT_LENGTH);
