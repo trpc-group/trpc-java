@@ -403,6 +403,7 @@ public class ServiceConfig extends BaseProtocolConfig {
         tempProtocolConfig.setSign(this.getSign());
         tempProtocolConfig.setDefault();
         tempProtocolConfig.setServiceConfig(this);
+        tempProtocolConfig.setAddress(this.getAddress());
         return tempProtocolConfig;
     }
 
