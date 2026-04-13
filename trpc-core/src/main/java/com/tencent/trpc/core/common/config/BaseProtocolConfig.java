@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 Tencent. 
+ * Copyright (C) 2023 Tencent.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -154,7 +154,7 @@ public class BaseProtocolConfig implements Serializable, Cloneable {
     /**
      * Service address.
      */
-    @ConfigProperty
+    @ConfigProperty(override = true)
     protected String address;
     /**
      * Extension configuration.
