@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.protobuf.Message;
 import com.tencent.trpc.core.common.ConfigManager;
 import com.tencent.trpc.core.common.config.ProviderConfig;
 import com.tencent.trpc.core.exception.ErrorCode;
@@ -45,6 +46,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -687,8 +689,95 @@ public class AbstractHttpExecutorTest {
         verify(response).setStatus(HttpStatus.SC_OK);
     }
 
+    // ==================== execute catch branch ====================
+
+    @Test
+    public void testExecuteCatchBranch() throws Exception {
+        ProviderInvoker<?> invoker = mock(ProviderInvoker.class);
+        ProviderConfig config = mockProviderConfig(0);
+        when(invoker.getConfig()).thenReturn(config);
+
+        HttpServletRequest request = mockRequest();
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        Method method = BadService.class.getMethod("hello", String.class);
+        RpcMethodInfo methodInfo = new RpcMethodInfo(BadService.class, method);
+        RpcMethodInfoAndInvoker methodInfoAndInvoker = new RpcMethodInfoAndInvoker();
+        methodInfoAndInvoker.setMethodInfo(methodInfo);
+        methodInfoAndInvoker.setInvoker(invoker);
+
+        AbstractHttpExecutor executor = createExecutorWithInvoker(methodInfoAndInvoker);
+
+        executor.execute(request, response, methodInfoAndInvoker);
+
+        verify(response).setStatus(HttpStatus.SC_SERVICE_UNAVAILABLE);
+    }
+
+    // ==================== parseRpcParams Protobuf ====================
+
+    @Test
+    public void testParseRpcParamsProtobuf() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        RpcMethodInfo methodInfo = mock(RpcMethodInfo.class);
+        when(methodInfo.getParamsTypes()).thenReturn(
+                new Type[]{RpcContext.class, tests.service.HelloRequestProtocol.HelloRequest.class});
+
+        AbstractHttpExecutor executor = createExecutorWithCodec();
+        HttpCodec httpCodec = (HttpCodec) getField(executor, "httpCodec");
+        tests.service.HelloRequestProtocol.HelloRequest mockMsg =
+                tests.service.HelloRequestProtocol.HelloRequest.getDefaultInstance();
+        when(httpCodec.convertToPBParam(any(), any())).thenReturn(mockMsg);
+
+        Object[] result = (Object[]) invokePrivate(executor, "parseRpcParams",
+                new Class[]{HttpServletRequest.class, RpcMethodInfo.class}, request, methodInfo);
+
+        assertNotNull(result);
+        assertEquals(mockMsg, result[0]);
+    }
+
+    // ==================== setRpcServerContext header loop ====================
+
+    @Test
+    public void testExecuteWithHeaders() throws Exception {
+        ProviderInvoker<?> invoker = mock(ProviderInvoker.class);
+        ProviderConfig config = mockProviderConfig(0);
+        when(invoker.getConfig()).thenReturn(config);
+
+        DefResponse successResponse = new DefResponse();
+        successResponse.setValue("ok");
+        when(invoker.invoke(any())).thenReturn(CompletableFuture.completedFuture(successResponse));
+
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getAttribute(HttpConstants.REQUEST_ATTRIBUTE_TRPC_SERVICE)).thenReturn(TEST_SERVICE);
+        when(request.getAttribute(HttpConstants.REQUEST_ATTRIBUTE_TRPC_METHOD)).thenReturn(TEST_METHOD);
+        when(request.getRemoteAddr()).thenReturn(TEST_IP);
+        when(request.getRemotePort()).thenReturn(TEST_PORT);
+        when(request.getMethod()).thenReturn("POST");
+        when(request.getRequestURI()).thenReturn("/api/test");
+        Enumeration<String> headerNames = Collections.enumeration(Collections.singletonList("X-Custom"));
+        when(request.getHeaderNames()).thenReturn(headerNames);
+        when(request.getHeader("X-Custom")).thenReturn("custom-value");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        RpcMethodInfoAndInvoker methodInfoAndInvoker = buildMethodInfoAndInvoker(invoker);
+        AbstractHttpExecutor executor = createExecutorWithInvoker(methodInfoAndInvoker);
+        HttpCodec httpCodec = (HttpCodec) getField(executor, "httpCodec");
+        when(httpCodec.convertToJavaBean(any(), any())).thenReturn("param");
+
+        executor.execute(request, response, methodInfoAndInvoker);
+
+        verify(response).setStatus(HttpStatus.SC_OK);
+    }
+
+    // ==================== TestService ====================
+
     private interface TestService {
 
         String hello(RpcContext ctx, String req);
+    }
+
+    private interface BadService {
+
+        String hello(String req);
     }
 }
