@@ -93,10 +93,8 @@ public class HttpConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
         Map<String, Object> respAttachments = new HashMap<>();
         for (Header header : httpResponse.getAllHeaders()) {
             String name = header.getName();
-            for (HeaderElement element : header.getElements()) {
-                String value = element.getName();
-                respAttachments.put(name, value.getBytes(StandardCharsets.UTF_8));
-            }
+            String value = header.getValue();
+            respAttachments.put(name, value.getBytes(StandardCharsets.UTF_8));
         }
 
         Header contentLengthHdr = httpResponse.getFirstHeader(HttpHeaders.CONTENT_LENGTH);

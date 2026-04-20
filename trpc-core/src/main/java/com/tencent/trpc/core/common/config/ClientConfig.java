@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 THL A29 Limited, a Tencent company. 
+ * Copyright (C) 2023 THL A29 Limited, a Tencent company.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 public class ClientConfig extends BaseProtocolConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientConfig.class);
-    
+
     @ConfigProperty
     protected String namespace;
 
@@ -75,7 +75,7 @@ public class ClientConfig extends BaseProtocolConfig {
     /**
      * BackendConfig mapping.
      */
-    protected Map<String, BackendConfig> backendConfigMap = Maps.newHashMap();
+    protected Map<String, BackendConfig> backendConfigMap = Maps.newConcurrentMap();
 
     /**
      * Whether the service is registered.

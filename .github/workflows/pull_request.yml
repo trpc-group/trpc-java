@@ -13,7 +13,7 @@ on:
     branches: [ "JDK17/Springboot3" ]
 
 jobs:
-  test:
+  JDK17-Test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codes
@@ -35,3 +35,19 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: pull-request
           name: PR-Coverage
+  JDK21-Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout codes
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      - name: Test with Maven
+        run: mvn clean install -B -U --file pom.xml

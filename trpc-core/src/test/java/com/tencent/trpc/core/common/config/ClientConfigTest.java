@@ -227,4 +227,54 @@ public class ClientConfigTest {
         assertEquals(false, backendConfig.isIoThreadGroupShare());
         assertEquals(1000, backendConfig.getIoThreads());
     }
+
+    @Test
+    public void testInitAndStop() {
+        ClientConfig config = new ClientConfig();
+        config.init();
+        assertTrue(config.isInitialized());
+        config.init();
+        assertTrue(config.isInitialized());
+        config.stop();
+        config.stop();
+    }
+
+    @Test
+    public void testGetBackendConfig() {
+        ClientConfig config = new ClientConfig();
+        BackendConfig backendConfig = new BackendConfig();
+        backendConfig.setName("svc");
+        backendConfig.setNamingUrl("a://b");
+        config.addBackendConfig(backendConfig);
+        assertEquals(backendConfig, config.getBackendConfig("svc"));
+    }
+
+    @Test
+    public void testSetterAfterInitThrows() {
+        ClientConfig config = new ClientConfig();
+        config.init();
+        Exception ex = null;
+        try {
+            config.setNamespace("ns");
+        } catch (Exception e) {
+            ex = e;
+        }
+        assertTrue(ex instanceof IllegalArgumentException);
+    }
+
+    @Test
+    public void testSetBackendConfigMap() {
+        ClientConfig config = new ClientConfig();
+        java.util.Map<String, BackendConfig> map = new java.util.HashMap<>();
+        config.setBackendConfigMap(map);
+        assertEquals(map, config.getBackendConfigMap());
+    }
+
+    @Test
+    public void testSetDefaultIdempotent() {
+        ClientConfig config = new ClientConfig();
+        config.setDefault();
+        config.setDefault();
+        assertTrue(config.isSetDefault());
+    }
 }
