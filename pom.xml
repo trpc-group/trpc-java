@@ -203,7 +203,6 @@
                         </argLine>
                         <testFailureIgnore>${maven.ignore.testfailure}</testFailureIgnore>
                         <skipTests>false</skipTests>
-                        <reportsDirectory>../../site/junit</reportsDirectory>
                         <useSystemClassLoader>false</useSystemClassLoader>
                         <forkCount>1</forkCount>
                         <reuseForks>true</reuseForks>
@@ -297,7 +296,8 @@
                             </goals>
                             <configuration>
                                 <dataFile>${project.build.directory}/coverage.exec</dataFile>
-                                <outputDirectory>../../site/${project.artifactId}</outputDirectory>
+                                <outputDirectory>${project.build.directory}/site/jacoco
+                                </outputDirectory>
                             </configuration>
                         </execution>
                         <execution>
