@@ -31,26 +31,21 @@ tRPC-Java 具有以下特点：
 
 ### 依赖环境
 
-JDK 1.8.0_251+, Maven 3.6.3+
-
-> 请通过 `mvn -Dmaven.test.skip=true clean install` 编译tRPC-Java。如果运行单元测试需使用JDK 8执行。
+JDK 17+, Maven 3.8.6+
 
 ### 引入依赖
+
+2.x 版本支持JDK 17 和 SpringBoot 3，1.x 版本 支持JDK 8 和 SpringBoot 2.
 
 ```pom
 <dependencies>
     <dependency>
         <groupId>com.tencent.trpc</groupId>
         <artifactId>trpc-mini</artifactId>
-        <version>1.0.0</version>
+        <version>2.0.4</version>
     </dependency>
 </dependencies>
 ```
-
-#### 使用协程
-
-推荐使用 [Tencent Kona JDK FIBER 8](https://github.com/Tencent/TencentKona-8)
-使用示例见[coroutine](https://github.com/trpc-group/trpc-java-examples/tree/master/trpc-coroutine)
 
 <h2 id="2">相关文档</h2>
 
