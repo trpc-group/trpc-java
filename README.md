@@ -32,27 +32,21 @@ tRPC-Java has the following features:
 
 ### Dependency environment
 
-JDK 1.8.0_251+, Maven 3.6.3+
-
-> Please compile tRPC-Java through `mvn -Dmaven.test.skip=true clean install`. If you want to run unit tests, you need to use JDK 8.
+JDK 17+, Maven 3.8.6+
 
 ### Import dependencies
+
+Version 2.x supports JDK 17 and Spring Boot 3, while Version 1.x supports JDK 8 and Spring Boot 2.
 
 ```pom
 <dependencies>
     <dependency>
         <groupId>com.tencent.trpc</groupId>
         <artifactId>trpc-mini</artifactId>
-        <version>1.0.0</version>
+        <version>2.0.4</version>
     </dependency>
 </dependencies>
 ```
-
-#### Use coroutine
-
-It is recommended to use [Tencent Kona JDK FIBER 8](https://github.com/Tencent/TencentKona-8). For
-usage examples,
-see [coroutine](https://github.com/trpc-group/trpc-java-examples/tree/master/trpc-coroutine)
 
 <h2 id="2">Related Documentation</h2>
 
