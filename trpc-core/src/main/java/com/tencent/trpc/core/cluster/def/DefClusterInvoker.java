@@ -72,7 +72,10 @@ public class DefClusterInvoker<T> extends AbstractClusterInvoker<T> {
     protected ConsumerInvokerProxy<T> getInvoker(ServiceInstance instance) {
         String key = toUniqKey(instance);
         ConsumerInvokerProxy<T> result = invokerCache.get(key);
-        return Optional.ofNullable(result).orElseGet(() -> createInvoker(instance));
+        if (result != null && result.isAvailable()) {
+            return result;
+        }
+        return createInvoker(instance);
     }
 
     @SuppressWarnings("rawtypes")
