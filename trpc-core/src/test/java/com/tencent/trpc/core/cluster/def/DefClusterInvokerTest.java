@@ -33,10 +33,12 @@ import com.tencent.trpc.core.worker.WorkerPoolManager;
 import com.tencent.trpc.core.worker.handler.TrpcThreadExceptionHandler;
 import com.tencent.trpc.core.worker.spi.WorkerPool;
 import com.tencent.trpc.core.worker.support.thread.ThreadWorkerPool;
+import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -202,6 +204,57 @@ public class DefClusterInvokerTest {
                     + "), Client router error [found no available instance]";
             Assertions.assertEquals(expect, exception.getMessage());
         }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testGetInvokerSkipsUnavailableCachedInvoker() throws Exception {
+        Assertions.assertFalse(consumerInvokerProxy.isAvailable());
+
+        // Put the unavailable invoker into invokerCache via reflection
+        Field cacheField = DefClusterInvoker.class.getDeclaredField("invokerCache");
+        cacheField.setAccessible(true);
+        ConcurrentMap<String, ConsumerInvokerProxy<GenericClient>> cache =
+                (ConcurrentMap<String, ConsumerInvokerProxy<GenericClient>>) cacheField.get(defClusterInvoker);
+
+        ServiceInstance instance = new ServiceInstance("127.0.0.1", 12345);
+        String key = "127.0.0.1:12345:null";
+        cache.put(key, consumerInvokerProxy);
+
+        // Spy on defClusterInvoker and mock createInvoker to return a new available proxy
+        DefClusterInvoker<GenericClient> spy = Mockito.spy(defClusterInvoker);
+        ConsumerInvokerProxy<GenericClient> newProxy = Mockito.mock(ConsumerInvokerProxy.class);
+        Mockito.when(newProxy.isAvailable()).thenReturn(true);
+        Mockito.doReturn(newProxy).when(spy).createInvoker(instance);
+
+        ConsumerInvokerProxy<GenericClient> result = spy.getInvoker(instance);
+
+        // Should not return the unavailable cached invoker
+        Assertions.assertNotSame(consumerInvokerProxy, result);
+        // Should return the new available one from createInvoker
+        Assertions.assertSame(newProxy, result);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testGetInvokerReturnsAvailableCachedInvoker() throws Exception {
+        // Put an available invoker into invokerCache via reflection
+        Field cacheField = DefClusterInvoker.class.getDeclaredField("invokerCache");
+        cacheField.setAccessible(true);
+        ConcurrentMap<String, ConsumerInvokerProxy<GenericClient>> cache =
+                (ConcurrentMap<String, ConsumerInvokerProxy<GenericClient>>) cacheField.get(defClusterInvoker);
+
+        ServiceInstance instance = new ServiceInstance("127.0.0.1", 12345);
+        String key = "127.0.0.1:12345:null";
+
+        // Create an available proxy (client.isAvailable() = true)
+        ConsumerInvokerProxy<GenericClient> availableProxy = Mockito.mock(ConsumerInvokerProxy.class);
+        Mockito.when(availableProxy.isAvailable()).thenReturn(true);
+        cache.put(key, availableProxy);
+
+        // getInvoker should return the cached available proxy directly
+        ConsumerInvokerProxy<GenericClient> result = defClusterInvoker.getInvoker(instance);
+        Assertions.assertSame(availableProxy, result);
     }
 
 }
