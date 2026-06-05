@@ -20,6 +20,7 @@ import com.tencent.trpc.core.rpc.ConsumerInvoker;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.http.config.SocketConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -47,7 +48,12 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
  *         which beats most NAT idle timers (typical 5–15min);</li>
  *     <li>{@code connectionTimeToLive}: hard ceiling — every connection is forcibly recycled
  *         after {@value #CONNECTION_TTL_MINUTES}min regardless of activity, so backend IP rotation
- *         (K8s pod drift, blue/green) is recovered from in bounded time.</li>
+ *         (K8s pod drift, blue/green) is recovered from in bounded time;</li>
+ *     <li>{@code SO_KEEPALIVE=true} on every pooled socket: a last-resort path so the OS
+ *         eventually surfaces dead peers in the worst-case "host pulled the plug / kernel
+ *         panic" black-hole scenario where no FIN/RST is ever sent. Linux defaults are
+ *         conservative (~2h11min) — the application-layer paths above will normally fire
+ *         long before this kicks in.</li>
  * </ul>
  *
  * <p><b>Health signalling to the cluster manager</b>. The cluster manager's periodic health
@@ -140,6 +146,19 @@ public class HttpRpcClient extends AbstractRpcClient {
         // Re-validate idle pooled connections before reuse so we do not send a request through a
         // socket the server has already half-closed.
         cm.setValidateAfterInactivity(VALIDATE_AFTER_INACTIVITY_MS);
+        // Enable TCP-level keep-alive (SO_KEEPALIVE) on every pooled socket. This gives the OS a
+        // last-resort path for surfacing dead peers in the worst case where neither the
+        // application-layer Keep-Alive timer (5min) nor connectionTimeToLive (10min) fires —
+        // typically the "host pulled the plug / kernel panic" black-hole scenario where no FIN
+        // or RST is ever sent. Linux defaults are conservative (~2h11min total: 7200s idle +
+        // 9 × 75s probes) so this isn't a fast path, but it's a pure win — the alternative is
+        // socket lingering until {@code tcp_retries2} (~15min) catches up. Operators who care
+        // about faster recovery should tune sysctl {@code net.ipv4.tcp_keepalive_time/intvl/probes}
+        // host-wide; Apache HttpClient 4.x's blocking IO does not expose per-socket
+        // configuration of those values via SocketOptions, hence the OS default applies.
+        cm.setDefaultSocketConfig(SocketConfig.custom()
+                .setSoKeepAlive(true)
+                .build());
         httpClient = HttpClients.custom()
                 .setConnectionManager(cm)
                 // Background eviction of stale & long-idle connections; keeps the pool tidy in
