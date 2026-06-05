@@ -36,9 +36,9 @@ import org.junit.Test;
 
 /**
  * Drives the {@code catch (Throwable)} branch in
- * {@link RpcClusterClientManager#ensureHealthObserverStarted()}: when the shared scheduler
+ * {@link RpcClusterClientManager#ensureIdleScanStarted()}: when the shared scheduler
  * rejects the periodic task, the manager must swallow the exception and leave
- * {@code healthObserverFuture} as {@code null}.
+ * {@code idleScanFuture} as {@code null}.
  *
  * <p>Implemented without PowerMock — instead the {@code WorkerPoolManager.shareScheduler}
  * static field is reflectively replaced with a {@link ScheduledThreadPoolExecutor} subclass
@@ -52,7 +52,7 @@ public class RpcClusterSchedulerRejectTest {
     @Before
     public void setUp() throws Exception {
         RpcClusterClientManager.reset();
-        clearHealthObserverFuture();
+        clearIdleScanFuture();
         clearClusterMap();
         // Snapshot the live scheduler so we can put it back when the test ends.
         Field f = WorkerPoolManager.class.getDeclaredField("shareScheduler");
@@ -68,7 +68,7 @@ public class RpcClusterSchedulerRejectTest {
         Field f = WorkerPoolManager.class.getDeclaredField("shareScheduler");
         f.setAccessible(true);
         f.set(null, originalScheduler);
-        clearHealthObserverFuture();
+        clearIdleScanFuture();
         clearClusterMap();
         RpcClusterClientManager.reset();
     }
@@ -83,8 +83,8 @@ public class RpcClusterSchedulerRejectTest {
                 new StubProtocolConfig());
         assertNotNull(client);
 
-        // Catch branch leaves healthObserverFuture as null.
-        Field f = RpcClusterClientManager.class.getDeclaredField("healthObserverFuture");
+        // Catch branch leaves idleScanFuture as null.
+        Field f = RpcClusterClientManager.class.getDeclaredField("idleScanFuture");
         f.setAccessible(true);
         assertNull("scheduler rejected → future must remain null", f.get(null));
 
@@ -99,8 +99,8 @@ public class RpcClusterSchedulerRejectTest {
         ((Map<?, ?>) f.get(null)).clear();
     }
 
-    private static void clearHealthObserverFuture() throws Exception {
-        Field f = RpcClusterClientManager.class.getDeclaredField("healthObserverFuture");
+    private static void clearIdleScanFuture() throws Exception {
+        Field f = RpcClusterClientManager.class.getDeclaredField("idleScanFuture");
         f.setAccessible(true);
         Object cur = f.get(null);
         if (cur != null) {

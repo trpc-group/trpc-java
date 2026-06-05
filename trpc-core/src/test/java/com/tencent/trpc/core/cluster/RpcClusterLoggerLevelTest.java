@@ -65,13 +65,14 @@ public class RpcClusterLoggerLevelTest {
     }
 
     /**
-     * Drives all three {@code if (logger.isDebugEnabled())} blocks in the source with the flag
+     * Drives the {@code if (logger.isDebugEnabled())} blocks in the source with the flag
      * evaluating to {@code false}, covering the previously-missed branches:
      * <ul>
      *     <li>{@code shutdownBackendConfig} success path,</li>
-     *     <li>{@code getOrCreateClient} closeFuture hook,</li>
-     *     <li>{@code observeHealth} per-client failure log.</li>
+     *     <li>{@code getOrCreateClient} closeFuture hook.</li>
      * </ul>
+     * Also exercises {@link RpcClusterClientManager#scanIdleClients()} once for completeness;
+     * the Netty stub's default transporter makes the idle-scan a no-op.
      */
     @Test
     public void testDebugBranchesWhenLoggerDisabled() throws Exception {
@@ -86,13 +87,12 @@ public class RpcClusterLoggerLevelTest {
         backendConfig.setNamingUrl("ip://127.0.0.1:9100");
         StubProtocolConfig pConfig = new StubProtocolConfig();
 
-        // (1) Triggers getOrCreateClient → eventually closeFuture hook (via shutdown below) and
-        //     (3) observeHealth's failure-log path (since available is forced false next).
+        // (1) Triggers getOrCreateClient → eventually closeFuture hook (via shutdown below).
         RpcClient client = RpcClusterClientManager.getOrCreateClient(backendConfig, pConfig);
         org.junit.Assert.assertNotNull(client);
 
         pConfig.available = false;
-        invokeObserveHealth();
+        invokeScanIdleClients();
 
         // (2) shutdownBackendConfig success path.
         RpcClusterClientManager.shutdownBackendConfig(backendConfig);
@@ -126,8 +126,8 @@ public class RpcClusterLoggerLevelTest {
         return previous;
     }
 
-    private static void invokeObserveHealth() throws Exception {
-        Method m = RpcClusterClientManager.class.getDeclaredMethod("observeHealth");
+    private static void invokeScanIdleClients() throws Exception {
+        Method m = RpcClusterClientManager.class.getDeclaredMethod("scanIdleClients");
         m.setAccessible(true);
         m.invoke(null);
     }

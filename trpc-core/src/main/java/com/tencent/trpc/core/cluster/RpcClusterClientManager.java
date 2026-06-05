@@ -13,6 +13,7 @@ package com.tencent.trpc.core.cluster;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.tencent.trpc.core.common.Constants;
 import com.tencent.trpc.core.common.config.BackendConfig;
 import com.tencent.trpc.core.common.config.ConsumerConfig;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
@@ -34,22 +35,18 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Used to manage the list mapping of point-to-point clients generated through BackendConfig.
  * <p>
- * Long-connection mode:
+ * Long-connection lifecycle:
  * <ul>
- *     <li>Clients are kept alive for the lifetime of the {@link BackendConfig}; no idle timeout
- *         scanner closes idle connections.</li>
- *     <li>A lightweight background <b>health observer</b> runs every
- *         {@value #HEALTH_OBSERVE_PERIOD_SECONDS}s. It is purely observational: for each
- *         cached {@link RpcClientProxy} it tracks how long the proxy has been unavailable
- *         and emits a single warning once the count reaches
- *         {@link #STUCK_UNAVAILABLE_THRESHOLD} consecutive failures
- *         (~{@value #STUCK_UNAVAILABLE_THRESHOLD} × {@value #HEALTH_OBSERVE_PERIOD_SECONDS}s).
- *         The observer <b>does NOT close the transport, does NOT initiate a reconnect, and
- *         does NOT send any heartbeat</b>. Recovery is delegated entirely to:
+ *     <li><b>Netty-based clients</b> ({@code transporter=netty}, e.g. the standard tRPC
+ *         protocol) are kept alive for the lifetime of the {@link BackendConfig}. Their
+ *         idleness is already governed at the transport layer (Netty
+ *         {@code IdleStateHandler} and TCP keepalive), so the cluster manager never closes
+ *         them by idle time. Recovery on transport failure is delegated entirely to:
  *         <ol>
  *             <li>the request path (
  *                 {@link com.tencent.trpc.core.transport.AbstractClientTransport#ensureChannelActive}),
@@ -59,11 +56,25 @@ import java.util.concurrent.atomic.AtomicInteger;
  *                 {@link RpcClient#closeFuture()} hook.</li>
  *         </ol>
  *     </li>
- *     <li>When the underlying {@link RpcClient} closes itself (transport error or explicit
- *         shutdown), the {@link RpcClient#closeFuture()} callback removes the cache entry so
- *         the next request rebuilds a fresh long connection.</li>
- *     <li>{@link #shutdownBackendConfig(BackendConfig)} / {@link #close()} still release clients
- *         explicitly.</li>
+ *     <li><b>Non-Netty clients</b> (e.g. HTTP / Jetty pooled connections) are policed by a
+ *         lightweight background <b>idle-scanner</b> that runs every
+ *         {@value #IDLE_SCAN_PERIOD_SECONDS}s. For each cached client, if no successful RPC
+ *         response has been observed for longer than the configured
+ *         {@link ProtocolConfig#getIdleTimeout()} (in milliseconds), the scanner closes the
+ *         client. Closing fires the {@link RpcClient#closeFuture()} hook, which removes the
+ *         entry from the cluster cache; the next request rebuilds a fresh connection
+ *         lazily. Setting {@code idleTimeout <= 0} disables the check.
+ *         <p>To avoid racing with a request whose response is just about to come back,
+ *         the scanner uses an in-flight counter, a single-shot CAS gate and a re-check of
+ *         the last-response timestamp before actually closing &mdash; see
+ *         {@link #closeIfIdleResponseTimedOut} for details.</p></li>
+ *     <li>The idle-scanner <b>does NOT send heartbeats and does NOT trigger reconnects</b>;
+ *         its only side effect is closing idle non-Netty clients.</li>
+ *     <li>When the underlying {@link RpcClient} closes itself (transport error, idle-scan
+ *         eviction or explicit shutdown), the {@link RpcClient#closeFuture()} callback
+ *         removes the cache entry so the next request rebuilds a fresh long connection.</li>
+ *     <li>{@link #shutdownBackendConfig(BackendConfig)} / {@link #close()} still release
+ *         clients explicitly.</li>
  * </ul>
  */
 public class RpcClusterClientManager {
@@ -71,16 +82,11 @@ public class RpcClusterClientManager {
     private static final Logger logger = LoggerFactory.getLogger(RpcClusterClientManager.class);
 
     /**
-     * Period of the long-connection health observer in seconds.
+     * How often (in seconds) the background idle-scanner runs to evict non-Netty clients
+     * that have not received any successful RPC response within their configured
+     * {@link ProtocolConfig#getIdleTimeout()}.
      */
-    private static final int HEALTH_OBSERVE_PERIOD_SECONDS = 30;
-    /**
-     * Number of consecutive observations of "unavailable" required before a stuck-unavailable
-     * warning is emitted (once per spell). The observer never closes the transport itself —
-     * recovery is delegated to {@code ensureChannelActive} on the request path and to
-     * Netty's {@code channelInactive} hook.
-     */
-    private static final int STUCK_UNAVAILABLE_THRESHOLD = 5;
+    private static final int IDLE_SCAN_PERIOD_SECONDS = 30;
 
     /**
      * Cluster map, {@code Map<BackendConfig, Map<String, RpcClientProxy>>}
@@ -92,10 +98,11 @@ public class RpcClusterClientManager {
     private static final AtomicBoolean CLOSED_FLAG = new AtomicBoolean(false);
 
     /**
-     * Health-observer timer handle. Started lazily on first {@link #getOrCreateClient}.
-     * Purely observational — see class-level javadoc.
+     * Handle of the periodic idle-scan task, started lazily on the first
+     * {@link #getOrCreateClient(BackendConfig, ProtocolConfig)}. {@code null} until the
+     * scheduler accepts the task; remains {@code null} if the scheduler rejected it.
      */
-    private static volatile ScheduledFuture<?> healthObserverFuture;
+    private static volatile ScheduledFuture<?> idleScanFuture;
 
     /**
      * Shutdown a cluster.
@@ -130,7 +137,7 @@ public class RpcClusterClientManager {
      */
     public static RpcClient getOrCreateClient(BackendConfig bConfig, ProtocolConfig pConfig) {
         Preconditions.checkNotNull(bConfig, "backendConfig can't not be null");
-        ensureHealthObserverStarted();
+        ensureIdleScanStarted();
         Map<String, RpcClientProxy> map = CLUSTER_MAP.computeIfAbsent(bConfig, k -> new ConcurrentHashMap<>());
         String uniqId = pConfig.toUniqId();
         RpcClientProxy rpcClientProxy = map.computeIfAbsent(uniqId,
@@ -171,78 +178,136 @@ public class RpcClusterClientManager {
     }
 
     /**
-     * Lazily start the long-connection health observer on first usage. Idempotent and
-     * thread-safe. If the shared scheduler rejects the periodic task the failure is
-     * swallowed and the manager falls back to "request-path lazy reconnect only" — the
-     * loss is purely observability (no stuck-unavailable warnings), not correctness.
+     * Lazily start the periodic idle-scan task on first usage. Idempotent and thread-safe.
+     * <p>If the shared scheduler rejects the task, the failure is logged and swallowed:
+     * Netty long connections remain unaffected (they manage their own idleness), and
+     * non-Netty pooled clients simply lose the proactive idle-timeout eviction — they
+     * will still be reclaimed lazily on the next failed request.</p>
      */
-    private static void ensureHealthObserverStarted() {
-        if (healthObserverFuture != null || CLOSED_FLAG.get()) {
+    private static void ensureIdleScanStarted() {
+        if (idleScanFuture != null || CLOSED_FLAG.get()) {
             return;
         }
         synchronized (RpcClusterClientManager.class) {
-            if (healthObserverFuture != null || CLOSED_FLAG.get()) {
+            if (idleScanFuture != null || CLOSED_FLAG.get()) {
                 return;
             }
             try {
-                healthObserverFuture = WorkerPoolManager.getShareScheduler().scheduleAtFixedRate(
-                        RpcClusterClientManager::observeHealth,
-                        HEALTH_OBSERVE_PERIOD_SECONDS,
-                        HEALTH_OBSERVE_PERIOD_SECONDS,
+                idleScanFuture = WorkerPoolManager.getShareScheduler().scheduleAtFixedRate(
+                        RpcClusterClientManager::scanIdleClients,
+                        IDLE_SCAN_PERIOD_SECONDS,
+                        IDLE_SCAN_PERIOD_SECONDS,
                         TimeUnit.SECONDS);
             } catch (Throwable ex) {
-                logger.warn("Start long-connection health observer failed; falling back to "
-                        + "lazy reconnect on the request path only", ex);
+                logger.warn("Start cluster idle-scan task failed; non-Netty clients will only "
+                        + "be reclaimed lazily on the request path", ex);
             }
         }
     }
 
     /**
-     * Periodic health observation. For each cached client the failure counter is
-     * incremented while the client reports unavailable, and a single warning is emitted
-     * once the counter crosses {@link #STUCK_UNAVAILABLE_THRESHOLD}. Healthy clients have
-     * their counter reset.
-     * <p><b>Pure observation:</b> this method never sends a heartbeat, never closes the
-     * underlying transport and never triggers a reconnect. Closing the transport here
-     * would tear down the shared Netty {@code EventLoopGroup} and abort in-flight
-     * long-connection requests; instead recovery is delegated to the transport's existing
-     * lazy reconnect (request path) and to Netty's {@code channelInactive} event.</p>
+     * Periodic idle-scan tick. Iterates every cached {@link RpcClientProxy} and delegates
+     * to {@link #closeIfIdleResponseTimedOut} to evict non-Netty clients whose
+     * idle-response timeout has elapsed. Per-proxy exceptions are swallowed so a single
+     * misbehaving client cannot break the timer loop.
+     * <p>Netty-based transports are deliberately left untouched here — see class javadoc.</p>
      */
-    static void observeHealth() {
+    static void scanIdleClients() {
         if (CLOSED_FLAG.get()) {
             return;
         }
         CLUSTER_MAP.forEach((bConfig, clusterMap) -> clusterMap.forEach((key, proxy) -> {
             try {
-                if (proxy.isAvailable()) {
-                    proxy.failureCount.set(0);
-                    proxy.warnedStuckUnavailable.set(false);
-                    return;
-                }
-                // Cap the counter at STUCK_UNAVAILABLE_THRESHOLD to avoid unbounded growth
-                // (and the resulting integer wrap-around) when the backend stays unavailable
-                // for a very long time. Once capped, further iterations are silent — the
-                // warning has already been emitted at the threshold-crossing iteration below.
-                int fails = proxy.failureCount.updateAndGet(
-                        cur -> cur >= STUCK_UNAVAILABLE_THRESHOLD ? STUCK_UNAVAILABLE_THRESHOLD : cur + 1);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Health-observe: client {} not available, failureCount={}",
-                            proxy.getProtocolConfig().toSimpleString(), fails);
-                }
-                if (fails == STUCK_UNAVAILABLE_THRESHOLD
-                        && proxy.warnedStuckUnavailable.compareAndSet(false, true)) {
-                    // Log only once per unavailability spell to avoid log spam. The flag is
-                    // reset as soon as the proxy is observed available again above.
-                    logger.warn("Health-observe: client {} unavailable for {} consecutive checks "
-                                    + "(~{}s); leaving the transport intact and relying on lazy "
-                                    + "reconnect on the request path",
-                            proxy.getProtocolConfig().toSimpleString(), fails,
-                            fails * HEALTH_OBSERVE_PERIOD_SECONDS);
-                }
+                closeIfIdleResponseTimedOut(bConfig, key, proxy);
             } catch (Throwable ex) {
-                logger.error("Health-observe on client {} threw", key, ex);
+                logger.error("IdleScan: tick on client {} threw", key, ex);
             }
         }));
+    }
+
+    /**
+     * Close a non-Netty client when it has not received any successful RPC response within
+     * {@link ProtocolConfig#getIdleTimeout()} milliseconds. Closing fires the
+     * {@link RpcClient#closeFuture()} hook installed in {@link #getOrCreateClient}, which
+     * removes the entry from the cluster cache so the next request rebuilds a fresh client.
+     *
+     * <p>Netty-based transports are skipped: their idleness is already governed by Netty's
+     * {@code IdleStateHandler} and TCP keepalive; closing them here would tear down the
+     * shared {@code EventLoopGroup} and abort in-flight long-connection requests.</p>
+     *
+     * <p><b>Race-window narrowing</b>. Closing a long-lived client while a request is in
+     * flight (or a response is on its way back from the wire) would surface as a spurious
+     * I/O failure to the caller. To minimise that window without resorting to coarse
+     * locking, this method:
+     * <ol>
+     *     <li>skips the proxy when {@link RpcClientProxy#inFlight} &gt; 0 (a request is on
+     *         the wire — wait until the next tick);</li>
+     *     <li>uses {@link RpcClientProxy#closing} as a single-shot CAS gate so only one
+     *         caller (this scanner thread) actually invokes {@link RpcClient#close()};</li>
+     *     <li>re-reads {@link RpcClientProxy#lastResponseTimeMs} <i>after</i> winning the
+     *         CAS &mdash; if a response landed in the tiny window before we won, the
+     *         eviction is aborted and the {@code closing} flag is rolled back so a future
+     *         tick can try again.</li>
+     * </ol>
+     * The truly extreme corner case &mdash; a response arriving on the wire <i>after</i>
+     * {@code close()} has begun &mdash; is handled by the underlying transport: the
+     * pooled HTTP client surfaces an {@code IOException} on the affected request, which
+     * the consumer invoker maps to a normal {@link TRpcException}. Subsequent requests
+     * see the proxy gone from the cache and rebuild a fresh connection.</p>
+     */
+    private static void closeIfIdleResponseTimedOut(BackendConfig bConfig, String key, RpcClientProxy proxy) {
+        ProtocolConfig pConfig = proxy.getProtocolConfig();
+        if (pConfig == null) {
+            return;
+        }
+        // Skip Netty transports — see method-level javadoc.
+        String transporter = pConfig.getTransporter();
+        if (transporter == null || Constants.TRANSPORTER_NETTY.equalsIgnoreCase(transporter)) {
+            return;
+        }
+        Integer idleTimeoutBoxed = pConfig.getIdleTimeout();
+        if (idleTimeoutBoxed == null) {
+            return;
+        }
+        long idleTimeoutMs = idleTimeoutBoxed.longValue();
+        if (idleTimeoutMs <= 0L) {
+            return;
+        }
+        // Already closed (or being closed) — leave the cleanup to the closeFuture hook.
+        if (proxy.isClosed() || proxy.closing.get()) {
+            return;
+        }
+        // Skip while any RPC is on the wire — closing now would surface as a spurious
+        // I/O failure on the in-flight request. The scanner will re-evaluate next tick.
+        if (proxy.inFlight.get() > 0) {
+            return;
+        }
+        long idleMs = System.currentTimeMillis() - proxy.lastResponseTimeMs.get();
+        if (idleMs < idleTimeoutMs) {
+            return;
+        }
+        // Claim the right to close exactly once.
+        if (!proxy.closing.compareAndSet(false, true)) {
+            return;
+        }
+        // Re-check after winning the CAS to plug the residual race: a successful response
+        // may have updated lastResponseTimeMs (and inFlight may have ticked back up)
+        // between our first read above and the CAS here. If so, abort the eviction and
+        // give back the closing flag so a future tick can retry.
+        long idleMsAfterCas = System.currentTimeMillis() - proxy.lastResponseTimeMs.get();
+        if (idleMsAfterCas < idleTimeoutMs || proxy.inFlight.get() > 0) {
+            proxy.closing.set(false);
+            return;
+        }
+        try {
+            logger.info("IdleScan: closing idle client {} (transporter={}, idleMs={}, "
+                            + "idleTimeoutMs={}); cache entry will be removed via closeFuture",
+                    pConfig.toSimpleString(), transporter, idleMsAfterCas, idleTimeoutMs);
+            proxy.close();
+        } catch (Throwable ex) {
+            logger.error("IdleScan: close idle client {} (key={}) failed",
+                    pConfig.toSimpleString(), key, ex);
+        }
     }
 
     /**
@@ -251,13 +316,13 @@ public class RpcClusterClientManager {
     public static void close() {
         if (CLOSED_FLAG.compareAndSet(Boolean.FALSE, Boolean.TRUE)) {
             try {
-                ScheduledFuture<?> f = healthObserverFuture;
+                ScheduledFuture<?> f = idleScanFuture;
                 if (f != null) {
                     f.cancel(true);
-                    healthObserverFuture = null;
+                    idleScanFuture = null;
                 }
             } catch (Exception ex) {
-                logger.error("Cancel long-connection health observer failed", ex);
+                logger.error("Cancel cluster idle-scan task failed", ex);
             }
             CLUSTER_MAP.forEach((config, clientProxyMap) -> clientProxyMap
                     .forEach((key, clientProxy) -> {
@@ -294,7 +359,35 @@ public class RpcClusterClientManager {
 
         @Override
         public CompletionStage<Response> invoke(Request request) {
-            return delegate.invoke(request);
+            // Bump the in-flight counter BEFORE handing the request off to the delegate,
+            // so the idle-scanner cannot race in and close the proxy between the counter
+            // read and the actual network operation. A matching decrement runs in
+            // whenComplete below regardless of success or failure.
+            rpcClient.inFlight.incrementAndGet();
+            CompletionStage<Response> stage;
+            try {
+                stage = delegate.invoke(request);
+            } catch (Throwable ex) {
+                // Synchronous failure (e.g. immediate IllegalStateException) — release the
+                // counter here, otherwise it would leak. Then propagate so the caller's
+                // exception-handling stays unchanged.
+                rpcClient.inFlight.decrementAndGet();
+                throw ex;
+            }
+            // Mark the underlying long-lived client as "active" only when we actually
+            // observe a response come back from the wire. Failures are intentionally NOT
+            // counted as activity here: in a fully-broken-link scenario invocations may
+            // fail-fast indefinitely, and treating those as "activity" would prevent the
+            // cluster manager's idle-response timeout from ever closing the dead client.
+            return stage.whenComplete((response, throwable) -> {
+                try {
+                    if (throwable == null && response != null) {
+                        rpcClient.markResponseReceived();
+                    }
+                } finally {
+                    rpcClient.inFlight.decrementAndGet();
+                }
+            });
         }
 
         @Override
@@ -332,20 +425,48 @@ public class RpcClusterClientManager {
 
         private final RpcClient delegate;
         /**
-         * Consecutive "unavailable" observations seen by {@link #observeHealth()}; reset to
-         * 0 whenever the client is observed available. Capped at
-         * {@link #STUCK_UNAVAILABLE_THRESHOLD} to avoid unbounded growth.
+         * Wall-clock timestamp (ms) of the most recent successful RPC response observed on
+         * this proxy. Initialised to the proxy creation time so a freshly-built client is
+         * not eligible for idle-timeout eviction until at least
+         * {@link ProtocolConfig#getIdleTimeout()} has elapsed without any traffic.
+         * <p>Updated by {@link ConsumerInvokerProxy#invoke(Request)} when the underlying
+         * stage completes with a non-null response and no throwable.</p>
          */
-        final AtomicInteger failureCount = new AtomicInteger(0);
+        final AtomicLong lastResponseTimeMs = new AtomicLong(System.currentTimeMillis());
         /**
-         * Whether a "stuck unavailable" warning has already been emitted for the current
-         * unavailability spell. Reset to {@code false} as soon as the proxy is observed
-         * available again, so a future incident produces a fresh warning.
+         * Number of RPCs currently in flight on this proxy. Incremented on
+         * {@link ConsumerInvokerProxy#invoke(Request)} entry and decremented on stage
+         * completion (success or failure). Read by the idle-scanner: if any RPC is in
+         * flight, eviction is skipped this tick to avoid racing with a request whose
+         * response is about to come back. Pure best-effort &mdash; under truly extreme
+         * timing the response can still arrive after {@link #close()} runs, but the
+         * counter dramatically narrows the window.
          */
-        final AtomicBoolean warnedStuckUnavailable = new AtomicBoolean(false);
+        final AtomicInteger inFlight = new AtomicInteger(0);
+        /**
+         * Single-shot guard used by the idle-scanner to claim "the right to close this
+         * proxy" exactly once. {@code compareAndSet(false, true)} succeeds for the first
+         * caller; subsequent calls (a concurrent shutdown, a duplicate scan, etc.) see
+         * {@code true} and back off &mdash; the proxy will be removed from the cache by
+         * the {@link RpcClient#closeFuture()} hook.
+         */
+        final AtomicBoolean closing = new AtomicBoolean(false);
 
         RpcClientProxy(RpcClient delegate) {
             this.delegate = delegate;
+        }
+
+        /**
+         * Refresh {@link #lastResponseTimeMs} to "now". Called from the response-completion
+         * path of {@link ConsumerInvokerProxy#invoke(Request)}. Skipped once the proxy has
+         * already been claimed for closing &mdash; the next request will rebuild a fresh
+         * proxy whose timestamp starts from the current wall-clock.
+         */
+        void markResponseReceived() {
+            if (closing.get()) {
+                return;
+            }
+            lastResponseTimeMs.set(System.currentTimeMillis());
         }
 
         @Override
