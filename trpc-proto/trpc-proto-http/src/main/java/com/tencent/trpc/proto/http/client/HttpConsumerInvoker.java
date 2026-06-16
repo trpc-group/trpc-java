@@ -44,12 +44,6 @@ import org.apache.http.protocol.HttpContext;
 
 /**
  * HTTP/1.1 protocol client invoker.
- *
- * <p>Each {@link #send(Request)} entry signals the underlying {@link HttpRpcClient} that it
- * is being used (drives the idle-eviction heuristic) and reports success / failure to drive
- * the consecutive-failure counter that flips the client to unavailable on sustained backend
- * outages. See {@link HttpRpcClient} for the cluster-side health observer that consumes these
- * signals.</p>
  */
 public class HttpConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
 
@@ -70,33 +64,18 @@ public class HttpConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
     @Override
     public Response send(Request request) throws Exception {
         HttpRpcClient httpRpcClient = (HttpRpcClient) client;
-        // Mark "used" before any work so even a failed request keeps the idle-eviction timer
-        // accurate (a failing client is still actively used and must not be reaped as orphan).
-        httpRpcClient.markUsed();
 
         HttpPost httpPost;
         try {
             httpPost = buildRequest(request);
         } catch (Exception ex) {
-            // buildRequest failure is a local programming error (URI / encoding / config).
-            // Count it as a failure for the consecutive-failure counter — sustained build
-            // failures should still surface via isAvailable().
-            httpRpcClient.markFailure();
             return RpcUtils.newResponse(request, null, ex);
         }
 
         CloseableHttpClient httpClient = httpRpcClient.getHttpClient();
         try (CloseableHttpResponse httpResponse = httpClient.execute(httpPost)) {
-            Response response = handleResponse(request, httpResponse);
-            if (response.getException() == null) {
-                httpRpcClient.markSuccess();
-            } else {
-                // Non-2xx surfaced as Response with biz exception; count toward eviction.
-                httpRpcClient.markFailure();
-            }
-            return response;
+            return handleResponse(request, httpResponse);
         } catch (Exception ex) {
-            httpRpcClient.markFailure();
             return RpcUtils.newResponse(request, null, ex);
         }
     }

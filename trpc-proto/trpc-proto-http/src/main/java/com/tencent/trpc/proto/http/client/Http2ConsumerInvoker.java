@@ -44,11 +44,6 @@ import org.apache.hc.core5.http.HttpStatus;
 
 /**
  * HTTP/2 protocol client invoker, supporting both h2 and http2c.
- *
- * <p>Each {@link #send(Request)} entry signals the underlying {@link Http2cRpcClient} that
- * it is being used (drives the idle-eviction heuristic) and reports success / failure to
- * drive the consecutive-failure counter that flips the client to unavailable on sustained
- * backend outages.</p>
  */
 public class Http2ConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
 
@@ -72,31 +67,20 @@ public class Http2ConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
     @Override
     public Response send(Request request) throws Exception {
         Http2cRpcClient http2cRpcClient = (Http2cRpcClient) client;
-        // Mark "used" before any work so even a failed request keeps the idle-eviction timer
-        // accurate (a failing client is still actively used and must not be reaped as orphan).
-        http2cRpcClient.markUsed();
 
         int requestTimeout = config.getBackendConfig().getRequestTimeout();
         SimpleHttpRequest simpleHttpRequest;
         try {
             simpleHttpRequest = buildRequest(request, requestTimeout);
         } catch (Exception ex) {
-            http2cRpcClient.markFailure();
             return RpcUtils.newResponse(request, null, ex);
         }
 
         try {
             SimpleHttpResponse simpleHttpResponse = execute(request, requestTimeout,
                     simpleHttpRequest, http2cRpcClient);
-            Response response = handleResponse(request, simpleHttpResponse);
-            if (response.getException() == null) {
-                http2cRpcClient.markSuccess();
-            } else {
-                http2cRpcClient.markFailure();
-            }
-            return response;
+            return handleResponse(request, simpleHttpResponse);
         } catch (Exception e) {
-            http2cRpcClient.markFailure();
             return RpcUtils.newResponse(request, null, e);
         }
 
@@ -164,40 +148,54 @@ public class Http2ConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
             SimpleHttpRequest simpleHttpRequest, Http2cRpcClient http2cRpcClient) throws Exception {
         CloseableHttpAsyncClient httpAsyncClient = http2cRpcClient.getHttpAsyncClient();
         Future<SimpleHttpResponse> httpResponseFuture = httpAsyncClient.execute(simpleHttpRequest,
-                new FutureCallback<SimpleHttpResponse>() {
-                    @Override
-                    public void completed(SimpleHttpResponse result) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug(result.getBodyText());
-                        }
-                    }
-
-                    @Override
-                    public void failed(Exception ex) {
-                        String msg = String
-                                .format("request has exception > %s ms, service=%s, "
-                                                + "method=%s, remoteAddr=%s, exception=%s",
-                                        requestTimeout,
-                                        request.getInvocation().getRpcServiceName(),
-                                        request.getInvocation().getRpcMethodName(),
-                                        request.getMeta().getRemoteAddress(),
-                                        ex.getMessage());
-                        logger.error(msg);
-                    }
-
-                    @Override
-                    public void cancelled() {
-                        String msg = String
-                                .format("request cancel > %s ms, service=%s, "
-                                                + "method=%s, remoteAddr=%s",
-                                        requestTimeout,
-                                        request.getInvocation().getRpcServiceName(),
-                                        request.getInvocation().getRpcMethodName(),
-                                        request.getMeta().getRemoteAddress());
-                        logger.error(msg);
-                    }
-                });
+                newResponseCallback(request, requestTimeout));
         return httpResponseFuture.get(requestTimeout, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Build the {@link FutureCallback} used to log the asynchronous request outcome. Extracted
+     * (package-private) from {@link #execute} so the completed / failed / cancelled logging
+     * branches can be unit-tested directly — the convenience {@code execute(SimpleHttpRequest,
+     * FutureCallback)} on {@link CloseableHttpAsyncClient} is {@code final} and cannot be stubbed.
+     *
+     * @param request the originating TRPC request (used only for log context)
+     * @param requestTimeout the request timeout in milliseconds (used only for log context)
+     * @return a logging-only callback; it never mutates request/response state
+     */
+    FutureCallback<SimpleHttpResponse> newResponseCallback(Request request, int requestTimeout) {
+        return new FutureCallback<SimpleHttpResponse>() {
+            @Override
+            public void completed(SimpleHttpResponse result) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(result.getBodyText());
+                }
+            }
+
+            @Override
+            public void failed(Exception ex) {
+                String msg = String
+                        .format("request has exception > %s ms, service=%s, "
+                                        + "method=%s, remoteAddr=%s, exception=%s",
+                                requestTimeout,
+                                request.getInvocation().getRpcServiceName(),
+                                request.getInvocation().getRpcMethodName(),
+                                request.getMeta().getRemoteAddress(),
+                                ex.getMessage());
+                logger.error(msg);
+            }
+
+            @Override
+            public void cancelled() {
+                String msg = String
+                        .format("request cancel > %s ms, service=%s, "
+                                        + "method=%s, remoteAddr=%s",
+                                requestTimeout,
+                                request.getInvocation().getRpcServiceName(),
+                                request.getInvocation().getRpcMethodName(),
+                                request.getMeta().getRemoteAddress());
+                logger.error(msg);
+            }
+        };
     }
 
     /**

@@ -16,7 +16,6 @@ import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.proto.http.client.Http2RpcClient;
 import com.tencent.trpc.proto.http.client.Http2cRpcClient;
 import com.tencent.trpc.proto.http.client.HttpRpcClient;
-import com.tencent.trpc.proto.http.client.HttpsRpcClient;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
@@ -25,25 +24,20 @@ import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.protocol.HttpContext;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
- * Pure unit tests for the long-connection extensions on the HTTP RpcClient hierarchy:
- * {@code markUsed}, the overridden {@code isAvailable}, and the idle-threshold heuristic.
+ * Unit tests for the HTTP RpcClient hierarchy long-connection setup: open / close lifecycle,
+ * the capped keep-alive strategy and doOpen failure surfacing.
  *
- * <p>No Jetty server is started; we manipulate the internal {@code lastUsedNanos} field via
- * reflection to drive the idle/active branches.</p>
+ * <p>No Jetty server is started.</p>
  */
 public class HttpRpcClientLongLinkTest {
 
-    private static final long ELEVEN_MINUTES_NANOS = java.util.concurrent.TimeUnit.MINUTES.toNanos(11);
-
     /**
-     * HttpRpcClient.isAvailable returns false when not started (lifecycle.isStarted() == false),
-     * regardless of lastUsedNanos.
+     * HttpRpcClient.isAvailable returns false when not started (lifecycle.isStarted() == false).
      */
     @Test
     public void testHttpRpcClientNotAvailableBeforeOpen() {
@@ -54,43 +48,6 @@ public class HttpRpcClientLongLinkTest {
     }
 
     /**
-     * HttpRpcClient.isAvailable returns true when started AND recently used.
-     */
-    @Test
-    public void testHttpRpcClientAvailableWhenStartedAndFresh() {
-        ProtocolConfig pc = newProtocolConfig();
-        HttpRpcClient client = new HttpRpcClient(pc);
-        client.open();
-        try {
-            client.markUsed(); // refresh
-            Assert.assertTrue(client.isAvailable());
-        } finally {
-            client.close();
-        }
-    }
-
-    /**
-     * HttpRpcClient.isAvailable returns false when started but idle > 10 min.
-     */
-    @Test
-    public void testHttpRpcClientNotAvailableWhenIdleTooLong() throws Exception {
-        ProtocolConfig pc = newProtocolConfig();
-        HttpRpcClient client = new HttpRpcClient(pc);
-        client.open();
-        try {
-            // Force lastUsedNanos to "11 minutes ago".
-            setField(client, "lastUsedNanos", System.nanoTime() - ELEVEN_MINUTES_NANOS);
-            Assert.assertFalse(client.isAvailable());
-
-            // Recovering via markUsed restores availability.
-            client.markUsed();
-            Assert.assertTrue(client.isAvailable());
-        } finally {
-            client.close();
-        }
-    }
-
-    /**
      * Http2cRpcClient mirrors the same logic.
      */
     @Test
@@ -98,34 +55,6 @@ public class HttpRpcClientLongLinkTest {
         ProtocolConfig pc = newProtocolConfig();
         Http2cRpcClient client = new Http2cRpcClient(pc);
         Assert.assertFalse(client.isAvailable());
-    }
-
-    @Test
-    public void testHttp2cRpcClientAvailableWhenStartedAndFresh() {
-        ProtocolConfig pc = newProtocolConfig();
-        Http2cRpcClient client = new Http2cRpcClient(pc);
-        client.open();
-        try {
-            client.markUsed();
-            Assert.assertTrue(client.isAvailable());
-        } finally {
-            client.close();
-        }
-    }
-
-    @Test
-    public void testHttp2cRpcClientNotAvailableWhenIdleTooLong() throws Exception {
-        ProtocolConfig pc = newProtocolConfig();
-        Http2cRpcClient client = new Http2cRpcClient(pc);
-        client.open();
-        try {
-            setField(client, "lastUsedNanos", System.nanoTime() - ELEVEN_MINUTES_NANOS);
-            Assert.assertFalse(client.isAvailable());
-            client.markUsed();
-            Assert.assertTrue(client.isAvailable());
-        } finally {
-            client.close();
-        }
     }
 
     /**
@@ -155,133 +84,6 @@ public class HttpRpcClientLongLinkTest {
         client.close();
         Assert.assertTrue(client.isClosed());
         client.close();
-    }
-
-    /**
-     * Http2RpcClient inherits markUsed/isAvailable from Http2cRpcClient. We don't need a real
-     * TLS context — we only verify the inherited methods behave the same on the subclass.
-     * Use reflection to flip lifecycle state to STARTED so that super.isAvailable() returns true.
-     */
-    @Test
-    public void testHttp2RpcClientInheritsIdleHeuristic() throws Exception {
-        ProtocolConfig pc = newProtocolConfig();
-        Http2RpcClient client = new Http2RpcClient(pc);
-        forceLifecycleStarted(client);
-        try {
-            client.markUsed();
-            Assert.assertTrue(client.isAvailable());
-            setField(client, "lastUsedNanos", System.nanoTime() - ELEVEN_MINUTES_NANOS);
-            Assert.assertFalse(client.isAvailable());
-        } finally {
-            forceLifecycleClosed(client);
-        }
-    }
-
-    /**
-     * HttpsRpcClient extends Http2RpcClient. Same inheritance check.
-     */
-    @Test
-    public void testHttpsRpcClientInheritsIdleHeuristic() throws Exception {
-        ProtocolConfig pc = newProtocolConfig();
-        HttpsRpcClient client = new HttpsRpcClient(pc);
-        forceLifecycleStarted(client);
-        try {
-            client.markUsed();
-            Assert.assertTrue(client.isAvailable());
-            setField(client, "lastUsedNanos", System.nanoTime() - ELEVEN_MINUTES_NANOS);
-            Assert.assertFalse(client.isAvailable());
-        } finally {
-            forceLifecycleClosed(client);
-        }
-    }
-
-    /**
-     * Sustained backend failure: consecutive markFailure() crossing FAILURE_UNAVAILABLE_THRESHOLD
-     * flips isAvailable() to false even while lastUsedNanos is fresh.
-     */
-    @Test
-    public void testHttpRpcClientUnavailableOnConsecutiveFailures() {
-        final ProtocolConfig pc = newProtocolConfig();
-        HttpRpcClient client = new HttpRpcClient(pc);
-        client.open();
-        try {
-            client.markUsed();
-            for (int i = 0; i < 49; i++) {
-                client.markFailure();
-            }
-            // 49 < threshold (50): still available.
-            Assert.assertTrue(client.isAvailable());
-            client.markFailure(); // 50 — flip
-            Assert.assertFalse(client.isAvailable());
-            // markSuccess resets counter — recovers immediately.
-            client.markSuccess();
-            Assert.assertTrue(client.isAvailable());
-            Assert.assertEquals(0, client.getConsecutiveFailures());
-        } finally {
-            client.close();
-        }
-    }
-
-    /**
-     * Same eviction-on-consecutive-failure semantics on the H2 path.
-     */
-    @Test
-    public void testHttp2cRpcClientUnavailableOnConsecutiveFailures() {
-        final ProtocolConfig pc = newProtocolConfig();
-        Http2cRpcClient client = new Http2cRpcClient(pc);
-        client.open();
-        try {
-            client.markUsed();
-            for (int i = 0; i < 49; i++) {
-                client.markFailure();
-            }
-            Assert.assertTrue(client.isAvailable());
-            client.markFailure();
-            Assert.assertFalse(client.isAvailable());
-            client.markSuccess();
-            Assert.assertTrue(client.isAvailable());
-            Assert.assertEquals(0, client.getConsecutiveFailures());
-        } finally {
-            client.close();
-        }
-    }
-
-    /**
-     * Concurrent markFailure / markSuccess from many business threads must converge to a
-     * deterministic terminal state — the AtomicInteger contract guarantees no lost updates.
-     */
-    @Test
-    public void testHttpRpcClientConsecutiveFailureCounterIsThreadSafe() throws Exception {
-        final ProtocolConfig pc = newProtocolConfig();
-        final HttpRpcClient client = new HttpRpcClient(pc);
-        client.open();
-        try {
-            final int threads = 32;
-            final int incrementsPerThread = 1000;
-            java.util.concurrent.CountDownLatch start = new java.util.concurrent.CountDownLatch(1);
-            java.util.concurrent.CountDownLatch done = new java.util.concurrent.CountDownLatch(threads);
-            for (int i = 0; i < threads; i++) {
-                new Thread(() -> {
-                    try {
-                        start.await();
-                        for (int j = 0; j < incrementsPerThread; j++) {
-                            client.markFailure();
-                        }
-                    } catch (InterruptedException ignore) {
-                        Thread.currentThread().interrupt();
-                    } finally {
-                        done.countDown();
-                    }
-                }).start();
-            }
-            start.countDown();
-            Assert.assertTrue(done.await(10, java.util.concurrent.TimeUnit.SECONDS));
-            Assert.assertEquals(threads * incrementsPerThread, client.getConsecutiveFailures());
-            client.markSuccess();
-            Assert.assertEquals(0, client.getConsecutiveFailures());
-        } finally {
-            client.close();
-        }
     }
 
     /**
@@ -448,33 +250,6 @@ public class HttpRpcClientLongLinkTest {
         pc.setNetwork("tcp");
         pc.setDefault();
         return pc;
-    }
-
-    /**
-     * Bypass real doOpen — flip the embedded LifecycleObj to STARTED so isAvailable's
-     * super.isAvailable() check passes without spinning up actual HTTP infrastructure.
-     */
-    private static void forceLifecycleStarted(Object client) throws Exception {
-        Field lf = findField(client.getClass(), "lifecycleObj");
-        lf.setAccessible(true);
-        Object lifecycle = lf.get(client);
-        Field state = findField(lifecycle.getClass(), "state");
-        state.setAccessible(true);
-        // LifecycleState enum: STARTED ordinal lookup via reflection (avoid hard dependency).
-        Class<?> stateEnum = state.getType();
-        Object started = stateEnum.getMethod("valueOf", String.class).invoke(null, "STARTED");
-        state.set(lifecycle, started);
-    }
-
-    private static void forceLifecycleClosed(Object client) throws Exception {
-        Field lf = findField(client.getClass(), "lifecycleObj");
-        lf.setAccessible(true);
-        Object lifecycle = lf.get(client);
-        Field state = findField(lifecycle.getClass(), "state");
-        state.setAccessible(true);
-        Class<?> stateEnum = state.getType();
-        Object stopped = stateEnum.getMethod("valueOf", String.class).invoke(null, "STOPPED");
-        state.set(lifecycle, stopped);
     }
 
     private static void setField(Object target, String fieldName, Object value) throws Exception {

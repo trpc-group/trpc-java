@@ -11,6 +11,7 @@
 
 package com.tencent.trpc.proto.http.client;
 
+import static com.tencent.trpc.proto.http.common.HttpConstants.VALIDATE_AFTER_INACTIVITY_MS;
 import static com.tencent.trpc.transport.http.common.Constants.KEYSTORE_PASS;
 import static com.tencent.trpc.transport.http.common.Constants.KEYSTORE_PATH;
 
@@ -21,6 +22,7 @@ import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import java.io.File;
 import javax.net.ssl.SSLContext;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
@@ -32,22 +34,16 @@ import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.hc.core5.util.TimeValue;
 
 /**
- * HTTP/2 (TLS) protocol client. Inherits long-connection state ({@code lastUsedNanos},
- * {@code consecutiveFailures}, {@link #markUsed}, {@link #markSuccess}, {@link #markFailure}
- * and the overridden {@link #isAvailable()}) from {@link Http2cRpcClient}; the differences
- * are the TLS handshake and the explicit {@link HttpVersionPolicy} negotiation.
+ * HTTP/2 (TLS) protocol client. Inherits the long-connection connection-pool setup from
+ * {@link Http2cRpcClient}; the differences are the TLS handshake and the explicit
+ * {@link HttpVersionPolicy} negotiation.
  *
  * <p>The connection manager is sized and tuned identically to {@link Http2cRpcClient}: pool
- * limits derived from {@code maxConns}, idle / expired eviction, SO_KEEPALIVE and a hard
- * connection TTL.</p>
+ * limits derived from {@code maxConns}, idle / expired eviction and SO_KEEPALIVE.</p>
  */
 public class Http2RpcClient extends Http2cRpcClient {
 
     private static final Logger logger = LoggerFactory.getLogger(Http2RpcClient.class);
-
-    private static final int VALIDATE_AFTER_INACTIVITY_MS = 2000;
-    private static final long EVICT_IDLE_CONNECTIONS_SECONDS = 60L;
-    private static final int CONNECTION_TTL_MINUTES = 10;
 
     /**
      * The protocol type used for interaction with the server, such as HTTP1, H2, or protocol negotiation.
@@ -84,20 +80,19 @@ public class Http2RpcClient extends Http2cRpcClient {
                     .setMaxConnPerRoute(maxConns)
                     .setConnPoolPolicy(PoolReusePolicy.LIFO)
                     .setValidateAfterInactivity(TimeValue.ofMilliseconds(VALIDATE_AFTER_INACTIVITY_MS))
-                    .setConnectionTimeToLive(TimeValue.ofMinutes(CONNECTION_TTL_MINUTES))
                     .build();
 
             // 3. Configure the client to force HTTPS protocol to use HTTP1 communication and H2 protocol
             // to use H2 communication.
-            httpAsyncClient = HttpAsyncClients.custom()
+            HttpAsyncClientBuilder builder = HttpAsyncClients.custom()
                     .setVersionPolicy(this.clientVersionPolicy)
                     .setConnectionManager(cm)
                     .setIOReactorConfig(IOReactorConfig.custom()
                             .setSoKeepAlive(true)
                             .build())
-                    .evictExpiredConnections()
-                    .evictIdleConnections(TimeValue.ofSeconds(EVICT_IDLE_CONNECTIONS_SECONDS))
-                    .build();
+                    .evictExpiredConnections();
+            applyIdleEviction(builder);
+            httpAsyncClient = builder.build();
             // 4. Start the client.
             httpAsyncClient.start();
         } catch (Exception e) {

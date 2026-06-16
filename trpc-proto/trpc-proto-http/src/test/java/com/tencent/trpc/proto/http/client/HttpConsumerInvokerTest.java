@@ -321,6 +321,24 @@ public class HttpConsumerInvokerTest {
         assertEquals("hello", response.getValue());
     }
 
+    /**
+     * Verifies that a failure while building the HTTP request (here: a non-numeric
+     * {@code connection_request_timeout} makes {@code Integer.parseInt} throw inside
+     * {@code buildRequest}) is caught by {@link HttpConsumerInvoker#send(Request)} and surfaced
+     * as a response carrying the exception rather than propagating out.
+     */
+    @Test
+    public void testSendBuildRequestFailureReturnsErrorResponse() throws Exception {
+        java.util.Map<String, Object> extMap = new HashMap<>();
+        extMap.put(com.tencent.trpc.proto.http.common.HttpConstants.CONNECTION_REQUEST_TIMEOUT,
+                "not-a-number");
+        when(mockBackendConfig.getExtMap()).thenReturn(extMap);
+        Request request = buildMockRequest();
+        Response response = invoker.send(request);
+        assertNotNull(response);
+        assertNotNull(response.getException());
+    }
+
     // ==================== Helper methods ====================
 
     /**
