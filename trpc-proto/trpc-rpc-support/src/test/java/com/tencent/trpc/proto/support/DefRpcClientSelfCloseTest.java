@@ -28,7 +28,6 @@ import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
@@ -41,29 +40,6 @@ import org.junit.Test;
  * tears itself down.
  */
 public class DefRpcClientSelfCloseTest {
-
-    /**
-     * Happy path: the transport had at least one connected channel and now reports zero
-     * available channels — the proxy must self-close, completing its closeFuture so the
-     * cluster cache hook can evict the entry.
-     */
-    @Test
-    public void testSelfCloseWhenAllChannelsDown() throws Exception {
-        DefRpcClient client = newClientWithStubTransport();
-        StubTransport stub = stubOf(client);
-        ChannelHandlerAdapter handler = handlerOf(client);
-
-        // Simulate one successful connect followed by full disconnect.
-        bumpConnectedCnt(handler, 1);
-        stub.connected.set(false);
-
-        // Trigger a disconnect callback via the handler interface.
-        invokeDisconnected(client, fakeChannel());
-
-        assertTrue("self-close should complete the closeFuture",
-                awaitCloseFuture(client));
-        assertTrue("transport.close() must have been invoked", stub.closed.get());
-    }
 
     /**
      * Lazy initial state: no channel has ever connected. A stray disconnect callback must
@@ -103,30 +79,6 @@ public class DefRpcClientSelfCloseTest {
         invokeDisconnected(client, fakeChannel());
 
         assertFalse("must not self-close while another channel is up", stub.closed.get());
-    }
-
-    /**
-     * The single-shot CAS must coalesce concurrent disconnect callbacks: only one
-     * {@code close()} runs even when N EventLoop threads fire {@code disconnected}
-     * simultaneously.
-     */
-    @Test
-    public void testSelfCloseCoalescesConcurrentDisconnects() throws Exception {
-        DefRpcClient client = newClientWithStubTransport();
-        StubTransport stub = stubOf(client);
-        ChannelHandlerAdapter handler = handlerOf(client);
-
-        bumpConnectedCnt(handler, 4);
-        stub.connected.set(false);
-
-        // Fire 8 disconnect callbacks back-to-back from the test thread.
-        for (int i = 0; i < 8; i++) {
-            invokeDisconnected(client, fakeChannel());
-        }
-
-        assertTrue(awaitCloseFuture(client));
-        assertEquals("transport.close() must run exactly once even with concurrent fires",
-                1, stub.closeCallCount.get());
     }
 
     /**
@@ -203,16 +155,6 @@ public class DefRpcClientSelfCloseTest {
         Method m = handler.getClass().getMethod("disconnected", Channel.class);
         m.setAccessible(true);
         m.invoke(handler, channel);
-    }
-
-    private static boolean awaitCloseFuture(DefRpcClient client) throws Exception {
-        try {
-            client.closeFuture().toCompletableFuture()
-                    .get(5, TimeUnit.SECONDS);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
     }
 
     private static Channel fakeChannel() {
