@@ -102,6 +102,27 @@ public abstract class AbstractProtocolSchema {
     private Integer idleTimeout;
 
     /**
+     * TCP keepalive idle in seconds (Linux {@code TCP_KEEPIDLE}). Effective only when
+     * {@code ioMode=epoll} on Linux. Maps to yaml key {@code tcp_keep_alive_idle}.
+     * Value 0 leaves the OS default in place.
+     */
+    private Integer tcpKeepAliveIdle;
+
+    /**
+     * TCP keepalive probe interval in seconds (Linux {@code TCP_KEEPINTVL}). Effective only
+     * when {@code ioMode=epoll} on Linux. Maps to yaml key {@code tcp_keep_alive_intvl}.
+     * Value 0 leaves the OS default in place.
+     */
+    private Integer tcpKeepAliveIntvl;
+
+    /**
+     * TCP keepalive probe count (Linux {@code TCP_KEEPCNT}). Effective only when
+     * {@code ioMode=epoll} on Linux. Maps to yaml key {@code tcp_keep_alive_cnt}. Value 0
+     * leaves the OS default in place.
+     */
+    private Integer tcpKeepAliveCnt;
+
+    /**
      * Lazy-initialization
      */
     private Boolean lazyinit;
@@ -267,6 +288,30 @@ public abstract class AbstractProtocolSchema {
 
     public void setIdleTimeout(Integer idleTimeout) {
         this.idleTimeout = idleTimeout;
+    }
+
+    public Integer getTcpKeepAliveIdle() {
+        return tcpKeepAliveIdle;
+    }
+
+    public void setTcpKeepAliveIdle(Integer tcpKeepAliveIdle) {
+        this.tcpKeepAliveIdle = tcpKeepAliveIdle;
+    }
+
+    public Integer getTcpKeepAliveIntvl() {
+        return tcpKeepAliveIntvl;
+    }
+
+    public void setTcpKeepAliveIntvl(Integer tcpKeepAliveIntvl) {
+        this.tcpKeepAliveIntvl = tcpKeepAliveIntvl;
+    }
+
+    public Integer getTcpKeepAliveCnt() {
+        return tcpKeepAliveCnt;
+    }
+
+    public void setTcpKeepAliveCnt(Integer tcpKeepAliveCnt) {
+        this.tcpKeepAliveCnt = tcpKeepAliveCnt;
     }
 
     public Boolean getLazyinit() {

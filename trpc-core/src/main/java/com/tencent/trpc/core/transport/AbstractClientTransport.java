@@ -11,7 +11,6 @@
 
 package com.tencent.trpc.core.transport;
 
-import com.google.common.collect.Lists;
 import com.tencent.trpc.core.common.LifecycleBase;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.exception.LifecycleException;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -64,7 +64,11 @@ public abstract class AbstractClientTransport implements ClientTransport {
      */
     protected AtomicInteger channelIdx = new AtomicInteger(0);
     /**
-     * List of channels.
+     * Channel pool. Backed by {@link CopyOnWriteArrayList} so that the slot publication done by
+     * {@link #ensureChannelActive} (under {@link #connLock}) is visible to concurrent readers in
+     * {@link #getChannel0} with volatile semantics, eliminating the data race that an
+     * {@link java.util.ArrayList} would have. Size is bounded by {@code connsPerAddr}; writes
+     * are infrequent (slot rebuild on disconnect) so the COW copy cost is negligible.
      */
     protected List<ChannelFutureItem> channels;
     /**
@@ -80,7 +84,7 @@ public abstract class AbstractClientTransport implements ClientTransport {
         this.config = Objects.requireNonNull(config, "config is null");
         this.handler = Objects.requireNonNull(handler, "handler is null");
         this.codec = clientCodec;
-        this.channels = Lists.newArrayListWithExpectedSize(config.getConnsPerAddr());
+        this.channels = new CopyOnWriteArrayList<>();
     }
 
     /**
@@ -253,21 +257,93 @@ public abstract class AbstractClientTransport implements ClientTransport {
         ChannelFutureItem curChannelItem = channels.get(chIndex);
         // initiate a new connection creation action when the connection is not yet established or the connection
         // is broken
-        boolean futureIsDoneAndNotConnected =
-                !curChannelItem.isAvailable() && !curChannelItem.isConnecting();
-        // not available and not establishing a connection
-        if (futureIsDoneAndNotConnected || curChannelItem.isNotYetConnect()) {
+        if (!needsReconnect(curChannelItem)) {
+            return;
+        }
+        connLock.lock();
+        try {
+            // Double-check inside the lock: another thread may have already replaced this slot
+            // with a fresh ChannelFutureItem (either still connecting or already connected).
+            // Without this check, a thundering-herd of requests arriving right after a
+            // disconnect would each rebuild the slot, producing a connect/disconnect storm
+            // against the peer and a burst of short-lived TIME_WAIT sockets.
+            ChannelFutureItem latest = channels.get(chIndex);
+            if (!needsReconnect(latest)) {
+                return;
+            }
+            channels.set(chIndex, new ChannelFutureItem(createChannel().toCompletableFuture(), config));
+            try {
+                latest.close();
+            } catch (Exception ex) {
+                logger.error("close " + latest + " exception", ex);
+            }
+        } finally {
+            connLock.unlock();
+        }
+    }
+
+    /**
+     * A slot needs a fresh connection when it is either uninitialized (lazy-init not yet
+     * triggered) or its previous future has finished without producing a connected channel.
+     * A slot whose future is still in flight ({@code isConnecting()}) is left alone — the
+     * in-flight {@code bootstrap.connect} will publish the result into the same item.
+     */
+    private static boolean needsReconnect(ChannelFutureItem item) {
+        if (item.isNotYetConnect()) {
+            return true;
+        }
+        return !item.isAvailable() && !item.isConnecting();
+    }
+
+    /**
+     * Invalidate the slot holding {@code target}: replace it with a blank placeholder
+     * ({@code channelFuture==null}, i.e. {@code isNotYetConnect=true}) so the next request
+     * unconditionally goes through {@link #ensureChannelActive} and rebuilds a fresh
+     * connection. The previous item is closed best-effort.
+     * <p>Called by the client-side idle handler so that <em>before</em> the actual
+     * {@code channel.close()} runs (asynchronously in the EventLoop), the request thread
+     * already sees the slot as needing a reconnect — eliminating the "request lands on a
+     * channel that is about to be closed" race window.</p>
+     */
+    @Override
+    public void invalidateChannel(Channel target) {
+        if (target == null || channels == null || channels.isEmpty()) {
+            return;
+        }
+        // The list is bounded by connsPerAddr; a linear scan is fine.
+        for (int i = 0; i < channels.size(); i++) {
+            ChannelFutureItem item = channels.get(i);
+            if (item == null || item.channelFuture == null || !item.channelFuture.isDone()
+                    || item.channelFuture.isCompletedExceptionally()) {
+                continue;
+            }
+            Channel ch;
+            try {
+                ch = item.channelFuture.join();
+            } catch (Throwable ignore) {
+                continue;
+            }
+            if (ch != target) {
+                continue;
+            }
             connLock.lock();
             try {
-                channels.set(chIndex, new ChannelFutureItem(createChannel().toCompletableFuture(), config));
+                // Re-read under the lock to avoid clobbering a slot another thread already
+                // refreshed (e.g. concurrent reconnect).
+                ChannelFutureItem latest = channels.get(i);
+                if (latest != item) {
+                    return;
+                }
+                channels.set(i, new ChannelFutureItem(null, config));
                 try {
-                    curChannelItem.close();
+                    item.close();
                 } catch (Exception ex) {
-                    logger.error("close " + curChannelItem + " exception", ex);
+                    logger.error("close invalidated " + item + " exception", ex);
                 }
             } finally {
                 connLock.unlock();
             }
+            return;
         }
     }
 

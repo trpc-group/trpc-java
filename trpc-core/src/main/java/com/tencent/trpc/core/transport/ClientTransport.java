@@ -63,6 +63,22 @@ public interface ClientTransport {
     ChannelHandler getChannelHandler();
 
     /**
+     * Mark the slot currently holding {@code channel} as invalidated so that the very next
+     * request observes "needs reconnect" instead of routing onto the about-to-be-closed
+     * channel. The default no-op keeps the contract optional for transports that do not
+     * support a slot/pool model.
+     * <p>This is the hook used by client-side idle handlers: when the idle handler decides to
+     * tear down a long-idle channel, it calls {@code invalidateChannel} <b>before</b>
+     * {@code channel.close()} so that the request-thread side cannot read the stale slot any
+     * longer. The actual TCP close happens asynchronously in the EventLoop afterwards.</p>
+     *
+     * @param channel the channel about to be closed; may be {@code null} (no-op).
+     */
+    default void invalidateChannel(Channel channel) {
+        // default no-op
+    }
+
+    /**
      * Get the remote address.
      */
     InetSocketAddress getRemoteAddress();

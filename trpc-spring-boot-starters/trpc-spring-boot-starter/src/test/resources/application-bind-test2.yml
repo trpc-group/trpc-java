@@ -82,6 +82,9 @@ trpc:
     send_buffer: 10
     receive_buffer: 20
     idle_timeout: 200
+    tcp_keep_alive_idle: 25
+    tcp_keep_alive_intvl: 8
+    tcp_keep_alive_cnt: 4
     lazyinit: false
     conns_per_addr: 5
     conn_timeout: 2000

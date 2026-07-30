@@ -121,6 +121,9 @@ public class BindTest2 {
         Assert.assertEquals(properties.getClient().getSendBuffer(), Integer.valueOf(10));
         Assert.assertEquals(properties.getClient().getReceiveBuffer(), Integer.valueOf(20));
         Assert.assertEquals(properties.getClient().getIdleTimeout(), Integer.valueOf(200));
+        Assert.assertEquals(properties.getClient().getTcpKeepAliveIdle(), Integer.valueOf(25));
+        Assert.assertEquals(properties.getClient().getTcpKeepAliveIntvl(), Integer.valueOf(8));
+        Assert.assertEquals(properties.getClient().getTcpKeepAliveCnt(), Integer.valueOf(4));
         Assert.assertEquals(properties.getClient().getLazyinit(), false);
         Assert.assertEquals(properties.getClient().getConnsPerAddr(), Integer.valueOf(5));
         Assert.assertEquals(properties.getClient().getConnTimeout(), Integer.valueOf(2000));

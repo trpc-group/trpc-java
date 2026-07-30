@@ -117,21 +117,24 @@ public class NettyTcpServerTransport extends AbstractServerTransport {
         }
         final boolean flushConsolidationSwitch = config.getFlushConsolidation();
         final Integer explicitFlushAfterFlushes = config.getExplicitFlushAfterFlushes();
+        // Resolve the server idle-close threshold (milliseconds). A non-positive (or null)
+        // idleTimeout disables the idle handler entirely: the server will NOT install
+        // IdleStateHandler and never proactively closes a client connection due to idle.
+        final long serverIdleTimeoutMills = resolveIdleTimeoutMills();
 
         bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ChannelPipeline p = ch.pipeline();
-                IdleStateHandler idleHandler =
-                        new IdleStateHandler(0, 0, config.getIdleTimeout(), MILLISECONDS);
-                if (codec == null) {
-                    p.addLast("server-idle", idleHandler);
-                } else {
+                if (codec != null) {
                     NettyCodecAdapter nettyCodec = NettyCodecAdapter
                             .createTcpCodecAdapter(codec, config);
                     p.addLast("encode", nettyCodec.getEncoder())//
-                            .addLast("decode", nettyCodec.getDecoder())//
-                            .addLast("server-idle", idleHandler);
+                            .addLast("decode", nettyCodec.getDecoder());
+                }
+                if (serverIdleTimeoutMills > 0) {
+                    p.addLast("server-idle",
+                            new IdleStateHandler(0, 0, serverIdleTimeoutMills, MILLISECONDS));
                 }
                 if (flushConsolidationSwitch) {
                     p.addLast("flushConsolidationHandlers",
@@ -187,6 +190,20 @@ public class NettyTcpServerTransport extends AbstractServerTransport {
 
     private boolean canMultiOccupyPort() {
         return Epoll.isAvailable() && config.useEpoll() && config.getReusePort();
+    }
+
+    /**
+     * Resolve the server-side idle-close threshold (milliseconds). A {@code null} or
+     * non-positive {@code idleTimeout} configuration returns {@code 0}, which disables the
+     * idle handler entirely: the server never proactively closes a client connection due to
+     * idle. This also guards against auto-unboxing NPE when {@code idleTimeout} is null.
+     */
+    private long resolveIdleTimeoutMills() {
+        Integer raw = config.getIdleTimeout();
+        if (raw == null || raw <= 0) {
+            return 0L;
+        }
+        return raw.longValue();
     }
 
     @Override

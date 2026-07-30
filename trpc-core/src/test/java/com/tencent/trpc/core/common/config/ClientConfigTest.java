@@ -38,7 +38,7 @@ public class ClientConfigTest {
         assertEquals(16384, config.getSendBuffer());
         assertEquals(180000, config.getIdleTimeout().intValue());
         assertEquals(false, config.isLazyinit());
-        assertEquals(2, config.getConnsPerAddr());
+        assertEquals(4, config.getConnsPerAddr());
         assertEquals(1000, config.getConnTimeout());
         assertEquals(true, config.isIoThreadGroupShare());
         assertEquals(Constants.DEFAULT_IO_THREADS, config.getIoThreads());
@@ -141,7 +141,7 @@ public class ClientConfigTest {
         assertEquals(16384, config.getSendBuffer());
         assertEquals(180000, config.getIdleTimeout().intValue());
         assertEquals(false, config.isLazyinit());
-        assertEquals(2, config.getConnsPerAddr());
+        assertEquals(4, config.getConnsPerAddr());
         assertEquals(1000, config.getConnTimeout());
         assertEquals(1000, config.getRequestTimeout());
         assertTrue(config.isSetDefault());
@@ -157,7 +157,7 @@ public class ClientConfigTest {
         assertEquals(16384, backendConfig.getSendBuffer());
         assertEquals(180000, backendConfig.getIdleTimeout().intValue());
         assertEquals(false, backendConfig.isLazyinit());
-        assertEquals(2, backendConfig.getConnsPerAddr());
+        assertEquals(4, backendConfig.getConnsPerAddr());
         assertEquals(1000, backendConfig.getConnTimeout());
         assertEquals(1000, backendConfig.getRequestTimeout());
         assertTrue(backendConfig.isSetDefault());

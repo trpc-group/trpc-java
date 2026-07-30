@@ -208,6 +208,24 @@ public class BaseProtocolConfigTest {
     }
 
     @Test
+    public void testTcpKeepAliveIdle() {
+        bpc.setTcpKeepAliveIdle(45);
+        Assert.assertEquals(45, bpc.getTcpKeepAliveIdle().intValue());
+    }
+
+    @Test
+    public void testTcpKeepAliveIntvl() {
+        bpc.setTcpKeepAliveIntvl(15);
+        Assert.assertEquals(15, bpc.getTcpKeepAliveIntvl().intValue());
+    }
+
+    @Test
+    public void testTcpKeepAliveCnt() {
+        bpc.setTcpKeepAliveCnt(5);
+        Assert.assertEquals(5, bpc.getTcpKeepAliveCnt().intValue());
+    }
+
+    @Test
     public void testGetLazyinit() {
         Assert.assertTrue(bpc.getLazyinit());
     }
