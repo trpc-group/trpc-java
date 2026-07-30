@@ -20,6 +20,8 @@ import com.tencent.trpc.core.utils.NetUtils;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -118,6 +120,21 @@ public class NettyServerHandler extends ChannelDuplexHandler {
         } finally {
             NettyChannelManager.removeChannelIfDisconnected(ctx.channel());
         }
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            NettyChannel channel = NettyChannelManager.getOrAddChannel(ctx.channel(), config);
+            try {
+                IdleState state = ((IdleStateEvent) evt).state();
+                logger.warn("idle event[{}] trigger, close channel:{}", state, channel);
+                channel.close();
+            } finally {
+                NettyChannelManager.removeChannelIfDisconnected(ctx.channel());
+            }
+        }
+        super.userEventTriggered(ctx, evt);
     }
 
     public ConcurrentMap<String, Channel> getChannels() {
