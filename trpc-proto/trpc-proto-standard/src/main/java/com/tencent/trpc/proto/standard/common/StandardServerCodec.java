@@ -13,6 +13,8 @@ package com.tencent.trpc.proto.standard.common;
 
 import static com.tencent.trpc.core.rpc.RpcContextValueKeys.SERVER_SIGNATURE_VERIFY_RESULT_KEY;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.protobuf.ByteString;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.compressor.spi.Compressor;
@@ -41,9 +43,9 @@ import com.tencent.trpc.proto.standard.common.TRPCProtocol.ResponseProtocol;
 import com.tencent.trpc.proto.standard.common.TRPCProtocol.ResponseProtocol.Builder;
 import com.tencent.trpc.proto.standard.common.TRPCProtocol.TrpcCallType;
 import com.tencent.trpc.proto.standard.common.TRPCProtocol.TrpcMessageType;
-import java.util.Map;
+import java.time.Duration;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -52,19 +54,100 @@ import org.apache.commons.lang3.StringUtils;
 public class StandardServerCodec extends ServerCodec {
 
     /**
-     * Remotely call the cache of services and methods to avoid string cutting operations during decoding
+     * The max entry number of the decoding caches, the entries will be evicted when it is exceeded.
      */
-    private static final Map<String, String[]> FUNC_INFO_CACHE = new ConcurrentHashMap<>();
+    private static final int CACHE_MAX_SIZE = 10000;
+
+    /**
+     * The initial capacity of the decoding caches.
+     */
+    private static final int CACHE_INITIAL_CAPACITY = 64;
+
+    /**
+     * The expire time(in minutes) after the last access of a decoding cache entry.
+     */
+    private static final int CACHE_EXPIRE_MINUTES = 60;
+
+    /**
+     * The max length of the cache key, the key longer than it will never be cached, so that a few oversized
+     * attacker-controlled keys can not occupy too much memory.
+     */
+    private static final int CACHE_KEY_MAX_LENGTH = 1024;
+
+    /**
+     * The separator of the func of the request head, whose format is {@code /serviceName/methodName}.
+     */
+    private static final String FUNC_SEPARATOR = "/";
+
+    /**
+     * The begin index of the serviceName in the func, the func always starts with {@link #FUNC_SEPARATOR}.
+     */
+    private static final int FUNC_SERVICE_NAME_BEGIN_INDEX = 1;
+
+    /**
+     * The index of the serviceName in the parsed func info.
+     */
+    private static final int FUNC_SERVICE_NAME_INDEX = 0;
+
+    /**
+     * The index of the methodName in the parsed func info.
+     */
+    private static final int FUNC_METHOD_NAME_INDEX = 1;
+
+    /**
+     * Remotely call the cache of services and methods to avoid string cutting operations during decoding.
+     *
+     * <p>Note: the cache key comes from the attacker-controllable protocol head, so it MUST be bounded, see
+     * {@link #newCache()} and {@link #getOrCompute(Cache, String, Function)}.</p>
+     */
+    private static final Cache<String, String[]> FUNC_INFO_CACHE = newCache();
 
     /**
      * The cache of the caller and callee information avoids the string cutting operation during decoding, which can
      * increase the throughput of the framework by about 4%. Considering that the mainstream of the current
-     * architecture is microservices, and each service has limited external interfaces, the built-in ConcurrentHashMap
-     * is used as a cache here. If the number of caches is too large, you can consider migrating to caffeine,
-     * but this will greatly offset the performance optimization here.
+     * architecture is microservices, and each service has limited external interfaces, a bounded cache is enough
+     * here.
+     *
+     * <p>Note: the cache key comes from the attacker-controllable protocol head, so it MUST be bounded, see
+     * {@link #newCache()} and {@link #getOrCompute(Cache, String, Function)}.</p>
      */
-    private static final Map<String, CallInfo> CALL_INFO_CACHE = new ConcurrentHashMap<>();
+    private static final Cache<String, CallInfo> CALL_INFO_CACHE = newCache();
 
+    /**
+     * Create a bounded cache whose entries are evicted by size and by idle time.
+     *
+     * @param <V> the type of the cached value
+     * @return the bounded cache
+     */
+    private static <V> Cache<String, V> newCache() {
+        return Caffeine.newBuilder()
+                .initialCapacity(CACHE_INITIAL_CAPACITY)
+                .maximumSize(CACHE_MAX_SIZE)
+                .expireAfterAccess(Duration.ofMinutes(CACHE_EXPIRE_MINUTES))
+                .build();
+    }
+
+    /**
+     * Get the value from the bounded cache, compute it if absent.
+     *
+     * <p>The cache keys are built from the request head fields(func/caller/callee) which are fully controlled by the
+     * remote peer, and they are written before the service/method existence check. An unbounded cache would allow an
+     * attacker to write an entry per request and finally exhaust the heap(OOM). The cache is bounded in two
+     * dimensions here: the entry number is limited by {@link #CACHE_MAX_SIZE}, and an oversized key is never cached
+     * so that the memory of a single entry is limited as well.</p>
+     *
+     * @param cache the cache to read and write
+     * @param key the cache key, which is untrusted
+     * @param mappingFunction the function to compute the value
+     * @param <V> the type of the cached value
+     * @return the cached or newly computed value
+     */
+    private static <V> V getOrCompute(Cache<String, V> cache, String key, Function<String, V> mappingFunction) {
+        if (key.length() > CACHE_KEY_MAX_LENGTH) {
+            return mappingFunction.apply(key);
+        }
+        return cache.get(key, mappingFunction);
+    }
 
     @Override
     public void encode(Channel channel, ChannelBuffer channelBuffer, Object message) {
@@ -236,19 +319,27 @@ public class StandardServerCodec extends ServerCodec {
     private RpcInvocation buildRpcInvocation(StandardPackage packet, RequestProtocol requestHeader) {
         RpcInvocation inv = new RpcInvocation();
         String func = requestHeader.getFunc().toStringUtf8();
-        String[] funcInfo = FUNC_INFO_CACHE.computeIfAbsent(func, s -> {
-            int idx = func.lastIndexOf("/");
-            // func format: /serviceName/methodName
-            return (idx > 1 && func.length() > idx + 1) ? new String[]{func.substring(1, idx), func.substring(idx + 1)}
-                    : new String[]{"", ""};
-        });
+        String[] funcInfo = getOrCompute(FUNC_INFO_CACHE, func, StandardServerCodec::parseFunc);
         inv.setFunc(func);
-        inv.setRpcServiceName(funcInfo[0]);
-        inv.setRpcMethodName(funcInfo[1]);
+        inv.setRpcServiceName(funcInfo[FUNC_SERVICE_NAME_INDEX]);
+        inv.setRpcMethodName(funcInfo[FUNC_METHOD_NAME_INDEX]);
         Object[] obj = new Object[]{new DecodableValue(requestHeader.getContentEncoding(),
                 requestHeader.getContentType(), packet.getBodyBytes())};
         inv.setArguments(obj);
         return inv;
+    }
+
+    /**
+     * Parse the func of the request head, whose format is {@code /serviceName/methodName}.
+     *
+     * @param func the func of the request head
+     * @return an array of [serviceName, methodName], both of them are empty if the func is illegal
+     */
+    private static String[] parseFunc(String func) {
+        int idx = func.lastIndexOf(FUNC_SEPARATOR);
+        return (idx > FUNC_SERVICE_NAME_BEGIN_INDEX && func.length() > idx + 1)
+                ? new String[]{func.substring(FUNC_SERVICE_NAME_BEGIN_INDEX, idx), func.substring(idx + 1)}
+                : new String[]{StringUtils.EMPTY, StringUtils.EMPTY};
     }
 
     private void setDyeingKeyIfNonNull(RequestProtocol requestHeader, DefRequest request) {
@@ -276,7 +367,7 @@ public class StandardServerCodec extends ServerCodec {
         if (StringUtils.isBlank(cacheKey)) {
             return null;
         }
-        return CALL_INFO_CACHE.computeIfAbsent(cacheKey, s -> {
+        return getOrCompute(CALL_INFO_CACHE, cacheKey, s -> {
             CallInfo callInfo = new CallInfo();
             fillCallerInfo(caller, callInfo);
             fillCalleeInfo(callee, rpcMethodName, callInfo);
