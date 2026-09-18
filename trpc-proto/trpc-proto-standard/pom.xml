@@ -9,7 +9,7 @@
     <parent>
         <groupId>com.tencent.trpc</groupId>
         <artifactId>trpc-proto</artifactId>
-        <version>1.5.1-SNAPSHOT</version>
+        <version>1.5.5-SNAPSHOT</version>
     </parent>
 
     <packaging>jar</packaging>
@@ -41,6 +41,10 @@
                     <groupId>io.projectreactor.netty</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>

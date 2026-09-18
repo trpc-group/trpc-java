@@ -9,7 +9,7 @@
     <parent>
         <groupId>com.tencent.trpc</groupId>
         <artifactId>trpc-registry</artifactId>
-        <version>1.5.1-SNAPSHOT</version>
+        <version>1.5.5-SNAPSHOT</version>
     </parent>
 
     <packaging>jar</packaging>
@@ -36,11 +36,6 @@
             <groupId>com.tencent.trpc</groupId>
             <artifactId>trpc-transport-netty</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-recipes</artifactId>

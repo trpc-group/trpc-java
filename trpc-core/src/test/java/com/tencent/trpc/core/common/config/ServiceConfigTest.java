@@ -138,6 +138,7 @@ public class ServiceConfigTest {
         config.setVersion("1");
         config.setGroup("b");
         config.setCompressMinBytes(10);
+        config.setAddress("127.0.0.1:9092?topics=quickstart-events&group=quickstart-group");
         config.setRegistryConfigs(new ArrayList<>());
         config.setDefault();
         assertEquals("a", config.getWorkerPool());
@@ -147,6 +148,7 @@ public class ServiceConfigTest {
         assertTrue(config.getEnableLinkTimeout());
         assertTrue(config.getRegistryConfigs().isEmpty());
         assertTrue(config.getRegistries().isEmpty());
+        assertEquals("127.0.0.1:9092?topics=quickstart-events&group=quickstart-group", config.getAddress());
         assertEquals("name", config.getName());
         assertEquals("127.1.1.1", config.getIp());
         assertEquals(8080, config.getPort());
@@ -233,5 +235,18 @@ public class ServiceConfigTest {
         config.overrideConfigDefault(new ServerConfig());
         config.register();
         config.unRegister();
+    }
+
+    @Test
+    public void testToStringContainsAddress() {
+        ServiceConfig config = new ServiceConfig();
+        config.setName("name");
+        config.setIp("127.0.0.1");
+        config.setPort(8080);
+        config.setAddress("127.0.0.1:9092?topics=quickstart-events&group=quickstart-group");
+        config.setDefault();
+        String str = config.toString();
+        assertTrue(str.contains("address="));
+        assertTrue(str.contains("127.0.0.1:9092?topics=quickstart-events&group=quickstart-group"));
     }
 }

@@ -403,8 +403,10 @@ public abstract class AbstractFailedRetryRegistryCenter extends AbstractRegistry
         }
         recoverSubscribed.forEach((registerInfo, registryCenterListenerSet) ->
                 registryCenterListenerSet.getNotifyListeners().forEach(notifyListener -> {
-                    logger.debug("[Recover] Subscribe registerInfo: {}, listener: {}",
-                            registerInfo, notifyListener);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("[Recover] Subscribe registerInfo: {}, listener: {}",
+                                registerInfo, notifyListener);
+                    }
                     addFailedSubscribedTask(registerInfo, notifyListener);
                 })
         );

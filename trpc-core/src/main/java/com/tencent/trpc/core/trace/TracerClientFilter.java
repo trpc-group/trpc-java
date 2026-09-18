@@ -42,7 +42,9 @@ public abstract class TracerClientFilter extends TracerFilter {
         Span span = null;
         try {
             span = buildSpan(invoker, request, context, meta, tracer, parentSpan);
-            logger.debug("before tjg TraceClientFilter reporting, span: {}", span);
+            if (logger.isDebugEnabled()) {
+                logger.debug("before tjg TraceClientFilter reporting, span: {}", span);
+            }
         } catch (Exception e) {
             logger.error("create trace client span error: ", e);
         }
@@ -59,7 +61,9 @@ public abstract class TracerClientFilter extends TracerFilter {
                     updateUpstreamSpanFlag(parentSpan, tempSpan);
                     finish(tempSpan, request, r, t);
                 }
-                logger.debug("after tjg TraceClientFilter reporting, span: {}", tempSpan);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("after tjg TraceClientFilter reporting, span: {}", tempSpan);
+                }
             } catch (Exception e) {
                 logger.error("finish span error: ", e);
             }

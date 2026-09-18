@@ -43,6 +43,59 @@ public class RpcClusterClientManagerTest {
         Thread.sleep(10);
         RpcClusterClientManager.scanUnusedClient();
         assertEquals(0, clusterMap.get(backendConfig).size());
+        BackendConfig backend = new BackendConfig();
+        backend.setNamingUrl("ip://127.0.0.1:8081");
+        RpcClusterClientManager.getOrCreateClient(backend, config);
+        RpcClusterClientManager.shutdownBackendConfig(backend);
+    }
+
+    @Test
+    public void testDebugLog() throws Exception {
+        BackendConfig backendConfig = new BackendConfig();
+        backendConfig.setIdleTimeout(100000);
+        backendConfig.setNamingUrl("ip://127.0.0.1:8082");
+        ProtocolConfigTest config = new ProtocolConfigTest();
+        RpcClient rpcClient = RpcClusterClientManager.getOrCreateClient(backendConfig, config);
+        Assert.assertNotNull(rpcClient);
+        RpcClusterClientManager.scanUnusedClient();
+        RpcClusterClientManager.shutdownBackendConfig(backendConfig);
+    }
+
+    @Test
+    public void testGetOrCreateClientTwice() throws Exception {
+        BackendConfig backendConfig = new BackendConfig();
+        backendConfig.setIdleTimeout(100000);
+        backendConfig.setNamingUrl("ip://127.0.0.1:8083");
+        ProtocolConfigTest config = new ProtocolConfigTest();
+        RpcClient rpcClient1 = RpcClusterClientManager.getOrCreateClient(backendConfig, config);
+        RpcClient rpcClient2 = RpcClusterClientManager.getOrCreateClient(backendConfig, config);
+        Assert.assertNotNull(rpcClient1);
+        Assert.assertNotNull(rpcClient2);
+        RpcClusterClientManager.shutdownBackendConfig(backendConfig);
+    }
+
+    @Test
+    public void testClose() throws Exception {
+        BackendConfig backendConfig = new BackendConfig();
+        backendConfig.setIdleTimeout(100000);
+        backendConfig.setNamingUrl("ip://127.0.0.1:8084");
+        ProtocolConfigTest config = new ProtocolConfigTest();
+        RpcClient rpcClient = RpcClusterClientManager.getOrCreateClient(backendConfig, config);
+        Assert.assertNotNull(rpcClient);
+        RpcClusterClientManager.close();
+        RpcClusterClientManager.reset();
+    }
+
+    @Test
+    public void testShutdownNonExistBackend() {
+        BackendConfig backendConfig = new BackendConfig();
+        backendConfig.setNamingUrl("ip://127.0.0.1:9999");
+        RpcClusterClientManager.shutdownBackendConfig(backendConfig);
+    }
+
+    @Test
+    public void testScanWithEmptyCluster() {
+        RpcClusterClientManager.scanUnusedClient();
     }
 
     private static class ProtocolConfigTest extends ProtocolConfig {

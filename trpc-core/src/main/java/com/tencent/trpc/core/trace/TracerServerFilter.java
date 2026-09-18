@@ -54,7 +54,9 @@ public abstract class TracerServerFilter extends TracerFilter {
                     RpcContextUtils.putValueMapValue(context, RpcContextValueKeys.CTX_TRACE_SPAN, span);
                 }
             }
-            logger.debug("before tjg TraceServerFilter reporting,span: {}", span);
+            if (logger.isDebugEnabled()) {
+                logger.debug("before tjg TraceServerFilter reporting,span: {}", span);
+            }
         } catch (Exception e) {
             logger.error("create trace server span error", e);
         }
@@ -74,7 +76,9 @@ public abstract class TracerServerFilter extends TracerFilter {
                     }
                     finish(tempSpan, request, r, t);
                 }
-                logger.debug("after tjg TraceClientFilter reporting,span:{}", tempSpan);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("after tjg TraceClientFilter reporting,span:{}", tempSpan);
+                }
             } catch (Exception e) {
                 logger.error("finish span error", e);
             }

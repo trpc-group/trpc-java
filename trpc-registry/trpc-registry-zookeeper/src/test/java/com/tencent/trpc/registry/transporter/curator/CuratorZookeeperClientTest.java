@@ -392,4 +392,220 @@ public class CuratorZookeeperClientTest {
         }
     }
 
+    @Test
+    public void testCheckExists() throws Exception {
+        client.create(testNodeFullPath, false);
+        boolean exists = Whitebox.invokeMethod(client, "checkExists", testNodeFullPath);
+        Assert.assertTrue(exists);
+        
+        boolean notExists = Whitebox.invokeMethod(client, "checkExists", testNodeFullPath + "/notexist");
+        Assert.assertFalse(notExists);
+    }
+
+    @Test
+    public void testCheckExistsError() throws Exception {
+        ZookeeperClient client = new CuratorZookeeperClient(buildConfig());
+        ((CuratorZookeeperClient) client).setClient(null);
+        
+        boolean exists = Whitebox.invokeMethod(client, "checkExists", testNodeFullPath);
+        Assert.assertFalse(exists);
+    }
+
+    @Test
+    public void testCreatePersistentNoData() throws Exception {
+        Whitebox.invokeMethod(client, "createPersistent", testRootPath);
+        List<String> children = client.getChildren("/");
+        Assert.assertTrue(children.contains(testRootName));
+    }
+
+    @Test
+    public void testCreatePersistentNoDataError() throws Exception {
+        ZookeeperClient client = new CuratorZookeeperClient(buildConfig());
+        ((CuratorZookeeperClient) client).setClient(null);
+        
+        try {
+            Whitebox.invokeMethod(client, "createPersistent", testRootPath);
+        } catch (Exception e) {
+            LOGGER.info("testCreatePersistentNoDataError success");
+        }
+    }
+
+    @Test
+    public void testCreateEphemeralNodeExists() throws Exception {
+        client.create(testNodeFullPath, false);
+        String providerPath = testNodeFullPath + "/provider1";
+        client.create(providerPath, true);
+        
+        Whitebox.invokeMethod(client, "createEphemeral", providerPath);
+        List<String> children = client.getChildren(testNodeFullPath);
+        Assert.assertEquals(1, children.size());
+    }
+
+    @Test
+    public void testCreateEphemeralWithDataNodeExists() throws Exception {
+        client.create(testNodeFullPath, false);
+        String providerPath = testNodeFullPath + "/provider1";
+        client.create(providerPath, "data1", true);
+        
+        Whitebox.invokeMethod(client, "createEphemeral", providerPath, "data2");
+        List<String> children = client.getChildren(testNodeFullPath);
+        Assert.assertEquals(1, children.size());
+    }
+
+    @Test
+    public void testCreatePersistentWithDataNodeExists() throws Exception {
+        client.create(testNodeFullPath, false);
+        String providerPath = testNodeFullPath + "/provider1";
+        client.create(providerPath, "data1", false);
+        
+        Whitebox.invokeMethod(client, "createPersistent", providerPath, "data2");
+        List<String> children = client.getChildren(testNodeFullPath);
+        Assert.assertEquals(1, children.size());
+    }
+
+    @Test
+    public void testStateListener() throws Exception {
+        final Map<String, Integer> stateMap = new HashMap<>();
+        client.addStateListener(state -> {
+            stateMap.put(state.name(), stateMap.getOrDefault(state.name(), 0) + 1);
+        });
+        
+        client.create(testRootPath, false);
+        Thread.sleep(500);
+        Assert.assertTrue(client.isConnected());
+    }
+
+    @Test
+    public void testGetCuratorConnectStringError() {
+        try {
+            RegistryCenterConfig config = new RegistryCenterConfig();
+            config.setAddresses("");
+            ZookeeperClient client = new CuratorZookeeperClient(config);
+        } catch (Exception e) {
+            LOGGER.info("testGetCuratorConnectStringError success");
+        }
+    }
+
+    @Test
+    public void testCuratorChildWatcherProcess() throws Exception {
+        client.create(testNodeFullPath, false);
+        
+        final Map<String, List<String>> childrenMap = new HashMap<>();
+        ChildListener childListener = (path, children) -> {
+            childrenMap.put(path, children);
+        };
+        
+        client.addChildListener(testNodeFullPath, childListener);
+        
+        String providerPath = testNodeFullPath + "/provider1";
+        client.create(providerPath, true);
+        
+        Thread.sleep(1000);
+        Assert.assertTrue(childrenMap.containsKey(testNodeFullPath));
+        Assert.assertEquals(1, childrenMap.get(testNodeFullPath).size());
+    }
+
+    @Test
+    public void testCuratorChildWatcherUnwatch() throws Exception {
+        client.create(testNodeFullPath, false);
+        
+        final Map<String, List<String>> childrenMap = new HashMap<>();
+        ChildListener childListener = (path, children) -> {
+            childrenMap.put(path, children);
+        };
+        
+        client.addChildListener(testNodeFullPath, childListener);
+        client.removeChildListener(testNodeFullPath, childListener);
+        
+        String providerPath = testNodeFullPath + "/provider1";
+        client.create(providerPath, true);
+        
+        Thread.sleep(1000);
+        Assert.assertFalse(childrenMap.containsKey(testNodeFullPath));
+    }
+
+    @Test
+    public void testCuratorDataCacheGetterSetter() throws Exception {
+        DataListener dataListener1 = (type, oldData, data) -> {};
+        DataListener dataListener2 = (type, oldData, data) -> {};
+        
+        CuratorZookeeperClient.CuratorDataCacheImpl cache = 
+            new CuratorZookeeperClient.CuratorDataCacheImpl(dataListener1);
+        
+        Assert.assertEquals(dataListener1, cache.getDataListener());
+        
+        cache.setDataListener(dataListener2);
+        Assert.assertEquals(dataListener2, cache.getDataListener());
+    }
+
+    @Test
+    public void testRemoveDataListenerWithNullCache() throws Exception {
+        client.create(testNodeFullPath, false);
+        String providerPath = testNodeFullPath + "/provider1";
+        
+        DataListener dataListener = (type, oldData, data) -> {};
+        client.removeDataListener(providerPath, dataListener);
+    }
+
+    @Test
+    public void testCreateWithContent() throws Exception {
+        client.create(testNodeFullPath, false);
+        String providerPath = testNodeFullPath + "/provider1";
+        client.create(providerPath, "testContent", false);
+        
+        List<String> children = client.getChildren(testNodeFullPath);
+        Assert.assertEquals(1, children.size());
+        Assert.assertEquals("provider1", children.get(0));
+    }
+
+    @Test
+    public void testCreateEphemeralWithContent() throws Exception {
+        client.create(testNodeFullPath, false);
+        String providerPath = testNodeFullPath + "/provider1";
+        client.create(providerPath, "testContent", true);
+        
+        List<String> children = client.getChildren(testNodeFullPath);
+        Assert.assertEquals(1, children.size());
+        Assert.assertEquals("provider1", children.get(0));
+    }
+
+    @Test
+    public void testDoClose() throws Exception {
+        ZookeeperClient newClient = curatorZookeeperFactory.connect(buildConfig());
+        newClient.create(testRootPath, false);
+        Assert.assertTrue(newClient.isConnected());
+        newClient.close();
+        newClient.close();
+    }
+
+    @Test
+    public void testGetState() throws Exception {
+        client.create(testRootPath, false);
+        Thread.sleep(500);
+    }
+
+    @Test
+    public void testAddStateListener() throws Exception {
+        final Map<String, Integer> stateMap = new HashMap<>();
+        client.addStateListener(state -> {
+            stateMap.put(state.name(), stateMap.getOrDefault(state.name(), 0) + 1);
+        });
+        
+        client.removeStateListener(state -> {});
+    }
+
+    @Test
+    public void testGetContent() throws Exception {
+        client.create(testNodeFullPath, "testContent", false);
+        String content = client.getContent(testNodeFullPath);
+        Assert.assertNull(content);
+    }
+
+    @Test
+    public void testGetContentNotExist() throws Exception {
+        String content = client.getContent(testNodeFullPath + "/notexist");
+        Assert.assertNull(content);
+    }
+
 }
+

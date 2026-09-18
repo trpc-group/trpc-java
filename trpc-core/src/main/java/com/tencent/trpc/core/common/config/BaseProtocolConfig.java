@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 Tencent. 
+ * Copyright (C) 2023 Tencent.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -151,6 +151,11 @@ public class BaseProtocolConfig implements Serializable, Cloneable {
      */
     @ConfigProperty(value = Constants.DEFAULT_REUSE_PORT, type = Boolean.class, override = true)
     protected Boolean reusePort;
+    /**
+     * Service address.
+     */
+    @ConfigProperty(override = true)
+    protected String address;
     /**
      * Extension configuration.
      */
@@ -387,6 +392,15 @@ public class BaseProtocolConfig implements Serializable, Cloneable {
     public void setReusePort(Boolean reusePort) {
         checkFiledModifyPrivilege();
         this.reusePort = reusePort;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        checkFiledModifyPrivilege();
+        this.address = address;
     }
 
     public int getBossThreads() {

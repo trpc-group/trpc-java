@@ -72,7 +72,10 @@ public class DefClusterInvoker<T> extends AbstractClusterInvoker<T> {
     protected ConsumerInvokerProxy<T> getInvoker(ServiceInstance instance) {
         String key = toUniqKey(instance);
         ConsumerInvokerProxy<T> result = invokerCache.get(key);
-        return Optional.ofNullable(result).orElseGet(() -> createInvoker(instance));
+        if (result != null && result.isAvailable()) {
+            return result;
+        }
+        return createInvoker(instance);
     }
 
     @SuppressWarnings("rawtypes")
@@ -210,8 +213,6 @@ public class DefClusterInvoker<T> extends AbstractClusterInvoker<T> {
                         Constants.CONTAINER_NAME));
                 request.getMeta().getCallInfo().setCalleeSetName(serviceInstance.getParameter(
                         Constants.SET_DIVISION));
-                logger.debug("[invoke] container:{},set:{}", serviceInstance.getParameter(
-                        Constants.CONTAINER_NAME), serviceInstance.getParameter(Constants.SET_DIVISION));
             }
         }
 

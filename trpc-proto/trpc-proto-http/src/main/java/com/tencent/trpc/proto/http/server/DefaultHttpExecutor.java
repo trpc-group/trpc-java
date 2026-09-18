@@ -68,9 +68,6 @@ public class DefaultHttpExecutor extends AbstractHttpExecutor implements HttpExe
         if (object instanceof HttpServletRequest) {
             HttpServletRequest request = (HttpServletRequest) object;
             String func = methodRegister.getNativeHttpFunc(request.getPathInfo());
-
-            logger.debug("got http trpc request, func: {}", func);
-
             RpcMethodInfoAndInvoker methodAndInvoker = methodRegister.route(func);
             if (null == methodAndInvoker) {
                 String serviceName = request.getParameter(HttpConstants.RPC_CALL_PARAM_SERVICE);

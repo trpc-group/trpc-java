@@ -26,11 +26,13 @@ import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.core.utils.NetUtils;
+import com.tencent.trpc.proto.http.client.AbstractConsumerInvoker;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import tests.service.GreeterJsonService;
@@ -50,6 +52,17 @@ public class HttpsRpcClientTest {
     private static ServerConfig serverConfig;
 
     private static Map<String, Object> extMap = new HashMap<>();
+
+    /**
+     * The timeout manager of {@link AbstractConsumerInvoker} is a static one shared by the whole JVM, and its
+     * underlying timer can never be restarted once it is stopped. Other test classes running before this one may
+     * have stopped it(directly or by the shutdown listener of the container), so it is rebuilt before every test
+     * case to keep the test cases independent.
+     */
+    @Before
+    public void beforeTest() {
+        AbstractConsumerInvoker.reset();
+    }
 
     @BeforeClass
     public static void startHttpServer() {

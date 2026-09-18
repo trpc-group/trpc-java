@@ -1,7 +1,7 @@
 /*
  * Tencent is pleased to support the open source community by making tRPC available.
  *
- * Copyright (C) 2023 Tencent. 
+ * Copyright (C) 2023 Tencent.
  * All rights reserved.
  *
  * If you have downloaded a copy of the tRPC source code from Tencent,
@@ -69,7 +69,7 @@ public class StreamConsumerInvoker<T> implements ConsumerInvoker<T> {
     private final ClientTransport clientTransport;
 
     public StreamConsumerInvoker(ConsumerConfig<T> consumerConfig, ProtocolConfig protocolConfig,
-                                 ClientTransport clientTransport) {
+            ClientTransport clientTransport) {
         this.consumerConfig = Objects.requireNonNull(consumerConfig, "consumerConfig is null");
         this.backendConfig = Objects
                 .requireNonNull(consumerConfig.getBackendConfig(), "backendConfig is null");

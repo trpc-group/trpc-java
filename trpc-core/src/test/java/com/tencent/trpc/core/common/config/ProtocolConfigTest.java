@@ -14,9 +14,11 @@ package com.tencent.trpc.core.common.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetSocketAddress;
 import com.google.common.collect.ImmutableMap;
 import com.tencent.trpc.core.common.Constants;
 import org.junit.Test;
@@ -128,5 +130,44 @@ public class ProtocolConfigTest {
         assertEquals(10, config.getCompressMinBytes());
         assertTrue(config.isSetDefault());
         assertSame(serviceConfig, config.getServiceConfig());
+    }
+
+    @Test
+    public void testSocketAddress() {
+        ProtocolConfig config = new ProtocolConfig();
+        config.setIp("127.0.0.1");
+        config.setPort(8080);
+        config.setDefault();
+        InetSocketAddress socketAddress = config.toInetSocketAddress();
+        assertNotNull(socketAddress);
+        assertEquals("127.0.0.1", socketAddress.getHostString());
+        assertEquals(8080, socketAddress.getPort());
+    }
+
+    @Test
+    public void testSocketAddressNull() {
+        ProtocolConfig config = new ProtocolConfig();
+        config.setIp("192.168.1.1");
+        config.setPort(9090);
+        InetSocketAddress addr = config.toInetSocketAddress();
+        assertNotNull(addr);
+        assertEquals("192.168.1.1", addr.getHostString());
+        assertEquals(9090, addr.getPort());
+    }
+
+    @Test
+    public void testIpBlank() {
+        ProtocolConfig config = new ProtocolConfig();
+        assertNull(config.toInetSocketAddress());
+    }
+
+    @Test
+    public void testToString() {
+        ProtocolConfig config = new ProtocolConfig();
+        config.setIp("127.0.0.1");
+        config.setPort(8080);
+        config.setDefault();
+        String str = config.toString();
+        assertTrue(str.contains("socketAddress="));
     }
 }
