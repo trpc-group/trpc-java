@@ -89,7 +89,7 @@ public class TRpcServiceHandlerMapping extends AbstractHandlerMapping implements
     @Override
     protected RpcMethodInfoAndInvoker getHandlerInternal(HttpServletRequest request) {
         String requestPath = request.getRequestURI();
-        logger.debug("got trpc springmvc request {}, basePath is {}", requestPath);
+        logger.debug("got trpc springmvc request {}", requestPath);
         String method = request.getMethod();
         if (!TRpcHttpConstants.HTTP_METHOD_GET.equals(method)
                 && !TRpcHttpConstants.HTTP_METHOD_POST.equals(method)) {
