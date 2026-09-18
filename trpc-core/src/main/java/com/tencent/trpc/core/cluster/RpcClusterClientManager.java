@@ -128,11 +128,32 @@ public class RpcClusterClientManager {
         });
         unusedClientMap.forEach((bConfig, value) -> value.forEach(e -> {
             try {
+                RpcClientProxy proxy = (RpcClientProxy) e;
+                // Double-check before closing: ensure the client is still idle to avoid closing a client in use.
+                // This prevents race condition where getOrCreateClient() gets a client right before it's closed.
+                if (!isIdleTimeout(bConfig, proxy)) {
+                    // lastUsedNanos was updated, meaning a business thread is using it, try to put it back
+                    Map<String, RpcClientProxy> clientMap = CLUSTER_MAP.get(bConfig);
+                    if (clientMap != null) {
+                        RpcClientProxy existing = clientMap.putIfAbsent(
+                                proxy.getProtocolConfig().toUniqId(), proxy);
+                        if (existing == null) {
+                            // Successfully put back, do not close
+                            logger.info("RpcClient {} rescued from closing due to recent usage",
+                                    proxy.getProtocolConfig().toSimpleString());
+                            return;
+                        }
+                    }
+                    // Failed to put back (a new client already exists), still need to close the old one
+                }
                 e.close();
-            } finally {
                 logger.warn("RpcClient in clusterName={}, naming={}, remove rpc client{}, due to unused time > {} ms",
                         bConfig.getName(), bConfig.getNamingOptions().getServiceNaming(),
                         e.getProtocolConfig().toSimpleString(), bConfig.getIdleTimeout());
+            } catch (Exception ex) {
+                logger.error("Failed to close RpcClient in clusterName={}, naming={}, client={}",
+                        bConfig.getName(), bConfig.getNamingOptions().getServiceNaming(),
+                        e.getProtocolConfig().toSimpleString(), ex);
             }
         }));
     }
@@ -140,7 +161,24 @@ public class RpcClusterClientManager {
     private static boolean isIdleTimeout(BackendConfig bConfig, RpcClientProxy clientProxy) {
         long unusedNanosLimit = TimeUnit.MILLISECONDS.toNanos(bConfig.getIdleTimeout());
         long lastUsedNanos = clientProxy.getLastUsedNanos();
-        return lastUsedNanos > 0 && unusedNanosLimit > 0 && (System.nanoTime() - lastUsedNanos) > unusedNanosLimit;
+        boolean idleTooLong = lastUsedNanos > 0 && unusedNanosLimit > 0
+                && (System.nanoTime() - lastUsedNanos) > unusedNanosLimit;
+        if (!idleTooLong) {
+            return false;
+        }
+        // The client is idle for a long time, but there are still requests in flight on it.
+        // Skip cleaning in this round and re-check in the next one, otherwise closeClient() would
+        // forcibly fail all those in-flight requests with "Client(...) stop".
+        int pending = clientProxy.getPendingRequestCount();
+        if (pending > 0) {
+            logger.warn("RpcClient in clusterName={}, naming={}, client={} idle > {} ms, "
+                            + "but {} request(s) still in flight, skip cleaning this round",
+                    bConfig.getName(), bConfig.getNamingOptions().getServiceNaming(),
+                    clientProxy.getProtocolConfig().toSimpleString(),
+                    bConfig.getIdleTimeout(), pending);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -304,6 +342,11 @@ public class RpcClusterClientManager {
         @Override
         public ProtocolConfig getProtocolConfig() {
             return delegate.getProtocolConfig();
+        }
+
+        @Override
+        public int getPendingRequestCount() {
+            return delegate.getPendingRequestCount();
         }
 
         @Override
