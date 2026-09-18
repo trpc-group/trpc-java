@@ -138,4 +138,11 @@ public class HttpConstants {
      */
     public static final String CONNECTION_REQUEST_TIMEOUT = "connection_request_timeout";
 
+    /**
+     * Re-validate a pooled connection before reuse when it has been idle for at least this many
+     * milliseconds. Cheap stale-connection guard that catches most server-side half-closed
+     * keep-alive sockets.
+     */
+    public static final int VALIDATE_AFTER_INACTIVITY_MS = 5000;
+
 }

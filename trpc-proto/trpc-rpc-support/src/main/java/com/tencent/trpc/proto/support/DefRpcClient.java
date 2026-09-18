@@ -45,6 +45,7 @@ import java.util.concurrent.ConcurrentMap;
 public class DefRpcClient extends AbstractRpcClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefRpcClient.class);
+
     /**
      * ClientTransport
      */

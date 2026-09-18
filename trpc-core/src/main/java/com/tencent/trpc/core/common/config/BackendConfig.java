@@ -497,6 +497,9 @@ public class BackendConfig extends BaseProtocolConfig {
         config.setPort(port);
         config.setNetwork(network);
         config.setIdleTimeout(idleTimeout);
+        config.setTcpKeepAliveIdle(tcpKeepAliveIdle);
+        config.setTcpKeepAliveIntvl(tcpKeepAliveIntvl);
+        config.setTcpKeepAliveCnt(tcpKeepAliveCnt);
         config.setCharset(charset);
         config.setLazyinit(lazyinit);
         config.setConnsPerAddr(connsPerAddr);

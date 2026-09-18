@@ -43,7 +43,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HttpContext;
 
 /**
- * HTTP protocol client invoker.
+ * HTTP/1.1 protocol client invoker.
  */
 public class HttpConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
 
@@ -57,14 +57,22 @@ public class HttpConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
      *
      * @param request TRPC request
      * @return TRPC response
-     * @throws Exception if send request failed
+     * @throws Exception declared to honour the abstract contract; the implementation never
+     *         lets exceptions escape — every failure path is wrapped into a Response with
+     *         {@code exception != null}.
      */
     @Override
     public Response send(Request request) throws Exception {
-        HttpPost httpPost = buildRequest(request);
+        HttpRpcClient httpRpcClient = (HttpRpcClient) client;
 
-        CloseableHttpClient httpClient = ((HttpRpcClient) client).getHttpClient();
+        HttpPost httpPost;
+        try {
+            httpPost = buildRequest(request);
+        } catch (Exception ex) {
+            return RpcUtils.newResponse(request, null, ex);
+        }
 
+        CloseableHttpClient httpClient = httpRpcClient.getHttpClient();
         try (CloseableHttpResponse httpResponse = httpClient.execute(httpPost)) {
             return handleResponse(request, httpResponse);
         } catch (Exception ex) {

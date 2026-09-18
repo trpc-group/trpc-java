@@ -95,6 +95,28 @@ public class BaseProtocolConfig implements Serializable, Cloneable {
     @ConfigProperty(value = Constants.DEFAULT_IDLE_TIMEOUT, type = Integer.class, override = true, moreZero = false)
     protected Integer idleTimeout;
     /**
+     * TCP keepalive idle in seconds (Linux {@code TCP_KEEPIDLE}). Applied only on
+     * Linux + epoll TCP client transports. Value 0 disables tuning and leaves the OS
+     * default in place (Linux ≈ 7200 s).
+     */
+    @ConfigProperty(value = Constants.DEFAULT_TCP_KEEPALIVE_IDLE, type = Integer.class, override = true,
+            moreZero = false)
+    protected Integer tcpKeepAliveIdle;
+    /**
+     * TCP keepalive probe interval in seconds (Linux {@code TCP_KEEPINTVL}). Applied only
+     * on Linux + epoll TCP client transports. Value 0 disables tuning.
+     */
+    @ConfigProperty(value = Constants.DEFAULT_TCP_KEEPALIVE_INTVL, type = Integer.class, override = true,
+            moreZero = false)
+    protected Integer tcpKeepAliveIntvl;
+    /**
+     * TCP keepalive probe count (Linux {@code TCP_KEEPCNT}). Applied only on Linux +
+     * epoll TCP client transports. Value 0 disables tuning.
+     */
+    @ConfigProperty(value = Constants.DEFAULT_TCP_KEEPALIVE_CNT, type = Integer.class, override = true,
+            moreZero = false)
+    protected Integer tcpKeepAliveCnt;
+    /**
      * Whether to delay initialization.
      */
     @ConfigProperty(value = Constants.DEFAULT_LAZY_INIT, type = Boolean.class, override = true)
@@ -301,6 +323,33 @@ public class BaseProtocolConfig implements Serializable, Cloneable {
     public void setIdleTimeout(Integer idleTimeout) {
         checkFiledModifyPrivilege();
         this.idleTimeout = idleTimeout;
+    }
+
+    public Integer getTcpKeepAliveIdle() {
+        return tcpKeepAliveIdle;
+    }
+
+    public void setTcpKeepAliveIdle(Integer tcpKeepAliveIdle) {
+        checkFiledModifyPrivilege();
+        this.tcpKeepAliveIdle = tcpKeepAliveIdle;
+    }
+
+    public Integer getTcpKeepAliveIntvl() {
+        return tcpKeepAliveIntvl;
+    }
+
+    public void setTcpKeepAliveIntvl(Integer tcpKeepAliveIntvl) {
+        checkFiledModifyPrivilege();
+        this.tcpKeepAliveIntvl = tcpKeepAliveIntvl;
+    }
+
+    public Integer getTcpKeepAliveCnt() {
+        return tcpKeepAliveCnt;
+    }
+
+    public void setTcpKeepAliveCnt(Integer tcpKeepAliveCnt) {
+        checkFiledModifyPrivilege();
+        this.tcpKeepAliveCnt = tcpKeepAliveCnt;
     }
 
     public Boolean getLazyinit() {

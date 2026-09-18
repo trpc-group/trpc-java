@@ -133,6 +133,24 @@ public class AbstractProtocolSchemaTest {
     }
 
     @Test
+    public void testTcpKeepAliveIdle() {
+        schema.setTcpKeepAliveIdle(30);
+        assertEquals(Integer.valueOf(30), schema.getTcpKeepAliveIdle());
+    }
+
+    @Test
+    public void testTcpKeepAliveIntvl() {
+        schema.setTcpKeepAliveIntvl(10);
+        assertEquals(Integer.valueOf(10), schema.getTcpKeepAliveIntvl());
+    }
+
+    @Test
+    public void testTcpKeepAliveCnt() {
+        schema.setTcpKeepAliveCnt(3);
+        assertEquals(Integer.valueOf(3), schema.getTcpKeepAliveCnt());
+    }
+
+    @Test
     public void testLazyinit() {
         schema.setLazyinit(Boolean.TRUE);
         assertEquals(Boolean.TRUE, schema.getLazyinit());

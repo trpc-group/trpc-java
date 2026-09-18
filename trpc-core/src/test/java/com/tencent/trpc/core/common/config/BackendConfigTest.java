@@ -84,7 +84,7 @@ public class BackendConfigTest {
         assertEquals(16384, config.getSendBuffer());
         assertEquals(180000, config.getIdleTimeout().intValue());
         assertEquals(false, config.isLazyinit());
-        assertEquals(2, config.getConnsPerAddr());
+        assertEquals(4, config.getConnsPerAddr());
         assertEquals(1000, config.getConnTimeout());
         assertEquals(true, config.isIoThreadGroupShare());
         assertEquals(Constants.DEFAULT_IO_THREADS, config.getIoThreads());

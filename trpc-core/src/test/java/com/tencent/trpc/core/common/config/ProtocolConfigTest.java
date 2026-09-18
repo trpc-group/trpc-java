@@ -42,7 +42,7 @@ public class ProtocolConfigTest {
         assertEquals(true, config.isKeepAlive());
         assertEquals(Constants.DEFAULT_CHARSET, config.getCharset());
         assertEquals(Constants.DEFAULT_TRANSPORTER, config.getTransporter());
-        assertEquals(20480, config.getMaxConns());
+        assertEquals(200, config.getMaxConns());
         assertEquals(1024, config.getBacklog());
         assertEquals(Constants.DEFAULT_NETWORK_TYPE, config.getNetwork());
         assertEquals(16384, config.getReceiveBuffer());
@@ -50,7 +50,7 @@ public class ProtocolConfigTest {
         assertEquals(10485760, config.getPayload());
         assertEquals(180000, config.getIdleTimeout().intValue());
         assertEquals(false, config.isLazyinit());
-        assertEquals(2, config.getConnsPerAddr());
+        assertEquals(4, config.getConnsPerAddr());
         assertEquals(1000, config.getConnTimeout());
         assertEquals(Constants.DEFAULT_IO_MODE, config.getIoMode());
         assertEquals(Boolean.TRUE, config.isIoThreadGroupShare());

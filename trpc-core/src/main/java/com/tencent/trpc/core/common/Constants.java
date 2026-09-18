@@ -36,7 +36,11 @@ public class Constants {
 
     public static final String DEFAULT_KEEP_ALIVE = "true";
     /**
-     * Default shared IO thread pool true
+     * Default shared IO thread pool: true. The shared pool now supports both NIO and
+     * Epoll: each transport joins one of two reference-counted shared groups based on
+     * {@code Epoll.isAvailable() && config.useEpoll()}, so enabling epoll no longer forces
+     * the user to also flip {@code ioThreadGroupShare} off. Server-side transports do not
+     * consult this flag (they always own their own group).
      */
     public static final String DEFAULT_IO_THREAD_GROUPSHARE = "true";
     /**
@@ -107,9 +111,27 @@ public class Constants {
      */
     public static final String DEFAULT_CONNECT_TIMEOUT = "1000";
     /**
-     * Default maximum number of connections 20480
+     * Default maximum number of connections.
+     *
+     * <p>200 covers the great majority of internal RPC workloads while keeping the worst-case
+     * resource footprint bounded:</p>
+     * <ul>
+     *     <li>By Little's Law (concurrent in-flight = QPS × RT) 200 connections sustain
+     *         e.g. {@code QPS=20000 × RT=10ms} or {@code QPS=2000 × RT=100ms} on the HTTP/1.1
+     *         path where each connection serves one request at a time;</li>
+     *     <li>Far below the Linux default ephemeral-port range (~28k usable) so a connection
+     *         storm against an unreachable backend cannot exhaust the port pool;</li>
+     *     <li>Friendly to backend LBs whose per-source keep-alive limits are typically in the
+     *         low thousands.</li>
+     * </ul>
+     *
+     * <p>Workloads that genuinely need more (high-fanout aggregation services, very high QPS
+     * with long RT) should override per-{@code BackendConfig} via {@code maxConns}.</p>
+     *
+     * <p>Note: the trpc protocol path does not read this field — it sizes the connection pool
+     * via {@code connsPerAddr} (default 4). Only the HTTP / HTTP/2 paths consume it.</p>
      */
-    public static final String DEFAULT_MAX_CONNECTIONS = "20480";
+    public static final String DEFAULT_MAX_CONNECTIONS = "200";
     /**
      * Default maximum payload limit 10M
      */
@@ -119,17 +141,69 @@ public class Constants {
      */
     public static final String DEFAULT_BUFFER_SIZE = "16384";
     /**
-     * Default client idle timeout 3 minutes
+     * Default client idle timeout 3 minutes. Drives the read-idle close handler installed
+     * by {@code NettyTcpClientTransport}: a long connection that has not received any
+     * inbound bytes for this duration is recycled by the client (the next request goes
+     * through lazy reconnect). Half-dead detection in faster paths is delegated to the
+     * configurable TCP keepalive parameters below; the read-idle handler is the slow
+     * universal fallback that also covers macOS / Windows where TCP keepalive tuning is
+     * not available.
      */
     public static final String DEFAULT_IDLE_TIMEOUT = "180000";
+    /**
+     * Default TCP keepalive idle (Linux {@code TCP_KEEPIDLE}) in seconds: 30 s without
+     * traffic on the socket before the kernel starts emitting keepalive probes. Together
+     * with {@link #DEFAULT_TCP_KEEPALIVE_INTVL} and {@link #DEFAULT_TCP_KEEPALIVE_CNT}
+     * (Dubbo-style 30/10/3) this yields a half-dead detection window of roughly 60 s on
+     * Linux + epoll (30 + 10 × 3 = 60). Value 0 leaves the OS default (Linux: 7200 s).
+     */
+    public static final String DEFAULT_TCP_KEEPALIVE_IDLE = "30";
+    /**
+     * Default TCP keepalive interval (Linux {@code TCP_KEEPINTVL}) in seconds between
+     * consecutive keepalive probes after the idle window has elapsed.
+     */
+    public static final String DEFAULT_TCP_KEEPALIVE_INTVL = "10";
+    /**
+     * Default TCP keepalive probe count (Linux {@code TCP_KEEPCNT}): the number of
+     * unacknowledged keepalive probes after which the kernel marks the connection dead
+     * and emits a RST.
+     */
+    public static final String DEFAULT_TCP_KEEPALIVE_CNT = "3";
     /**
      * Default server idle timeout 4 minutes
      */
     public static final String DEFAULT_SERVER_IDLE_TIMEOUT = "240000";
     /**
-     * Default number of connections per address 2
+     * Default number of long-lived TCP connections to a single peer address.
+     *
+     * <p>Each business request is dispatched round-robin across these N channels
+     * ({@code channelIdx.getAndIncrement() % N}); on a single channel Netty multiplexes many
+     * in-flight RPCs via the protocol-level sequence id, so {@code N=1} would already saturate
+     * a 1Gbps link in pure throughput. The default of <b>4</b> is chosen so that:</p>
+     * <ul>
+     *     <li>Multiple Netty {@code EventLoop} threads run in parallel for a single peer —
+     *         no single EventLoop becomes a CPU bottleneck under high QPS;</li>
+     *     <li>Failure-domain isolation: when a channel is invalidated by READ_IDLE / RST /
+     *         half-close, the remaining 3 channels absorb traffic with minimal RT impact
+     *         (compared to {@code N=2} which would double the load on the surviving channel);</li>
+     *     <li>Resource cost stays bounded: 4 fd × ephemeral ports × ~16KB Netty buffer per
+     *         peer is negligible even with hundreds of peer addresses.</li>
+     * </ul>
+     *
+     * <p>Tuning guidance (override per-{@code BackendConfig} via {@code connsPerAddr}):</p>
+     * <ul>
+     *     <li>Low QPS / few peers: {@code 1~2} (saves resources);</li>
+     *     <li>High QPS / few peers: {@code 8~16} (more EventLoop parallelism);</li>
+     *     <li>Many peer IPs (hundreds+): leave at {@code 4}, the IP fan-out already
+     *         provides parallelism &amp; failure isolation;</li>
+     *     <li>Gateway / aggregation services: {@code 8}.</li>
+     * </ul>
+     *
+     * <p><b>Compatibility note</b>: this default was {@code 2} in earlier versions. Upgrades
+     * will see <b>per-peer inbound connections double</b> on the server side; review server
+     * fd ulimits and LB per-source connection limits before rollout.</p>
      */
-    public static final String DEFAULT_CONNECTIONS_PERADDR = "2";
+    public static final String DEFAULT_CONNECTIONS_PERADDR = "4";
     public static final String DEFAULT_TRANSPORTER = TRANSPORTER_NETTY;
     public static final String DEFAULT_IO_MODE = IO_MODE_EPOLL;
     /**

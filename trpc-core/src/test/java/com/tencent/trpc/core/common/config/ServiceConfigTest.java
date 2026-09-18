@@ -63,7 +63,7 @@ public class ServiceConfigTest {
         assertEquals(true, config.isKeepAlive());
         assertEquals(Constants.DEFAULT_CHARSET, config.getCharset());
         assertEquals(Constants.DEFAULT_TRANSPORTER, config.getTransporter());
-        assertEquals(20480, config.getMaxConns());
+        assertEquals(200, config.getMaxConns());
         assertEquals(1024, config.getBacklog());
         assertEquals(Constants.DEFAULT_NETWORK_TYPE, config.getNetwork());
         assertEquals(16384, config.getReceiveBuffer());
@@ -87,7 +87,7 @@ public class ServiceConfigTest {
         assertEquals(true, protocolConfig.isKeepAlive());
         assertEquals(Constants.DEFAULT_CHARSET, protocolConfig.getCharset());
         assertEquals(Constants.DEFAULT_TRANSPORTER, protocolConfig.getTransporter());
-        assertEquals(20480, protocolConfig.getMaxConns());
+        assertEquals(200, protocolConfig.getMaxConns());
         assertEquals(1024, protocolConfig.getBacklog());
         assertEquals(Constants.DEFAULT_NETWORK_TYPE, protocolConfig.getNetwork());
         assertEquals(16384, protocolConfig.getReceiveBuffer());

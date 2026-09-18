@@ -90,7 +90,11 @@ public class DefClusterInvoker<T> extends AbstractClusterInvoker<T> {
                 value = invokerCache.get(key);
                 if (value == null || !value.isAvailable()) {
                     if (value != null && !value.isAvailable()) {
-                        invokerCache.remove(key);
+                        // CAS remove: only evict if the current cache slot is still the stale
+                        // proxy we observed. Avoid blowing away a fresh proxy that another
+                        // thread may have just installed (or that an earlier closeFuture hook
+                        // would otherwise also race against).
+                        invokerCache.remove(key, value);
                     }
                     RpcClient rpcClient;
                     try {
@@ -100,24 +104,30 @@ public class DefClusterInvoker<T> extends AbstractClusterInvoker<T> {
                                 backendConfig.generateProtocolConfig(instance.getHost(), instance.getPort(),
                                         backendConfig.getNetwork(), protocolType.getName(), backendConfig.getExtMap()));
                         ConsumerInvoker<T> originInvoker = rpcClient.createInvoker(consumerConfig);
-                        value = new ConsumerInvokerProxy<>(FilterChain.buildConsumerChain(consumerConfig,
-                                originInvoker), rpcClient);
-                        invokerCache.put(key, value);
-                        // When the rpcClient is cleaned up and closed during idle time,
-                        // the corresponding map should also be cleaned up.
+                        ConsumerInvokerProxy<T> created = new ConsumerInvokerProxy<>(
+                                FilterChain.buildConsumerChain(consumerConfig, originInvoker), rpcClient);
+                        invokerCache.put(key, created);
+                        // Long-connection mode: the client is no longer evicted by an idle scanner.
+                        // It is only closed on explicit shutdown or fatal transport error (or by
+                        // the reconnect-check timer in RpcClusterClientManager). When that
+                        // happens we still need to clean up the local invoker cache to avoid
+                        // memory leak.
+                        // Use CAS remove: if the cache slot has already been replaced by a newer
+                        // proxy (e.g. after a series of rebuilds), this stale closeFuture must
+                        // NOT evict that newer entry.
                         rpcClient.closeFuture().whenComplete((r, e) -> {
-                            ConsumerInvokerProxy<T> remove = invokerCache.remove(key);
-                            if (remove != null) {
-                                logger.warn("Service [name=" + consumerConfig.getServiceInterface()
+                            boolean removed = invokerCache.remove(key, created);
+                            if (removed && logger.isDebugEnabled()) {
+                                logger.debug("Service [name=" + consumerConfig.getServiceInterface()
                                         .getName()
                                         + ", naming=" + backendConfig.getNamingOptions()
                                         .getServiceNaming()
-                                        + ")], remove rpc client invoker["
-                                        + remove.getInvoker().getProtocolConfig().toSimpleString()
+                                        + "], remove rpc client invoker["
+                                        + created.getInvoker().getProtocolConfig().toSimpleString()
                                         + "], due to rpc client close");
                             }
                         });
-                        return value;
+                        return created;
                     } catch (Exception ex) {
                         throw TRpcException.newFrameException(ErrorCode.TRPC_INVOKE_UNKNOWN_ERR,
                                 "Service(name=" + consumerConfig.getServiceInterface().getName()
