@@ -20,8 +20,10 @@ import static org.junit.Assert.fail;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
 import com.tencent.trpc.core.exception.TransportException;
 import com.tencent.trpc.core.transport.codec.ClientCodec;
+import java.net.InetSocketAddress;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import org.junit.Test;
 
 public class AbstractClientTransportTest {
@@ -146,6 +148,32 @@ public class AbstractClientTransportTest {
         }
     }
 
+    /**
+     * When a channel fails to be closed, the error should be logged with the channel item and the cause, and the
+     * remaining steps(doClose and the handler destroying) should still be executed.
+     *
+     * <p>The lifecycle only executes stopInternal when it has left the new state, so the transport is opened first.
+     * The open fails on purpose so that the state becomes FAILED, and then stop executes stopInternal.</p>
+     */
+    @Test
+    public void testCloseLogsChannelCloseFailure() throws Exception {
+        ClientTransportTest transport = new ClientTransportTest(TransporterTestUtils.newProtocolConfig(),
+                new ThrowingDestroyChannelHandler(), TransporterTestUtils.newClientCodec(), true);
+        transport.channels.add(new AbstractClientTransport.ChannelFutureItem(
+                CompletableFuture.completedFuture(new ThrowingCloseChannel()),
+                TransporterTestUtils.newProtocolConfig()));
+        try {
+            // the open fails, and the failed start triggers the stop which executes stopInternal
+            transport.open();
+            fail("TransportException is expected");
+        } catch (TransportException e) {
+            assertNotNull(e.getMessage());
+        }
+        assertTrue(transport.isClosed());
+        // the channel close, the doClose and the handler destroying all failed, but they were all attempted
+        assertTrue(transport.isDoCloseCalled());
+    }
+
     private ClientTransportTest newClosedTransport() throws Exception {
         ClientTransportTest transport = new ClientTransportTest(TransporterTestUtils.newProtocolConfig(),
                 TransporterTestUtils.newChannelHandler(), TransporterTestUtils.newClientCodec(), true);
@@ -154,11 +182,54 @@ public class AbstractClientTransportTest {
         return transport;
     }
 
+    /**
+     * A channel whose close always fails, it is used to trigger the error log of the channel closing.
+     */
+    private static class ThrowingCloseChannel implements Channel {
+
+        @Override
+        public CompletionStage<Void> close() {
+            throw new IllegalStateException("close failed");
+        }
+
+        @Override
+        public CompletionStage<Void> send(Object message) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        @Override
+        public boolean isClosed() {
+            return false;
+        }
+
+        @Override
+        public boolean isConnected() {
+            return true;
+        }
+
+        @Override
+        public InetSocketAddress getRemoteAddress() {
+            return new InetSocketAddress("127.0.0.1", 6666);
+        }
+
+        @Override
+        public InetSocketAddress getLocalAddress() {
+            return new InetSocketAddress("127.0.0.1", 6667);
+        }
+
+        @Override
+        public ProtocolConfig getProtocolConfig() {
+            return TransporterTestUtils.newProtocolConfig();
+        }
+    }
+
     private static class ClientTransportTest extends AbstractClientTransport {
 
         private boolean isTransportException;
 
         private String description;
+
+        private boolean doCloseCalled;
 
         ClientTransportTest(ProtocolConfig config, ChannelHandler channelHandler,
                 ClientCodec clientCodec, boolean isTransportException) throws TransportException {
@@ -168,6 +239,10 @@ public class AbstractClientTransportTest {
 
         void setDescription(String description) {
             this.description = description;
+        }
+
+        boolean isDoCloseCalled() {
+            return doCloseCalled;
         }
 
         @Override
@@ -196,6 +271,7 @@ public class AbstractClientTransportTest {
 
         @Override
         protected void doClose() {
+            doCloseCalled = true;
             throw new IllegalArgumentException();
         }
 
@@ -204,5 +280,37 @@ public class AbstractClientTransportTest {
             return false;
         }
 
+    }
+
+    /**
+     * A channel handler whose destroying always fails, it is used to trigger the error log of the handler
+     * destroying.
+     */
+    private static class ThrowingDestroyChannelHandler implements ChannelHandler {
+
+        @Override
+        public void connected(Channel channel) {
+        }
+
+        @Override
+        public void disconnected(Channel channel) {
+        }
+
+        @Override
+        public void send(Channel channel, Object message) {
+        }
+
+        @Override
+        public void received(Channel channel, Object message) {
+        }
+
+        @Override
+        public void caught(Channel channel, Throwable exception) {
+        }
+
+        @Override
+        public void destroy() {
+            throw new IllegalStateException("destroy failed");
+        }
     }
 }
