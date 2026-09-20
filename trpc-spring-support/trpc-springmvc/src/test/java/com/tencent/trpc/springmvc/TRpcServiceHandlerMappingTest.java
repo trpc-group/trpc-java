@@ -11,12 +11,12 @@
 
 package com.tencent.trpc.springmvc;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.tencent.trpc.core.rpc.common.RpcMethodInfoAndInvoker;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 /**
@@ -29,7 +29,7 @@ public class TRpcServiceHandlerMappingTest {
 
     private TRpcServiceHandlerMapping handlerMapping;
 
-    @Before
+    @BeforeEach
     public void before() {
         handlerMapping = new TRpcServiceHandlerMapping();
     }
@@ -99,7 +99,7 @@ public class TRpcServiceHandlerMappingTest {
     public void testHandlerMappingOrder() {
         assertNotNull(handlerMapping);
         // the order is set in the constructor so that the tRPC mapping takes precedence
-        org.junit.Assert.assertEquals(org.springframework.core.Ordered.HIGHEST_PRECEDENCE + 50000,
+        org.junit.jupiter.api.Assertions.assertEquals(org.springframework.core.Ordered.HIGHEST_PRECEDENCE + 50000,
                 handlerMapping.getOrder());
     }
 }
