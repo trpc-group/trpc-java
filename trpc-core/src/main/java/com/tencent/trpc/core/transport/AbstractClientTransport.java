@@ -178,10 +178,10 @@ public abstract class AbstractClientTransport implements ClientTransport {
     @Override
     public CompletionStage<Void> send(Object msg) throws TransportException {
         if (isClosed()) {
-            throw TransportException.create(String.format(
+            throw TransportException.create(
                     "Client transport(transport=%s, class=%s, msg=%s) send fail, due to transport"
                             + " is not available or close",
-                    this, name, msg));
+                    this, name, msg);
         }
         return getChannel0().thenCompose(f -> f.send(msg));
     }
@@ -192,10 +192,10 @@ public abstract class AbstractClientTransport implements ClientTransport {
     @Override
     public CompletionStage<Channel> getChannel() throws TransportException {
         if (isClosed()) {
-            throw TransportException.create(String.format(
+            throw TransportException.create(
                     "Client transport(transport=%s, class=%s) get channel fail, due to transport "
                             + "is not available or close",
-                    this, name));
+                    this, name);
         }
         return getChannel0();
     }
@@ -420,8 +420,7 @@ public abstract class AbstractClientTransport implements ClientTransport {
             try {
                 doClose();
             } catch (Throwable ex) {
-                logger.error(String.format("Client transport(%s) destroy failed", getRemoteAddress(),
-                        ex));
+                logger.error(String.format("Client transport(%s) destroy failed", getRemoteAddress()), ex);
             }
             try {
                 if (handler != null) {
