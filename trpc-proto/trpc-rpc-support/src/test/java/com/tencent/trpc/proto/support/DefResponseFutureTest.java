@@ -110,6 +110,42 @@ public class DefResponseFutureTest {
         shutdownListener.onShutdown();
     }
 
+    @Test
+    public void testPendingRequestCount() throws Exception {
+        // The timeout manager is a static field shared by all DefResponseFutureManager instances, and it is
+        // closed by DefResponseFutureTest#test(). Reset it so that this test is order independent.
+        DefResponseFutureManager.reset();
+
+        ProtocolConfig config = ProtocolConfig.newInstance();
+        config.setIp("127.0.0.1");
+        config.setPort(8889);
+        DefRpcClient rpcClient = new DefRpcClient(config, new TestClientCodec());
+        ConsumerInvoker invoker = new DefConsumerInvoker(rpcClient, new ConsumerConfig<>());
+
+        // No request in flight yet
+        assertEquals(0, rpcClient.getPendingRequestCount());
+        assertEquals(0, rpcClient.getFutureManager().getPendingCount());
+
+        ClientTransport client = new NettyClientTransportFactory().create(config,
+                new ChannelHandlerAdapter() {
+                }, new TestClientCodec());
+        DefRequest request = new DefRequest();
+        request.setRequestId(2000);
+        request.getMeta().setTimeout(1000);
+        RpcClientContext context = new RpcClientContext();
+        rpcClient.getFutureManager().newFuture(context, invoker, client, request);
+
+        // One request in flight: the idle client cleaner must be able to see it
+        assertEquals(1, rpcClient.getFutureManager().getPendingCount());
+        assertEquals(1, rpcClient.getPendingRequestCount());
+
+        rpcClient.getFutureManager().remove(request.getRequestId());
+        assertEquals(0, rpcClient.getPendingRequestCount());
+
+        rpcClient.close();
+        client.close();
+    }
+
     private class TestClientCodec extends ClientCodec {
 
         @Override

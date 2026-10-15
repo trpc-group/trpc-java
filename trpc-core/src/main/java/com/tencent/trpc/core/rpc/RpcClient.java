@@ -61,4 +61,20 @@ public interface RpcClient {
      */
     ProtocolConfig getProtocolConfig();
 
+    /**
+     * Get the number of requests which are still in flight on this client.
+     *
+     * <p>It is used by the idle client cleaner to skip a client which still has in-flight requests,
+     * otherwise closing the client would forcibly fail those requests with {@code Client(...) stop}.</p>
+     *
+     * <p>A {@code default} implementation is provided to keep binary compatibility with the existing
+     * third-party implementations, which simply reports "no in-flight request" and thus keeps the old
+     * cleaning behavior.</p>
+     *
+     * @return the number of in-flight requests, 0 if unknown
+     */
+    default int getPendingRequestCount() {
+        return 0;
+    }
+
 }
