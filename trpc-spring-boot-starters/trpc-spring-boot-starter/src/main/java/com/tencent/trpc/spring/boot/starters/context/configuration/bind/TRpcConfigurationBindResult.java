@@ -14,7 +14,7 @@ package com.tencent.trpc.spring.boot.starters.context.configuration.bind;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import com.tencent.trpc.core.utils.JsonUtils;
@@ -26,7 +26,7 @@ public class TRpcConfigurationBindResult {
 
     private static final ObjectMapper MAP_CONVERTER = JsonUtils.copy()
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 
     private static final TypeReference<Map<String, Object>> MAP_TYPE = new TypeReference<Map<String, Object>>() {
     };
