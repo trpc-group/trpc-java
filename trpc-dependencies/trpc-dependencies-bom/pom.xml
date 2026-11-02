@@ -96,8 +96,7 @@
         <jakarta.xml.bind-api.version>4.0.2</jakarta.xml.bind-api.version>
         <javax.ws.rs.version>2.1.1</javax.ws.rs.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
-        <jetty.alpn.boot.version>8.1.13.v20181017</jetty.alpn.boot.version>
-        <jetty.version>11.0.25</jetty.version>
+        <jetty.version>12.1.14</jetty.version>
         <joda-time.version>2.7</joda-time.version>
         <jprotobuf.version>2.4.14</jprotobuf.version>
         <junit.version>5.12.2</junit.version>
@@ -577,85 +576,18 @@
                 <version>${javax.servlet-api.version}</version>
             </dependency>
             <dependency>
-                <artifactId>jetty-server</artifactId>
                 <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-bom</artifactId>
                 <version>${jetty.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
-                <artifactId>jetty-servlet</artifactId>
-                <groupId>org.eclipse.jetty</groupId>
+                <groupId>org.eclipse.jetty.ee10</groupId>
+                <artifactId>jetty-ee10-bom</artifactId>
                 <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>jetty-io</artifactId>
-                <groupId>org.eclipse.jetty</groupId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>jetty-util</artifactId>
-                <groupId>org.eclipse.jetty</groupId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>jetty-util-ajax</artifactId>
-                <groupId>org.eclipse.jetty</groupId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>jetty-security</artifactId>
-                <groupId>org.eclipse.jetty</groupId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>jetty-http</artifactId>
-                <groupId>org.eclipse.jetty</groupId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>http2-server</artifactId>
-                <groupId>org.eclipse.jetty.http2</groupId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>http2-common</artifactId>
-                <groupId>org.eclipse.jetty.http2</groupId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>http2-hpack</artifactId>
-                <groupId>org.eclipse.jetty.http2</groupId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>jetty-alpn-server</artifactId>
-                <groupId>org.eclipse.jetty</groupId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>jetty-alpn-conscrypt-server</artifactId>
-                <groupId>org.eclipse.jetty</groupId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>jetty-alpn-java-server</artifactId>
-                <groupId>org.eclipse.jetty</groupId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>jetty-alpn-openjdk8-server</artifactId>
-                <groupId>org.eclipse.jetty</groupId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-webapp</artifactId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <artifactId>alpn-boot</artifactId>
-                <groupId>org.mortbay.jetty.alpn</groupId>
-                <scope>runtime</scope>
-                <version>${jetty.alpn.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <!--javassist opensource dependencies-->
             <dependency>

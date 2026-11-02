@@ -19,8 +19,11 @@ import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import com.tencent.trpc.transport.http.common.ServletManager;
 import com.tencent.trpc.transport.http.spi.HttpServerFactory;
+import jakarta.servlet.AsyncContext;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -36,7 +39,7 @@ public class JettyServerTest {
     @BeforeAll
     public static void beforeClass() {
         ProtocolConfig protocolConfig = ProtocolConfig.newInstance();
-        protocolConfig.setIp("localhost");
+        protocolConfig.setIp("127.0.0.1");
         protocolConfig.setPort(18080);
         protocolConfig.setProtocol("http");
         protocolConfig.setTransporter("jetty");
@@ -49,6 +52,20 @@ public class JettyServerTest {
             String pathInfo = request.getPathInfo();
             if ("/".equals(pathInfo)) {
                 response.setStatus(HttpStatus.OK_200);
+            } else if ("/echo".equals(pathInfo)) {
+                response.getWriter().write(request.getMethod() + ":" + pathInfo + ":"
+                        + request.getParameter("id") + ":" + request.getReader().readLine());
+            } else if ("/async".equals(pathInfo)) {
+                AsyncContext asyncContext = request.startAsync();
+                asyncContext.start(() -> {
+                    try {
+                        asyncContext.getResponse().getWriter().write("async response");
+                    } catch (IOException e) {
+                        throw new IllegalStateException(e);
+                    } finally {
+                        asyncContext.complete();
+                    }
+                });
             } else {
                 response.sendError(HttpStatus.NOT_FOUND_404);
             }
@@ -119,6 +136,46 @@ public class JettyServerTest {
             if (connection != null) {
                 connection.disconnect();
             }
+        }
+    }
+
+    @Test
+    public void testPostRequestBody() throws Exception {
+        HttpURLConnection connection = (HttpURLConnection)
+                new URL("http://127.0.0.1:18080/echo?id=42").openConnection();
+        try {
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
+            connection.setConnectTimeout(1000);
+            connection.setReadTimeout(5000);
+            connection.setDoOutput(true);
+            try (var output = connection.getOutputStream()) {
+                output.write("request body".getBytes(StandardCharsets.UTF_8));
+            }
+            Assertions.assertEquals(200, connection.getResponseCode());
+            try (var input = connection.getInputStream()) {
+                Assertions.assertEquals("POST:/echo:42:request body",
+                        new String(input.readAllBytes(), StandardCharsets.UTF_8));
+            }
+        } finally {
+            connection.disconnect();
+        }
+    }
+
+    @Test
+    public void testAsyncRequest() throws Exception {
+        HttpURLConnection connection = (HttpURLConnection)
+                new URL("http://127.0.0.1:18080/async").openConnection();
+        try {
+            connection.setConnectTimeout(1000);
+            connection.setReadTimeout(5000);
+            Assertions.assertEquals(200, connection.getResponseCode());
+            try (var input = connection.getInputStream()) {
+                Assertions.assertEquals("async response",
+                        new String(input.readAllBytes(), StandardCharsets.UTF_8));
+            }
+        } finally {
+            connection.disconnect();
         }
     }
 
