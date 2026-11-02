@@ -12,8 +12,10 @@
 package com.tencent.trpc.springmvc;
 
 import com.tencent.trpc.spring.context.TRpcConfiguration;
+import com.tencent.trpc.spring.context.TRpcLifecycleManager;
 import com.tencent.trpc.springmvc.proto.ProtoJsonHttpMessageConverter;
 import java.util.List;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -41,6 +43,13 @@ public class TRpcSpringMvcAutoConfiguration implements WebMvcConfigurer {
     @ConditionalOnMissingBean
     public TRpcServiceHandlerMapping tRpcServiceHandlerMapping() {
         return new TRpcServiceHandlerMapping();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TRpcServiceExportListener tRpcServiceExportListener(TRpcServiceHandlerMapping tRpcServiceHandlerMapping,
+            ObjectProvider<TRpcLifecycleManager> tRpcLifecycleManager) {
+        return new TRpcServiceExportListener(tRpcServiceHandlerMapping, tRpcLifecycleManager.getIfAvailable());
     }
 
     @Bean

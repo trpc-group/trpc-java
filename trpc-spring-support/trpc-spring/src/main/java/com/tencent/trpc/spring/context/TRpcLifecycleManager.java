@@ -15,63 +15,104 @@ import com.tencent.trpc.core.common.ConfigManager;
 import com.tencent.trpc.core.common.config.ProviderConfig;
 import com.tencent.trpc.spring.util.TRpcSpringUtils;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.lang.NonNull;
 
 /**
- * Response on {@link ContextRefreshedEvent} and {@link ContextClosedEvent}
- * to perform necessary tRPC operations.
+ * Start tRPC on {@link ContextRefreshedEvent}.
+ * <p>Runs late so that other {@link ContextRefreshedEvent} listeners (e.g. Spring Cloud RefreshScope eager
+ * initialization) have finished before tRPC begins to accept traffic. Shutdown is handled by
+ * {@link TRpcShutdownListener}, which runs first on {@link org.springframework.context.event.ContextClosedEvent}.</p>
+ * <p>Only events of the application context which this manager belongs to are handled, events propagated from
+ * child contexts (e.g. actuator management context, whose id is {@code {parentId}:management}) are ignored.</p>
  */
-public class TRpcLifecycleManager implements SmartApplicationListener {
+public class TRpcLifecycleManager implements ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware,
+        DisposableBean, Ordered {
 
     /**
-     * tRPC 容器启动标记
+     * Order of starting tRPC on {@link ContextRefreshedEvent}.
+     */
+    public static final int START_ORDER = Ordered.LOWEST_PRECEDENCE - 20;
+
+    /**
+     * Whether tRPC has been started by this manager.
      */
     private final AtomicBoolean started = new AtomicBoolean(Boolean.FALSE);
 
-    @Override
-    public boolean supportsEventType(@NonNull Class<? extends ApplicationEvent> eventType) {
-        return ContextRefreshedEvent.class == eventType
-                || ContextClosedEvent.class == eventType;
-    }
+    /**
+     * The application context which this manager belongs to.
+     */
+    private ApplicationContext applicationContext;
 
     @Override
-    public void onApplicationEvent(@NonNull ApplicationEvent event) {
-        if (event instanceof ContextRefreshedEvent) {
-            onContextRefreshedEvent((ContextRefreshedEvent) event);
-        } else {
-            onContextClosedEvent((ContextClosedEvent) event);
-        }
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
     /**
-     * Start tRPC services on {@link ContextRefreshedEvent}
+     * Whether tRPC has been started by this manager.
+     *
+     * @return true if started
      */
-    private void onContextRefreshedEvent(ContextRefreshedEvent event) {
-        if (!TRpcSpringUtils.isAwareContext(event.getApplicationContext())) {
+    public boolean isStarted() {
+        return started.get();
+    }
+
+    /**
+     * Whether the context is managed by this manager, i.e. it is the context this manager belongs to
+     * and requires aware of tRPC.
+     *
+     * @param context the context of the event
+     * @return true if managed
+     */
+    public boolean isManagedContext(ApplicationContext context) {
+        if (context == null) {
+            return false;
+        }
+        if (applicationContext != null && applicationContext != context) {
+            return false;
+        }
+        return TRpcSpringUtils.isAwareContext(context);
+    }
+
+    /**
+     * Stop tRPC only if it has been started by this manager, e.g. on context close or application startup failure.
+     */
+    public void stopIfStarted() {
+        if (started.compareAndSet(Boolean.TRUE, Boolean.FALSE)) {
+            ConfigManager.getInstance().stop();
+        }
+    }
+
+    @Override
+    public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
+        if (!isManagedContext(event.getApplicationContext())) {
             return;
         }
         if (started.compareAndSet(Boolean.FALSE, Boolean.TRUE)) {
-            replaceProvidersRef(event.getApplicationContext());
-            startTRPC();
+            try {
+                replaceProvidersRef(event.getApplicationContext());
+                ConfigManager.getInstance().start(false);
+            } catch (Throwable t) {
+                // tRPC lifecycle has already stopped itself on start failure, avoid stopping it again
+                started.set(Boolean.FALSE);
+                throw t;
+            }
         }
     }
 
     /**
-     * Shutdown tRPC services on {@link ContextClosedEvent}
+     * Fallback of stopping tRPC when the context refresh fails after tRPC has started, in which case
+     * beans are destroyed without publishing {@link org.springframework.context.event.ContextClosedEvent}.
      */
-    private void onContextClosedEvent(ContextClosedEvent event) {
-        if (!TRpcSpringUtils.isAwareContext(event.getApplicationContext())) {
-            return;
-        }
-        if (started.compareAndSet(Boolean.TRUE, Boolean.FALSE)) {
-            stopTRPC();
-        }
+    @Override
+    public void destroy() {
+        stopIfStarted();
     }
 
     /**
@@ -92,16 +133,8 @@ public class TRpcLifecycleManager implements SmartApplicationListener {
         }
     }
 
-    private void startTRPC() {
-        ConfigManager.getInstance().start(false);
-    }
-
-    private void stopTRPC() {
-        ConfigManager.getInstance().stop();
-    }
-
     @Override
     public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE + 20000;
+        return START_ORDER;
     }
 }
