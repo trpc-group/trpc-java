@@ -32,6 +32,8 @@ jobs:
           cache: maven
       - name: Test with Maven
         run: mvn clean install -Dmaven.test.skip=true -B -U --file pom.xml
+      - name: Test HTTP transport with Spring Boot BOM first
+        run: python3 trpc-transport/trpc-transport-http/src/test/it/boot-bom-first/run.py
   JDK21:
     runs-on: ubuntu-latest
     steps:
@@ -48,6 +50,8 @@ jobs:
           cache: maven
       - name: Test with Maven
         run: mvn clean install -Dmaven.test.skip=true -B -U --file pom.xml
+      - name: Test HTTP transport with Spring Boot BOM first
+        run: python3 trpc-transport/trpc-transport-http/src/test/it/boot-bom-first/run.py
   JDK17-master:
     runs-on: ubuntu-latest
     steps:
