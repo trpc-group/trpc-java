@@ -38,6 +38,17 @@ public class TRpcConfiguration {
     }
 
     /**
+     * Build {@link TRpcShutdownListener}
+     *
+     * @param tRpcLifecycleManager the {@link TRpcLifecycleManager} which started tRPC
+     * @return TRpcShutdownListener
+     */
+    @Bean
+    public TRpcShutdownListener tRpcShutdownListener(TRpcLifecycleManager tRpcLifecycleManager) {
+        return new TRpcShutdownListener(tRpcLifecycleManager);
+    }
+
+    /**
      * Build {@link TRpcConfigManagerInitializer}.
      * <p>Users could implement {@link TRpcConfigManagerCustomizer} and
      * register it as bean to customize {@link com.tencent.trpc.core.common.ConfigManager}</p>

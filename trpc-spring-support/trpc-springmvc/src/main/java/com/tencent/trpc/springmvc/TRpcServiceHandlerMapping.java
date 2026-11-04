@@ -21,21 +21,20 @@ import com.tencent.trpc.core.logger.LoggerFactory;
 import com.tencent.trpc.core.rpc.common.RpcMethodInfoAndInvoker;
 import com.tencent.trpc.core.rpc.def.DefMethodInfoRegister;
 import com.tencent.trpc.core.rpc.def.DefProviderInvoker;
-import com.tencent.trpc.spring.util.TRpcSpringUtils;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 
 /**
  * TRPC service routing management class.
+ * <p>tRPC services are exported by {@link TRpcServiceExportListener} after tRPC has started. This class
+ * does not listen to context events itself, because its {@link #getOrder()} is the handler mapping priority and
+ * must not be coupled with the event listener order.</p>
  */
-public class TRpcServiceHandlerMapping extends AbstractHandlerMapping implements
-        ApplicationListener<ContextRefreshedEvent> {
+public class TRpcServiceHandlerMapping extends AbstractHandlerMapping {
 
     private static final Logger logger = LoggerFactory.getLogger(TRpcServiceHandlerMapping.class);
 
@@ -49,13 +48,12 @@ public class TRpcServiceHandlerMapping extends AbstractHandlerMapping implements
         setOrder(Ordered.HIGHEST_PRECEDENCE + 50000);
     }
 
-    @Override
+    /**
+     * Export tRPC rest services to spring mvc. Must be called after tRPC has started,
+     * so that {@link ProviderConfig} refs are replaced by spring beans and initialized.
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        if (!TRpcSpringUtils.isAwareContext(event.getApplicationContext())) {
-            logger.debug("the event is not aware");
-            return;
-        }
+    public void exportTRpcServices() {
         if (!registered.compareAndSet(Boolean.FALSE, Boolean.TRUE)) {
             logger.info("already exported trpc backends to springmvc");
             return;
