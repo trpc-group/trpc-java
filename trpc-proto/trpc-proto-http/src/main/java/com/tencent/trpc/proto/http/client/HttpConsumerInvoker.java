@@ -15,7 +15,13 @@ import static com.tencent.trpc.core.common.Constants.DEFAULT_CLIENT_REQUEST_TIME
 import static com.tencent.trpc.proto.http.common.HttpConstants.CONNECTION_REQUEST_TIMEOUT;
 import static com.tencent.trpc.proto.http.common.HttpConstants.HTTP_HEADER_TRPC_CALLEE;
 import static com.tencent.trpc.proto.http.common.HttpConstants.HTTP_HEADER_TRPC_CALLER;
+import static com.tencent.trpc.proto.http.common.HttpConstants.HTTP_HEADER_TRPC_MESSAGE_TYPE;
+import static com.tencent.trpc.proto.http.common.HttpConstants.HTTP_HEADER_TRPC_REQUEST_ID;
+import static com.tencent.trpc.proto.http.common.HttpConstants.HTTP_HEADER_TRPC_TIMEOUT;
+import static com.tencent.trpc.proto.http.common.HttpConstants.HTTP_HEADER_TRPC_TRANS_INFO;
 
+import com.fasterxml.jackson.core.Base64Variant;
+import com.fasterxml.jackson.core.Base64Variants;
 import com.tencent.trpc.core.common.config.BackendConfig;
 import com.tencent.trpc.core.common.config.ConsumerConfig;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
@@ -23,11 +29,13 @@ import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.core.rpc.CallInfo;
 import com.tencent.trpc.core.rpc.Request;
 import com.tencent.trpc.core.rpc.Response;
+import com.tencent.trpc.core.utils.JsonUtils;
 import com.tencent.trpc.core.utils.RpcUtils;
 import com.tencent.trpc.proto.http.common.HttpConstants;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import org.apache.commons.io.IOUtils;
@@ -158,6 +166,33 @@ public class HttpConsumerInvoker<T> extends AbstractConsumerInvoker<T> {
         CallInfo callInfo = request.getMeta().getCallInfo();
         httpPost.setHeader(HTTP_HEADER_TRPC_CALLER, callInfo.getCaller());
         httpPost.setHeader(HTTP_HEADER_TRPC_CALLEE, callInfo.getCallee());
+
+        // set request id
+        httpPost.setHeader(HTTP_HEADER_TRPC_REQUEST_ID, String.valueOf(request.getRequestId()));
+        // set timeout
+        httpPost.setHeader(HTTP_HEADER_TRPC_TIMEOUT, String.valueOf(socketTimeout));
+        // set message type
+        int messageType = request.getMeta().getMessageType();
+        if (messageType != 0) {
+            httpPost.setHeader(HTTP_HEADER_TRPC_MESSAGE_TYPE, String.valueOf(messageType));
+        }
+        // set trans info: encode attachments as JSON with base64-encoded values,
+        // consistent with the server-side decoding logic in AbstractHttpExecutor.setAttachments
+        Map<String, Object> attachments = request.getAttachments();
+        if (attachments != null && !attachments.isEmpty()) {
+            Map<String, String> transInfoMap = new LinkedHashMap<>();
+            attachments.forEach((k, v) -> {
+                Base64Variant variant = Base64Variants.getDefaultVariant();
+                if (v instanceof byte[]) {
+                    transInfoMap.put(k, variant.encode((byte[]) v));
+                } else if (v instanceof String) {
+                    transInfoMap.put(k, variant.encode(((String) v).getBytes(StandardCharsets.UTF_8)));
+                }
+            });
+            if (!transInfoMap.isEmpty()) {
+                httpPost.setHeader(HTTP_HEADER_TRPC_TRANS_INFO, JsonUtils.toJson(transInfoMap));
+            }
+        }
 
         // encode request parameters
         String jsonString = encodeToJson(request);
