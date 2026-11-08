@@ -80,6 +80,19 @@ public class DefResponseFutureManager {
     }
 
     /**
+     * Get the number of requests which are still in flight, i.e. the {@link DefResponseFuture}s that have
+     * not been completed (by a response or by the timeout watcher) yet.
+     *
+     * <p>It is used by the idle client cleaner to avoid closing a client which still has in-flight
+     * requests, otherwise those requests would be forcibly failed with {@code Client(...) stop}.</p>
+     *
+     * @return the number of in-flight requests
+     */
+    public int getPendingCount() {
+        return futureMap.size();
+    }
+
+    /**
      * Removes and force stops all {@link DefResponseFuture}s related to a tRPC client.
      * Should be called when a tRPC client closes.
      *
