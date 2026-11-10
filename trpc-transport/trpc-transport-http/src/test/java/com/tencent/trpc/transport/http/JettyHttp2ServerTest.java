@@ -34,14 +34,16 @@ import javax.net.ssl.SSLContext;
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequests;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
+import org.apache.hc.client5.http.config.TlsConfig;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
-import org.apache.hc.core5.concurrent.FutureCallback;
-import org.apache.hc.core5.http2.HttpVersionPolicy;
 import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.core5.concurrent.FutureCallback;
+import org.apache.hc.core5.http.HttpVersion;
+import org.apache.hc.core5.http2.HttpVersionPolicy;
 import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.hc.core5.ssl.TrustStrategy;
 import org.eclipse.jetty.http.HttpStatus;
@@ -55,6 +57,8 @@ public class JettyHttp2ServerTest {
     private static final Logger logger = LoggerFactory.getLogger(JettyHttp2ServerTest.class);
 
     private static HttpServer httpServer;
+
+    private static SSLContext sslContext;
 
     private static CloseableHttpAsyncClient httpAsyncClient;
 
@@ -79,6 +83,8 @@ public class JettyHttp2ServerTest {
             String pathInfo = request.getPathInfo();
             if (("/").equals(pathInfo)) {
                 response.setStatus(HttpStatus.OK_200);
+                response.setHeader("X-Request-Scheme", request.getScheme());
+                response.setHeader("X-Request-Secure", Boolean.toString(request.isSecure()));
                 response.flushBuffer();
             } else {
                 response.setStatus(HttpStatus.NOT_FOUND_404);
@@ -98,23 +104,28 @@ public class JettyHttp2ServerTest {
 
         String keyStorePath = String.valueOf(path);
         String keyStorePass = "init234";
-        final SSLContext sslContext = SSLContexts.custom()
+        sslContext = SSLContexts.custom()
                 .loadTrustMaterial(new File(keyStorePath), keyStorePass.toCharArray(),
                         (TrustStrategy) (chain, authType) -> true)
                 .build();
+        httpAsyncClient = createClient(HttpVersionPolicy.FORCE_HTTP_2);
+        Thread.sleep(1000);
+    }
+
+    private static CloseableHttpAsyncClient createClient(HttpVersionPolicy versionPolicy) {
         final PoolingAsyncClientConnectionManager cm = PoolingAsyncClientConnectionManagerBuilder
                 .create()
+                .setDefaultTlsConfig(TlsConfig.custom().setVersionPolicy(versionPolicy).build())
                 .setTlsStrategy(ClientTlsStrategyBuilder.create()
                         .setSslContext(sslContext)
                         .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
                         .build())
                 .build();
-        httpAsyncClient = HttpAsyncClients.custom()
-                .setVersionPolicy(HttpVersionPolicy.FORCE_HTTP_2)
+        CloseableHttpAsyncClient client = HttpAsyncClients.custom()
                 .setConnectionManager(cm)
                 .build();
-        httpAsyncClient.start();
-        Thread.sleep(1000);
+        client.start();
+        return client;
     }
 
     @AfterAll
@@ -129,6 +140,23 @@ public class JettyHttp2ServerTest {
         if (httpServer != null) {
             httpServer.close();
             httpServer = null;
+        }
+    }
+
+    @Test
+    public void testHttp1FallbackUsesHttpsConfiguration() throws Exception {
+        try (CloseableHttpAsyncClient client = createClient(HttpVersionPolicy.FORCE_HTTP_1)) {
+            SimpleHttpRequest request = SimpleHttpRequests.get("https://localhost:18082/");
+            SimpleHttpResponse response = client.execute(request, null).get(10, TimeUnit.SECONDS);
+            Assertions.assertEquals(HttpVersion.HTTP_1_1, response.getVersion());
+            Assertions.assertEquals(200, response.getCode());
+            Assertions.assertEquals("https", response.getHeader("X-Request-Scheme").getValue());
+            Assertions.assertEquals("true", response.getHeader("X-Request-Secure").getValue());
+
+            SimpleHttpRequest mismatchedHost = SimpleHttpRequests.get("https://localhost:18082/");
+            mismatchedHost.setHeader("Host", "127.0.0.2");
+            SimpleHttpResponse rejected = client.execute(mismatchedHost, null).get(10, TimeUnit.SECONDS);
+            Assertions.assertEquals(400, rejected.getCode());
         }
     }
 
