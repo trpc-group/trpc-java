@@ -21,10 +21,9 @@ import com.tencent.trpc.core.rpc.anno.TRpcService;
 import com.tencent.trpc.core.rpc.def.DefProviderInvoker;
 import com.tencent.trpc.core.utils.NetUtils;
 import com.tencent.trpc.proto.standard.common.TRPCProtocol;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
-import org.eclipse.jetty.server.HttpChannel;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -69,9 +68,8 @@ public class DefaultHttpExecutorTest {
         connector.setAcceptQueueSize(60);
         server.addConnector(connector);
 
-        HttpChannel httpChannel = org.mockito.Mockito.mock(HttpChannel.class);
-        Request request = org.mockito.Mockito.mock(Request.class);
-        Response response = org.mockito.Mockito.mock(Response.class);
+        HttpServletRequest request = org.mockito.Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse response = org.mockito.Mockito.mock(HttpServletResponse.class);
 
         org.mockito.Mockito.when(request.getMethod()).thenReturn(HttpMethod.GET);
         org.mockito.Mockito.when(request.getPathInfo()).thenReturn("/trpc.test.rpc.Hello/sayHello");

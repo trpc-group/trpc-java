@@ -57,7 +57,7 @@ public class JettyHttp2Server extends JettyHttpsServer {
 
         // 4. Config the connector of h2
         ServerConnector http2Connector = new ServerConnector(server, ssl, alpn, h2,
-                new HttpConnectionFactory(httpConfig));
+                new HttpConnectionFactory(httpsConfig));
         http2Connector.setHost(config.getIp());
         http2Connector.setPort(config.getPort());
         http2Connector.setAcceptQueueSize(config.getMaxConns());

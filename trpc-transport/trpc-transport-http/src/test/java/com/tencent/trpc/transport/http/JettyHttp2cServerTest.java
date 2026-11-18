@@ -52,7 +52,7 @@ public class JettyHttp2cServerTest {
     @BeforeAll
     public static void beforeClass() throws InterruptedException {
         ProtocolConfig protocolConfig = ProtocolConfig.newInstance();
-        protocolConfig.setIp("localhost");
+        protocolConfig.setIp("127.0.0.1");
         protocolConfig.setPort(18081);
         protocolConfig.setProtocol(HTTP2_SCHEME);
         protocolConfig.setTransporter("jetty");

@@ -20,11 +20,11 @@ import com.tencent.trpc.transport.http.AbstractHttpServer;
 import com.tencent.trpc.transport.http.ExecutorDispatcher;
 import com.tencent.trpc.transport.http.HttpExecutor;
 import com.tencent.trpc.transport.http.common.ServletManager;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 /**
@@ -120,9 +120,10 @@ public class JettyHttpServer extends AbstractHttpServer {
                 servletHandler.addServletWithMapping(ExecutorDispatcher.class, "/*");
         servletHolder.setAsyncSupported(true);
         servletHolder.setInitOrder(1);
-        ServletContextHandler context =
-                new ServletContextHandler(server, "/", ServletContextHandler.SESSIONS);
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.setContextPath("/");
         context.setServletHandler(servletHandler);
+        server.setHandler(context);
         return context;
     }
 

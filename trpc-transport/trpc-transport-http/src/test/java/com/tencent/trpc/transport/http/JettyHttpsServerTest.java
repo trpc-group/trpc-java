@@ -62,7 +62,7 @@ public class JettyHttpsServerTest {
     public static void beforeClass() throws CertificateException, NoSuchAlgorithmException,
             KeyStoreException, IOException, KeyManagementException, InterruptedException {
         ProtocolConfig protocolConfig = ProtocolConfig.newInstance();
-        protocolConfig.setIp("localhost");
+        protocolConfig.setIp("127.0.0.1");
         protocolConfig.setPort(18083);
         protocolConfig.setProtocol(HTTP_SCHEME);
         protocolConfig.setTransporter("jetty");
