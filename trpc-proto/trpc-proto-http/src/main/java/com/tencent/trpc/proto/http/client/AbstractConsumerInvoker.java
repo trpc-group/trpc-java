@@ -35,8 +35,6 @@ import com.tencent.trpc.core.rpc.RpcInvocation;
 import com.tencent.trpc.core.rpc.TimeoutManager;
 import com.tencent.trpc.core.rpc.def.DefTimeoutManager;
 import com.tencent.trpc.core.utils.JsonUtils;
-import com.tencent.trpc.core.common.ConfigManager;
-import com.tencent.trpc.core.common.ShutdownListener;
 import com.tencent.trpc.core.utils.ProtoJsonConverter;
 import com.tencent.trpc.core.utils.RpcUtils;
 import com.tencent.trpc.core.utils.StringUtils;
@@ -66,12 +64,7 @@ public abstract class AbstractConsumerInvoker<T> implements ConsumerInvoker<T> {
     /**
      * The request timeout manager, used to handle the result of client requests in timeout scenarios.
      */
-    private static TimeoutManager TIMEOUT_MANAGER = new DefTimeoutManager(10);
-    
-    /**
-     * Internal shutdown listener that handles the shutdown of the timeout manager
-     */
-    private final ShutdownListener shutdownListener = new InternalShutdownListener();
+    private static final TimeoutManager TIMEOUT_MANAGER = new DefTimeoutManager(10);
 
     /**
      * Http client for the request
@@ -103,9 +96,6 @@ public abstract class AbstractConsumerInvoker<T> implements ConsumerInvoker<T> {
         if (extMap.containsKey(KEYSTORE_PATH) && extMap.containsKey(KEYSTORE_PASS)) {
             scheme = HTTPS_SCHEME;
         }
-        
-        // register shutdown listener
-        ConfigManager.getInstance().registerShutdownListener(shutdownListener);
     }
 
     /**
@@ -294,39 +284,5 @@ public abstract class AbstractConsumerInvoker<T> implements ConsumerInvoker<T> {
     @Override
     public Class<T> getInterface() {
         return config.getServiceInterface();
-    }
-
-    /**
-     * Stop the timeout manager
-     */
-    public static void stop() {
-        TIMEOUT_MANAGER.close();
-    }
-
-    /**
-     * Called when the container is reset.
-     */
-    public static void reset() {
-        TIMEOUT_MANAGER = new DefTimeoutManager(10);
-    }
-
-    /**
-     * Get the internal shutdown listener for testing purposes
-     *
-     * @return the internal shutdown listener
-     */
-    public ShutdownListener getShutdownListener() {
-        return shutdownListener;
-    }
-
-    /**
-     * Internal shutdown listener implementation
-     */
-    private class InternalShutdownListener implements ShutdownListener {
-        @Override
-        public void onShutdown() {
-            logger.info("AbstractConsumerInvoker received shutdown notification");
-            AbstractConsumerInvoker.stop();
-        }
     }
 }

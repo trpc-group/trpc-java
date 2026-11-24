@@ -22,7 +22,6 @@ import com.tencent.trpc.core.container.spi.Container;
 import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.core.rpc.TRpcProxy;
-import com.tencent.trpc.proto.support.DefResponseFutureManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +44,6 @@ public class ConsumerProxyTest {
             container.stop();
         }
         ConfigManager.stopTest();
-        DefResponseFutureManager.reset();
     }
 
     @Test

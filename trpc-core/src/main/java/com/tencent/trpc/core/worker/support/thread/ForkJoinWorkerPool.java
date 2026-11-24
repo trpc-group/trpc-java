@@ -126,11 +126,6 @@ public class ForkJoinWorkerPool extends AbstractWorkerPool implements PluginConf
                 shutdownGraceful(timeoutMills);
             }
         }
-
-        // unregister MBean
-        if (this.forkJoinPoolMXBean != null) {
-            MBeanRegistryHelper.unregisterMBean(this.forkJoinPoolMXBean.getObjectName());
-        }
     }
 
     private void shutdownGraceful(long timeoutMills) {

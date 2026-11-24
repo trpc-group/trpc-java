@@ -40,7 +40,6 @@ import com.tencent.trpc.proto.standard.client.StandardRpcClientFactory;
 import com.tencent.trpc.proto.standard.common.HelloRequestProtocol.HelloRequest;
 import com.tencent.trpc.proto.standard.common.HelloRequestProtocol.HelloResponse;
 import com.tencent.trpc.proto.standard.server.StandardRpcServerFactory;
-import com.tencent.trpc.proto.support.DefResponseFutureManager;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -115,7 +114,6 @@ public class TRpcServerTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        DefResponseFutureManager.reset();
     }
 
     @Test
@@ -465,7 +463,6 @@ public class TRpcServerTest {
     public void testDefaultMethod() {
         HelloRequest.Builder builder = HelloRequest.newBuilder();
         builder.setMessage(ByteString.copyFromUtf8("hello"));
-        DefResponseFutureManager.reset();
         HelloServiceApi serviceApi = helloClientConfig.getProxy();
         HelloResponse response = serviceApi.doDefaultMethod(new RpcClientContext(), builder.build());
         Assert.assertEquals(response.getMessage().toStringUtf8(), "this is default method");
