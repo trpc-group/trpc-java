@@ -83,7 +83,6 @@ public class HttpConsumerInvokerTest {
 
     @After
     public void tearDown() {
-        AbstractConsumerInvoker.reset();
         ConfigManager.stopTest();
     }
 

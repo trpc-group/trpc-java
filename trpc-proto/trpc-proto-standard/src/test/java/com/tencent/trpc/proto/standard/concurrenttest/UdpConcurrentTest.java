@@ -22,7 +22,6 @@ import com.tencent.trpc.core.common.config.ServiceConfig;
 import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.core.utils.RpcContextUtils;
 import com.tencent.trpc.proto.standard.common.HelloRequestProtocol;
-import com.tencent.trpc.proto.support.DefResponseFutureManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -68,7 +67,6 @@ public class UdpConcurrentTest {
         List<TestResult> results = new ArrayList<TestResult>();
         for (int i = 0; i < concurrent; i++) {
             BackendConfig config = new BackendConfig();
-            DefResponseFutureManager.reset();
             config.setNamingUrl("ip://127.0.0.1:" + UDP_PORT);
             config.setConnsPerAddr(1);
             config.setNetwork("udp");
@@ -116,7 +114,7 @@ public class UdpConcurrentTest {
     }
 
     private void startServer() {
-        // 1) Service interface configuration
+        // 1)服务接口配置
         ProviderConfig<ConcurrentTestService> providerConfig = new ProviderConfig<>();
         providerConfig.setRef(new ConcurrentTestServiceImpl());
         serviceConfig = getServiceConfig();
