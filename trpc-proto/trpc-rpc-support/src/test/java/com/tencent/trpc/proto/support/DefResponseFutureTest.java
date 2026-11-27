@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.tencent.trpc.core.common.config.ConsumerConfig;
 import com.tencent.trpc.core.common.config.ProtocolConfig;
+import com.tencent.trpc.core.common.ShutdownListener;
 import com.tencent.trpc.core.exception.ErrorCode;
 import com.tencent.trpc.core.exception.TRpcException;
 import com.tencent.trpc.core.rpc.ConsumerInvoker;
@@ -100,6 +101,13 @@ public class DefResponseFutureTest {
         }
 
         manager.stop();
+        
+        // Test internal shutdown listener
+        ShutdownListener shutdownListener = manager.getShutdownListener();
+        assertTrue(shutdownListener != null);
+        
+        // Test shutdown listener functionality
+        shutdownListener.onShutdown();
     }
 
     private class TestClientCodec extends ClientCodec {

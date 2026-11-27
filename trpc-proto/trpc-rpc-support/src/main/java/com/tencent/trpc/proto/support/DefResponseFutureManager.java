@@ -23,6 +23,8 @@ import com.tencent.trpc.core.rpc.RpcInvocation;
 import com.tencent.trpc.core.rpc.TimeoutManager;
 import com.tencent.trpc.core.rpc.def.DefTimeoutManager;
 import com.tencent.trpc.core.transport.ClientTransport;
+import com.tencent.trpc.core.common.ConfigManager;
+import com.tencent.trpc.core.common.ShutdownListener;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -36,14 +38,24 @@ import java.util.concurrent.Future;
 public class DefResponseFutureManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefResponseFutureManager.class);
+
     /**
      * Watcher for timeouts
      */
-    private static final TimeoutManager TIMEOUT_MANAGER = new DefTimeoutManager(10);
+    private static TimeoutManager TIMEOUT_MANAGER = new DefTimeoutManager(10);
     /**
      * Store
      */
     private final ConcurrentMap<Long, DefResponseFuture> futureMap = new ConcurrentHashMap<>();
+    
+    /**
+     * Internal shutdown listener that handles the shutdown of this manager
+     */
+    private final ShutdownListener shutdownListener = new InternalShutdownListener();
+
+    public DefResponseFutureManager() {
+        ConfigManager.getInstance().registerShutdownListener(shutdownListener);
+    }
 
     /**
      * Create a {@link DefResponseFuture} for a tRPC request
@@ -150,6 +162,33 @@ public class DefResponseFutureManager {
 
     public void stop() {
         TIMEOUT_MANAGER.close();
+    }
+
+    /**
+     * Called when the container is reset.
+     */
+    public static void reset() {
+        TIMEOUT_MANAGER = new DefTimeoutManager(10);
+    }
+
+    /**
+     * Get the internal shutdown listener for testing purposes
+     *
+     * @return the internal shutdown listener
+     */
+    public ShutdownListener getShutdownListener() {
+        return shutdownListener;
+    }
+
+    /**
+     * Internal shutdown listener implementation
+     */
+    private class InternalShutdownListener implements ShutdownListener {
+        @Override
+        public void onShutdown() {
+            LOG.info("DefResponseFutureManager received shutdown notification");
+            DefResponseFutureManager.this.stop();
+        }
     }
 
     /**

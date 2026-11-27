@@ -24,10 +24,12 @@ import com.tencent.trpc.core.logger.Logger;
 import com.tencent.trpc.core.logger.LoggerFactory;
 import com.tencent.trpc.core.rpc.RpcClientContext;
 import com.tencent.trpc.core.utils.NetUtils;
+import com.tencent.trpc.proto.http.client.AbstractConsumerInvoker;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import tests.service.GreeterJsonService;
@@ -46,6 +48,11 @@ public class Http2cRpcClientTest {
     private static final String TEST_MESSAGE = "tRPC-Java!";
 
     private static ServerConfig serverConfig;
+
+    @Before
+    public void beforeTest() {
+        AbstractConsumerInvoker.reset();
+    }
 
     @BeforeClass
     public static void startHttpServer() {

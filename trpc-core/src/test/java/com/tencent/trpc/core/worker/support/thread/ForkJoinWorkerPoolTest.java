@@ -15,10 +15,14 @@ import com.tencent.trpc.core.common.config.PluginConfig;
 import com.tencent.trpc.core.management.ForkJoinPoolMXBean;
 import com.tencent.trpc.core.management.PoolMXBean;
 import com.tencent.trpc.core.management.PoolMXBean.WorkerPoolType;
+import com.tencent.trpc.core.management.support.MBeanRegistryHelper;
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -72,5 +76,58 @@ public class ForkJoinWorkerPoolTest {
         ForkJoinPool forkJoinPool = (ForkJoinPool) executor;
         Assert.assertTrue(forkJoinPool.isShutdown());
         forkJoinWorkerPool.close(0);
+    }
+
+    /**
+     * Test MBean unregistration when closing ForkJoinWorkerPool
+     */
+    @Test
+    public void testMBeanUnregistrationOnClose() throws Exception {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(ForkJoinPoolConfig.PARALLELISM, PARALLELISM);
+        properties.put(ForkJoinPoolConfig.TIMEOUT_MS, TIMEOUT_MILLS);
+        PluginConfig poolPluginConfig = new PluginConfig(ForkJoinWorkerPool.NAME, ThreadWorkerPool.class,
+                properties);
+        ForkJoinWorkerPool forkJoinWorkerPool = new ForkJoinWorkerPool();
+        forkJoinWorkerPool.setPluginConfig(poolPluginConfig);
+        forkJoinWorkerPool.init();
+        
+        // Get the MXBean and its object name
+        PoolMXBean report = forkJoinWorkerPool.report();
+        ForkJoinPoolMXBean forkJoinPoolMXBean = (ForkJoinPoolMXBean) report;
+        ObjectName objectName = forkJoinPoolMXBean.getObjectName();
+        
+        // Verify MBean is registered
+        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+        Assert.assertTrue("MBean should be registered after init", 
+                mBeanServer.isRegistered(objectName));
+        
+        // Close the worker pool
+        forkJoinWorkerPool.close(1000);
+        
+        // Verify MBean is unregistered after close
+        Assert.assertFalse("MBean should be unregistered after close", 
+                mBeanServer.isRegistered(objectName));
+    }
+
+    /**
+     * Test close method when forkJoinPoolMXBean is null (covers the null check branch)
+     */
+    @Test
+    public void testCloseWithNullMXBean() throws Exception {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(ForkJoinPoolConfig.PARALLELISM, PARALLELISM);
+        properties.put(ForkJoinPoolConfig.TIMEOUT_MS, TIMEOUT_MILLS);
+        PluginConfig poolPluginConfig = new PluginConfig(ForkJoinWorkerPool.NAME, ThreadWorkerPool.class,
+                properties);
+        ForkJoinWorkerPool forkJoinWorkerPool = new ForkJoinWorkerPool();
+        forkJoinWorkerPool.setPluginConfig(poolPluginConfig);
+        
+        // Don't call init() so forkJoinPoolMXBean remains null
+        // This should not throw any exception when closing
+        forkJoinWorkerPool.close(1000);
+        
+        // Verify no exception is thrown and method completes successfully
+        Assert.assertTrue("Close method should complete successfully even with null MXBean", true);
     }
 }

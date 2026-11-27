@@ -18,8 +18,12 @@ import com.tencent.trpc.core.management.PoolMXBean;
 import com.tencent.trpc.core.management.PoolMXBean.WorkerPoolType;
 import com.tencent.trpc.core.management.ThreadPerTaskExecutorMXBeanImpl;
 import com.tencent.trpc.core.management.ThreadPoolMXBean;
+import com.tencent.trpc.core.management.support.MBeanRegistryHelper;
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -111,6 +115,55 @@ public class ThreadWorkerPoolTest {
             Assert.assertEquals(DEFALUT_POOL_SIZE, threadPoolMXBean.getMaximumPoolSize());
         }
         Assert.assertNotNull(report.toString());
+    }
+
+    /**
+     * Test MBean unregistration when closing ThreadWorkerPool
+     */
+    @Test
+    public void testMBeanUnregistrationOnClose() throws Exception {
+        Map<String, Object> properties = getProperties();
+        PluginConfig poolPluginConfig = new PluginConfig("work_pool", ThreadWorkerPool.class,
+                properties);
+        ThreadWorkerPool threadWorkerPool = new ThreadWorkerPool();
+        threadWorkerPool.setPluginConfig(poolPluginConfig);
+        threadWorkerPool.init();
+        
+        // Get the MXBean and its object name
+        PoolMXBean report = threadWorkerPool.report();
+        ThreadPoolMXBean threadPoolMXBean = (ThreadPoolMXBean) report;
+        ObjectName objectName = threadPoolMXBean.getObjectName();
+        
+        // Verify MBean is registered
+        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+        Assert.assertTrue("MBean should be registered after init", 
+                mBeanServer.isRegistered(objectName));
+        
+        // Close the worker pool
+        threadWorkerPool.close(1000);
+        
+        // Verify MBean is unregistered after close
+        Assert.assertFalse("MBean should be unregistered after close", 
+                mBeanServer.isRegistered(objectName));
+    }
+
+    /**
+     * Test close method when threadPoolMXBean is null (covers the null check branch)
+     */
+    @Test
+    public void testCloseWithNullMXBean() throws Exception {
+        Map<String, Object> properties = getProperties();
+        PluginConfig poolPluginConfig = new PluginConfig("work_pool", ThreadWorkerPool.class,
+                properties);
+        ThreadWorkerPool threadWorkerPool = new ThreadWorkerPool();
+        threadWorkerPool.setPluginConfig(poolPluginConfig);
+        
+        // Don't call init() so threadPoolMXBean remains null
+        // This should not throw any exception when closing
+        threadWorkerPool.close(1000);
+        
+        // Verify no exception is thrown and method completes successfully
+        Assert.assertTrue("Close method should complete successfully even with null MXBean", true);
     }
 
 }
