@@ -72,6 +72,9 @@ public class DefClusterInvoker<T> extends AbstractClusterInvoker<T> {
     protected ConsumerInvokerProxy<T> getInvoker(ServiceInstance instance) {
         String key = toUniqKey(instance);
         ConsumerInvokerProxy<T> result = invokerCache.get(key);
+        // Keep consistent with createInvoker: the invoker must be rebuilt once its client is closed
+        // (or is being closed), otherwise the request would be sent to a client which is being torn
+        // down by RpcClusterClientManager#scanUnusedClient.
         if (result != null && result.isAvailable()) {
             return result;
         }

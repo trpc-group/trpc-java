@@ -87,6 +87,14 @@ public class DefRpcClient extends AbstractRpcClient {
 
     /**
      * {@inheritDoc}
+     */
+    @Override
+    public int getPendingRequestCount() {
+        return futureManager.getPendingCount();
+    }
+
+    /**
+     * {@inheritDoc}
      *
      * @param consumerConfig client configurations
      * @return created {@link ConsumerInvoker}
